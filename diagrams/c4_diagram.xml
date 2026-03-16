@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36" version="29.6.1">
+  <diagram name="Page-1" id="2-IXsjG4wvkXFeQVCvPw">
+    <mxGraphModel dx="2143" dy="1140" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;align=center;strokeColor=none;fillColor=none;verticalAlign=middle;" value="&lt;b style=&quot;font-size:20px;&quot;&gt;Diagrama de Componente C4 — Nivel 3&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 13px; color: rgb(85, 85, 85);&quot;&gt;Frontend - Platforma Probleme de Informatica&lt;/span&gt;" vertex="1">
+          <mxGeometry height="60" width="1050" x="75" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="spa" parent="1" style="swimlane;startSize=0;fillColor=#EBF5FB;strokeColor=#2E86C1;fontSize=14;fontStyle=1;align=center;swimlaneLine=1;rounded=1;arcSize=2;strokeWidth=0;" value="" vertex="1">
+          <mxGeometry height="780" width="1155" x="20" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c10" parent="spa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;fontSize=10;verticalAlign=top;spacingTop=8;" value="&lt;b&gt;Header / Navigatie&lt;/b&gt;&lt;br/&gt;&lt;font color=&#39;#6666aa&#39;&gt;&lt;i&gt;React, TypeScript&lt;/i&gt;&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;Bara globala prezenta pe toate paginile, cu meniu si informatii despre contul activ." vertex="1">
+          <mxGeometry height="110" width="195" x="480" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="c1" parent="spa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;fontSize=10;verticalAlign=top;spacingTop=8;" value="&lt;b&gt;Autentificare&lt;/b&gt;&lt;br/&gt;&lt;font color=&#39;#6666aa&#39;&gt;&lt;i&gt;React, TypeScript&lt;/i&gt;&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;Permite utilizatorului sa se conecteze sau sa isi creeze un cont." vertex="1">
+          <mxGeometry height="110" width="195" x="30" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" parent="spa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;fontSize=10;verticalAlign=top;spacingTop=8;" value="&lt;b&gt;Lista Probleme&lt;/b&gt;&lt;br/&gt;&lt;font color=&#39;#6666aa&#39;&gt;&lt;i&gt;React, TypeScript&lt;/i&gt;&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;Afiseaza toate problemele disponibile, cu optiuni de filtrare si cautare." vertex="1">
+          <mxGeometry height="110" width="195" x="255" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" parent="spa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;fontSize=10;verticalAlign=top;spacingTop=8;" value="&lt;b&gt;Detalii Problema&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#6666aa&quot;&gt;&lt;i&gt;React, TypeScript&lt;/i&gt;&lt;/font&gt;&lt;br&gt;&lt;br&gt;Afiseaza enuntul problemei si permite scrierea si trimiterea unei solutii." vertex="1">
+          <mxGeometry height="110" width="195" x="480" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" parent="spa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;fontSize=10;verticalAlign=top;spacingTop=8;" value="&lt;b&gt;Profil &amp;amp; Dashboard&lt;/b&gt;&lt;br/&gt;&lt;font color=&#39;#6666aa&#39;&gt;&lt;i&gt;React, TypeScript&lt;/i&gt;&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;Prezinta statisticile utilizatorului si istoricul solutiilor trimise." vertex="1">
+          <mxGeometry height="110" width="195" x="705" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" parent="spa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;fontSize=10;verticalAlign=top;spacingTop=8;" value="&lt;b&gt;Clasament&lt;/b&gt;&lt;br/&gt;&lt;font color=&#39;#6666aa&#39;&gt;&lt;i&gt;React, TypeScript&lt;/i&gt;&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;Afiseaza clasamentul utilizatorilor in functie de punctajul acumulat." vertex="1">
+          <mxGeometry height="110" width="195" x="930" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" parent="spa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;fontSize=10;verticalAlign=top;spacingTop=8;" value="&lt;b&gt;Editor de Cod&lt;/b&gt;&lt;br/&gt;&lt;font color=&#39;#6666aa&#39;&gt;&lt;i&gt;Monaco Editor&lt;/i&gt;&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;Zona de scriere a codului sursa cu evidentiere sintaxa si selectie limbaj." vertex="1">
+          <mxGeometry height="110" width="195" x="255" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" parent="spa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;fontSize=10;verticalAlign=top;spacingTop=8;" value="&lt;b&gt;Formular Submisie&lt;/b&gt;&lt;br/&gt;&lt;font color=&#39;#6666aa&#39;&gt;&lt;i&gt;React, TypeScript&lt;/i&gt;&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;Permite alegerea limbajului de programare si trimiterea solutiei spre evaluare." vertex="1">
+          <mxGeometry height="110" width="195" x="480" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" parent="spa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;fontSize=10;verticalAlign=top;spacingTop=8;" value="&lt;b&gt;Verdict &amp;amp; Rezultate&lt;/b&gt;&lt;br/&gt;&lt;font color=&#39;#6666aa&#39;&gt;&lt;i&gt;React, TypeScript&lt;/i&gt;&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;Afiseaza rezultatele evaluarii: punctaj, teste trecute si resurse consumate." vertex="1">
+          <mxGeometry height="110" width="195" x="705" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="c11" parent="spa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=center;fontSize=10;verticalAlign=top;spacingTop=8;" value="&lt;b&gt;Gestiune Navigare&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#6666aa&quot;&gt;&lt;i&gt;React&lt;/i&gt;&lt;/font&gt;&lt;br&gt;&lt;br&gt;Controleaza tranzitiile intre pagini si restrictioneaza accesul la paginile private." vertex="1">
+          <mxGeometry height="110" width="195" x="255" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="c12" parent="spa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=center;fontSize=10;verticalAlign=top;spacingTop=8;" value="&lt;b&gt;Gestiune Stare Globala&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#8d8dc7&quot;&gt;&lt;i&gt;TanStack Query&lt;/i&gt;&lt;/font&gt;&lt;br&gt;&lt;br&gt;Pastreaza si sincronizeaza datele partajate intre paginile aplicatiei." vertex="1">
+          <mxGeometry height="110" width="195" x="480" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="c13" parent="spa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=center;fontSize=10;verticalAlign=top;spacingTop=8;" value="&lt;b&gt;Gestiune Sesiune&lt;/b&gt;&lt;br/&gt;&lt;font color=&#39;#6666aa&#39;&gt;&lt;i&gt;React Context API&lt;/i&gt;&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;Retine datele de autentificare ale utilizatorului pe durata sesiunii active." vertex="1">
+          <mxGeometry height="110" width="195" x="705" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="c14" parent="spa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=center;fontSize=10;verticalAlign=top;spacingTop=8;" value="&lt;b&gt;Client API&lt;/b&gt;&lt;br/&gt;&lt;font color=&#39;#6666aa&#39;&gt;&lt;i&gt;Axios&lt;/i&gt;&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;Trimite cereri catre server si returneaza datele primite catre componentele care le solicita." vertex="1">
+          <mxGeometry height="110" width="195" x="480" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="c15" parent="spa" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=center;fontSize=10;verticalAlign=top;spacingTop=8;" value="&lt;b&gt;Client Timp Real&lt;/b&gt;&lt;br/&gt;&lt;font color=&#39;#6666aa&#39;&gt;&lt;i&gt;Socket.io Client&lt;/i&gt;&lt;/font&gt;&lt;br/&gt;&lt;br/&gt;Mentine o conexiune persistenta cu serverul pentru a primi actualizari instantanee." vertex="1">
+          <mxGeometry height="110" width="195" x="705" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="spa" source="c11" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;strokeColor=#6c8ebf;" target="c1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="spa" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;strokeColor=#6c8ebf;" target="c2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="340" y="460" />
+              <mxPoint x="240" y="460" />
+              <mxPoint x="240" y="260" />
+            </Array>
+            <mxPoint x="340.0000000000002" y="480" as="sourcePoint" />
+            <mxPoint x="340.0000000000002" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="spa" source="c11" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;strokeColor=#6c8ebf;" target="c3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="370" y="470" />
+              <mxPoint x="690" y="470" />
+              <mxPoint x="690" y="235" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="spa" source="c11" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;strokeColor=#6c8ebf;" target="c4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="352" y="460" />
+              <mxPoint x="1140" y="460" />
+              <mxPoint x="1140" y="160" />
+              <mxPoint x="802" y="160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="spa" source="c3" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#6c8ebf;" target="c6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="570" y="310" />
+              <mxPoint x="353" y="310" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="spa" source="c3" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#6c8ebf;" target="c7">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="600" y="310" />
+              <mxPoint x="600" y="310" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="spa" source="c7" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#6c8ebf;" target="c8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="spa" source="c7" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#6c8ebf;" target="c14">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="578" y="450" />
+              <mxPoint x="680" y="450" />
+              <mxPoint x="680" y="755" />
+              <mxPoint x="590" y="755" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="spa" source="c2" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#6c8ebf;" target="c14">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="352" y="300" />
+              <mxPoint x="460" y="300" />
+              <mxPoint x="460" y="685" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="spa" source="c4" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#6c8ebf;" target="c14">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="790" y="160" />
+              <mxPoint x="470" y="160" />
+              <mxPoint x="470" y="670" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="spa" source="c5" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#6c8ebf;" target="c14">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1028" y="300" />
+              <mxPoint x="700" y="300" />
+              <mxPoint x="700" y="685" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e18" edge="1" parent="spa" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;strokeColor=#d6b656;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="c2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="581" y="600" />
+              <mxPoint x="230" y="600" />
+              <mxPoint x="230" y="235" />
+            </Array>
+            <mxPoint x="580.4842857142858" y="590" as="sourcePoint" />
+            <mxPoint x="257.97" y="235.02857142857135" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e19" edge="1" parent="spa" source="c12" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;strokeColor=#d6b656;" target="c4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="590" y="600" />
+              <mxPoint x="920" y="600" />
+              <mxPoint x="920" y="235" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e15" edge="1" parent="spa" source="c15" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#d6b656;" target="c8">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="820" y="755" />
+              <mxPoint x="940" y="755" />
+              <mxPoint x="940" y="455" />
+              <mxPoint x="802" y="455" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="spa" source="c1" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#6c8ebf;" target="c13">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="128" y="170" />
+              <mxPoint x="20" y="170" />
+              <mxPoint x="20" y="620" />
+              <mxPoint x="780" y="620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e17" edge="1" parent="spa" source="c10" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;strokeColor=#d6b656;" target="c13">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="910" y="85" />
+              <mxPoint x="910" y="535" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ext1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;align=center;fontSize=10;verticalAlign=top;spacingTop=8;" value="&lt;b&gt;Backend REST API&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Gestioneaza problemele, utilizatorii, submisiile si scorurile." vertex="1">
+          <mxGeometry height="100" width="210" x="540" y="910" as="geometry" />
+        </mxCell>
+        <mxCell id="e21" edge="1" parent="1" source="c13" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;strokeColor=#333333;strokeWidth=2;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" target="ext1" value="autentificare">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1030" y="630" />
+              <mxPoint x="1030" y="985" />
+            </Array>
+            <mxPoint x="860" y="1020" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e20" edge="1" parent="1" source="c14" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;strokeColor=#333333;strokeWidth=2;" target="ext1" value="cereri / raspunsuri">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="575" y="840" />
+              <mxPoint x="575" y="840" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e22" edge="1" parent="1" source="c15" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=10;strokeColor=#333333;strokeWidth=2;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="ext1" value="actualizari in timp real">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="710" y="970" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
