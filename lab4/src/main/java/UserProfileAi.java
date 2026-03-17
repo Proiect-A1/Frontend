@@ -1,19 +1,13 @@
 public class UserProfileAi {
-
-    // 1. ATRIBUTE (2 puncte)
     private String username;
     private int totalScore;
     private int problemsSolved;
-
-    // Constructor to initialize the attributes
     public UserProfileAi(String username, int totalScore, int problemsSolved) {
         this.username = username;
         this.totalScore = totalScore;
         this.problemsSolved = problemsSolved;
     }
 
-    // 2. O METODĂ MAI IMPORTANTĂ (2 puncte)
-    // This method simulates a user successfully solving a new problem on the platform
     public void addSuccessfulSubmission(int pointsEarned) {
         this.problemsSolved += 1;
         this.totalScore += pointsEarned;
@@ -24,7 +18,6 @@ public class UserProfileAi {
         System.out.println("Current Rank: " + this.getRankTier());
     }
 
-    // Helper method to determine the user's rank based on their score
     private String getRankTier() {
         if (this.totalScore < 100) {
             return "Începător (Novice)";
