@@ -1,0 +1,101 @@
+@startuml
+skinparam maxMessageSize 150
+skinparam ParticipantPadding 20
+skinparam BoxPadding 10
+
+actor User
+participant "AppRouter\n(React Router)" as Router
+participant "AuthPage" as Auth
+participant "ProblemListPage" as PList
+participant "ProblemViewPage" as PDetails
+participant "CodeEditor" as Editor
+participant "SubmitStatus" as SubmitUI
+participant "APIClient\n(Axios/Fetch)" as API
+
+User -> Router : accessApplication()
+activate Router
+
+== Authentication ==
+Router -> Auth : render()
+activate Auth
+User -> Auth : fillForm(email, password)
+User -> Auth : clickLogin()
+Auth -> API : postLogin(credentials)
+activate API
+API --> Auth : return(Token + UserData)
+deactivate API
+Auth --> Router : redirectTo('/problems')
+deactivate Auth
+
+== View & Filter Problems ==
+Router -> PList : render()
+activate PList
+User -> PList : applyFilter(difficulty, category)
+PList -> API : fetchProblems(filters)
+activate API
+API --> PList : returnProblemsArray()
+deactivate API
+User -> PList : clickProblem(id)
+PList --> Router : navigate('/problem/:id')
+deactivate PList
+
+== Problem Solving & Editor ==
+Router -> PDetails : render(id)
+activate PDetails
+
+PDetails -> API : fetchProblemDetails(id)
+activate API
+API --> PDetails : return(description, constraints)
+deactivate API
+
+PDetails -> Editor : render(MonacoEditor)
+activate Editor
+Editor -> Editor : setOptions(language: 'java')
+
+User -> Editor : typeCode(solution)
+Editor -> Editor : SyntaxHighlighting & IntelliSense
+
+User -> PDetails : clickSubmit(code)
+
+== Submit Flow ==
+PDetails -> SubmitUI : startSubmitFlow(code)
+activate SubmitUI
+SubmitUI -> SubmitUI : updateState('Sending...')
+SubmitUI -> API : submit(code, language, problemId)
+activate API
+
+SubmitUI -> SubmitUI : updateState('Compiling & Checking...')
+
+alt Compilation Failed
+    API --> SubmitUI : returnError(compilationLogs)
+    SubmitUI -> SubmitUI : updateState('Compilation Error')
+    SubmitUI --> PDetails : displayError(compilationLogs)
+
+else Compilation OK
+    alt Tests Failed (Wrong Answer / Time Limit)
+        API --> SubmitUI : returnResult(failedTestsData, partialScore)
+        SubmitUI -> SubmitUI : updateState('Tests Failed')
+        SubmitUI --> PDetails : displayTestFailures(partialScore, failedTestsData)
+        
+    else All Tests Passed
+        API --> SubmitUI : returnResult(successStatus, maxScore)
+        SubmitUI -> SubmitUI : updateState('Calculating score...')
+        SubmitUI --> PDetails : displayFinalSuccess(maxScore)
+    end
+end
+
+deactivate API
+deactivate SubmitUI
+
+== Unlock Solution ==
+User -> PDetails : clickUnlockSolution()
+PDetails -> API : postUnlockRequest(pointsCost)
+activate API
+API --> PDetails : returnOfficialSolution()
+deactivate API
+PDetails -> PDetails : displaySolutionTab()
+
+deactivate Editor
+deactivate PDetails
+deactivate Router
+@enduml
