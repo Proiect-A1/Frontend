@@ -1,0 +1,208 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36" version="29.6.4">
+  <diagram id="ay6tSY0sZrfxd2DftjFp" name="Page-1">
+    <mxGraphModel dx="1097" dy="555" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="zau-bb06rEBkuNWURd6W-10" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Admin" vertex="1">
+          <mxGeometry height="60" width="30" x="70" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="zau-bb06rEBkuNWURd6W-11" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="User autentificat" vertex="1">
+          <mxGeometry height="60" width="30" x="70" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="zau-bb06rEBkuNWURd6W-14" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Guest" vertex="1">
+          <mxGeometry height="60" width="30" x="70" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="zau-bb06rEBkuNWURd6W-12" edge="1" parent="1" source="zau-bb06rEBkuNWURd6W-10" style="endArrow=block;endFill=0;endSize=12;strokeColor=#555555;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="zau-bb06rEBkuNWURd6W-11" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="GEN1" edge="1" parent="1" source="zau-bb06rEBkuNWURd6W-11" style="endArrow=block;endFill=0;endSize=12;strokeColor=#555555;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="zau-bb06rEBkuNWURd6W-14" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="GRP_ADM" parent="1" style="swimlane;fillColor=none;strokeColor=none;fontSize=12;fontStyle=1;startSize=25;dashed=1;swimlaneLine=0;" value="" vertex="1">
+          <mxGeometry height="280" width="1300" x="220" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_queue" parent="GRP_ADM" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Vizualizare coadă probleme&#xa;propuse" vertex="1">
+          <mxGeometry height="55" width="195" x="20" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_rev" parent="GRP_ADM" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Verificarea datelor trimise" vertex="1">
+          <mxGeometry height="55" width="205" x="300" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_appr" parent="GRP_ADM" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Aprobă publicarea problemei" vertex="1">
+          <mxGeometry height="55" width="185" x="580" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="e_a1" edge="1" parent="GRP_ADM" source="UC_queue" style="endArrow=open;endFill=0;" target="UC_rev" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_a2" edge="1" parent="GRP_ADM" source="UC_rev" style="endArrow=open;endFill=0;" target="UC_appr" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_suser" parent="GRP_ADM" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Caută user-ul în baza de date" vertex="1">
+          <mxGeometry height="55" width="175" x="20" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_brea" parent="GRP_ADM" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Selectează motivul de banare" vertex="1">
+          <mxGeometry height="55" width="185" x="310" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_bcon" parent="GRP_ADM" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Confirmă banarea utilizatorului" vertex="1">
+          <mxGeometry height="55" width="195" x="580" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="e_a3" edge="1" parent="GRP_ADM" source="UC_suser" style="endArrow=open;endFill=0;" target="UC_brea" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_a4" edge="1" parent="GRP_ADM" source="UC_brea" style="endArrow=open;endFill=0;" target="UC_bcon" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_ntit" parent="GRP_ADM" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Scrie titlul știrei" vertex="1">
+          <mxGeometry height="50" width="165" x="35" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_nbod" parent="GRP_ADM" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Adaugă conținut" vertex="1">
+          <mxGeometry height="50" width="175" x="325" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_npub" parent="GRP_ADM" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Publică știrea pe pagina de știri" vertex="1">
+          <mxGeometry height="50" width="185" x="590" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="e_a5" edge="1" parent="GRP_ADM" source="UC_ntit" style="endArrow=open;endFill=0;" target="UC_nbod" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_a6" edge="1" parent="GRP_ADM" source="UC_nbod" style="endArrow=open;endFill=0;" target="UC_npub" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_adm1" edge="1" parent="1" source="zau-bb06rEBkuNWURd6W-10" style="endArrow=open;endFill=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" target="UC_queue" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_adm2" edge="1" parent="1" source="zau-bb06rEBkuNWURd6W-10" style="endArrow=open;endFill=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" target="UC_suser" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_adm3" edge="1" parent="1" source="zau-bb06rEBkuNWURd6W-10" style="endArrow=open;endFill=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" target="UC_ntit" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="GRP_PROP" parent="1" style="swimlane;fillColor=none;strokeColor=none;fontSize=12;fontStyle=1;startSize=25;dashed=1;swimlaneLine=0;" value="" vertex="1">
+          <mxGeometry height="140" width="1300" x="220" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_pform" parent="GRP_PROP" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Deschide pagina pentru&#xa;propunerea de probleme" vertex="1">
+          <mxGeometry height="55" width="175" x="40" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_enunt" parent="GRP_PROP" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Scrie titlu și enunț" vertex="1">
+          <mxGeometry height="55" width="165" x="300" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_lim" parent="GRP_PROP" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Definește limite timp/memorie" vertex="1">
+          <mxGeometry height="55" width="165" x="550" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_upl" parent="GRP_PROP" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Adaugă set date de test (.in/.out)" vertex="1">
+          <mxGeometry height="55" width="185" x="820" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_send" parent="GRP_PROP" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Trimite spre aprobare" vertex="1">
+          <mxGeometry height="55" width="175" x="1110" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p1" edge="1" parent="GRP_PROP" source="UC_pform" style="endArrow=open;endFill=0;" target="UC_enunt" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p2" edge="1" parent="GRP_PROP" source="UC_enunt" style="endArrow=open;endFill=0;" target="UC_lim" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p3" edge="1" parent="GRP_PROP" source="UC_lim" style="endArrow=open;endFill=0;" target="UC_upl" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p4" edge="1" parent="GRP_PROP" source="UC_upl" style="endArrow=open;endFill=0;" target="UC_send" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_u_prop" edge="1" parent="1" source="zau-bb06rEBkuNWURd6W-11" style="endArrow=open;endFill=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="UC_pform" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="GRP_REZ" parent="1" style="swimlane;fillColor=none;strokeColor=none;fontSize=12;fontStyle=1;startSize=25;dashed=1;swimlaneLine=0;" value="" vertex="1">
+          <mxGeometry height="150" width="1300" x="270" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_editor" parent="GRP_REZ" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Deschide editor" vertex="1">
+          <mxGeometry height="55" width="175" x="-10" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_lang" parent="GRP_REZ" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Selectează limbajul în care&#xa; vrea să codeze" vertex="1">
+          <mxGeometry height="55" width="195" x="250" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_code" parent="GRP_REZ" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Scrie codul sursă" vertex="1">
+          <mxGeometry height="55" width="160" x="530" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_subm" parent="GRP_REZ" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Apasă buton &#39;Submit Solution&#39;" vertex="1">
+          <mxGeometry height="55" width="165" x="800" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_eval" parent="GRP_REZ" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Verificare automată/Evaluare" vertex="1">
+          <mxGeometry height="55" width="200" x="1070" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rez1" edge="1" parent="GRP_REZ" source="UC_editor" style="endArrow=open;endFill=0;" target="UC_lang" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rez2" edge="1" parent="GRP_REZ" source="UC_lang" style="endArrow=open;endFill=0;" target="UC_code" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rez3" edge="1" parent="GRP_REZ" source="UC_code" style="endArrow=open;endFill=0;" target="UC_subm" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rez4" edge="1" parent="GRP_REZ" source="UC_subm" style="endArrow=open;endFill=0;" target="UC_eval" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_u_rez" edge="1" parent="1" source="zau-bb06rEBkuNWURd6W-11" style="endArrow=open;endFill=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" target="UC_editor" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_test" parent="1" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Rulează teste" vertex="1">
+          <mxGeometry height="45" width="165" x="797.5" y="665" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rez5" edge="1" parent="1" source="UC_test" style="dashed=1;dashPattern=5 3;endArrow=open;endFill=0;fontSize=10;fontStyle=2;fontColor=#888888;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="UC_code" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="GRP_VIZ" parent="1" style="swimlane;fillColor=none;strokeColor=none;fontSize=12;fontStyle=1;startSize=25;dashed=1;swimlaneLine=0;" value="" vertex="1">
+          <mxGeometry height="140" width="1300" x="220" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_list" parent="GRP_VIZ" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Accesează lista de probleme" vertex="1">
+          <mxGeometry height="55" width="190" x="20" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_open" parent="GRP_VIZ" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Click pe titlu problemei" vertex="1">
+          <mxGeometry height="55" width="180" x="320" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_read" parent="GRP_VIZ" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Citește cerința" vertex="1">
+          <mxGeometry height="55" width="190" x="610" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="e_v1" edge="1" parent="GRP_VIZ" source="UC_list" style="endArrow=open;endFill=0;" target="UC_open" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_v2" edge="1" parent="GRP_VIZ" source="UC_open" style="endArrow=open;endFill=0;" target="UC_read" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_g_viz" edge="1" parent="1" source="zau-bb06rEBkuNWURd6W-14" style="endArrow=open;endFill=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="UC_list" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_filter" parent="1" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Aplică filtru Dificultate" vertex="1">
+          <mxGeometry height="40" width="190" x="240" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="e_v3" edge="1" parent="1" source="UC_filter" style="dashed=1;dashPattern=5 3;endArrow=open;endFill=0;fontSize=10;fontStyle=2;fontColor=#888888;" target="UC_list" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="GRP_REG" parent="1" style="swimlane;fillColor=none;strokeColor=none;fontSize=12;fontStyle=1;startSize=25;swimlaneLine=0;" value="" vertex="1">
+          <mxGeometry height="130" width="1300" x="220" y="880" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_signup" parent="GRP_REG" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Apasă butonul de &#39;Sign Up&#39;" vertex="1">
+          <mxGeometry height="55" width="170" x="20" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_fill" parent="GRP_REG" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Completează câmpurile&#xa; necesare (nume, email, etc.)" vertex="1">
+          <mxGeometry height="65" width="200" x="270" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_pass" parent="GRP_REG" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Alege o parolă" vertex="1">
+          <mxGeometry height="55" width="170" x="550" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="UC_sub_reg" parent="GRP_REG" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Confirmă crearea contului" vertex="1">
+          <mxGeometry height="55" width="170" x="820" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="e_r1" edge="1" parent="GRP_REG" source="UC_signup" style="endArrow=open;endFill=0;" target="UC_fill" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_r2" edge="1" parent="GRP_REG" source="UC_fill" style="endArrow=open;endFill=0;" target="UC_pass" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_r3" edge="1" parent="GRP_REG" source="UC_pass" style="endArrow=open;endFill=0;" target="UC_sub_reg" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_g_reg" edge="1" parent="1" source="zau-bb06rEBkuNWURd6W-14" style="endArrow=open;endFill=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" target="UC_signup" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
