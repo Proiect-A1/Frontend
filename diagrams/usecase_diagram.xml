@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36" version="29.6.4">
-  <diagram id="ay6tSY0sZrfxd2DftjFp" name="Page-1">
-    <mxGraphModel dx="1097" dy="555" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <diagram name="Page-1" id="FMyqvJ1jyQrJjosyDIgy">
+    <mxGraphModel dx="1389" dy="703" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -22,7 +23,7 @@
         <mxCell id="GRP_ADM" parent="1" style="swimlane;fillColor=none;strokeColor=none;fontSize=12;fontStyle=1;startSize=25;dashed=1;swimlaneLine=0;" value="" vertex="1">
           <mxGeometry height="280" width="1300" x="220" y="50" as="geometry" />
         </mxCell>
-        <mxCell id="UC_queue" parent="GRP_ADM" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Vizualizare coadă probleme&#xa;propuse" vertex="1">
+        <mxCell id="UC_queue" parent="GRP_ADM" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Vizualizare listă probleme&#xa;propuse" vertex="1">
           <mxGeometry height="55" width="195" x="20" y="50" as="geometry" />
         </mxCell>
         <mxCell id="UC_rev" parent="GRP_ADM" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Verificarea datelor trimise" vertex="1">
@@ -110,22 +111,22 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="GRP_REZ" parent="1" style="swimlane;fillColor=none;strokeColor=none;fontSize=12;fontStyle=1;startSize=25;dashed=1;swimlaneLine=0;" value="" vertex="1">
-          <mxGeometry height="150" width="1300" x="270" y="510" as="geometry" />
+          <mxGeometry height="150" width="1300" x="910" y="500" as="geometry" />
         </mxCell>
         <mxCell id="UC_editor" parent="GRP_REZ" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Deschide editor" vertex="1">
-          <mxGeometry height="55" width="175" x="-10" y="50" as="geometry" />
+          <mxGeometry height="55" width="175" x="140" y="45" as="geometry" />
         </mxCell>
         <mxCell id="UC_lang" parent="GRP_REZ" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Selectează limbajul în care&#xa; vrea să codeze" vertex="1">
-          <mxGeometry height="55" width="195" x="250" y="50" as="geometry" />
+          <mxGeometry height="55" width="195" x="380" y="45" as="geometry" />
         </mxCell>
         <mxCell id="UC_code" parent="GRP_REZ" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Scrie codul sursă" vertex="1">
-          <mxGeometry height="55" width="160" x="530" y="50" as="geometry" />
+          <mxGeometry height="55" width="160" x="640" y="45" as="geometry" />
         </mxCell>
         <mxCell id="UC_subm" parent="GRP_REZ" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Apasă buton &#39;Submit Solution&#39;" vertex="1">
-          <mxGeometry height="55" width="165" x="800" y="50" as="geometry" />
+          <mxGeometry height="55" width="165" x="860" y="45" as="geometry" />
         </mxCell>
         <mxCell id="UC_eval" parent="GRP_REZ" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Verificare automată/Evaluare" vertex="1">
-          <mxGeometry height="55" width="200" x="1070" y="50" as="geometry" />
+          <mxGeometry height="55" width="200" x="1070" y="45" as="geometry" />
         </mxCell>
         <mxCell id="e_rez1" edge="1" parent="GRP_REZ" source="UC_editor" style="endArrow=open;endFill=0;" target="UC_lang" value="">
           <mxGeometry relative="1" as="geometry" />
@@ -139,11 +140,11 @@
         <mxCell id="e_rez4" edge="1" parent="GRP_REZ" source="UC_subm" style="endArrow=open;endFill=0;" target="UC_eval" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e_u_rez" edge="1" parent="1" source="zau-bb06rEBkuNWURd6W-11" style="endArrow=open;endFill=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" target="UC_editor" value="">
+        <mxCell id="e_u_rez" edge="1" parent="1" source="zau-bb06rEBkuNWURd6W-11" style="endArrow=open;endFill=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="3pVqg9Ada_QiwNoiw0pC-1" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="UC_test" parent="1" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Rulează teste" vertex="1">
-          <mxGeometry height="45" width="165" x="797.5" y="665" as="geometry" />
+          <mxGeometry height="45" width="165" x="1550" y="650" as="geometry" />
         </mxCell>
         <mxCell id="e_rez5" edge="1" parent="1" source="UC_test" style="dashed=1;dashPattern=5 3;endArrow=open;endFill=0;fontSize=10;fontStyle=2;fontColor=#888888;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="UC_code" value="">
           <mxGeometry relative="1" as="geometry" />
@@ -201,6 +202,30 @@
         </mxCell>
         <mxCell id="e_g_reg" edge="1" parent="1" source="zau-bb06rEBkuNWURd6W-14" style="endArrow=open;endFill=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" target="UC_signup" value="">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3pVqg9Ada_QiwNoiw0pC-3" edge="1" parent="1" source="3pVqg9Ada_QiwNoiw0pC-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="3pVqg9Ada_QiwNoiw0pC-2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3pVqg9Ada_QiwNoiw0pC-1" parent="1" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Accesează lista de probleme" vertex="1">
+          <mxGeometry height="55" width="190" x="220" y="545" as="geometry" />
+        </mxCell>
+        <mxCell id="3pVqg9Ada_QiwNoiw0pC-5" edge="1" parent="1" source="3pVqg9Ada_QiwNoiw0pC-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="3pVqg9Ada_QiwNoiw0pC-4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3pVqg9Ada_QiwNoiw0pC-2" parent="1" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Click pe titlu problemei" vertex="1">
+          <mxGeometry height="55" width="180" x="510" y="545" as="geometry" />
+        </mxCell>
+        <mxCell id="3pVqg9Ada_QiwNoiw0pC-6" edge="1" parent="1" source="3pVqg9Ada_QiwNoiw0pC-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="UC_editor" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3pVqg9Ada_QiwNoiw0pC-4" parent="1" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Citește cerința" vertex="1">
+          <mxGeometry height="55" width="190" x="775" y="545" as="geometry" />
+        </mxCell>
+        <mxCell id="3pVqg9Ada_QiwNoiw0pC-8" edge="1" parent="1" source="3pVqg9Ada_QiwNoiw0pC-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" target="3pVqg9Ada_QiwNoiw0pC-1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3pVqg9Ada_QiwNoiw0pC-7" parent="1" style="ellipse;fillColor=#ffffff;strokeColor=#333333;fontSize=11;" value="Aplică filtru Dificultate" vertex="1">
+          <mxGeometry height="40" width="190" x="220" y="640" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
