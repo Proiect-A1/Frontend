@@ -1,0 +1,64 @@
+@startuml
+hide empty description
+
+' Forțăm așezarea orizontală (stânga -> dreapta)
+left to right direction
+
+skinparam state {
+  BackgroundColor LightBlue
+  BorderColor Blue
+  FontSize 12
+}
+
+' Starea Inițială
+[*] --> Idle : Deschide pagina
+
+' Main Horizontal Chain (Păstrarea ordinii secvențiale)
+state "Idle (Page Open / Editor Active)" as Idle
+state "Sending (API Request)" as Sending
+state "In Queue (Așteptare server)" as InQueue
+state "Compiling (Verificare sintaxă)" as Compiling
+state "Running (Execuție pe teste)" as Running
+state "Calculating Score" as Calculating
+
+' Flow-ul Secvențial Principal (Axa orizontală)
+Idle --> Sending : Click "Submit"
+Sending --> InQueue : Succes
+InQueue --> Compiling : Preluat de sistem
+Compiling --> Running : Compilare OK
+Running --> Calculating : Teste finalizate
+
+' Final Result States (Poziționate pentru a încheia linia)
+state "Verdict: ACCEPTED (100 puncte)" as Accepted
+state "Verdict: WRONG ANSWER (<100)" as WrongAnswer
+state "Verdict: TLE (Depășire timp)" as TLE
+state "Verdict: MLE (Depășire memorie)" as MLE
+state "System Error: NETWORK FAIL" as NetErr
+state "Verdict: COMPILATION ERROR" as CompErr
+
+' Ramificarea din pași către rezultate finale
+Sending --> NetErr : Timeout / Eroare Rețea
+Compiling --> CompErr : Syntax Error
+Running --> TLE : TLE detectat
+Running --> MLE : MLE detectat
+Calculating --> Accepted : Scor 100
+Calculating --> WrongAnswer : Scor parțial / Logică greșită
+
+' Terminal State (Punctul final)
+' Toate rezultatele duc la finalizarea procesului de submit
+Accepted --> [*]
+WrongAnswer --> [*]
+TLE --> [*]
+MLE --> [*]
+NetErr --> [*]
+CompErr --> [*]
+
+' Bucla de feedback (similară cu prăjitorul de pâine)
+' Din orice stare finală, utilizatorul se întoarce la editare
+Accepted --> Idle : Editează cod (Re-editare)
+WrongAnswer --> Idle : Editează cod
+TLE --> Idle : Editează cod
+MLE --> Idle : Editează cod
+NetErr --> Idle : Reîncearcă Submit
+CompErr --> Idle : Editează cod
+@enduml
