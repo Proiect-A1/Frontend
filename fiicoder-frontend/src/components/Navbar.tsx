@@ -7,7 +7,7 @@ export default function Navbar() {
     <div className="px-4 pt-4">
       <nav
         className="
-        mx-auto max-w-6xl
+        mx-auto
         bg-white/75 backdrop-blur-md
         border border-pink-200
         rounded-full shadow-[0_4px_24px_rgba(236,72,153,0.1)]

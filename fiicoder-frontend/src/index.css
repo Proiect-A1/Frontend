@@ -128,7 +128,6 @@ code {
 .site-hero {
   background: radial-gradient(circle at top, #ffe0f2 0%, #fff4fb 50%, #ffd5ef 100%);
   background-size: 200% 200%;
-  animation: gradient-bg 12s ease infinite;
 }
 
 .animate-appear { animation: fadeInUp 0.8s ease-out both; }
