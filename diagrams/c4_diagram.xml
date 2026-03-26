@@ -1,0 +1,52 @@
+@startuml
+hide empty members
+skinparam shadowing false
+skinparam classBackgroundColor white
+skinparam classBorderColor black
+skinparam packageBorderColor black
+skinparam ArrowColor black
+
+' Excepția generală a platformei
+class "FiicoderBaseException" as BaseException
+
+' Pachetul pentru componenta de listare și filtrare a problemelor
+package "fiicoder.frontend.component.problemlist" {
+    
+    ' Interfața pe care o folosește UI-ul tău React
+    () "ProblemArchiveFacade" as Facade
+    
+    ' Implementarea logicii de filtrare și paginare
+    class "ProblemArchiveFacadeImpl" as Impl
+    
+    ' Excepția specifică în caz că pică serverul când cauți o problemă
+    class "ArchiveFetchException" as FetchException
+    
+    ' Obiectele care trimit filtrele (ex: difficulty=hard) și primesc lista
+    class "FilterProblemsRequest" as Request
+    class "ProblemListResponse" as Response
+    
+    ' Conexiunea cu backend-ul
+    class "BackendApiClient" as ApiClient
+    
+    ' Clasele de bază
+    class "AbstractApiRequest" as AbsRequest
+    class "AbstractApiResponse" as AbsResponse
+    
+    ' --- RELAȚIILE (identice cu structura cerută de profesor) ---
+    Facade -- Impl
+    
+    BaseException <|-- FetchException
+    Impl .right.> FetchException : +throws
+    
+    Impl ...> Request : +creates
+    Impl ...> Response : +parses
+    
+    Impl ..> ApiClient : +uses
+    
+    ApiClient ...> AbsRequest : +sends
+    ApiClient ...> AbsResponse : +receives
+    
+    AbsRequest <|-- Request
+    AbsResponse <|-- Response
+}
+@enduml
