@@ -7,7 +7,7 @@ export default function App() {
   return (
     <BrowserRouter>
       {/* Containerul principal al aplicației. min-h-screen asigură că acoperă tot ecranul */}
-      <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
+      <div className="min-h-screen w-full bg-gray-50 text-gray-900 font-sans">
         
         {/* Navbar-ul stă deasupra rutelor, deci va fi vizibil pe absolut orice pagină */}
         <Navbar />
