@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
+  --text: #6f2c59;
+  --text-h: #3b0b30;
+  --bg: #fff4fb;
+  --border: #f8d4ec;
+  --code-bg: #fff0f9;
+  --accent: #ff5eb6;
+  --accent-bg: rgba(255, 94, 182, 0.15);
+  --accent-border: rgba(255, 94, 182, 0.45);
+  --social-bg: rgba(255, 230, 245, 0.7);
   --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+    rgba(255, 94, 182, 0.22) 0 10px 30px -5px, rgba(255, 122, 208, 0.16) 0 4px 10px -3px;
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -56,7 +56,6 @@
   width: 100%;
   max-width: 100%;
   margin: 0;
-  text-align: center;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -65,13 +64,13 @@
 
 body {
   margin: 0;
+  overflow-x: hidden;
 }
 
 h1,
 h2 {
   font-family: var(--heading);
   font-weight: 500;
-  color: var(--text-h);
 }
 
 h1 {
@@ -109,4 +108,54 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes gradient-bg {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.site-hero {
+  background: radial-gradient(circle at top, #ffe0f2 0%, #fff4fb 50%, #ffd5ef 100%);
+  background-size: 200% 200%;
+  animation: gradient-bg 12s ease infinite;
+}
+
+.animate-appear { animation: fadeInUp 0.8s ease-out both; }
+
+.card-glow {
+  box-shadow: 0 20px 35px rgba(255, 94, 182, 0.2);
+}
+
+@keyframes dropIn {
+  0%   { opacity: 0; transform: translateY(-48px) scale(0.95); }
+  60%  { opacity: 1; transform: translateY(6px) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes expandLine {
+  0%   { opacity: 0; width: 0; }
+  100% { opacity: 1; width: 40px; }
+}
+
+.page-enter {
+  animation: dropIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.page-line {
+  width: 40px; height: 3px;
+  background: #f9a8d4; border-radius: 2px;
+  margin: 12px 0;
+  animation: expandLine 0.4s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
