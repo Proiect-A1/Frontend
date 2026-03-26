@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --text: #6f2c59;
-  --text-h: #3b0b30;
-  --bg: #fff4fb;
-  --border: #f8d4ec;
-  --code-bg: #fff0f9;
+  --text: #f5c8e4;
+  --text-h: #ffe8f6;
+  --bg: #090812;
+  --border: #4a2641;
+  --code-bg: #1a1322;
   --accent: #ff5eb6;
   --accent-bg: rgba(255, 94, 182, 0.15);
-  --accent-border: rgba(255, 94, 182, 0.45);
-  --social-bg: rgba(255, 230, 245, 0.7);
+  --accent-border: rgba(255, 94, 182, 0.6);
+  --social-bg: rgba(255, 94, 182, 0.12);
   --shadow:
-    rgba(255, 94, 182, 0.22) 0 10px 30px -5px, rgba(255, 122, 208, 0.16) 0 4px 10px -3px;
+    rgba(5, 4, 10, 0.75) 0 18px 38px -10px, rgba(255, 94, 182, 0.2) 0 6px 18px -8px;
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -19,7 +19,7 @@
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
-  color-scheme: light dark;
+  color-scheme: dark;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -29,26 +29,6 @@
 
   @media (max-width: 1024px) {
     font-size: 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
   }
 }
 
@@ -65,6 +45,8 @@
 body {
   margin: 0;
   overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
 }
 
 h1,
@@ -126,14 +108,14 @@ code {
 }
 
 .site-hero {
-  background: radial-gradient(circle at top, #ffe0f2 0%, #fff4fb 50%, #ffd5ef 100%);
+  background: radial-gradient(circle at 20% 0%, #2f1630 0%, #171124 45%, #090812 100%);
   background-size: 200% 200%;
 }
 
 .animate-appear { animation: fadeInUp 0.8s ease-out both; }
 
 .card-glow {
-  box-shadow: 0 20px 35px rgba(255, 94, 182, 0.2);
+  box-shadow: 0 22px 36px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 94, 182, 0.1);
 }
 
 @keyframes dropIn {
@@ -143,8 +125,8 @@ code {
 }
 
 @keyframes expandLine {
-  0%   { opacity: 0; width: 0; }
-  100% { opacity: 1; width: 40px; }
+  0%   { opacity: 0; transform: scaleX(0); }
+  100% { opacity: 1; transform: scaleX(1); }
 }
 
 .page-enter {
@@ -152,8 +134,9 @@ code {
 }
 
 .page-line {
-  width: 40px; height: 3px;
-  background: #f9a8d4; border-radius: 2px;
+  width: 50px; height: 3px;
+  background: #ff7bc8; border-radius: 2px;
   margin: 12px 0;
+  transform-origin: left center;
   animation: expandLine 0.4s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
