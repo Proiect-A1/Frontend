@@ -28,7 +28,6 @@ function AnimatedRoutes() {
         initial="initial"
         animate="animate"
         exit="exit"
-        transition={pageTransition}
       >
         <Routes location={location}>
           <Route path="/" element={<Navigate to="/problems" replace />} />
