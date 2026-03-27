@@ -49,4 +49,20 @@ export const problemSummaries: Problem[] = [
       "Given n integers, print them sorted in non-decreasing order.",
     difficulty: "Ușor",
   },
+  {
+    id: 7,
+    title: "Problem 7",
+    shortDescription: "Sort numbers in descending order.",
+    statement:
+      "Given n integers, print them sorted in non-increasing order.",
+    difficulty: "Ușor",
+  },
+  {
+    id: 8,
+    title: "Problem 8",
+    shortDescription: "Find the maximum element in an array.",
+    statement:
+      "Given an array of n integers, find the largest element.",
+    difficulty: "Mediu",
+  },
 ];
