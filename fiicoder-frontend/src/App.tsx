@@ -50,10 +50,22 @@ function AnimatedRoutes() {
         exit="exit"
       >
         <Routes location={location}>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/problems" element={<ProblemList />} />
-          <Route path="/problems/:problemId" element={<ProblemDetails />} />
+          <Route path="/" element={
+            <Navigate to="/login" replace />
+            } 
+          />
+          <Route path="/login" element={
+            <Login />
+            } 
+          />
+          <Route path="/problems" element={
+            <ProblemList />
+            } 
+          />
+          <Route path="/problems/:problemId" element={
+            <ProblemDetails />
+            } 
+          />
         </Routes>
       </motion.main>
     </AnimatePresence>
