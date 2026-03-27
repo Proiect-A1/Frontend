@@ -1,19 +1,13 @@
-export type ProblemSummary = {
-  id: number;
-  title: string;
-  shortDescription: string;
-  statement: string;
-  difficulty: "Easy" | "Medium" | "Hard";
-};
+import type { Problem } from "../types/problem";
 
-export const problemSummaries: ProblemSummary[] = [
+export const problemSummaries: Problem[] = [
   {
     id: 1,
     title: "Problem 1",
     shortDescription: "Find the sum of two integers read from input.",
     statement:
       "Given two integers a and b, print their sum. This is a warm-up problem for parsing and basic arithmetic.",
-    difficulty: "Easy",
+    difficulty: "Ușor",
   },
   {
     id: 2,
@@ -21,7 +15,7 @@ export const problemSummaries: ProblemSummary[] = [
     shortDescription: "Count vowels in a lowercase string.",
     statement:
       "Given a lowercase string s, compute how many characters are vowels from the set {a, e, i, o, u}.",
-    difficulty: "Easy",
+    difficulty: "Ușor",
   },
   {
     id: 3,
@@ -29,7 +23,7 @@ export const problemSummaries: ProblemSummary[] = [
     shortDescription: "Return the maximum value from a list of numbers.",
     statement:
       "Given n integers, output the largest number. Assume n is at least 1.",
-    difficulty: "Medium",
+    difficulty: "Mediu",
   },
   {
     id: 4,
@@ -37,7 +31,7 @@ export const problemSummaries: ProblemSummary[] = [
     shortDescription: "Check if a number is a palindrome.",
     statement:
       "Given an integer x, determine whether it reads the same from left to right and right to left.",
-    difficulty: "Medium",
+    difficulty: "Mediu",
   },
   {
     id: 5,
@@ -45,7 +39,7 @@ export const problemSummaries: ProblemSummary[] = [
     shortDescription: "Compute factorial n! for n up to 12.",
     statement:
       "Given an integer n, compute the product 1 * 2 * ... * n. Constraints keep the result inside 32-bit signed integer.",
-    difficulty: "Hard",
+    difficulty: "Greu",
   },
   {
     id: 6,
@@ -53,6 +47,6 @@ export const problemSummaries: ProblemSummary[] = [
     shortDescription: "Sort numbers in ascending order.",
     statement:
       "Given n integers, print them sorted in non-decreasing order.",
-    difficulty: "Easy",
+    difficulty: "Ușor",
   },
 ];

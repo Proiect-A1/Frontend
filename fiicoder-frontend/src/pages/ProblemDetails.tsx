@@ -8,7 +8,7 @@ export default function ProblemDetails() {
 
   if (!problem) {
     return (
-      <div className="p-8 max-w-2xl mx-auto bg-[#151221]/80 backdrop-blur-lg border border-pink-500/30 rounded-2xl card-glow page-enter">
+      <div className="p-8 max-w-2xl mx-auto bg-[#151221]/80 backdrop-blur-lg border border-pink-500/30 rounded-2xl card-glow">
         <h1 className="text-2xl font-bold text-pink-200 mb-2">Problem not found</h1>
         <div className="page-line" />
         <p className="text-pink-100/85 mb-4">This problem does not exist in the static list yet.</p>
@@ -20,7 +20,7 @@ export default function ProblemDetails() {
   }
 
   return (
-    <div className="p-8 max-w-3xl mx-auto bg-[#151221]/80 backdrop-blur-lg border border-pink-500/30 rounded-2xl card-glow page-enter">
+    <div className="p-8 max-w-3xl mx-auto bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow">
       <p className="text-xs font-semibold uppercase tracking-wider text-pink-400">Problem #{problem.id}</p>
       <h1 className="text-3xl font-bold text-pink-200 mb-2">{problem.title}</h1>
       <div className="page-line" />

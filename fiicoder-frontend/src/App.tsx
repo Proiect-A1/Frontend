@@ -6,9 +6,32 @@ import ProblemList from "./pages/ProblemList";
 import ProblemDetails from "./pages/ProblemDetails";
   
 const pageVariants = {
-  initial: { y: "-300px", opacity: 0 },
-  animate: { y: 0, opacity: 1 },
-  exit:    { y: "0px", opacity: 0 },
+  initial: { 
+    y: -60,         
+    opacity: 0, 
+    scale: 0.97     
+  },
+  animate: { 
+    y: 0,            
+    opacity: 1, 
+    scale: 1,
+    transition: { 
+      duration: 0.5,
+      type: "spring",    
+      stiffness: 260,   
+      damping: 20,      
+      mass: 1 
+    } 
+  },
+  exit: { 
+    y: 30,           
+    opacity: 0, 
+    scale: 0.95,
+    transition: { 
+      duration: 0.2, 
+      ease: "easeIn" 
+    } 
+  },
 };
 
 function AnimatedRoutes() {
@@ -20,13 +43,14 @@ function AnimatedRoutes() {
         key={location.pathname}
         className="max-w-6xl mx-auto px-4 pt-24 pb-6"
         style={{ position: "relative" }}
+        
         variants={pageVariants}
         initial="initial"
         animate="animate"
         exit="exit"
       >
         <Routes location={location}>
-          <Route path="/" element={<Navigate to="/problems" replace />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/problems" element={<ProblemList />} />
           <Route path="/problems/:problemId" element={<ProblemDetails />} />
