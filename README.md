@@ -1,0 +1,1 @@
+stergeți complet folderul fiicoder-frontend și dați un fetch+pull. dupa asta din fiicoder-frontend dati npm install și dupa merge sa rulați cu npm run dev
