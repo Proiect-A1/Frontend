@@ -66,7 +66,7 @@ export default function ProblemList() {
                 </p>
               </div>
               {index < filteredProblems.length - 1 && (
-                <div className="w-full h-1 bg-gradient-to-r from-transparent via-pink-500/50 to-transparent my-4 blur-[3px]" />
+                <div className="w-full h-1 bg-gradient-to-r from-transparent via-pink-500/50 my-4 blur-[3px]" />
               )}
             </Fragment>
           ))}
