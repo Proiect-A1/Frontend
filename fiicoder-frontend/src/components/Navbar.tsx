@@ -16,12 +16,13 @@ export default function Navbar() {
     <div className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
       <nav className="mx-auto bg-[#12101c]/80 backdrop-blur-md border-2 border-pink-500/35 rounded-full shadow-[0_8px_28px_rgba(0,0,0,0.45)] px-5 py-2.5 flex items-center justify-between">
         <h2 className="font-semibold text-pink-300 text-xl tracking-tight">
-          {`<_fiicoder`}
+          {`<_fiicoder>`}
         </h2>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <Link to="/problems" className={getNavLinkClass("/problems")}>
             Arhivă Probleme
           </Link>
+          <div className="page-line-vertical" />
           <Link to="/login" className={getNavLinkClass("/login")}>
             Autentificare
           </Link>
