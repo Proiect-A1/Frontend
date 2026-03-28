@@ -27,20 +27,23 @@ export default function Navbar() {
             <Link to="/problems" className={getNavLinkClass("/problems")}>
               {lang === "RO" ? "Arhivă Probleme" : "Problem Archive"}
             </Link>
-            
+
+            <div className="page-line-vertical"></div>
+
             <Link to="/login" className={getNavLinkClass("/login")}>
               {lang === "RO" ? "Autentificare" : "Authentication"}
             </Link>
 
+            <div className="page-line-vertical"></div>
+
             <div className="relative flex items-center bg-[#0f0c18] border-2 border-pink-400/50 rounded-full p-1 h-9.5 w-24 overflow-hidden">
               <div
                 className={`absolute top-1 bottom-1 w-10 bg-pink-500/40 border border-pink-400/60 rounded-full transition-all duration-300 ease-out ${
-                   // Indicatorul se va mișca acum bazat pe starea GLOBALĂ
                    lang === "RO" ? "left-1" : "left-11.5"
                 }`}
               />
               <button
-                onClick={() => setLang("RO")} // Schimbă global în RO
+                onClick={() => setLang("RO")}
                 className={`relative z-10 flex-1 text-[10px] font-bold transition-colors duration-300 ${
                   lang === "RO" ? "text-pink-100" : "text-pink-400/60"
                 }`}
@@ -48,7 +51,7 @@ export default function Navbar() {
                 RO
               </button>
               <button
-                onClick={() => setLang("EN")} // Schimbă global în EN
+                onClick={() => setLang("EN")}
                 className={`relative z-10 flex-1 text-[10px] font-bold transition-colors duration-300 ${
                   lang === "EN" ? "text-pink-100" : "text-pink-400/60"
                 }`}
