@@ -2,10 +2,12 @@ import { Fragment, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { problemSummaries } from "./problemData";
 
+import { useLanguage } from "../language/LanguageUsed";
 import FilterSidebar from "../components/FilterSidebar";
 import StatsSidebar from "../components/StatsSidebar";
 
 export default function ProblemList() {
+  const { lang } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("All");
 
@@ -37,7 +39,9 @@ export default function ProblemList() {
       />
 
       <section className="h-[calc(100svh-8.5rem)] overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow md:col-start-2">
-        <h1 className="text-3xl font-bold text-pink-200 mb-2">Probleme</h1>
+        <h1 className="text-3xl font-bold text-pink-200 mb-2">
+          {lang === "RO" ? "Probleme" : "Problems"}
+        </h1>
         <div className="page-line-horizontal" />
 
         <div className="">
@@ -58,7 +62,14 @@ export default function ProblemList() {
                     {problem.title}
                   </Link>
                   <span className="rounded-full border border-pink-400/40 bg-pink-500/10 px-2.5 py-1 text-xs font-semibold text-pink-100">
-                    {problem.difficulty}
+                    {lang === "RO" 
+                      ? problem.difficulty 
+                      : (
+                          problem.difficulty === "Ușor" ? "Easy" : 
+                          problem.difficulty === "Mediu" ? "Medium" : 
+                          "Hard"
+                      )
+                    }
                   </span>
                 </div>
                 <p className="text-sm text-pink-100/85">

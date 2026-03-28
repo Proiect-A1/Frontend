@@ -1,4 +1,7 @@
+// src/pages/ProblemDetails.tsx
 import { Link, useParams } from "react-router-dom";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { problemSummaries } from "./problemData";
 
 export default function ProblemDetails() {
@@ -6,33 +9,180 @@ export default function ProblemDetails() {
   const id = Number(problemId);
   const problem = problemSummaries.find((item) => item.id === id);
 
-  if (!problem) {
-    return (
-      <div className="p-8 max-w-2xl mx-auto bg-[#151221]/80 backdrop-blur-lg border border-pink-500/30 rounded-2xl card-glow">
-        <h1 className="text-2xl font-bold text-pink-200 mb-2">Problem not found</h1>
-        <div className="page-line-horizontal" />
-        <p className="text-pink-100/85 mb-4">This problem does not exist in the static list yet.</p>
-        <Link to="/problems" className="text-sm font-semibold text-pink-200 underline underline-offset-4">
-          Back to problems
-        </Link>
-      </div>
-    );
-  }
+  const [code, setCode] = useState("");
+  const [language, setLanguage] = useState("C++");
+  const [isOpen, setIsOpen] = useState(false);
+  const [status, setStatus] = useState<null | "success" | "pending">(null);
+
+  const languages = ["C++", "Python", "Java", "JavaScript", "Rust"];
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!code.trim()) return;
+    setStatus("pending");
+
+    setTimeout(() => {
+      setStatus("success");
+      setTimeout(() => setStatus(null), 4000);
+    }, 2000);
+  };
+
+  if (!problem)
+    return <div className="p-8 text-pink-200">Error! Problem not found.</div>;
 
   return (
-    <div className="p-8 max-w-3xl mx-auto bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow">
-      <p className="text-xs font-semibold uppercase tracking-wider text-pink-400">Problem #{problem.id}</p>
-      <h1 className="text-3xl font-bold text-pink-200 mb-2">{problem.title}</h1>
-      <div className="page-line-horizontal" />
+    <div className="max-w-4xl mx-auto space-y-6 pb-20">
+      {/* enunt */}
+      <div className="p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow">
+        <p className="text-xs font-semibold uppercase tracking-wider text-pink-400">
+          Problem #{problem.id}
+        </p>
+        <h1 className="text-3xl font-bold text-pink-200 mb-2">
+          {problem.title}
+        </h1>
+        <div className="page-line-horizontal" />
+        <p className="text-pink-100/85 leading-relaxed">{problem.statement}</p>
+      </div>
 
-      <p className="text-pink-100/85 leading-relaxed">{problem.statement}</p>
+      {/* code submission */}
+      <div className="p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-pink-200">Trimite Soluția</h2>
 
-      <Link
-        to="/problems"
-        className="mt-5 inline-block text-sm font-semibold text-pink-200 underline decoration-pink-500/60 underline-offset-4"
-      >
-        Back to all problems
-      </Link>
+          <div className="relative w-40">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="w-full flex items-center justify-between bg-[#0f0c18] border-2 border-pink-500/30 rounded-xl px-4 py-2 text-sm text-pink-100 hover:border-pink-400 transition-colors"
+            >
+              {language}
+              <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
+                ▼
+              </motion.span>
+            </button>
+
+            <AnimatePresence>
+              {isOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 5 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="absolute z-50 w-full bg-[#1a1629] border-2 border-pink-500/40 rounded-xl shadow-2xl overflow-hidden"
+                >
+                  {languages.map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => {
+                        setLanguage(lang);
+                        setIsOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-pink-100 hover:bg-pink-500/20 transition-colors"
+                    >
+                      {lang}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="relative group">
+            <input
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="Scrie soluția ta aici..."
+              className="w-full h-80 bg-[#0a0812] border-2 border-pink-500/20 rounded-2xl p-6 pb-70 font-mono text-sm text-pink-100 outline-none focus:border-pink-500/50 transition-all shadow-inner"
+            />
+            <div className="absolute top-4 right-4 text-xs font-mono text-pink-500/30 group-focus-within:text-pink-500/60">
+              {language.toLowerCase()}
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={status === "pending"}
+            className="w-full bg-pink-500/20 border-2 border-pink-400/50 py-4 rounded-2xl font-bold text-pink-100 hover:bg-pink-500/30 transition-all hover:shadow-[0_0_20px_rgba(236,72,153,0.2)] disabled:opacity-50"
+          >
+            {status === "pending" ? "Evaluare în curs..." : "Evaluare soluție"}
+          </button>
+        </form>
+      </div>
+
+      {/* back button */}
+      <div className="flex justify-start pt-4">
+        <Link to="/problems" className="relative inline-block group">
+          <motion.div
+            className="flex items-center gap-2 text-pink-300/70 font-semibold text-sm hover:text-pink-100 transition-colors cursor-pointer"
+            whileHover="hover"
+          >
+            <motion.span
+              variants={{
+                hover: { x: -5 },
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              ←
+            </motion.span>
+            <span>Înapoi la listă</span>
+
+            {/* Linia de subliniere animată */}
+            <motion.div
+              className="absolute -bottom-0.5 left-6 h-px bg-pink-400/60"
+              initial={{ width: 0 }}
+              variants={{
+                hover: { width: "calc(100% - 24px)" },
+              }}
+              transition={{ duration: 0.3 }}
+            />
+          </motion.div>
+        </Link>
+      </div>
+
+      <AnimatePresence>
+        {status && (
+          <motion.div
+            initial={{ x: 400, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 400, opacity: 0 }}
+            className="fixed bottom-8 right-8 z-100"
+          >
+            <div
+              className={`relative overflow-hidden px-8 py-5 rounded-2xl border-2 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${
+                status === "pending"
+                  ? "border-pink-500/50 bg-[#151221]/90 text-pink-200"
+                  : "border-green-500/50 bg-[#0d1a12]/90 text-green-300"
+              }`}
+            >
+              <motion.div
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: status === "pending" ? 2 : 4 }}
+                className={`absolute bottom-0 left-0 h-1 w-full origin-left ${
+                  status === "pending" ? "bg-pink-500" : "bg-green-500"
+                }`}
+              />
+              <div className="flex items-center gap-4">
+                <div
+                  className={`w-3 h-3 rounded-full animate-pulse ${
+                    status === "pending" ? "bg-pink-500" : "bg-green-500"
+                  }`}
+                />
+                <div>
+                  <h4 className="text-xs uppercase tracking-widest font-bold opacity-60">
+                    Evaluare
+                  </h4>
+                  <p className="text-lg font-mono tracking-tight">
+                    {status === "pending"
+                      ? "> Se verifică codul trimis..."
+                      : "> 100 puncte!"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
