@@ -1,13 +1,16 @@
-// src/pages/ProblemDetails.tsx
 import { Link, useParams } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { problemSummaries } from "./problemData";
+import { useLanguage, translations } from "../language/LanguageUsed";
 
 export default function ProblemDetails() {
   const { problemId } = useParams();
   const id = Number(problemId);
   const problem = problemSummaries.find((item) => item.id === id);
+
+  const { lang } = useLanguage();
+  const t = translations[lang];
 
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("C++");
@@ -47,7 +50,7 @@ export default function ProblemDetails() {
       {/* code submission */}
       <div className="p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-pink-200">Trimite Soluția</h2>
+          <h2 className="text-xl font-bold text-pink-200">{t.submitTitle}</h2>
 
           <div className="relative w-40">
             <button
@@ -91,7 +94,7 @@ export default function ProblemDetails() {
             <input
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="Scrie soluția ta aici..."
+              placeholder={t.placeholderCode}
               className="w-full h-80 bg-[#0a0812] border-2 border-pink-500/20 rounded-2xl p-6 pb-70 font-mono text-sm text-pink-100 outline-none focus:border-pink-500/50 transition-all shadow-inner"
             />
             <div className="absolute top-4 right-4 text-xs font-mono text-pink-500/30 group-focus-within:text-pink-500/60">
@@ -104,7 +107,7 @@ export default function ProblemDetails() {
             disabled={status === "pending"}
             className="w-full bg-pink-500/20 border-2 border-pink-400/50 py-4 rounded-2xl font-bold text-pink-100 hover:bg-pink-500/30 transition-all hover:shadow-[0_0_20px_rgba(236,72,153,0.2)] disabled:opacity-50"
           >
-            {status === "pending" ? "Evaluare în curs..." : "Evaluare soluție"}
+            {status === "pending" ? t.evalPending : t.evalBtn}
           </button>
         </form>
       </div>
@@ -124,7 +127,7 @@ export default function ProblemDetails() {
             >
               ←
             </motion.span>
-            <span>Înapoi la listă</span>
+            <span>{t.backToList}</span>
 
             {/* Linia de subliniere animată */}
             <motion.div
@@ -170,12 +173,10 @@ export default function ProblemDetails() {
                 />
                 <div>
                   <h4 className="text-xs uppercase tracking-widest font-bold opacity-60">
-                    Evaluare
+                    {t.systemEval}
                   </h4>
                   <p className="text-lg font-mono tracking-tight">
-                    {status === "pending"
-                      ? "> Se verifică codul trimis..."
-                      : "> 100 puncte!"}
+                    {status === "pending" ? t.checking : t.success}
                   </p>
                 </div>
               </div>
