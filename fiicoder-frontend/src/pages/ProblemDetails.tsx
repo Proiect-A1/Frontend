@@ -34,9 +34,9 @@ export default function ProblemDetails() {
     return <div className="p-8 text-pink-200">Error! Problem not found.</div>;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-20">
-      {/* enunt */}
-      <div className="p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow">
+    <div className="max-w-4xl mx-auto flex flex-col gap-6 pb-6 h-[calc(100svh-7.5rem)]">
+      {/* problem description */}
+      <div className="flex-1 min-h-0 overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow pr-4 custom-scrollbar">
         <p className="text-xs font-semibold uppercase tracking-wider text-pink-400">
           Problem #{problem.id}
         </p>
@@ -47,8 +47,8 @@ export default function ProblemDetails() {
         <p className="text-pink-100/85 leading-relaxed">{problem.statement}</p>
       </div>
 
-      {/* code submission */}
-      <div className="p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow">
+      {/* code submission box */}
+      <div className="flex-1 min-h-0 overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow pr-4 custom-scrollbar">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-pink-200">{t.submitTitle}</h2>
 
@@ -113,7 +113,7 @@ export default function ProblemDetails() {
       </div>
 
       {/* back button */}
-      <div className="flex justify-start pt-4">
+      <div className="flex justify-start shrink-0">
         <Link to="/problems" className="relative inline-block group">
           <motion.div
             className="flex items-center gap-2 text-pink-300/70 font-semibold text-sm hover:text-pink-100 transition-colors cursor-pointer"
@@ -129,7 +129,7 @@ export default function ProblemDetails() {
             </motion.span>
             <span>{t.backToList}</span>
 
-            {/* Linia de subliniere animată */}
+            {/* animatie back button */}
             <motion.div
               className="absolute -bottom-0.5 left-6 h-px bg-pink-400/60"
               initial={{ width: 0 }}
@@ -142,6 +142,7 @@ export default function ProblemDetails() {
         </Link>
       </div>
 
+      {/* notification*/}
       <AnimatePresence>
         {status && (
           <motion.div
