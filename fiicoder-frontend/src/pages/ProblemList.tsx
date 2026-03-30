@@ -27,7 +27,7 @@ export default function ProblemList() {
   };
 
   return (
-    <div className="grid w-screen box-border px-6 gap-6 md:grid-cols-[280px_minmax(0,1fr)_280px] md:relative md:left-1/2 md:right-1/2 md:-ml-[50vw] md:-mr-[50vw]">
+    <div className="grid w-screen box-border px-6 gap-6 md:grid-cols-[300px_minmax(0,1fr)_300px] md:relative md:left-1/2 md:right-1/2 md:-ml-[50vw] md:-mr-[50vw]">
       <FilterSidebar
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -38,7 +38,7 @@ export default function ProblemList() {
         totalCount={problemSummaries.length}
       />
 
-      <section className="h-[calc(100svh-7.5rem)] overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow md:col-start-2">
+      <section className="h-[calc(100svh-8.5rem)] overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow md:col-start-2">
         <h1 className="text-3xl font-bold text-pink-200 mb-2">
           {lang === "RO" ? "Probleme" : "Problems"}
         </h1>
@@ -47,7 +47,7 @@ export default function ProblemList() {
         <div className="">
           {filteredProblems.length === 0 && (
             <p className="text-sm text-pink-100/85 bg-[#100d19]/80 p-4 rounded-xl border-2 border-pink-500/25">
-              Nu am găsit nicio problemă.
+              {lang === "RO" ? "Nu am găsit nicio problemă." : "No problems found."}
             </p>
           )}
 
@@ -62,12 +62,12 @@ export default function ProblemList() {
                     {problem.title}
                   </Link>
                   <span className="rounded-full border border-pink-400/40 bg-pink-500/10 px-2.5 py-1 text-xs font-semibold text-pink-100">
-                    {lang === "RO" 
+                    {lang === "EN" 
                       ? problem.difficulty 
                       : (
-                          problem.difficulty === "Ușor" ? "Easy" : 
-                          problem.difficulty === "Mediu" ? "Medium" : 
-                          "Hard"
+                          problem.difficulty === "Easy" ? "Usor" : 
+                          problem.difficulty === "Medium" ? "Mediu" : 
+                          "Greu"
                       )
                     }
                   </span>
@@ -77,7 +77,7 @@ export default function ProblemList() {
                 </p>
               </div>
               {index < filteredProblems.length - 1 && (
-                <div className="w-full h-1 bg-gradient-to-r from-transparent via-pink-500/50 my-4 blur-[3px]" />
+                <div className="w-full h-1 bg-linear-to-r from-transparent via-pink-500/50 my-3 blur-[5px]" />
               )}
             </Fragment>
           ))}
