@@ -1,4 +1,4 @@
-export type Difficulty = "Ușor" | "Mediu" | "Greu";
+export type Difficulty = "Easy" | "Medium" | "Hard";
 
 export interface Problem {
   id: number;
