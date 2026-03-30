@@ -16,11 +16,9 @@ const pageVariants = {
     opacity: 1, 
     scale: 1,
     transition: { 
-      duration: 0.5,
-      type: "spring",    
-      stiffness: 260,   
-      damping: 20,      
-      mass: 1 
+      type: "tween",    
+      duration: 0.5,    
+      ease: "easeInOut"   
     } 
   },
   exit: { 
@@ -75,7 +73,7 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen w-full text-pink-100 font-sans site-hero">
+      <div className="min-h-screen w-full text-pink-100 font-sans site-hero overflow-x-hidden">
         <Navbar />
         <AnimatedRoutes />
       </div>

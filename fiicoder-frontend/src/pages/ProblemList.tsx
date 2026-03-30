@@ -38,7 +38,7 @@ export default function ProblemList() {
         totalCount={problemSummaries.length}
       />
 
-      <section className="h-[calc(100svh-8.5rem)] overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow md:col-start-2">
+      <section className="h-[calc(100svh-7.5rem)] overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow md:col-start-2">
         <h1 className="text-3xl font-bold text-pink-200 mb-2">
           {lang === "RO" ? "Probleme" : "Problems"}
         </h1>
