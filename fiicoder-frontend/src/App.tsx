@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import ProblemList from "./pages/ProblemList";
 import ProblemDetails from "./pages/ProblemDetails";
   
-const pageVariants = {
+const pageVariants: Variants = {
   initial: { 
     y: -60,         
     opacity: 0, 
@@ -43,7 +43,6 @@ function AnimatedRoutes() {
         key={location.pathname}
         className="max-w-6xl mx-auto px-4 pt-24 pb-6"
         style={{ position: "relative" }}
-        
         variants={pageVariants}
         initial="initial"
         animate="animate"
