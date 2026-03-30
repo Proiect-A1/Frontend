@@ -16,7 +16,7 @@ const pageVariants: Variants = {
     opacity: 1, 
     scale: 1,
     transition: { 
-      type: "tween",    
+      type: "spring",    
       duration: 0.5,    
       ease: "easeInOut"   
     } 
@@ -39,7 +39,7 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <motion.main
         key={location.pathname}
-        className="max-w-6xl mx-auto px-4 pt-24 pb-6"
+        className="max-w-6xl mx-auto px-4 pt-28 pb-6"
         style={{ position: "relative" }}
         variants={pageVariants}
         initial="initial"
@@ -72,7 +72,7 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen w-full text-pink-100 font-sans site-hero overflow-x-hidden">
+      <div className="h-screen w-full text-pink-100 font-sans site-hero overflow-hidden">
         <Navbar />
         <AnimatedRoutes />
       </div>
