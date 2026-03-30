@@ -7,7 +7,7 @@ export const problemSummaries: Problem[] = [
     shortDescription: "Find the sum of two integers read from input.",
     statement:
       "Given two integers a and b, print their sum. This is a warm-up problem for parsing and basic arithmetic.",
-    difficulty: "Ușor",
+    difficulty: "Easy",
   },
   {
     id: 2,
@@ -15,7 +15,7 @@ export const problemSummaries: Problem[] = [
     shortDescription: "Count vowels in a lowercase string.",
     statement:
       "Given a lowercase string s, compute how many characters are vowels from the set {a, e, i, o, u}.",
-    difficulty: "Ușor",
+    difficulty: "Easy",
   },
   {
     id: 3,
@@ -23,7 +23,7 @@ export const problemSummaries: Problem[] = [
     shortDescription: "Return the maximum value from a list of numbers.",
     statement:
       "Given n integers, output the largest number. Assume n is at least 1.",
-    difficulty: "Mediu",
+    difficulty: "Medium",
   },
   {
     id: 4,
@@ -31,15 +31,15 @@ export const problemSummaries: Problem[] = [
     shortDescription: "Check if a number is a palindrome.",
     statement:
       "Given an integer x, determine whether it reads the same from left to right and right to left.",
-    difficulty: "Mediu",
+    difficulty: "Medium",
   },
   {
     id: 5,
     title: "Problem 5",
     shortDescription: "Compute factorial n! for n up to 12.",
     statement:
-      "Given an integer n, compute the product 1 * 2 * ... * n. Constraints keep the result inside 32-bit signed integer.",
-    difficulty: "Greu",
+      "Given an integer n, compute the product 1 * 2 * ... * n. Constraints keep the result inside 32-bit signed integer. blablablablalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalaGiven an integer n, compute the product 1 * 2 * ... * n. Constraints keep the result inside 32-bit signed integer. blablablablalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbalbala ",
+    difficulty: "Hard",
   },
   {
     id: 6,
@@ -47,7 +47,7 @@ export const problemSummaries: Problem[] = [
     shortDescription: "Sort numbers in ascending order.",
     statement:
       "Given n integers, print them sorted in non-decreasing order.",
-    difficulty: "Ușor",
+    difficulty: "Easy",
   },
   {
     id: 7,
@@ -55,7 +55,7 @@ export const problemSummaries: Problem[] = [
     shortDescription: "Sort numbers in descending order.",
     statement:
       "Given n integers, print them sorted in non-increasing order.",
-    difficulty: "Ușor",
+    difficulty: "Medium",
   },
   {
     id: 8,
@@ -63,6 +63,6 @@ export const problemSummaries: Problem[] = [
     shortDescription: "Find the maximum element in an array.",
     statement:
       "Given an array of n integers, find the largest element.",
-    difficulty: "Mediu",
+    difficulty: "Medium",
   },
 ];
