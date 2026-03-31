@@ -55,7 +55,7 @@ export default function ProblemDetails() {
           <div className="relative w-40">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="w-full flex items-center justify-between bg-[#0f0c18] border-2 border-pink-500/30 rounded-xl px-4 py-2 text-sm text-pink-100 hover:border-pink-400 transition-colors"
+              className="w-full flex items-center justify-between bg-[#0f0c18] border border-pink-500/30 rounded-xl px-4 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400"
             >
               {language}
               <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
@@ -69,7 +69,7 @@ export default function ProblemDetails() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 5 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute z-50 w-full bg-[#1a1629] border-2 border-pink-500/40 rounded-xl shadow-2xl overflow-hidden"
+                  className="absolute z-50 w-full bg-[#1a1629] border border-pink-500/40 rounded-xl shadow-2xl overflow-hidden"
                 >
                   {languages.map((lang) => (
                     <button
@@ -95,7 +95,7 @@ export default function ProblemDetails() {
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder={t.placeholderCode}
-              className="w-full h-80 bg-[#0a0812] border-2 border-pink-500/20 rounded-2xl p-6 pb-70 font-mono text-sm text-pink-100 outline-none focus:border-pink-500/50 transition-all shadow-inner"
+              className="w-full h-80 bg-[#0a0812] border border-pink-500/20 rounded-2xl p-6 pb-70 font-mono text-sm text-pink-100 outline-none focus:border-pink-500/50 transition-all shadow-inner"
             />
             <div className="absolute top-4 right-4 text-xs font-mono text-pink-500/30 group-focus-within:text-pink-500/60">
               {language.toLowerCase()}
@@ -105,7 +105,7 @@ export default function ProblemDetails() {
           <button
             type="submit"
             disabled={status === "pending"}
-            className="w-full bg-pink-500/20 border-2 border-pink-400/50 py-4 rounded-2xl font-bold text-pink-100 hover:bg-pink-500/30 transition-all hover:shadow-[0_0_20px_rgba(236,72,153,0.2)] disabled:opacity-50"
+            className="w-full bg-pink-500/20 border border-pink-400/50 py-4 rounded-2xl font-bold text-pink-100 outline-none transition hover:border-pink-400 hover:bg-pink-500/30 hover:-translate-y-0.5"
           >
             {status === "pending" ? t.evalPending : t.evalBtn}
           </button>

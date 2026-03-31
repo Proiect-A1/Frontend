@@ -16,9 +16,11 @@ const pageVariants: Variants = {
     opacity: 1, 
     scale: 1,
     transition: { 
-      type: "spring",    
-      duration: 0.5,    
-      ease: "easeInOut"   
+      type: "spring", 
+      stiffness: 200,  
+      damping: 20, 
+      duration: 0.3,    
+      ease: "easeIn"   
     } 
   },
   exit: { 

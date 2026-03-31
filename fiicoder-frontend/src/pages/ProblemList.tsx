@@ -53,7 +53,7 @@ export default function ProblemList() {
 
           {filteredProblems.map((problem, index) => (
             <Fragment key={problem.id}>
-              <div className="rounded-xl border border-pink-500/25 bg-[#100d19]/80 p-4 transition-all duration-200 hover:-translate-y-1">
+              <div className="rounded-xl border border-pink-500/25 bg-[#100d19]/80 p-4 transition-all duration-200 hover:-translate-y-0.5  hover:border-pink-400">
                 <div className="mb-2 flex items-center justify-between gap-3">
                   <Link
                     to={`/problems/${problem.id}`}

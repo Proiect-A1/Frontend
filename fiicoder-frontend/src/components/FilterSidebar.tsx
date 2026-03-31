@@ -58,7 +58,7 @@ export default function FilterSidebar({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={lang === "RO" ? "ex: Problema 3" : "ex: Problem 3"}
-            className="w-full rounded-lg border-2 border-pink-500/30 bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 placeholder:text-pink-200/40 outline-none transition focus:border-pink-400 focus:ring-2 focus:ring-pink-500/20"
+            className="w-full rounded-xl border border-pink-500/30 bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 placeholder:text-pink-200/40 outline-none transition hover:border-pink-400"
           />
         </div>
 
@@ -71,7 +71,7 @@ export default function FilterSidebar({
             <button
               type="button"
               onClick={() => setIsOpen(!isOpen)}
-              className="w-full flex items-center justify-between rounded-lg border-2 border-pink-500/30 bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-500/20"
+              className="w-full flex items-center justify-between rounded-xl border border-pink-500/30 bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400"
             >
               {getDifficultyLabel(difficultyFilter)}
               <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
@@ -85,7 +85,7 @@ export default function FilterSidebar({
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 5 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute z-50 mt-1 w-full bg-[#1a1629] border-2 border-pink-500/40 rounded-xl shadow-2xl overflow-hidden"
+                  className="absolute z-50 mt-1 w-full bg-[#1a1629] border border-pink-500/40 rounded-xl shadow-2xl overflow-hidden"
                 >
                   {difficultyOptions.map((option) => (
                     <button
@@ -95,7 +95,7 @@ export default function FilterSidebar({
                         setDifficultyFilter(option); 
                         setIsOpen(false); 
                       }}
-                      className="w-full text-left px-4 py-2 text-sm text-pink-100 hover:bg-[#2d2645] transition-colors"
+                      className="w-full text-left px-4 py-2 text-sm text-pink-100 hover:bg-pink-500/20 transition-colors"
                     >
                       {getDifficultyLabel(option)}
                     </button>
@@ -113,7 +113,7 @@ export default function FilterSidebar({
             clearFilters();
             setIsOpen(false);
           }}
-          className="w-full rounded-lg border border-pink-400/50 bg-pink-500/10 px-3 py-2 text-sm font-semibold text-pink-100 transition hover:bg-pink-500/20"
+          className="w-full rounded-xl border border-pink-400/50 bg-pink-500/10 px-3 py-2 text-sm font-semibold text-pink-100 outline-none transition hover:border-pink-400 hover:bg-pink-500/30 hover:-translate-y-0.5"
         >
           {t.clearFilters}
         </button>

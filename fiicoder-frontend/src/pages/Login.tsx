@@ -30,7 +30,7 @@ export default function Login() {
             type="text"
             required
             placeholder="ex: fiicoder"
-            className="w-full rounded-lg border-2 border-pink-500/30 bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition focus:border-pink-400 focus:ring-2 focus:ring-pink-500/20"
+            className="w-full rounded-xl border border-pink-500/30 bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400"
           />
         </div>
         <div>
@@ -41,13 +41,13 @@ export default function Login() {
             type="password"
             required
             placeholder="••••••••"
-            className="w-full rounded-lg border-2 border-pink-500/30 bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition focus:border-pink-400 focus:ring-2 focus:ring-pink-500/20"
+            className="w-full rounded-xl border border-pink-500/30 bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400"
           />
         </div>
 
         <button
           type="submit"
-          className="mt-4 w-full rounded-lg border-2 border-pink-400/50 bg-pink-500/20 px-4 py-2.5 text-sm font-bold text-pink-100 transition hover:bg-pink-500/30 hover:-translate-y-0.5"
+          className="mt-4 w-full rounded-xl border border-pink-400/50 bg-pink-500/20 px-4 py-2.5 text-sm font-bold text-pink-100 outline-none transition hover:border-pink-400 hover:bg-pink-500/30 hover:-translate-y-0.5"
         >
           {isLogin ? t.loginBtn : t.registerBtn}
         </button>

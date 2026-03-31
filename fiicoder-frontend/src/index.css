@@ -68,7 +68,7 @@ input {
 }
 
 .card-glow {
-  box-shadow: 0 22px 36px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 94, 182, 0.1);
+  box-shadow: 0 15px 36px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 94, 182, 0.1);
 }
 
 .page-line-horizontal {
