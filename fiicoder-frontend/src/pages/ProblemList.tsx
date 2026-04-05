@@ -1,25 +1,100 @@
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { problemSummaries } from "./problemData";
+import type { Difficulty, Problem } from "../types/problem";
+import { apiClient } from "../services/apiClient";
 
 import { useLanguage } from "../language/LanguageUsed";
 import FilterSidebar from "../components/FilterSidebar";
 import StatsSidebar from "../components/StatsSidebar";
 
+function toDifficulty(value: unknown): Difficulty {
+  if (value === "Easy" || value === "Medium" || value === "Hard") {
+    return value;
+  }
+
+  return "Medium";
+}
+
+function normalizeProblem(raw: unknown): Problem | null {
+  if (!raw || typeof raw !== "object") {
+    return null;
+  }
+
+  const candidate = raw as Record<string, unknown>;
+  const id = Number(candidate.id);
+
+  if (!Number.isFinite(id)) {
+    return null;
+  }
+
+  return {
+    id,
+    title: String(candidate.title ?? `Problem ${id}`),
+    shortDescription: String(
+      candidate.shortDescription ?? candidate.summary ?? "No short description available.",
+    ),
+    statement: String(candidate.statement ?? candidate.description ?? ""),
+    difficulty: toDifficulty(candidate.difficulty),
+  };
+}
+
+function extractProblems(payload: unknown): Problem[] {
+  if (Array.isArray(payload)) {
+    return payload.map(normalizeProblem).filter((p): p is Problem => p !== null);
+  }
+
+  if (payload && typeof payload === "object") {
+    const maybeWrapped = payload as Record<string, unknown>;
+    if (Array.isArray(maybeWrapped.data)) {
+      return maybeWrapped.data
+        .map(normalizeProblem)
+        .filter((p): p is Problem => p !== null);
+    }
+  }
+
+  return [];
+}
+
 export default function ProblemList() {
   const { lang } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("All");
+  const [problems, setProblems] = useState<Problem[]>(problemSummaries);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    apiClient
+      .get<unknown>("/problems")
+      .then((payload) => {
+        if (!isMounted) {
+          return;
+        }
+
+        const extracted = extractProblems(payload);
+        if (extracted.length > 0) {
+          setProblems(extracted);
+        }
+      })
+      .catch(() => {
+        // Keep local fallback data if backend is unavailable in development.
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const filteredProblems = useMemo(() => {
     const normalized = searchQuery.trim().toLowerCase();
-    return problemSummaries.filter((problem) => {
+    return problems.filter((problem) => {
       const matchesName = problem.title.toLowerCase().includes(normalized);
       const matchesDifficulty =
         difficultyFilter === "All" || problem.difficulty === difficultyFilter;
       return matchesName && matchesDifficulty;
     });
-  }, [difficultyFilter, searchQuery]);
+  }, [difficultyFilter, problems, searchQuery]);
 
   const clearFilters = () => {
     setSearchQuery("");
@@ -35,7 +110,7 @@ export default function ProblemList() {
         setDifficultyFilter={setDifficultyFilter}
         clearFilters={clearFilters}
         filteredCount={filteredProblems.length}
-        totalCount={problemSummaries.length}
+        totalCount={problems.length}
       />
 
       <section className="h-[calc(100svh-8.5rem)] overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow md:col-start-2">
