@@ -91,11 +91,11 @@ export default function ProblemDetails() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="relative group">
-            <input
+            <textarea
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder={t.placeholderCode}
-              className="w-full h-80 bg-[#0a0812] border border-pink-500/20 rounded-2xl p-6 pb-70 font-mono text-sm text-pink-100 outline-none focus:border-pink-500/50 transition-all shadow-inner"
+              className="w-full h-80 bg-[#0a0812] border border-pink-500/20 rounded-2xl p-6 font-mono text-sm text-pink-100 outline-none focus:border-pink-500/50 transition-all shadow-inner resize-none"
             />
             <div className="absolute top-4 right-4 text-xs font-mono text-pink-500/30 group-focus-within:text-pink-500/60">
               {language.toLowerCase()}
