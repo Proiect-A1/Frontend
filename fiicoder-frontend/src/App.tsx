@@ -4,33 +4,33 @@ import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import ProblemList from "./pages/ProblemList";
 import ProblemDetails from "./pages/ProblemDetails";
-  
+
 const pageVariants: Variants = {
-  initial: { 
-    y: -60,         
-    opacity: 0, 
-    scale: 0.97     
+  initial: {
+    y: -60,
+    opacity: 0,
+    scale: 0.97
   },
-  animate: { 
-    y: 0,            
-    opacity: 1, 
+  animate: {
+    y: 0,
+    opacity: 1,
     scale: 1,
-    transition: { 
-      type: "spring", 
-      stiffness: 200,  
-      damping: 20, 
-      duration: 0.3,    
-      ease: "easeIn"   
-    } 
+    transition: {
+      type: "spring",
+      stiffness: 200,
+      damping: 20,
+      duration: 0.3,
+      ease: "easeIn"
+    }
   },
-  exit: { 
-    y: 30,           
-    opacity: 0, 
+  exit: {
+    y: 30,
+    opacity: 0,
     scale: 0.95,
-    transition: { 
-      duration: 0.2, 
-      ease: "easeIn" 
-    } 
+    transition: {
+      duration: 0.2,
+      ease: "easeIn"
+    }
   },
 };
 
@@ -51,19 +51,19 @@ function AnimatedRoutes() {
         <Routes location={location}>
           <Route path="/" element={
             <Navigate to="/login" replace />
-            } 
+            }
           />
           <Route path="/login" element={
             <Login />
-            } 
+            }
           />
           <Route path="/problems" element={
             <ProblemList />
-            } 
+            }
           />
           <Route path="/problems/:problemId" element={
             <ProblemDetails />
-            } 
+            }
           />
         </Routes>
       </motion.main>

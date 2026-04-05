@@ -3,6 +3,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { problemSummaries } from "./problemData";
 import { useLanguage, translations } from "../language/LanguageUsed";
+import { useAuth } from "../services/AuthContext";
 
 export default function ProblemDetails() {
   const { problemId } = useParams();
@@ -11,6 +12,7 @@ export default function ProblemDetails() {
 
   const { lang } = useLanguage();
   const t = translations[lang];
+  const { isAuthenticated } = useAuth();
 
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("C++");
@@ -49,67 +51,100 @@ export default function ProblemDetails() {
 
       {/* code submission box */}
       <div className="flex-1 min-h-0 overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow pr-4 custom-scrollbar">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-pink-200">{t.submitTitle}</h2>
+        {isAuthenticated ? (
+          /* ── Authenticated: show the normal submission form ── */
+          <>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-pink-200">{t.submitTitle}</h2>
 
-          <div className="relative w-40">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="w-full flex items-center justify-between bg-[#0f0c18] border border-pink-500/30 rounded-xl px-4 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400"
-            >
-              {language}
-              <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
-                ▼
-              </motion.span>
-            </button>
-
-            <AnimatePresence>
-              {isOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 5 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="absolute z-50 w-full bg-[#1a1629] border border-pink-500/40 rounded-xl shadow-2xl overflow-hidden"
+              <div className="relative w-40">
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="w-full flex items-center justify-between bg-[#0f0c18] border border-pink-500/30 rounded-xl px-4 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400"
                 >
-                  {languages.map((lang) => (
-                    <button
-                      key={lang}
-                      onClick={() => {
-                        setLanguage(lang);
-                        setIsOpen(false);
-                      }}
-                      className="w-full text-left px-4 py-2 text-sm text-pink-100 hover:bg-pink-500/20 transition-colors"
+                  {language}
+                  <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
+                    ▼
+                  </motion.span>
+                </button>
+
+                <AnimatePresence>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 5 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute z-50 w-full bg-[#1a1629] border border-pink-500/40 rounded-xl shadow-2xl overflow-hidden"
                     >
-                      {lang}
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="relative group">
-            <input
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder={t.placeholderCode}
-              className="w-full h-80 bg-[#0a0812] border border-pink-500/20 rounded-2xl p-6 pb-70 font-mono text-sm text-pink-100 outline-none focus:border-pink-500/50 transition-all shadow-inner"
-            />
-            <div className="absolute top-4 right-4 text-xs font-mono text-pink-500/30 group-focus-within:text-pink-500/60">
-              {language.toLowerCase()}
+                      {languages.map((lang) => (
+                        <button
+                          key={lang}
+                          onClick={() => {
+                            setLanguage(lang);
+                            setIsOpen(false);
+                          }}
+                          className="w-full text-left px-4 py-2 text-sm text-pink-100 hover:bg-pink-500/20 transition-colors"
+                        >
+                          {lang}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={status === "pending"}
-            className="w-full bg-pink-500/20 border border-pink-400/50 py-4 rounded-2xl font-bold text-pink-100 outline-none transition hover:border-pink-400 hover:bg-pink-500/30 hover:-translate-y-0.5"
-          >
-            {status === "pending" ? t.evalPending : t.evalBtn}
-          </button>
-        </form>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="relative group">
+                <input
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder={t.placeholderCode}
+                  className="w-full h-80 bg-[#0a0812] border border-pink-500/20 rounded-2xl p-6 pb-70 font-mono text-sm text-pink-100 outline-none focus:border-pink-500/50 transition-all shadow-inner"
+                />
+                <div className="absolute top-4 right-4 text-xs font-mono text-pink-500/30 group-focus-within:text-pink-500/60">
+                  {language.toLowerCase()}
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={status === "pending"}
+                className="w-full bg-pink-500/20 border border-pink-400/50 py-4 rounded-2xl font-bold text-pink-100 outline-none transition hover:border-pink-400 hover:bg-pink-500/30 hover:-translate-y-0.5"
+              >
+                {status === "pending" ? t.evalPending : t.evalBtn}
+              </button>
+            </form>
+          </>
+        ) : (
+          /* ── Guest: show locked panel ── */
+          <div className="flex flex-col items-center justify-center h-full gap-5 py-12">
+            {/* Lock icon */}
+            <div className="w-16 h-16 rounded-full bg-pink-500/10 border-2 border-pink-500/30 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-pink-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+            </div>
+
+            <div className="text-center">
+              <h3 className="text-lg font-bold text-pink-200 mb-1">
+                {lang === "RO" ? "Trimite soluții" : "Submit Solutions"}
+              </h3>
+              <p className="text-sm text-pink-300/60 max-w-xs">
+                {lang === "RO"
+                  ? "Trebuie să te autentifici pentru a trimite rezolvări la probleme."
+                  : "You need to log in to submit solutions to problems."}
+              </p>
+            </div>
+
+            <Link
+              to="/login"
+              className="px-6 py-2.5 rounded-xl border border-pink-400/50 bg-pink-500/20 text-sm font-bold text-pink-100 transition hover:border-pink-400 hover:bg-pink-500/30 hover:-translate-y-0.5"
+            >
+              {lang === "RO" ? "Autentifică-te" : "Log In"}
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* back button */}
