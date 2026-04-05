@@ -2,7 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { problemSummaries } from "./problemData";
-import { useLanguage, translations } from "../language/LanguageUsed";
+import { useLanguage, translations } from "../language/Language";
 
 export default function ProblemDetails() {
   const { problemId } = useParams();

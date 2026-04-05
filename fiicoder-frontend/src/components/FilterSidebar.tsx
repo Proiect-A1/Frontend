@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useLanguage, translations } from "../language/LanguageUsed";
+import { getDifficultyLabel, useLanguage, translations } from "../language/Language";
 import { useState } from "react";
+import type { Difficulty } from "../types/problem";
 
 interface FilterSidebarProps {
   searchQuery: string;
@@ -28,17 +29,12 @@ export default function FilterSidebar({
   
   const difficultyOptions = ["All", "Easy", "Medium", "Hard"];
 
-  const getDifficultyLabel = (val: string) => {
-    if (lang === "RO") {
-      switch(val) {
-        case "All": return "Toate";
-        case "Easy": return "Ușor";
-        case "Medium": return "Mediu";
-        case "Hard": return "Greu";
-        default: return val;
-      }
+  const getOptionLabel = (val: string) => {
+    if (val === "All") {
+      return t.allOption;
     }
-    return val;
+
+    return getDifficultyLabel(lang, val as Difficulty);
   };
 
   return (
@@ -73,7 +69,7 @@ export default function FilterSidebar({
               onClick={() => setIsOpen(!isOpen)}
               className="w-full flex items-center justify-between rounded-xl border border-pink-500/30 bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400"
             >
-              {getDifficultyLabel(difficultyFilter)}
+              {getOptionLabel(difficultyFilter)}
               <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
                 ▼
               </motion.span>
@@ -97,7 +93,7 @@ export default function FilterSidebar({
                       }}
                       className="w-full text-left px-4 py-2 text-sm text-pink-100 hover:bg-pink-500/20 transition-colors"
                     >
-                      {getDifficultyLabel(option)}
+                      {getOptionLabel(option)}
                     </button>
                   ))}
                 </motion.div>

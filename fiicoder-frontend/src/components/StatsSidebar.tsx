@@ -1,4 +1,4 @@
-import { useLanguage, translations } from "../language/LanguageUsed";
+import { useLanguage, translations } from "../language/Language";
 
 function StatCard({ title, value }: { title: string; value: string }) {
   return (
@@ -25,8 +25,7 @@ export default function StatsSidebar() {
         <StatCard title={t.statStreak} value="5" />
         <StatCard 
           title={t.statPref} 
-          // sau pot sa fac si asa daca cv :)
-          value={lang === "RO" ? "Mediu" : "Medium"} 
+          value={t.mediumDifficulty} 
         />
       </div>
     </aside>

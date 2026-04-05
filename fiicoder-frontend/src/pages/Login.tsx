@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLanguage, translations } from "../language/LanguageUsed";
+import { useLanguage, translations } from "../language/Language";
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true);
@@ -61,8 +61,8 @@ export default function Login() {
           className="font-semibold text-pink-300 underline underline-offset-4 hover:text-pink-100 transition-colors"
         >
           {isLogin 
-            ? (lang === "RO" ? "Înregistrează-te" : "Sign Up") 
-            : (lang === "RO" ? "Autentifică-te" : "Login")}
+            ? (t.registerBtn) 
+            : (t.loginBtn)}
         </button>
       </div>
     </div>

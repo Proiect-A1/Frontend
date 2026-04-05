@@ -1,10 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
-import { useLanguage } from "../language/LanguageUsed"; 
+import { useLanguage, translations } from "../language/Language"; 
 
 export default function Navbar() {
   const location = useLocation();
   
   const { lang, setLang } = useLanguage();
+  const t = translations[lang];
 
   const getNavLinkClass = (path: string) => {
     const isActive = location.pathname.startsWith(path);
@@ -36,13 +37,13 @@ export default function Navbar() {
           
           <div className="flex gap-3 items-center">
             <Link to="/problems" className={getNavLinkClass("/problems")}>
-              {lang === "RO" ? "Arhivă Probleme" : "Problem Archive"}
+              {t.archiveLabel}
             </Link>
 
             <div className="page-line-vertical"></div>
 
             <Link to="/login" className={getNavLinkClass("/login")}>
-              {lang === "RO" ? "Autentificare" : "Authentication"}
+              {t.loginLabel}
             </Link>
 
             <div className="page-line-vertical"></div>
