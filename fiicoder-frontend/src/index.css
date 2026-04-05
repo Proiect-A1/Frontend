@@ -48,7 +48,7 @@ label {
   cursor: url('assets/hand-cursor-24.png') 10 1, pointer;
 }
 
-input {
+input, textarea {
   cursor: url('assets/text-cursor-24.png') 12 12, text;
 }
 
