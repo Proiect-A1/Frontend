@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import ProblemList from "./pages/ProblemList";
 import ProblemDetails from "./pages/ProblemDetails";
+import { useAuth } from "./services/AuthContext";
 
 const pageVariants: Variants = {
   initial: {
@@ -36,6 +37,7 @@ const pageVariants: Variants = {
 
 function AnimatedRoutes() {
   const location = useLocation();
+  const { isAuthenticated } = useAuth(); // Extrage status-ul
 
   return (
     <AnimatePresence mode="wait">
@@ -50,7 +52,7 @@ function AnimatedRoutes() {
       >
         <Routes location={location}>
           <Route path="/" element={
-            <Navigate to="/login" replace />
+            isAuthenticated ? <Navigate to="/problems" replace /> : <Navigate to="/login" replace />
             }
           />
           <Route path="/login" element={
