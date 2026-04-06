@@ -11,7 +11,6 @@ export const translations = {
     registerTitle: "Înregistrare",
     emailLabel: "Email sau Nume utilizator",
     passwordLabel: "Parolă",
-    loginBtn: "Intră în cont",
     registerBtn: "Creează cont",
     noAccount: "Nu ai un cont?",
     hasAccount: "Ai deja un cont?",
@@ -42,15 +41,15 @@ export const translations = {
     mediumDifficulty: "Mediu",
     hardDifficulty: "Greu",
     // Navbar
-    archiveLabel: "Arhivă probleme",
-    loginLabel: "Autentificare",
+    archiveBtn: "Arhivă probleme",
+    loginBtn: "Autentificare",
+    disconnectBtn: "Deconectare",
   },
   EN: {
     loginTitle: "Login",
     registerTitle: "Sign Up",
     emailLabel: "Email or Username",
     passwordLabel: "Password",
-    loginBtn: "Sign In",
     registerBtn: "Create Account",
     noAccount: "Don't have an account?",
     hasAccount: "Already have an account?",
@@ -77,8 +76,9 @@ export const translations = {
     easyDifficulty: "Easy",
     mediumDifficulty: "Medium",
     hardDifficulty: "Hard",
-    archiveLabel: "Problem Archive",
-    loginLabel: "Authentication",
+    archiveBtn: "Problem Archive",
+    loginBtn: "Authentication",
+    disconnectBtn: "Logout",
   }
 };
 

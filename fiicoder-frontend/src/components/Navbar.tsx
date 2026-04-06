@@ -45,7 +45,7 @@ export default function Navbar() {
 
           <div className="flex gap-3 items-center">
             <Link to="/problems" className={getNavLinkClass("/problems")}>
-              {t.archiveLabel}
+              {t.archiveBtn}
             </Link>
 
             <div className="page-line-vertical"></div>
@@ -66,13 +66,13 @@ export default function Navbar() {
                   onClick={handleLogout}
                   className="px-4 py-1.5 rounded-full text-sm font-medium border-2 border-red-400/50 text-red-300 bg-red-500/10 transition-all duration-200 hover:bg-red-500/20 hover:border-red-400 hover:-translate-y-0.5"
                 >
-                  {lang === "RO" ? "Deconectare" : "Logout"}
+                  {t.disconnectBtn}
                 </button>
               </>
             ) : (
               /* ── Unauthenticated state: show login link ── */
               <Link to="/login" className={getNavLinkClass("/login")}>
-                {lang === "RO" ? "Autentificare" : "Authentication"}
+                {t.loginBtn}
               </Link>
             )}
 
