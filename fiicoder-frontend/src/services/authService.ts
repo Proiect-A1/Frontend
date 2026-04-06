@@ -63,9 +63,8 @@ export const authService = {
       );
     }
 
-    // Backend returns the token as plain text
-    const token = await response.text();
-    return token;
+    const body = await response.json();
+    return body.token;
   },
 
   /**

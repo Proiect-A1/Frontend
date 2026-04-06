@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { problemSummaries } from "./problemData";
 import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
+import { submissionService } from "../services/submissionService";
 
 export default function ProblemDetails() {
   const { problemId } = useParams();
@@ -12,7 +13,7 @@ export default function ProblemDetails() {
 
   const { lang } = useLanguage();
   const t = translations[lang];
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, userId } = useAuth();
 
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("C++");
@@ -21,15 +22,42 @@ export default function ProblemDetails() {
 
   const languages = ["C++", "Python", "Java", "JavaScript", "Rust"];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!code.trim()) return;
+    if (!problem || !code.trim()) return;
+
     setStatus("pending");
 
-    setTimeout(() => {
-      setStatus("success");
-      setTimeout(() => setStatus(null), 4000);
-    }, 2000);
+    try {
+      const response = await submissionService.submit({
+        problem_id: String(problem.id), // ID-ul real al problemei (ex: "1")
+        user_id: userId || "",          // ID-ul real al utilizatorului din token (ex: "student_test")
+        code: code,
+      });
+
+      // pooling
+      const checkStatus = setInterval(async () => {
+        try {
+          const result = await submissionService.getStatus(
+            response.evaluationNodeId,
+          );
+
+          if (result.status !== "PENDING") {
+            clearInterval(checkStatus);
+            setStatus("success");
+
+            setTimeout(() => setStatus(null), 4000);
+          }
+        } catch (err) {
+          clearInterval(checkStatus);
+          setStatus(null);
+          console.error("Eroare la verificarea statusului:", err);
+        }
+      }, 2000);
+    } catch (err) {
+      setStatus(null);
+      console.error("Eroare la trimiterea submisiei:", err);
+    }
   };
 
   if (!problem)
@@ -55,7 +83,9 @@ export default function ProblemDetails() {
           /* ── Authenticated: show the normal submission form ── */
           <>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-pink-200">{t.submitTitle}</h2>
+              <h2 className="text-xl font-bold text-pink-200">
+                {t.submitTitle}
+              </h2>
 
               <div className="relative w-40">
                 <button
@@ -121,8 +151,19 @@ export default function ProblemDetails() {
           <div className="flex flex-col items-center justify-center h-full gap-5 py-12">
             {/* Lock icon */}
             <div className="w-16 h-16 rounded-full bg-pink-500/10 border-2 border-pink-500/30 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-pink-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-7 h-7 text-pink-400/70"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+                />
               </svg>
             </div>
 
