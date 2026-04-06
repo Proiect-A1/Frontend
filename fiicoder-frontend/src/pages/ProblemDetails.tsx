@@ -7,8 +7,7 @@ import { useAuth } from "../services/AuthContext";
 
 export default function ProblemDetails() {
   const { problemId } = useParams();
-  const id = Number(problemId);
-  const problem = problemSummaries.find((item) => item.id === id);
+  const problem = problemSummaries.find((item) => item.id === problemId);
 
   const { lang } = useLanguage();
   const t = translations[lang];
@@ -17,19 +16,69 @@ export default function ProblemDetails() {
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("C++");
   const [isOpen, setIsOpen] = useState(false);
-  const [status, setStatus] = useState<null | "success" | "pending">(null);
+  const [status, setStatus] = useState<null | "pending" | "valid" | "invalid">(null);
 
   const languages = ["C++", "Python", "Java", "JavaScript", "Rust"];
 
+<<<<<<< Updated upstream
   const handleSubmit = (e: React.FormEvent) => {
+=======
+  // TODO: Backend trebuie să pună userId (UUID) în JWT claims.
+  // Temporar, lookup hardcodat username → UUID.
+  const userUuidMap: Record<string, string> = {
+    admin: "02c52893-bb4d-4d53-83c9-0eaa13d0863b",
+    student_test: "9fd27efc-323c-46d3-b3fb-5f356f8eda36",
+    testuser: "57f4fac5-e804-45f4-98a5-71c0c4b9ad6c",
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+>>>>>>> Stashed changes
     e.preventDefault();
     if (!code.trim()) return;
     setStatus("pending");
 
+<<<<<<< Updated upstream
     setTimeout(() => {
       setStatus("success");
       setTimeout(() => setStatus(null), 4000);
     }, 2000);
+=======
+    try {
+      const resolvedUserId = userUuidMap[userId || ""] || userId || "";
+      const response = await submissionService.submit({
+        problem_id: problem.id,
+        user_id: resolvedUserId,
+        code: code,
+      });
+
+      // pooling
+      const checkStatus = setInterval(async () => {
+        try {
+          const result = await submissionService.getStatus(
+            response.submissionId,
+          );
+
+          if (result.status !== "IDLE") {
+            clearInterval(checkStatus);
+            if (result.status === "OK") {
+              setStatus("valid");
+            } else {
+              setStatus("invalid");
+            }
+
+            setTimeout(() => setStatus(null), 4000);
+          }
+        } catch (err) {
+          clearInterval(checkStatus);
+          setStatus(null);
+          console.error("Eroare la verificarea statusului:", err);
+        }
+      }, 2000);
+    } catch (err) {
+      setStatus(null);
+      console.error("Eroare la trimiterea submisiei:", err);
+    }
+>>>>>>> Stashed changes
   };
 
   if (!problem)
@@ -190,7 +239,9 @@ export default function ProblemDetails() {
               className={`relative overflow-hidden px-8 py-5 rounded-2xl border-2 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${
                 status === "pending"
                   ? "border-pink-500/50 bg-[#151221]/90 text-pink-200"
-                  : "border-green-500/50 bg-[#0d1a12]/90 text-green-300"
+                  : status === "valid"
+                  ? "border-green-500/50 bg-[#0d1a12]/90 text-green-300"
+                  : "border-red-500/50 bg-[#1a0d0d]/90 text-red-300"
               }`}
             >
               <motion.div
@@ -198,13 +249,21 @@ export default function ProblemDetails() {
                 animate={{ scaleX: 1 }}
                 transition={{ duration: status === "pending" ? 2 : 4 }}
                 className={`absolute bottom-0 left-0 h-1 w-full origin-left ${
-                  status === "pending" ? "bg-pink-500" : "bg-green-500"
+                  status === "pending" 
+                    ? "bg-pink-500" 
+                    : status === "valid"
+                    ? "bg-green-500"
+                    : "bg-red-500"
                 }`}
               />
               <div className="flex items-center gap-4">
                 <div
                   className={`w-3 h-3 rounded-full animate-pulse ${
-                    status === "pending" ? "bg-pink-500" : "bg-green-500"
+                    status === "pending" 
+                      ? "bg-pink-500" 
+                      : status === "valid"
+                      ? "bg-green-500"
+                      : "bg-red-500"
                   }`}
                 />
                 <div>
@@ -212,7 +271,11 @@ export default function ProblemDetails() {
                     {t.systemEval}
                   </h4>
                   <p className="text-lg font-mono tracking-tight">
-                    {status === "pending" ? t.checking : t.success}
+                    {status === "pending" 
+                      ? t.checking 
+                      : status === "valid"
+                      ? "VALID"
+                      : "INVALID"}
                   </p>
                 </div>
               </div>
