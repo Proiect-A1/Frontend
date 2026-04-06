@@ -63,9 +63,14 @@ export const authService = {
       );
     }
 
-    // Backend returns the token as plain text
-    const token = await response.text();
-    return token;
+    // Backend returns the token as JSON: { "token": "..." }
+    const rawText = await response.text();
+    try {
+      const data = JSON.parse(rawText);
+      return data.token || rawText; // Fallback to raw text if token property doesn't exist
+    } catch {
+      return rawText; // Fallback for plain text response
+    }
   },
 
   /**

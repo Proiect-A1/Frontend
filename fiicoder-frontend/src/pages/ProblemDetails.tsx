@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { problemSummaries } from "./problemData";
 import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
+import { submissionService } from "../services/submissionService";
 
 export default function ProblemDetails() {
   const { problemId } = useParams();
@@ -11,7 +12,7 @@ export default function ProblemDetails() {
 
   const { lang } = useLanguage();
   const t = translations[lang];
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, username } = useAuth();
 
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("C++");
@@ -20,9 +21,6 @@ export default function ProblemDetails() {
 
   const languages = ["C++", "Python", "Java", "JavaScript", "Rust"];
 
-<<<<<<< Updated upstream
-  const handleSubmit = (e: React.FormEvent) => {
-=======
   // TODO: Backend trebuie să pună userId (UUID) în JWT claims.
   // Temporar, lookup hardcodat username → UUID.
   const userUuidMap: Record<string, string> = {
@@ -32,19 +30,12 @@ export default function ProblemDetails() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
->>>>>>> Stashed changes
     e.preventDefault();
-    if (!code.trim()) return;
+    if (!problem || !code.trim()) return;
     setStatus("pending");
 
-<<<<<<< Updated upstream
-    setTimeout(() => {
-      setStatus("success");
-      setTimeout(() => setStatus(null), 4000);
-    }, 2000);
-=======
     try {
-      const resolvedUserId = userUuidMap[userId || ""] || userId || "";
+      const resolvedUserId = userUuidMap[username || ""] || username || "";
       const response = await submissionService.submit({
         problem_id: problem.id,
         user_id: resolvedUserId,
@@ -78,7 +69,6 @@ export default function ProblemDetails() {
       setStatus(null);
       console.error("Eroare la trimiterea submisiei:", err);
     }
->>>>>>> Stashed changes
   };
 
   if (!problem)
@@ -236,46 +226,43 @@ export default function ProblemDetails() {
             className="fixed bottom-8 right-8 z-100"
           >
             <div
-              className={`relative overflow-hidden px-8 py-5 rounded-2xl border-2 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${
-                status === "pending"
-                  ? "border-pink-500/50 bg-[#151221]/90 text-pink-200"
-                  : status === "valid"
+              className={`relative overflow-hidden px-8 py-5 rounded-2xl border-2 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${status === "pending"
+                ? "border-pink-500/50 bg-[#151221]/90 text-pink-200"
+                : status === "valid"
                   ? "border-green-500/50 bg-[#0d1a12]/90 text-green-300"
                   : "border-red-500/50 bg-[#1a0d0d]/90 text-red-300"
-              }`}
+                }`}
             >
               <motion.div
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ duration: status === "pending" ? 2 : 4 }}
-                className={`absolute bottom-0 left-0 h-1 w-full origin-left ${
-                  status === "pending" 
-                    ? "bg-pink-500" 
-                    : status === "valid"
+                className={`absolute bottom-0 left-0 h-1 w-full origin-left ${status === "pending"
+                  ? "bg-pink-500"
+                  : status === "valid"
                     ? "bg-green-500"
                     : "bg-red-500"
-                }`}
+                  }`}
               />
               <div className="flex items-center gap-4">
                 <div
-                  className={`w-3 h-3 rounded-full animate-pulse ${
-                    status === "pending" 
-                      ? "bg-pink-500" 
-                      : status === "valid"
+                  className={`w-3 h-3 rounded-full animate-pulse ${status === "pending"
+                    ? "bg-pink-500"
+                    : status === "valid"
                       ? "bg-green-500"
                       : "bg-red-500"
-                  }`}
+                    }`}
                 />
                 <div>
                   <h4 className="text-xs uppercase tracking-widest font-bold opacity-60">
                     {t.systemEval}
                   </h4>
                   <p className="text-lg font-mono tracking-tight">
-                    {status === "pending" 
-                      ? t.checking 
+                    {status === "pending"
+                      ? t.checking
                       : status === "valid"
-                      ? "VALID"
-                      : "INVALID"}
+                        ? "VALID"
+                        : "INVALID"}
                   </p>
                 </div>
               </div>
