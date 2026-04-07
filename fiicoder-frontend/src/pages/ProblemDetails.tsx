@@ -21,8 +21,8 @@ export default function ProblemDetails() {
 
   const languages = ["C++", "Python", "Java", "JavaScript", "Rust"];
 
-  // TODO: Backend trebuie să pună userId (UUID) în JWT claims.
-  // Temporar, lookup hardcodat username → UUID.
+  // hardcoded mapping between username and UUID until the backend includes it in the JWT
+
   const userUuidMap: Record<string, string> = {
     admin: "02c52893-bb4d-4d53-83c9-0eaa13d0863b",
     student_test: "9fd27efc-323c-46d3-b3fb-5f356f8eda36",
@@ -42,7 +42,6 @@ export default function ProblemDetails() {
         code: code,
       });
 
-      // pooling
       const checkStatus = setInterval(async () => {
         try {
           const result = await submissionService.getStatus(
@@ -76,7 +75,6 @@ export default function ProblemDetails() {
 
   return (
     <div className="max-w-4xl mx-auto flex flex-col gap-6 pb-6 h-[calc(100svh-7.5rem)]">
-      {/* problem description */}
       <div className="flex-1 min-h-0 overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow pr-4 custom-scrollbar">
         <p className="text-xs font-semibold uppercase tracking-wider text-pink-400">
           Problem #{problem.id}
@@ -91,7 +89,7 @@ export default function ProblemDetails() {
       {/* code submission box */}
       <div className="flex-1 min-h-0 overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow pr-4 custom-scrollbar">
         {isAuthenticated ? (
-          /* ── Authenticated: show the normal submission form ── */
+          /* authenticated: show the normal submission form */
           <>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-pink-200">{t.submitTitle}</h2>
@@ -156,7 +154,7 @@ export default function ProblemDetails() {
             </form>
           </>
         ) : (
-          /* ── Guest: show locked panel ── */
+          /* Guest: show locked panel */
           <div className="flex flex-col items-center justify-center h-full gap-5 py-12">
             {/* Lock icon */}
             <div className="w-16 h-16 rounded-full bg-pink-500/10 border-2 border-pink-500/30 flex items-center justify-center">

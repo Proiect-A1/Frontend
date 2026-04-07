@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 
-// ── Helpers to decode a JWT payload ──────────────────────────────
+// Helpers to decode a JWT payload
 
 interface JwtPayload {
   sub: string;       // username
@@ -26,7 +26,7 @@ function isTokenExpired(token: string): boolean {
   return Date.now() >= payload.exp * 1000;
 }
 
-// ── Context shape ────────────────────────────────────────────────
+// Context structure
 
 interface AuthContextType {
   token: string | null;
@@ -40,15 +40,15 @@ const AuthContext = createContext<AuthContextType>({
   token: null,
   username: null,
   isAuthenticated: false,
-  login: () => {},
-  logout: () => {},
+  login: () => { },
+  logout: () => { },
 });
 
-// ── Local-storage key ────────────────────────────────────────────
+// Local-storage key
 
 const TOKEN_KEY = 'fiicoder_jwt';
 
-// ── Provider ─────────────────────────────────────────────────────
+// Provider
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() => {
@@ -89,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// ── Hook ─────────────────────────────────────────────────────────
+// Hook
 
 export function useAuth() {
   return useContext(AuthContext);

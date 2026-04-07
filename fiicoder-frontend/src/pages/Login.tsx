@@ -13,7 +13,7 @@ export default function Login() {
   const t = translations[lang];
   const { login } = useAuth();
 
-  // ── Form state ──────────────────────────────────────────────
+  // Form state
   const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
   // Register-only fields
@@ -27,7 +27,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // ── Helpers ─────────────────────────────────────────────────
+  // Helpers
 
   function clearMessages() {
     setError(null);
@@ -39,7 +39,7 @@ export default function Login() {
     return Object.values(errors).join(". ");
   }
 
-  // ── Submit ──────────────────────────────────────────────────
+  // Submit handler
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

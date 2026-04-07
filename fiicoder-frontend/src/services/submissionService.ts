@@ -21,7 +21,7 @@ export interface SubmissionStatus {
   score: number;
 }
 
-// ── Methods that communicate with the backend ──
+// API wrappers
 
 export const submissionService = {
     // POST /api/submission/request-evaluation

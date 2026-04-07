@@ -1,6 +1,6 @@
 import { apiClient } from './apiClient';
 
-// ── Types matching the backend DTOs ──────────────────────────────
+// Types matching the backend DTOs
 
 export interface LoginRequest {
   usernameOrEmail: string;
@@ -30,13 +30,10 @@ export interface ApiError {
   message?: string;
 }
 
-// ── Auth Service ─────────────────────────────────────────────────
+// Authentication API calls
 
 export const authService = {
-  /**
-   * POST /api/auth/login
-   * Backend returns the JWT token as a plain string (not JSON).
-   */
+  // POST /api/auth/login
   async login(request: LoginRequest): Promise<string> {
     const url = `/auth/login`;
     const response = await fetch(
@@ -63,7 +60,7 @@ export const authService = {
       );
     }
 
-    // Backend returns the token as JSON: { "token": "..." }
+    // Extract token from JSON if available, otherwise use raw text
     const rawText = await response.text();
     try {
       const data = JSON.parse(rawText);
@@ -73,10 +70,7 @@ export const authService = {
     }
   },
 
-  /**
-   * POST /api/auth/register
-   * Backend returns { message, data } with status 201.
-   */
+  // POST /api/auth/register
   async register(request: RegisterRequest): Promise<RegisterResponse> {
     const url = `/auth/register`;
     const response = await fetch(
@@ -111,7 +105,7 @@ export const authService = {
   },
 };
 
-// ── Custom error class ───────────────────────────────────────────
+// Custom error class for authentication failures
 
 export class AuthError extends Error {
   status: number;
