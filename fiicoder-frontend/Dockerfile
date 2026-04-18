@@ -5,7 +5,7 @@ WORKDIR /app
 # Deoarece în docker-compose calea de build este `./Frontend/fiicoder-frontend`,
 # suntem deja în folder-ul corect.
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # Copiem sursele
 COPY . .
