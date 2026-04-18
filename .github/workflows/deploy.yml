@@ -1,0 +1,38 @@
+name: Deploy to Dev
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Executing remote SSH commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script_stop: true 
+          script: |
+            set -e 
+            echo "Frontend deployment has started..."
+            
+            # Mergem în folderul corespondent pentru Frontend
+            cd /home/github/sandbox/Frontend
+            
+            # Ne asigurăm că tragem de pe branch-ul de dev
+            git pull origin dev
+            
+            # Ne întoarcem la root /home/github/sandbox și refacem containerul
+            cd ../
+            docker compose up -d --build
+            
+            # Curățăm imaginile nefolosite (dangling) ca să nu umplem discul
+            docker image prune -f
+            
+            echo "✅ Frontend deployment has finished successfully!"
