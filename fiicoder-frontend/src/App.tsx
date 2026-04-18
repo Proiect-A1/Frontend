@@ -18,9 +18,10 @@ function AnimatedRoutes() {
 
   return (
     <AnimatePresence mode="wait">
-      <motion.main
+<motion.main
         key={location.pathname}
-        className="w-full px-6 pt-28 pb-6"
+        className="w-full px-6 pt-6 pb-6" 
+        style={{ position: "relative" }}
         variants={pageVariants}
         initial="initial"
         animate="animate"

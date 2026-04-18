@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLanguage, translations } from "../language/Language"; 
+import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
 
 export default function Navbar() {
@@ -33,10 +33,9 @@ export default function Navbar() {
   const closeMenu = () => setIsMobileOpen(false);
 
   return (
-    <div className="fixed inset-x-0 top-0 z-50 px-6 md:px-6 pt-4">
-      <nav className="w-full relative">
-        <div className="bg-[#12101c]/90 backdrop-blur-md border-2 border-pink-500/35 rounded-full px-4 md:px-5 py-2.5 flex items-center justify-between card-glow relative z-20">
-          
+   <div className="sticky top-0 z-50 w-full px-6 pt-4"> 
+      <nav className="w-full">
+        <div className="bg-[#12101c]/80 backdrop-blur-md border-2 border-pink-500/35 rounded-full px-5 py-2.5 flex items-center justify-between card-glow">
           <Link
             to={isAuthenticated ? "/problems" : "/login"}
             onClick={closeMenu}
@@ -90,7 +89,7 @@ export default function Navbar() {
             <div className="relative flex items-center bg-[#0f0c18] border-2 border-pink-400/50 rounded-full p-1 h-9.5 w-24 overflow-hidden">
               <div
                 className={`absolute top-1 bottom-1 w-10 bg-pink-500/40 border border-pink-400/60 rounded-full transition-all duration-300 ease-out ${
-                   lang === "RO" ? "left-1" : "left-11.5"
+                  lang === "RO" ? "left-1" : "left-11.5"
                 }`}
               />
               <button
@@ -113,16 +112,40 @@ export default function Navbar() {
           </div>
 
           {/* mobile hamburger menu button */}
-          <button 
+          <button
             className="md:hidden p-2 text-pink-200 hover:text-pink-100 focus:outline-none"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
           >
             {isMobileOpen ? (
               // X icon
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/></svg>
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
             ) : (
               // hamburger menu
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/></svg>
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
             )}
           </button>
         </div>
@@ -136,10 +159,14 @@ export default function Navbar() {
               exit={{ opacity: 0, y: -20 }}
               className="absolute top-full left-0 right-0 mt-3 p-5 bg-[#12101c]/95 backdrop-blur-xl border-2 border-pink-500/35 rounded-3xl flex flex-col gap-4 shadow-2xl z-10 md:hidden"
             >
-              <Link to="/problems" onClick={closeMenu} className={getNavLinkClass("/problems") + " text-center"}>
+              <Link
+                to="/problems"
+                onClick={closeMenu}
+                className={getNavLinkClass("/problems") + " text-center"}
+              >
                 {t.archiveBtn}
               </Link>
-              
+
               <div className="h-px w-full bg-pink-500/20" />
 
               {isAuthenticated ? (
@@ -160,7 +187,11 @@ export default function Navbar() {
                   </button>
                 </>
               ) : (
-                <Link to="/login" onClick={closeMenu} className={getNavLinkClass("/login") + " text-center"}>
+                <Link
+                  to="/login"
+                  onClick={closeMenu}
+                  className={getNavLinkClass("/login") + " text-center"}
+                >
                   {t.loginBtn}
                 </Link>
               )}
@@ -169,18 +200,24 @@ export default function Navbar() {
 
               {/* Language Toggle Simplificat Pentru Mobil */}
               <div className="flex justify-center gap-4">
-                 <button 
-                   onClick={() => { setLang("RO"); closeMenu(); }} 
-                   className={`px-6 py-2 rounded-xl text-sm font-bold border-2 transition-colors ${lang === "RO" ? "border-pink-400 text-pink-100 bg-pink-500/20" : "border-pink-500/20 text-pink-300/60"}`}
-                 >
-                   RO
-                 </button>
-                 <button 
-                   onClick={() => { setLang("EN"); closeMenu(); }} 
-                   className={`px-6 py-2 rounded-xl text-sm font-bold border-2 transition-colors ${lang === "EN" ? "border-pink-400 text-pink-100 bg-pink-500/20" : "border-pink-500/20 text-pink-300/60"}`}
-                 >
-                   EN
-                 </button>
+                <button
+                  onClick={() => {
+                    setLang("RO");
+                    closeMenu();
+                  }}
+                  className={`px-6 py-2 rounded-xl text-sm font-bold border-2 transition-colors ${lang === "RO" ? "border-pink-400 text-pink-100 bg-pink-500/20" : "border-pink-500/20 text-pink-300/60"}`}
+                >
+                  RO
+                </button>
+                <button
+                  onClick={() => {
+                    setLang("EN");
+                    closeMenu();
+                  }}
+                  className={`px-6 py-2 rounded-xl text-sm font-bold border-2 transition-colors ${lang === "EN" ? "border-pink-400 text-pink-100 bg-pink-500/20" : "border-pink-500/20 text-pink-300/60"}`}
+                >
+                  EN
+                </button>
               </div>
             </motion.div>
           )}
