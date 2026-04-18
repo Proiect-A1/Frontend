@@ -157,7 +157,7 @@ export default function Navbar() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="absolute top-full left-0 right-0 mt-3 p-5 bg-[#12101c]/95 backdrop-blur-xl border-2 border-pink-500/35 rounded-3xl flex flex-col gap-4 shadow-2xl z-10 md:hidden"
+              className="absolute top-full left-6 right-6 mt-3 p-6 bg-[#12101c]/95 backdrop-blur-xl border-2 border-pink-500/35 rounded-3xl flex flex-col gap-4 shadow-2xl z-10 md:hidden"
             >
               <Link
                 to="/problems"
@@ -167,7 +167,7 @@ export default function Navbar() {
                 {t.archiveBtn}
               </Link>
 
-              <div className="h-px w-full bg-pink-500/20" />
+              <div className="w-full h-1 bg-linear-to-r from-transparent via-pink-500/50 blur-[5px]" />
 
               {isAuthenticated ? (
                 <>
@@ -196,9 +196,9 @@ export default function Navbar() {
                 </Link>
               )}
 
-              <div className="h-px w-full bg-pink-500/20" />
+              <div className="w-full h-1 bg-linear-to-r from-transparent via-pink-500/50 blur-[5px]" />
 
-              {/* Language Toggle Simplificat Pentru Mobil */}
+              {/* lang toggle mobile */}
               <div className="flex justify-center gap-4">
                 <button
                   onClick={() => {
