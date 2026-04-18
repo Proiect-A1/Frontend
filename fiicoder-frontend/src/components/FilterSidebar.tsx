@@ -1,5 +1,9 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { getDifficultyLabel, useLanguage, translations } from "../language/Language";
+import {
+  getDifficultyLabel,
+  useLanguage,
+  translations,
+} from "../language/Language";
 import { useState } from "react";
 import type { Difficulty } from "../types/problem";
 
@@ -26,7 +30,7 @@ export default function FilterSidebar({
   const t = translations[lang];
 
   const [isOpen, setIsOpen] = useState(false);
-  
+
   const difficultyOptions = ["All", "Easy", "Medium", "Hard"];
 
   const getOptionLabel = (val: string) => {
@@ -38,14 +42,16 @@ export default function FilterSidebar({
   };
 
   return (
-    <aside className="h-fit p-5 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow md:sticky md:top-6 md:col-start-1">
+    <aside className="h-auto overflow-visible xl:h-fit xl:max-h-[calc(100svh-8.5rem)] xl:overflow-y-auto p-5 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow xl:sticky xl:top-0 xl:col-start-1 custom-scrollbar">
       <h2 className="text-xl font-bold text-pink-200 mb-2">{t.filterTitle}</h2>
-      <div className="page-line-horizontal" />
-      
+
       <div className="space-y-4">
         {/* input cautare */}
         <div>
-          <label htmlFor="problem-search" className="mb-1 block text-sm font-semibold text-pink-200">
+          <label
+            htmlFor="problem-search"
+            className="mb-1 block text-sm font-semibold text-pink-200"
+          >
             {t.searchLabel}
           </label>
           <input
@@ -88,8 +94,8 @@ export default function FilterSidebar({
                       key={option}
                       type="button"
                       onClick={() => {
-                        setDifficultyFilter(option); 
-                        setIsOpen(false); 
+                        setDifficultyFilter(option);
+                        setIsOpen(false);
                       }}
                       className="w-full text-left px-4 py-2 text-sm text-pink-100 hover:bg-pink-500/20 transition-colors"
                     >
@@ -116,8 +122,8 @@ export default function FilterSidebar({
 
         {/* counter for search results */}
         <p className="text-xs text-pink-100/70">
-          {lang === "RO" 
-            ? `Afișate ${filteredCount} din ${totalCount} probleme` 
+          {lang === "RO"
+            ? `Afișate ${filteredCount} din ${totalCount} probleme`
             : `Showing ${filteredCount} out of ${totalCount} problems`}
         </p>
       </div>
