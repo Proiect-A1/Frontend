@@ -22,15 +22,15 @@ function normalizeProblem(raw: unknown): Problem | null {
   }
 
   const candidate = raw as Record<string, unknown>;
-  const id = Number(candidate.id);
+  const id = candidate.id;
 
-  if (!Number.isFinite(id)) {
+  if (id === undefined || id === null) {
     return null;
   }
 
   return {
-    id,
-    title: String(candidate.title ?? `Problem ${id}`),
+    id: String(id),
+    title: String(candidate.title ?? `Problem`),
     shortDescription: String(
       candidate.shortDescription ?? candidate.summary ?? "No short description available.",
     ),

@@ -28,14 +28,14 @@ async function request<TResponse>(
   });
 
   if (!response.ok) {
-    // If we get 401, the token is invalid/expired — clean it up
+    // Clear the token if unauthorized
     if (response.status === 401) {
       localStorage.removeItem(TOKEN_KEY);
     }
     throw new Error(`Request failed (${response.status}) ${response.statusText}`);
   }
 
-  // Some endpoints may return no content (204).
+  // Handle 204 No Content
   if (response.status === 204) {
     return undefined as TResponse;
   }

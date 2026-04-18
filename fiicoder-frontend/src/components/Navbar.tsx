@@ -29,7 +29,7 @@ export default function Navbar() {
       <nav className="w-full">
         <div className="bg-[#12101c]/80 backdrop-blur-md border-2 border-pink-500/35 rounded-full px-5 py-2.5 flex items-center justify-between card-glow">
           <Link
-            to="/"
+            to={isAuthenticated ? "/problems" : "/login"}
             className="flex items-center gap-3 transition-transform duration-200 hover:scale-105"
           >
             <img

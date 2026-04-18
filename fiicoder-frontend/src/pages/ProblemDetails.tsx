@@ -4,32 +4,70 @@ import { motion, AnimatePresence } from "framer-motion";
 import { problemSummaries } from "./problemData";
 import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
+import { submissionService } from "../services/submissionService";
 
 export default function ProblemDetails() {
   const { problemId } = useParams();
-  const id = Number(problemId);
-  const problem = problemSummaries.find((item) => item.id === id);
+  const problem = problemSummaries.find((item) => item.id === problemId);
 
   const { lang } = useLanguage();
   const t = translations[lang];
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, username } = useAuth();
 
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("C++");
   const [isOpen, setIsOpen] = useState(false);
-  const [status, setStatus] = useState<null | "success" | "pending">(null);
+  const [status, setStatus] = useState<null | "pending" | "valid" | "invalid">(null);
 
   const languages = ["C++", "Python", "Java", "JavaScript", "Rust"];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // hardcoded mapping between username and UUID until the backend includes it in the JWT
+
+  const userUuidMap: Record<string, string> = {
+    admin: "02c52893-bb4d-4d53-83c9-0eaa13d0863b",
+    student_test: "9fd27efc-323c-46d3-b3fb-5f356f8eda36",
+    testuser: "57f4fac5-e804-45f4-98a5-71c0c4b9ad6c",
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!code.trim()) return;
+    if (!problem || !code.trim()) return;
     setStatus("pending");
 
-    setTimeout(() => {
-      setStatus("success");
-      setTimeout(() => setStatus(null), 4000);
-    }, 2000);
+    try {
+      const resolvedUserId = userUuidMap[username || ""] || username || "";
+      const response = await submissionService.submit({
+        problem_id: problem.id,
+        user_id: resolvedUserId,
+        code: code,
+      });
+
+      const checkStatus = setInterval(async () => {
+        try {
+          const result = await submissionService.getStatus(
+            response.submissionId,
+          );
+
+          if (result.status !== "IDLE") {
+            clearInterval(checkStatus);
+            if (result.status === "OK") {
+              setStatus("valid");
+            } else {
+              setStatus("invalid");
+            }
+
+            setTimeout(() => setStatus(null), 4000);
+          }
+        } catch (err) {
+          clearInterval(checkStatus);
+          setStatus(null);
+          console.error("Eroare la verificarea statusului:", err);
+        }
+      }, 2000);
+    } catch (err) {
+      setStatus(null);
+      console.error("Eroare la trimiterea submisiei:", err);
+    }
   };
 
   if (!problem)
@@ -37,7 +75,6 @@ export default function ProblemDetails() {
 
   return (
     <div className="max-w-4xl mx-auto flex flex-col gap-6 pb-6 h-[calc(100svh-7.5rem)]">
-      {/* problem description */}
       <div className="flex-1 min-h-0 overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow pr-4 custom-scrollbar">
         <p className="text-xs font-semibold uppercase tracking-wider text-pink-400">
           Problem #{problem.id}
@@ -52,7 +89,7 @@ export default function ProblemDetails() {
       {/* code submission box */}
       <div className="flex-1 min-h-0 overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow pr-4 custom-scrollbar">
         {isAuthenticated ? (
-          /* ── Authenticated: show the normal submission form ── */
+          /* authenticated: show the normal submission form */
           <>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-pink-200">{t.submitTitle}</h2>
@@ -117,7 +154,7 @@ export default function ProblemDetails() {
             </form>
           </>
         ) : (
-          /* ── Guest: show locked panel ── */
+          /* Guest: show locked panel */
           <div className="flex flex-col items-center justify-center h-full gap-5 py-12">
             {/* Lock icon */}
             <div className="w-16 h-16 rounded-full bg-pink-500/10 border-2 border-pink-500/30 flex items-center justify-center">
@@ -187,32 +224,43 @@ export default function ProblemDetails() {
             className="fixed bottom-8 right-8 z-100"
           >
             <div
-              className={`relative overflow-hidden px-8 py-5 rounded-2xl border-2 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${
-                status === "pending"
-                  ? "border-pink-500/50 bg-[#151221]/90 text-pink-200"
-                  : "border-green-500/50 bg-[#0d1a12]/90 text-green-300"
-              }`}
+              className={`relative overflow-hidden px-8 py-5 rounded-2xl border-2 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${status === "pending"
+                ? "border-pink-500/50 bg-[#151221]/90 text-pink-200"
+                : status === "valid"
+                  ? "border-green-500/50 bg-[#0d1a12]/90 text-green-300"
+                  : "border-red-500/50 bg-[#1a0d0d]/90 text-red-300"
+                }`}
             >
               <motion.div
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ duration: status === "pending" ? 2 : 4 }}
-                className={`absolute bottom-0 left-0 h-1 w-full origin-left ${
-                  status === "pending" ? "bg-pink-500" : "bg-green-500"
-                }`}
+                className={`absolute bottom-0 left-0 h-1 w-full origin-left ${status === "pending"
+                  ? "bg-pink-500"
+                  : status === "valid"
+                    ? "bg-green-500"
+                    : "bg-red-500"
+                  }`}
               />
               <div className="flex items-center gap-4">
                 <div
-                  className={`w-3 h-3 rounded-full animate-pulse ${
-                    status === "pending" ? "bg-pink-500" : "bg-green-500"
-                  }`}
+                  className={`w-3 h-3 rounded-full animate-pulse ${status === "pending"
+                    ? "bg-pink-500"
+                    : status === "valid"
+                      ? "bg-green-500"
+                      : "bg-red-500"
+                    }`}
                 />
                 <div>
                   <h4 className="text-xs uppercase tracking-widest font-bold opacity-60">
                     {t.systemEval}
                   </h4>
                   <p className="text-lg font-mono tracking-tight">
-                    {status === "pending" ? t.checking : t.success}
+                    {status === "pending"
+                      ? t.checking
+                      : status === "valid"
+                        ? "VALID"
+                        : "INVALID"}
                   </p>
                 </div>
               </div>
