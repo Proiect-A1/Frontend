@@ -1,5 +1,3 @@
-import { apiClient } from './apiClient';
-
 // Types matching the backend DTOs
 
 export interface LoginRequest {
