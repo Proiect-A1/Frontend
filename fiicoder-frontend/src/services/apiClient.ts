@@ -28,19 +28,25 @@ async function request<TResponse>(
   });
 
   if (!response.ok) {
-    // Clear the token if unauthorized
     if (response.status === 401) {
       localStorage.removeItem(TOKEN_KEY);
     }
-    throw new Error(`Request failed (${response.status}) ${response.statusText}`);
+    // Extragem detaliile erorii pentru a nu pierde mesajele de validare
+    const errorBody = await response.json().catch(() => null);
+    throw { status: response.status, body: errorBody, message: response.statusText };
   }
 
-  // Handle 204 No Content
   if (response.status === 204) {
     return undefined as TResponse;
   }
 
-  return (await response.json()) as TResponse;
+  // Verificăm dacă răspunsul este JSON. Dacă backend-ul returnează doar text (ex: JWT brut), îl parsam ca text.
+  const contentType = response.headers.get("content-type");
+  if (contentType && contentType.includes("application/json")) {
+    return (await response.json()) as TResponse;
+  } else {
+    return (await response.text()) as unknown as TResponse;
+  }
 }
 
 export const apiClient = {

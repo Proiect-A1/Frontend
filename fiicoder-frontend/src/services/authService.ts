@@ -1,5 +1,7 @@
 // Types matching the backend DTOs
 
+import { apiClient } from "./apiClient";
+
 export interface LoginRequest {
   usernameOrEmail: string;
   password: string;
@@ -29,82 +31,41 @@ export interface ApiError {
 }
 
 // Authentication API calls
-
 export const authService = {
   // POST /api/auth/login
   async login(request: LoginRequest): Promise<string> {
-    const url = `/auth/login`;
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL || '/api'}${url}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(request),
-      },
-    );
-
-    if (!response.ok) {
-      const body = await response.json().catch(() => null);
-      if (response.status === 401) {
-        throw new AuthError('Invalid credentials!', 401, body);
-      }
-      if (response.status === 400 && body?.errors) {
-        throw new AuthError('Validation failed', 400, body);
-      }
-      throw new AuthError(
-        body?.message || body?.error || 'Login failed',
-        response.status,
-        body,
-      );
-    }
-
-    // Extract token from JSON if available, otherwise use raw text
-    const rawText = await response.text();
     try {
-      const data = JSON.parse(rawText);
-      return data.token || rawText; // Fallback to raw text if token property doesn't exist
-    } catch {
-      return rawText; // Fallback for plain text response
+      // folosim 'any' temporar pentru a acoperi modificarile din backend
+      const response = await apiClient.post<any>('/auth/login', request);
+      
+      // tratez atat json cat si string ca raspuns
+      if (typeof response === 'string') return response;
+      return response.token || response.accessToken || response.jwt || "";
+      
+    } catch (err: any) {
+      throw new AuthError(
+        err.body?.message || err.body?.error || 'Login failed',
+        err.status || 500,
+        err.body
+      );
     }
   },
 
   // POST /api/auth/register
   async register(request: RegisterRequest): Promise<RegisterResponse> {
-    const url = `/auth/register`;
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL || '/api'}${url}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(request),
-      },
-    );
-
-    if (!response.ok) {
-      const body = await response.json().catch(() => null);
-      if (response.status === 409) {
-        throw new AuthError(
-          body?.error || 'Username or email already used',
-          409,
-          body,
-        );
-      }
-      if (response.status === 400 && body?.errors) {
-        throw new AuthError('Validation failed', 400, body);
-      }
-      throw new AuthError(
-        body?.message || body?.error || 'Registration failed',
-        response.status,
-        body,
-      );
+    try {
+      return await apiClient.post<RegisterResponse>('/auth/register', request);
+    } catch (err: any) {
+      const errorMessage = err.status === 409 
+        ? (err.body?.error || 'Username or email already used')
+        : (err.status === 400 && err.body?.errors ? 'Validation failed' : (err.body?.message || err.body?.error || 'Registration failed'));
+        
+      throw new AuthError(errorMessage, err.status || 500, err.body);
     }
-
-    return (await response.json()) as RegisterResponse;
   },
 };
 
 // Custom error class for authentication failures
-
 export class AuthError extends Error {
   status: number;
   body: unknown;

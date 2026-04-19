@@ -93,14 +93,12 @@ export default function Login() {
     }
   };
 
-  // ── Toggle login / register ─────────────────────────────────
+  // Toggle login/register
 
   const toggleMode = () => {
     setIsLogin(!isLogin);
     clearMessages();
   };
-
-  // ── Render ──────────────────────────────────────────────────
 
   return (
     <div className="p-8 max-w-md mx-auto bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow">
@@ -155,7 +153,7 @@ export default function Login() {
             </div>
           </>
         ) : (
-          /* ── Register fields ── */
+          /* Register fields */
           <>
             <div>
               <label className="block text-sm font-semibold text-pink-200 mb-1">
@@ -180,7 +178,7 @@ export default function Login() {
             <div className="flex gap-3">
               <div className="flex-1">
                 <label className="block text-sm font-semibold text-pink-200 mb-1">
-                  {lang === "RO" ? "Prenume" : "First Name"}
+                  {t.nameLabel}
                 </label>
                 <input
                   type="text"
@@ -188,7 +186,7 @@ export default function Login() {
                   maxLength={50}
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="Ion"
+                  placeholder={t.namePlaceholder}
                   className={`w-full rounded-xl border bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
                     fieldErrors.firstName ? "border-red-400/60" : "border-pink-500/30"
                   }`}
@@ -199,7 +197,7 @@ export default function Login() {
               </div>
               <div className="flex-1">
                 <label className="block text-sm font-semibold text-pink-200 mb-1">
-                  {lang === "RO" ? "Nume" : "Last Name"}
+                  {t.surnameLabel}
                 </label>
                 <input
                   type="text"
@@ -207,7 +205,7 @@ export default function Login() {
                   maxLength={50}
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Popescu"
+                  placeholder={t.surnamePlaceholder}
                   className={`w-full rounded-xl border bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
                     fieldErrors.lastName ? "border-red-400/60" : "border-pink-500/30"
                   }`}
@@ -226,7 +224,7 @@ export default function Login() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="ion@fiicoder.ro"
+                placeholder={t.emailPlaceholder}
                 className={`w-full rounded-xl border bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
                   fieldErrors.email ? "border-red-400/60" : "border-pink-500/30"
                 }`}
@@ -296,7 +294,7 @@ export default function Login() {
         onClick={() => navigate("/problems")}
         className="mt-5 w-full rounded-xl border border-pink-400/25 bg-transparent px-4 py-2.5 text-sm font-medium text-pink-300/80 outline-none transition hover:border-pink-400/50 hover:bg-pink-500/10 hover:text-pink-100 hover:-translate-y-0.5"
       >
-        {lang === "RO" ? "Continuă ca vizitator →" : "Continue as Guest →"}
+        {t.continueAsGuest}
       </button>
     </div>
   );
