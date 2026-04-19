@@ -26,7 +26,10 @@ jobs:
             cd /home/github/sandbox/Frontend
             
             # Ne asigurăm că tragem de pe branch-ul de dev
-            git pull frontend dev
+            git fetch --all
+            git checkout dev
+            git reset --hard frontend/dev
+            git clean -fd
             
             # Ne întoarcem la root /home/github/sandbox și refacem containerul
             cd ../
@@ -34,5 +37,6 @@ jobs:
             
             # Curățăm imaginile nefolosite (dangling) ca să nu umplem discul
             docker image prune -f
-            
+            sleep 20
+            docker compose logs 2>&1
             echo "✅ Frontend deployment has finished successfully!"
