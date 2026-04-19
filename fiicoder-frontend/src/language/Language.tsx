@@ -14,6 +14,14 @@ export const translations = {
     registerBtn: "Creează cont",
     noAccount: "Nu ai un cont?",
     hasAccount: "Ai deja un cont?",
+    nameLabel: "Prenume",
+    surnameLabel: "Nume",
+    emailPlaceholder: "ion@fiicoder.com",
+    namePlaceholder: "Ion",
+    surnamePlaceholder: "Popescu",
+    loginBtn: "Autentificare",
+    disconnectBtn: "Deconectare",
+    continueAsGuest: "Continua ca vizitator",
     // Problem List & Sidebars
     filterTitle: "Căutare & Filtre",
     searchLabel: "Nume problemă",
@@ -25,6 +33,7 @@ export const translations = {
     statRate: "Rată de Succes",
     statStreak: "Zile consecutive",
     statPref: "Dificultate preferată",
+    filterSearchPlaceholder: "Problema 3",
     // Problem Details
     submitTitle: "Trimite Soluția",
     placeholderCode: "Scrie soluția ta aici...",
@@ -42,10 +51,9 @@ export const translations = {
     hardDifficulty: "Greu",
     // Navbar
     archiveBtn: "Arhivă probleme",
-    loginBtn: "Autentificare",
-    disconnectBtn: "Deconectare",
   },
   EN: {
+    // login
     loginTitle: "Login",
     registerTitle: "Sign Up",
     emailLabel: "Email or Username",
@@ -53,16 +61,28 @@ export const translations = {
     registerBtn: "Create Account",
     noAccount: "Don't have an account?",
     hasAccount: "Already have an account?",
+    loginBtn: "Authentication",
+    disconnectBtn: "Logout",
+    emailPlaceholder: "john@fiicoder.com",
+    namePlaceholder: "John",
+    surnamePlaceholder: "Smith",
+    nameLabel: "Name",
+    surnameLabel: "Surname",
+    continueAsGuest: "Continue as Guest",
+    // Search sidebar
     filterTitle: "Search & Filters",
     searchLabel: "Problem Name",
     difficultyLabel: "Difficulty",
     allOption: "All",
     clearFilters: "Clear Filters",
+    filterSearchPlaceholder: "Problem 3",
+    // Stats sidebar
     statsTitle: "Statistics",
     statSolved: "Solved",
     statRate: "Success Rate",
     statStreak: "Daily Streak",
     statPref: "Preferred Difficulty",
+    // Problem details page (submissions)
     submitTitle: "Submit Solution",
     placeholderCode: "Type your solution here...",
     evalBtn: "Submit Solution",
@@ -71,14 +91,13 @@ export const translations = {
     systemEval: "Evaluation System",
     checking: "> Checking submitted code...",
     success: "> 100 points!",
+    // Problem list (+difficulties)
     problemsTitle: "Problems",
     noProblemsFound: "No problems found.",
     easyDifficulty: "Easy",
     mediumDifficulty: "Medium",
     hardDifficulty: "Hard",
     archiveBtn: "Problem Archive",
-    loginBtn: "Authentication",
-    disconnectBtn: "Logout",
   }
 };
 
