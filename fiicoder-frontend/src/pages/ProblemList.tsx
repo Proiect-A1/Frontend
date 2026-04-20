@@ -11,7 +11,7 @@ export default function ProblemList() {
   const t = translations[lang];
   // TEMPORARY need backend filtering (because of pagination) 
   const [searchQuery, setSearchQuery] = useState("");
-  const [difficultyFilter, setDifficultyFilter] = useState("All");
+  const [difficultyFilter, setDifficultyFilter] = useState("ALL");
   
   const [problems, setProblems] = useState<Problem[]>([]);
   const [loading, setLoading] = useState(true);

@@ -31,10 +31,10 @@ export default function FilterSidebar({
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const difficultyOptions = ["All", "Easy", "Medium", "Hard"];
+  const difficultyOptions = ["ALL", "EASY", "MEDIUM", "HARD", "CONTEST"];
 
   const getOptionLabel = (val: string) => {
-    if (val === "All") {
+    if (val === "ALL") {
       return t.allOption;
     }
 
