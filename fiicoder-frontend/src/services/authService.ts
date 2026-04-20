@@ -1,5 +1,3 @@
-// Types matching the backend DTOs
-
 import { apiClient } from "./apiClient";
 
 export interface LoginRequest {
@@ -20,7 +18,10 @@ export interface RegisterResponse {
   data: unknown;
 }
 
-// Backend error shapes
+export interface LoginResponse {
+  token: string;
+}
+
 export interface ValidationErrors {
   errors: Record<string, string>;
 }
@@ -30,17 +31,14 @@ export interface ApiError {
   message?: string;
 }
 
-// Authentication API calls
 export const authService = {
   // POST /api/auth/login
   async login(request: LoginRequest): Promise<string> {
     try {
-      // folosim 'any' temporar pentru a acoperi modificarile din backend
-      const response = await apiClient.post<any>('/auth/login', request);
+      // extrag tokenul din raspunsul API-ului
+      const response = await apiClient.post<LoginResponse>('/auth/login', request);
       
-      // tratez atat json cat si string ca raspuns
-      if (typeof response === 'string') return response;
-      return response.token || response.accessToken || response.jwt || "";
+      return response.token;
       
     } catch (err: any) {
       throw new AuthError(
@@ -65,7 +63,6 @@ export const authService = {
   },
 };
 
-// Custom error class for authentication failures
 export class AuthError extends Error {
   status: number;
   body: unknown;
