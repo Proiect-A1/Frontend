@@ -33,7 +33,7 @@ Fișierul de ieșire \`sortare.out\` conține pe prima linie $n$ numere naturale
 \`\`\`
 2 5 8 11 15 20
 \`\`\``,
-    difficulty: "Easy",
+    difficulty: "EASY",
   },
   {
     id: "6213ae07-a74a-4007-8b25-aab7c27e7344",
@@ -66,7 +66,7 @@ Se afișează rezultatul expresiei din cerință.
 
 ## Explicație
 $0 \\cdot 1 \\cdot 2 + 0 \\cdot 1 \\cdot 3 + 0 \\cdot 2 \\cdot 3 + 1 \\cdot 2 \\cdot 3 = 6$`,
-    difficulty: "Medium",
+    difficulty: "MEDIUM",
   },
   {
     id: "a6b244b3-b80c-4098-9505-f1cc7e055f89",
@@ -82,7 +82,7 @@ Spunem că o poziție dintr-un șir este maxim local dacă valoarea de la acea p
 Se dă șirul A de N numere naturale nenule. Numim secvență snake a șirului A o secvență S = (AL, AL+1, AL+2, ...AR) cu 1 ≤ L < R ≤ N cu proprietatea că fiecare poziție din șirul compress(S) este minim local sau maxim local.
 
 Cerință: Să se determine câte perechi de poziții (L, R) cu 1 ≤ L < R ≤ N au proprietatea că secvența S = (AL, AL+1, AL+2, ...AR) este snake.`,
-    difficulty: "Hard",
+    difficulty: "HARD",
   },
   {
     id: "fb46579f-487c-4f17-9917-e10be93f986e",
@@ -102,6 +102,6 @@ Pe a doua linie N numere întregi v1, v2, ..., vN, (0 ≤ vi ≤ 10^9, 1 ≤ i �
 
 Date de ieșire:
 Un număr întreg X, egal cu rezultatul dorit modulo 10^9 + 7.`,
-    difficulty: "Hard",
+    difficulty: "HARD",
   },
 ];

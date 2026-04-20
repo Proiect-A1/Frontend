@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import type { Problem } from "../types/problem";
+import type { Difficulty, Problem } from "../types/problem";
 import { problemService } from "../services/problemService";
 import { getDifficultyLabel, useLanguage, translations } from "../language/Language";
 import FilterSidebar from "../components/FilterSidebar";
@@ -24,7 +24,7 @@ export default function ProblemList() {
       try {
         const data = await problemService.getAllProblems(1, 100);
         
-        if (!isMounted) return;
+        if (!isMounted) return; 
 
         // mapez raspunsul la interfata Problem din frontend
         const formattedProblems: Problem[] = data.map((dto) => ({
@@ -32,7 +32,7 @@ export default function ProblemList() {
           title: dto.title,
           shortDescription: dto.description.substring(0, 120) + "...", // extrag o scurta descriere
           statement: dto.description,
-          difficulty: dto.difficulty || "Unknown",
+          difficulty: (dto.difficulty as Difficulty) || "MEDIUM", // daca nu e specificata dificultatea, o setez pe Medium
         }));
 
         setProblems(formattedProblems);

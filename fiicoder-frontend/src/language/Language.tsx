@@ -49,6 +49,7 @@ export const translations = {
     easyDifficulty: "Ușoară",
     mediumDifficulty: "Mediu",
     hardDifficulty: "Greu",
+    contestDifficulty: "Concurs",
     // Navbar
     archiveBtn: "Arhivă probleme",
   },
@@ -97,14 +98,17 @@ export const translations = {
     easyDifficulty: "Easy",
     mediumDifficulty: "Medium",
     hardDifficulty: "Hard",
+    contestDifficulty: "Contest", 
+    // Navbar
     archiveBtn: "Problem Archive",
   }
 };
 
-const difficultyKeyByValue: Record<Difficulty, "easyDifficulty" | "mediumDifficulty" | "hardDifficulty"> = {
-  Easy: "easyDifficulty",
-  Medium: "mediumDifficulty",
-  Hard: "hardDifficulty",
+const difficultyKeyByValue: Record<Difficulty, "easyDifficulty" | "mediumDifficulty" | "hardDifficulty" | "contestDifficulty"> = {
+  EASY: "easyDifficulty",
+  MEDIUM: "mediumDifficulty",
+  HARD: "hardDifficulty",
+  CONTEST: "contestDifficulty",
 };
 
 export function getDifficultyLabel(lang: Language, difficulty: Difficulty) {
