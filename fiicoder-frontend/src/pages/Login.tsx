@@ -98,6 +98,14 @@ export default function Login() {
   const toggleMode = () => {
     setIsLogin(!isLogin);
     clearMessages();
+
+    // clear form fields when switching modes (foolproof :))
+    setUsernameOrEmail("");
+    setPassword("");
+    setUsername("");
+    setFirstName("");
+    setLastName("");
+    setEmail("");
   };
 
   return (
