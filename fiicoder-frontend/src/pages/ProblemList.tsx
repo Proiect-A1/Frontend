@@ -62,7 +62,7 @@ export default function ProblemList() {
 
   const clearFilters = () => {
     setSearchQuery("");
-    setDifficultyFilter("All");
+    setDifficultyFilter("ALL");
   };
 
   return (
