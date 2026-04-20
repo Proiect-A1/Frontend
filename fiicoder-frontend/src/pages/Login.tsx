@@ -49,7 +49,7 @@ export default function Login() {
     try {
       if (isLogin) {
         const token = await authService.login({
-          usernameOrEmail,
+          email: usernameOrEmail,
           password,
         });
         login(token);
@@ -69,7 +69,7 @@ export default function Login() {
         );
         // Switch to login mode after successful registration
         setIsLogin(true);
-        setUsernameOrEmail(username);
+        setUsernameOrEmail(email);
         setPassword("");
       }
     } catch (err) {

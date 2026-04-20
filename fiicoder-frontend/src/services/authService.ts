@@ -3,7 +3,7 @@
 import { apiClient } from "./apiClient";
 
 export interface LoginRequest {
-  usernameOrEmail: string;
+  email: string;
   password: string;
 }
 
