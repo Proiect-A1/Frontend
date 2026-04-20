@@ -31,7 +31,7 @@ async function request<TResponse>(
     if (response.status === 401) {
       localStorage.removeItem(TOKEN_KEY);
     }
-    // Extragem detaliile erorii pentru a nu pierde mesajele de validare
+    // extrag detaliile erorii
     const errorBody = await response.json().catch(() => null);
     throw { status: response.status, body: errorBody, message: response.statusText };
   }
@@ -40,7 +40,7 @@ async function request<TResponse>(
     return undefined as TResponse;
   }
 
-  // Verificăm dacă răspunsul este JSON. Dacă backend-ul returnează doar text (ex: JWT brut), îl parsam ca text.
+  // verific daca raspunsul e json sau string si il parsez corespunzator
   const contentType = response.headers.get("content-type");
   if (contentType && contentType.includes("application/json")) {
     return (await response.json()) as TResponse;
