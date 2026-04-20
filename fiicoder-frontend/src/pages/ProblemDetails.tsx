@@ -12,7 +12,7 @@ export default function ProblemDetails() {
   
   const { lang } = useLanguage();
   const t = translations[lang];
-  const { isAuthenticated, username } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   // State-uri pentru preluarea datelor problemei
   const [problem, setProblem] = useState<Problem | null>(null);
