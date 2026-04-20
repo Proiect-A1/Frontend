@@ -1,33 +1,75 @@
 import { Link, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { problemSummaries } from "./problemData";
 import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
 import { submissionService } from "../services/submissionService";
+import { problemService } from "../services/problemService"; 
+import type { Problem } from "../types/problem"; 
 
 export default function ProblemDetails() {
-  const { problemId } = useParams();
-  const problem = problemSummaries.find((item) => item.id === problemId);
-
+  const { problemId } = useParams(); // iau id-ul problemei din URL (/problems/:problemId)
+  
   const { lang } = useLanguage();
   const t = translations[lang];
   const { isAuthenticated, username } = useAuth();
 
+  // State-uri pentru preluarea datelor problemei
+  const [problem, setProblem] = useState<Problem | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // state-uri pentru formularul de submisie
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("C++");
   const [isOpen, setIsOpen] = useState(false);
-  const [status, setStatus] = useState<null | "pending" | "valid" | "invalid">(
-    null,
-  );
+  const [status, setStatus] = useState<null | "pending" | "valid" | "invalid">(null);
 
   const languages = ["C++", "Python", "Java", "JavaScript", "Rust"];
 
-  const userUuidMap: Record<string, string> = {
-    admin: "02c52893-bb4d-4d53-83c9-0eaa13d0863b",
-    student_test: "9fd27efc-323c-46d3-b3fb-5f356f8eda36",
-    testuser: "57f4fac5-e804-45f4-98a5-71c0c4b9ad6c",
-  };
+  // iau datele din backend cand se incarca pagina sau cand se schimba problemId (URL)
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchProblemDetails() {
+      if (!problemId) {
+        if (isMounted) {
+          setError("ID-ul problemei lipsește din URL.");
+          setLoading(false);
+        }
+        return;
+      }
+
+      try {
+        const dto = await problemService.getProblemByTitle(problemId);
+        
+        if (!isMounted) return;
+
+        // mapez raspunsul la interfata Problem 
+        const formattedProblem: Problem = {
+          id: dto.title, 
+          title: dto.title,
+          shortDescription: dto.description.substring(0, 120) + "...", 
+          statement: dto.description,
+          difficulty: dto.difficulty || "MEDIUM",
+          // time/memory limits?
+        };
+
+        setProblem(formattedProblem);
+      } catch (err) {
+        if (isMounted) setError("Problema nu a putut fi găsită sau a apărut o eroare de server.");
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    fetchProblemDetails();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [problemId]); // reapeleaza pe endpoint când se schimba problemId (url)
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,10 +77,8 @@ export default function ProblemDetails() {
     setStatus("pending");
 
     try {
-      const resolvedUserId = userUuidMap[username || ""] || username || "";
       const response = await submissionService.submit({
         problem_id: problem.id,
-        user_id: resolvedUserId,
         code: code,
       });
 
@@ -69,8 +109,24 @@ export default function ProblemDetails() {
     }
   };
 
-  if (!problem)
-    return <div className="p-8 text-pink-200">Error! Problem not found.</div>;
+  // afisez loading sau eroare daca e cazul
+  if (loading) {
+    return (
+      <div className="w-full flex justify-center items-center h-[calc(100svh-11rem)]">
+        <div className="animate-spin w-12 h-12 border-4 border-pink-500/30 border-t-pink-500 rounded-full" />
+      </div>
+    );
+  }
+
+  if (error || !problem) {
+    return (
+      <div className="w-full text-center p-8 text-red-400 bg-[#151221]/80 backdrop-blur-lg border-2 border-red-500/30 rounded-2xl">
+        <h2 className="text-xl font-bold mb-2">Eroare</h2>
+        <p>{error || "Problema nu a fost găsită."}</p>
+        <Link to="/problems" className="text-pink-300 underline mt-4 inline-block">Înapoi la lista de probleme</Link>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col gap-6">
@@ -79,7 +135,7 @@ export default function ProblemDetails() {
         {/* column 1 - Problem description */}
         <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow custom-scrollbar">
           <p className="text-xs font-semibold uppercase tracking-wider text-pink-400">
-            Problem #{problem.id}
+            {lang === "RO" ? "Problemă: " : "Problem: "} {problem.title}
           </p>
           <h1 className="text-3xl font-bold text-pink-200 mb-2">
             {problem.title}
@@ -205,6 +261,7 @@ export default function ProblemDetails() {
             This is an empty panel placeholder.
           </p>
         </div>
+        
         {/* ── BACK BUTTON ── */}
         <div className="flex justify-start shrink-0">
           <Link to="/problems" className="relative inline-block group">

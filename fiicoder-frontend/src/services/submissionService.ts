@@ -2,7 +2,6 @@ import { apiClient } from "./apiClient";
 
 export interface SubmissionRequest {
   problem_id: string;
-  user_id: string;
   code: string;
 }
 
