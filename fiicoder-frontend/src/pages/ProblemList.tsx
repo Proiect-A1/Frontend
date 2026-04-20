@@ -55,7 +55,7 @@ export default function ProblemList() {
     return problems.filter((problem) => {
       const matchesName = problem.title.toLowerCase().includes(normalized);
       const matchesDifficulty =
-        difficultyFilter === "All" || problem.difficulty === difficultyFilter;
+        difficultyFilter === "ALL" || problem.difficulty === difficultyFilter;
       return matchesName && matchesDifficulty;
     });
   }, [difficultyFilter, problems, searchQuery]);
