@@ -66,7 +66,7 @@ export default function ProblemList() {
   };
 
   return (
-    <div className="w-full grid gap-6 xl:grid-cols-[280px_1fr_280px] h-[calc(100svh-5rem)] overflow-y-auto xl:h-auto xl:overflow-visible custom-scrollbar">
+    <div className="w-full grid gap-6 xl:grid-cols-[280px_1fr_280px] h-auto overflow-visible">
       <FilterSidebar
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
