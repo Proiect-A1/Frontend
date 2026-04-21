@@ -8,7 +8,7 @@ import { problemService } from "../services/problemService";
 import type { Problem } from "../types/problem"; 
 
 export default function ProblemDetails() {
-  const { problemId } = useParams(); // iau id-ul problemei din URL (/problems/:problemId)
+  const { problemId } = useParams(); // iau id-ul(titlul) problemei din URL (/problems/:title)
   
   const { lang } = useLanguage();
   const t = translations[lang];
