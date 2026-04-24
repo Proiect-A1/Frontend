@@ -33,9 +33,9 @@ jobs:
             
             # Ne întoarcem la root /home/github/sandbox și refacem containerul
             cd ../
-            docker compose up -d --build
             
-            # Curățăm imaginile nefolosite (dangling) ca să nu umplem discul
+            docker compose down && docker compose up -d --build
+            
             docker image prune -f
             sleep 20
             docker logs fiicoder-frontend 
