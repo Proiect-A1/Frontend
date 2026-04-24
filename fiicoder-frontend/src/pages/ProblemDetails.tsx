@@ -1,11 +1,21 @@
 import { Link, useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
 import { submissionService } from "../services/submissionService";
 import { problemService } from "../services/problemService"; 
-import type { Problem } from "../types/problem"; 
+import type { Problem } from "../types/problem";
+import Editor, { type OnMount } from "@monaco-editor/react";
+
+// mapare limbaj UI -> identificator Monaco
+const monacoLanguageMap: Record<string, string> = {
+  "C++": "cpp",
+  "Python": "python",
+  "Java": "java",
+  "JavaScript": "javascript",
+  "Rust": "rust",
+};
 
 export default function ProblemDetails() {
   const { problemId } = useParams(); // iau id-ul(titlul) problemei din URL (/problems/:title)
@@ -26,6 +36,42 @@ export default function ProblemDetails() {
   const [status, setStatus] = useState<null | "pending" | "valid" | "invalid">(null);
 
   const languages = ["C++", "Python", "Java", "JavaScript", "Rust"];
+
+  // Definim tema custom pentru Monaco la mount
+  const handleEditorMount: OnMount = (editor, monaco) => {
+    monaco.editor.defineTheme("fiicoder-dark", {
+      base: "vs-dark",
+      inherit: true,
+      rules: [
+        { token: "comment", foreground: "6b5a8a", fontStyle: "italic" },
+        { token: "keyword", foreground: "ec4899" },
+        { token: "string", foreground: "a78bfa" },
+        { token: "number", foreground: "f9a8d4" },
+        { token: "type", foreground: "c084fc" },
+        { token: "function", foreground: "f0abfc" },
+        { token: "variable", foreground: "fce7f3" },
+      ],
+      colors: {
+        "editor.background": "#0a0812",
+        "editor.foreground": "#fce7f3",
+        "editor.lineHighlightBackground": "#1a1229",
+        "editor.selectionBackground": "#ec489930",
+        "editor.inactiveSelectionBackground": "#ec489915",
+        "editorLineNumber.foreground": "#6b5a8a",
+        "editorLineNumber.activeForeground": "#ec4899",
+        "editorCursor.foreground": "#ec4899",
+        "editorIndentGuide.background": "#1e1830",
+        "editorIndentGuide.activeBackground": "#ec489940",
+        "editor.selectionHighlightBackground": "#ec489920",
+        "editorBracketMatch.background": "#ec489925",
+        "editorBracketMatch.border": "#ec489960",
+        "scrollbarSlider.background": "#ec489915",
+        "scrollbarSlider.hoverBackground": "#ec489930",
+        "scrollbarSlider.activeBackground": "#ec489950",
+      },
+    });
+    monaco.editor.setTheme("fiicoder-dark");
+  };
 
   // iau datele din backend cand se incarca pagina sau cand se schimba problemId (URL)
   useEffect(() => {
@@ -207,16 +253,36 @@ export default function ProblemDetails() {
                 onSubmit={handleSubmit}
                 className="flex-1 flex flex-col gap-4"
               >
-                <div className="relative group flex-1">
-                  <textarea
+                <div className="relative flex-1 rounded-2xl overflow-hidden border border-pink-500/20 bg-[#0a0812] min-h-[300px]">
+                  <Editor
+                    height="100%"
+                    language={monacoLanguageMap[language] || "cpp"}
                     value={code}
-                    onChange={(e) => setCode(e.target.value)}
-                    placeholder={t.placeholderCode}
-                    className="w-full h-full min-h-50 resize-none bg-[#0a0812] border border-pink-500/20 rounded-2xl p-6 pb-70 font-mono text-sm text-pink-100 outline-none focus:border-pink-500/50 transition-all shadow-inner custom-scrollbar"
+                    onChange={(val) => setCode(val || "")}
+                    theme="fiicoder-dark"
+                    onMount={handleEditorMount}
+                    loading={
+                      <div className="flex items-center justify-center h-full">
+                        <div className="animate-spin w-8 h-8 border-2 border-pink-500/30 border-t-pink-500 rounded-full" />
+                      </div>
+                    }
+                    options={{
+                      fontSize: 14,
+                      fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+                      fontLigatures: true,
+                      minimap: { enabled: false },
+                      scrollBeyondLastLine: false,
+                      padding: { top: 16, bottom: 16 },
+                      lineNumbersMinChars: 3,
+                      renderLineHighlight: "gutter",
+                      smoothScrolling: true,
+                      cursorBlinking: "smooth",
+                      cursorSmoothCaretAnimation: "on",
+                      bracketPairColorization: { enabled: true },
+                      automaticLayout: true,
+                      wordWrap: "on",
+                    }}
                   />
-                  <div className="absolute top-4 right-4 text-xs font-mono text-pink-500/30 group-focus-within:text-pink-500/60">
-                    {language.toLowerCase()}
-                  </div>
                 </div>
 
                 <button
