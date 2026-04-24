@@ -38,5 +38,6 @@ jobs:
             
             docker image prune -f
             sleep 20
+            echo "FRONTEND DEPLOYMENT LOGS"
             docker logs fiicoder-frontend 
             echo "✅ Frontend deployment has finished successfully!"
