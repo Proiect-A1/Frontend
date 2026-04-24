@@ -75,7 +75,7 @@ export default function Landing() {
   return (
     <div className="flex h-full min-h-0 w-full items-center justify-center overflow-hidden px-2 sm:px-4 lg:px-6">
       <motion.div
-        className="flex h-[min(100%,calc(100svh-1.5rem))] w-full max-w-[clamp(68rem,92vw,96rem)] overflow-y-auto custom-scrollbar rounded-[2rem] border border-pink-500/20 bg-[#0f0c18]/55 backdrop-blur-xl px-5 py-6 md:px-8 md:py-8 shadow-[0_0_60px_rgba(236,72,153,0.12)]"
+        className="h-[min(100%,calc(100svh-1.5rem))] w-full max-w-[clamp(68rem,92vw,96rem)] overflow-y-auto custom-scrollbar rounded-[2rem] border border-pink-500/20 bg-[#0f0c18]/55 backdrop-blur-xl px-5 py-6 md:px-8 md:py-8 shadow-[0_0_60px_rgba(236,72,153,0.12)]"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
