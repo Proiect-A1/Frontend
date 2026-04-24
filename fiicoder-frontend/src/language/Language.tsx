@@ -55,6 +55,24 @@ export const translations = {
     noTagsAvailable: "Niciun tag disponibil.",
     // Navbar
     archiveBtn: "Arhivă probleme",
+    // Landing
+    welcomeTitle: "Bine venit la",
+    welcomeDesc: "Platforma de concursuri de programare pentru studenți. Rezolvă probleme, participă la concursuri și devino maestru în coding.",
+    viewProblems: "Vezi Problemele",
+    authenticateBtn: "Autentificare",
+    startBtn: "Să Începem!",
+    readyText: "Gata să-ți testezi abilitățile? Alege-ți nivelul și apasă start!",
+    announcementsTitle: "Anunțuri Importante",
+    newProblems: "1000+ Probleme",
+    newProblemsDesc: "De la ușor la foarte greu, pentru orice nivel de abilitate",
+    dailyContests: "Concursuri Zilnice",
+    dailyContestsDesc: "Participă la concursuri, câștigă puncte și badges",
+    advancedEditor: "Editor Avansat",
+    advancedEditorDesc: "Monaco Editor cu syntax highlighting pentru C++, Python, Java...",
+    activeStudents: "Studenți Activi",
+    problemsCount: "Probleme",
+    contestsCount: "Concursuri",
+    satisfactionRate: "Satisfacție",
   },
   EN: {
     // login
@@ -107,6 +125,24 @@ export const translations = {
     noTagsAvailable: "No tags available.",
     // Navbar
     archiveBtn: "Problem Archive",
+    // Landing
+    welcomeTitle: "Welcome to",
+    welcomeDesc: "A competitive programming platform for students. Solve problems, join contests, and become a coding master.",
+    viewProblems: "View Problems",
+    authenticateBtn: "Login / Sign Up",
+    startBtn: "Let's Begin!",
+    readyText: "Ready to challenge yourself? Pick your level and get started!",
+    announcementsTitle: "Important Announcements",
+    newProblems: "1000+ Problems",
+    newProblemsDesc: "From easy to expert, for every skill level",
+    dailyContests: "Daily Contests",
+    dailyContestsDesc: "Compete, earn points, and unlock badges",
+    advancedEditor: "Advanced Editor",
+    advancedEditorDesc: "Monaco Editor with syntax highlighting for C++, Python, Java...",
+    activeStudents: "Active Students",
+    problemsCount: "Problems",
+    contestsCount: "Contests",
+    satisfactionRate: "Satisfaction",
   }
 };
 

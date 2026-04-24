@@ -1,10 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import Navbar from "./components/Navbar";
+import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import ProblemList from "./pages/ProblemList";
 import ProblemDetails from "./pages/ProblemDetails";
-import { useAuth } from "./services/AuthContext";
 
 const pageVariants: Variants = {
   initial: { y: -20, opacity: 0 },
@@ -14,7 +14,6 @@ const pageVariants: Variants = {
 
 function AnimatedRoutes() {
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
 
   return (
     <AnimatePresence mode="wait">
@@ -28,7 +27,7 @@ function AnimatedRoutes() {
         exit="exit"
       >
         <Routes location={location}>
-          <Route path="/" element={isAuthenticated ? <Navigate to="/problems" replace /> : <Navigate to="/login" replace />} />
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/problems" element={<ProblemList />} />
           <Route path="/problems/:problemId" element={<ProblemDetails />} />
