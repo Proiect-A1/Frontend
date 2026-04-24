@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
@@ -38,7 +38,7 @@ export default function ProblemDetails() {
   const languages = ["C++", "Python", "Java", "JavaScript", "Rust"];
 
   // Definim tema custom pentru Monaco la mount
-  const handleEditorMount: OnMount = (editor, monaco) => {
+  const handleEditorMount: OnMount = (_editor, monaco) => {
     monaco.editor.defineTheme("fiicoder-dark", {
       base: "vs-dark",
       inherit: true,
