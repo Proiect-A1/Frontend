@@ -1,18 +1,14 @@
 /**
- * Motion configuration that respects user's motion preferences
- * Returns animation config or instant (no animation) based on prefers-reduced-motion
+ * Simplified motion configuration - opacity only, no transforms
+ * Optimized for performance on all devices (including weak GPUs)
+ * Duration: 0.15s (fast, snappy feel)
  */
 
 export const prefersReducedMotion = () => {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 };
 
-// For Framer Motion transitions
-export const transitionConfig = prefersReducedMotion()
-  ? { duration: 0 }
-  : { duration: 0.3 };
-
-// For Framer Motion variants
+// Simplified page transitions - opacity only, no y transform
 export const pageVariants = prefersReducedMotion()
   ? {
       initial: { opacity: 0 },
@@ -20,21 +16,37 @@ export const pageVariants = prefersReducedMotion()
       exit: { opacity: 0, transition: { duration: 0 } },
     }
   : {
-      initial: { y: -20, opacity: 0 },
-      animate: { y: 0, opacity: 1, transition: { duration: 0.3 } },
-      exit: { y: 20, opacity: 0, transition: { duration: 0.2 } },
+      initial: { opacity: 0 },
+      animate: { opacity: 1, transition: { duration: 0.15 } },
+      exit: { opacity: 0, transition: { duration: 0.1 } },
     };
 
+// Fast stagger for grid items - reduced stagger time
 export const staggerConfig = prefersReducedMotion()
   ? { staggerChildren: 0, delayChildren: 0 }
-  : { staggerChildren: 0.05, delayChildren: 0.1 };
+  : { staggerChildren: 0.02, delayChildren: 0.05 };
 
+// Simple item fade in - no scale/y transform
 export const itemVariants = prefersReducedMotion()
   ? {
       hidden: { opacity: 0 },
       visible: { opacity: 1, transition: { duration: 0 } },
     }
   : {
-      hidden: { opacity: 0, y: 10 },
-      visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+      hidden: { opacity: 0 },
+      visible: { opacity: 1, transition: { duration: 0.12 } },
     };
+
+// Dropdown/modal animations - opacity only
+export const dropdownVariants = prefersReducedMotion()
+  ? {
+      hidden: { opacity: 0 },
+      visible: { opacity: 1, transition: { duration: 0 } },
+      exit: { opacity: 0, transition: { duration: 0 } },
+    }
+  : {
+      hidden: { opacity: 0 },
+      visible: { opacity: 1, transition: { duration: 0.1 } },
+      exit: { opacity: 0, transition: { duration: 0.08 } },
+    };
+

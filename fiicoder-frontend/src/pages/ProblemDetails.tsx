@@ -226,9 +226,10 @@ export default function ProblemDetails() {
                   <AnimatePresence>
                     {isOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 5 }}
-                        exit={{ opacity: 0, y: -10 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.12 }}
                         className="absolute z-50 w-full bg-[#1a1629] border border-pink-500/40 rounded-xl shadow-2xl overflow-hidden"
                       >
                         {languages.map((lang) => (
@@ -344,25 +345,10 @@ export default function ProblemDetails() {
         {/* ── BACK BUTTON ── */}
         <div className="flex justify-start shrink-0">
           <Link to="/problems" className="relative inline-block group">
-            <motion.div
-              className="flex items-center gap-2 text-pink-300/70 font-semibold text-sm hover:text-pink-100 transition-colors cursor-pointer"
-              whileHover="hover"
-            >
-              <motion.span
-                variants={{ hover: { x: -5 } }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                ←
-              </motion.span>
+            <div className="flex items-center gap-2 text-pink-300/70 font-semibold text-sm hover:text-pink-100 transition-colors cursor-pointer">
+              <span>←</span>
               <span>{t.backToList}</span>
-
-              <motion.div
-                className="absolute -bottom-0.5 left-6 h-px bg-pink-400/60"
-                initial={{ width: 0 }}
-                variants={{ hover: { width: "calc(100% - 24px)" } }}
-                transition={{ duration: 0.3 }}
-              />
-            </motion.div>
+            </div>
           </Link>
         </div>
       </div>
@@ -371,9 +357,10 @@ export default function ProblemDetails() {
       <AnimatePresence>
         {status && (
           <motion.div
-            initial={{ x: 400, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 400, opacity: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.12 }}
             className="fixed bottom-8 right-8 z-100"
           >
             <div
@@ -386,8 +373,8 @@ export default function ProblemDetails() {
               }`}
             >
               <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 transition={{ duration: status === "pending" ? 2 : 4 }}
                 className={`absolute bottom-0 left-0 h-1 w-full origin-left ${
                   status === "pending"
