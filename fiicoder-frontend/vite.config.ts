@@ -7,6 +7,29 @@ export default defineConfig({
   plugins: [react(),
   	tailwindcss()
   ],
+  build: {
+    target: 'esnext',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+      },
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separă Monaco Editor în chunk propriu
+          monaco: ['@monaco-editor/react'],
+          // Separă Framer Motion
+          framer: ['framer-motion'],
+          // Libs rămân în vendor
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+    sourcemap: false,
+  },
   server: {
     proxy: {
       '/api': {
