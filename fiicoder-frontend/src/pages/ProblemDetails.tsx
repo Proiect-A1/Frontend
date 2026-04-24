@@ -52,6 +52,7 @@ export default function ProblemDetails() {
           shortDescription: dto.description.substring(0, 120) + "...", 
           statement: dto.description,
           difficulty: dto.difficulty || "MEDIUM",
+          tags: dto.tags || [],
           // time/memory limits?
         };
 
@@ -140,6 +141,18 @@ export default function ProblemDetails() {
           <h1 className="text-3xl font-bold text-pink-200 mb-2">
             {problem.title}
           </h1>
+          {problem.tags.length > 0 && (
+            <div className="mb-3 flex flex-wrap gap-1.5">
+              {problem.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-2.5 py-0.5 rounded-full text-xs font-semibold border border-pink-500/25 bg-pink-500/10 text-pink-300/90"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
           <div className="page-line-horizontal" />
           <p className="text-pink-100/85 leading-relaxed whitespace-pre-wrap">
             {problem.statement}

@@ -4,14 +4,17 @@ import {
   useLanguage,
   translations,
 } from "../language/Language";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Difficulty } from "../types/problem";
+import { tagService, type TagResponseDTO } from "../services/tagService";
 
 interface FilterSidebarProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   difficultyFilter: string;
   setDifficultyFilter: (difficulty: string) => void;
+  selectedTags: string[];
+  setSelectedTags: (tags: string[]) => void;
   clearFilters: () => void;
   filteredCount: number;
   totalCount: number;
@@ -22,6 +25,8 @@ export default function FilterSidebar({
   setSearchQuery,
   difficultyFilter,
   setDifficultyFilter,
+  selectedTags,
+  setSelectedTags,
   clearFilters,
   filteredCount,
   totalCount,
@@ -30,6 +35,27 @@ export default function FilterSidebar({
   const t = translations[lang];
 
   const [isOpen, setIsOpen] = useState(false);
+
+  // Tag-uri din backend
+  const [availableTags, setAvailableTags] = useState<TagResponseDTO[]>([]);
+  const [tagsLoading, setTagsLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    tagService.getAllTags()
+      .then((tags) => { if (mounted) setAvailableTags(tags); })
+      .catch(() => { /* silently ignore */ })
+      .finally(() => { if (mounted) setTagsLoading(false); });
+    return () => { mounted = false; };
+  }, []);
+
+  const toggleTag = (tagTitle: string) => {
+    if (selectedTags.includes(tagTitle)) {
+      setSelectedTags(selectedTags.filter((t) => t !== tagTitle));
+    } else {
+      setSelectedTags([...selectedTags, tagTitle]);
+    }
+  };
 
   const difficultyOptions = ["ALL", "EASY", "MEDIUM", "HARD", "CONTEST"];
 
@@ -106,6 +132,46 @@ export default function FilterSidebar({
               )}
             </AnimatePresence>
           </div>
+        </div>
+
+        {/* tag-uri */}
+        <div>
+          <label className="mb-1 block text-sm font-semibold text-pink-200">
+            {t.tagsLabel}
+          </label>
+          {tagsLoading ? (
+            <div className="flex gap-2">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="h-7 w-16 rounded-full bg-pink-500/10 animate-pulse"
+                />
+              ))}
+            </div>
+          ) : availableTags.length === 0 ? (
+            <p className="text-xs text-pink-100/50">{t.noTagsAvailable}</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {availableTags.map((tag) => {
+                const isSelected = selectedTags.includes(tag.title);
+                return (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    onClick={() => toggleTag(tag.title)}
+                    className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-200 ${
+                      isSelected
+                        ? "bg-pink-500/30 border-pink-400 text-pink-100 shadow-[0_0_12px_rgba(236,72,153,0.3)]"
+                        : "bg-pink-500/5 border-pink-500/25 text-pink-200/70 hover:border-pink-400/60 hover:bg-pink-500/15"
+                    }`}
+                  >
+                    {isSelected && "✓ "}
+                    {tag.title}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* delete filters */}

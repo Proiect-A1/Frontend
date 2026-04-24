@@ -12,6 +12,7 @@ export default function ProblemList() {
   // TEMPORARY need backend filtering (because of pagination) 
   const [searchQuery, setSearchQuery] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   
   const [problems, setProblems] = useState<Problem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,16 @@ export default function ProblemList() {
 
     async function fetchProblems() {
       try {
-        const data = await problemService.getAllProblems(1, 100);
+        setLoading(true);
+        setError(null);
+
+        let data;
+        if (selectedTags.length > 0) {
+          // foloseste endpoint-ul de filtrare pe tag-uri
+          data = await problemService.searchByTags(selectedTags, 1, 100);
+        } else {
+          data = await problemService.getAllProblems(1, 100);
+        }
         
         if (!isMounted) return; 
 
@@ -33,6 +43,7 @@ export default function ProblemList() {
           shortDescription: dto.description.substring(0, 120) + "...", // extrag o scurta descriere
           statement: dto.description,
           difficulty: (dto.difficulty as Difficulty) || "MEDIUM", // daca nu e specificata dificultatea, o setez pe Medium
+          tags: dto.tags || [],
         }));
 
         setProblems(formattedProblems);
@@ -48,7 +59,7 @@ export default function ProblemList() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [selectedTags]); // re-fetch cand se schimba tag-urile selectate
 
   const filteredProblems = useMemo(() => {
     const normalized = searchQuery.trim().toLowerCase();
@@ -63,6 +74,7 @@ export default function ProblemList() {
   const clearFilters = () => {
     setSearchQuery("");
     setDifficultyFilter("ALL");
+    setSelectedTags([]);
   };
 
   return (
@@ -72,6 +84,8 @@ export default function ProblemList() {
         setSearchQuery={setSearchQuery}
         difficultyFilter={difficultyFilter}
         setDifficultyFilter={setDifficultyFilter}
+        selectedTags={selectedTags}
+        setSelectedTags={setSelectedTags}
         clearFilters={clearFilters}
         filteredCount={filteredProblems.length}
         totalCount={problems.length}
@@ -110,6 +124,19 @@ export default function ProblemList() {
                 <p className="text-sm text-pink-100/85">
                   {problem.shortDescription}
                 </p>
+                {/* Tag-uri afisate pe card */}
+                {problem.tags.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {problem.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2 py-0.5 rounded-full text-[10px] font-semibold border border-pink-500/20 bg-pink-500/5 text-pink-300/80"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
               {index < filteredProblems.length - 1 && (
                 <div className="w-full h-1 bg-linear-to-r from-transparent via-pink-500/50 my-3 blur-[5px]" />

@@ -6,4 +6,5 @@ export interface Problem {
   shortDescription: string;
   statement: string;
   difficulty: Difficulty;
+  tags: string[];
 }

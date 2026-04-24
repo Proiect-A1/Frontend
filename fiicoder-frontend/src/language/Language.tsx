@@ -50,6 +50,9 @@ export const translations = {
     mediumDifficulty: "Mediu",
     hardDifficulty: "Greu",
     contestDifficulty: "Concurs",
+    // Tags
+    tagsLabel: "Tag-uri",
+    noTagsAvailable: "Niciun tag disponibil.",
     // Navbar
     archiveBtn: "Arhivă probleme",
   },
@@ -98,7 +101,10 @@ export const translations = {
     easyDifficulty: "Easy",
     mediumDifficulty: "Medium",
     hardDifficulty: "Hard",
-    contestDifficulty: "Contest", 
+    contestDifficulty: "Contest",
+    // Tags
+    tagsLabel: "Tags",
+    noTagsAvailable: "No tags available.",
     // Navbar
     archiveBtn: "Problem Archive",
   }
