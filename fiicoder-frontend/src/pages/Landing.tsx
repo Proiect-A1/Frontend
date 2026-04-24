@@ -73,15 +73,15 @@ export default function Landing() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-[calc(100vh-140px)] w-full flex items-center justify-center px-4">
+    <div className="flex h-full min-h-0 w-full items-center justify-center overflow-hidden px-2 sm:px-4 lg:px-6">
       <motion.div
-        className="w-full max-w-4xl"
+        className="flex h-[min(100%,calc(100svh-1.5rem))] w-full max-w-[clamp(68rem,92vw,96rem)] overflow-y-auto custom-scrollbar rounded-[2rem] border border-pink-500/20 bg-[#0f0c18]/55 backdrop-blur-xl px-5 py-6 md:px-8 md:py-8 shadow-[0_0_60px_rgba(236,72,153,0.12)]"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         {/* Hero Section */}
-        <div className="text-center mb-12 md:mb-16">
+        <div className="text-center mb-10 md:mb-12">
           <motion.div variants={itemVariants} className="mb-6">
             <img
               src="/logo.svg"
@@ -127,14 +127,11 @@ export default function Landing() {
         </div>
 
         {/* Announcements Section */}
-        <motion.div
-          variants={itemVariants}
-          className="mt-16 mb-16"
-        >
+        <motion.div variants={itemVariants} className="mt-10 mb-10">
           <h2 className="text-3xl md:text-4xl font-bold text-pink-100 mb-8 text-center">
             {lang === "RO" ? t.announcementsTitle : t.announcementsTitle}
           </h2>
-          <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="grid gap-4 lg:grid-cols-3">
             {announcements.map((ann) => (
               <motion.div
                 key={ann.id}
@@ -174,10 +171,7 @@ export default function Landing() {
         </motion.div>
 
         {/* Features Grid */}
-        <motion.div
-          variants={itemVariants}
-          className="grid md:grid-cols-3 gap-6 mt-8"
-        >
+        <motion.div variants={itemVariants} className="grid md:grid-cols-3 gap-6 mt-8">
           {[
             {
               icon: "📚",
@@ -212,7 +206,7 @@ export default function Landing() {
         {/* Stats Section */}
         <motion.div
           variants={itemVariants}
-          className="mt-16 p-8 rounded-2xl border-2 border-pink-500/25 bg-[#0f0c18]/40 backdrop-blur-sm"
+          className="mt-10 p-8 rounded-2xl border-2 border-pink-500/25 bg-[#0f0c18]/40 backdrop-blur-sm"
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
@@ -232,10 +226,7 @@ export default function Landing() {
         </motion.div>
 
         {/* CTA Section */}
-        <motion.div
-          variants={itemVariants}
-          className="mt-16 text-center"
-        >
+        <motion.div variants={itemVariants} className="mt-10 text-center pb-4">
           <p className="text-pink-200/70 mb-4">
             {lang === "RO" ? t.readyText : t.readyText}
           </p>

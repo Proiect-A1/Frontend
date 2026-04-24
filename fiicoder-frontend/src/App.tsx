@@ -17,9 +17,9 @@ function AnimatedRoutes() {
 
   return (
     <AnimatePresence mode="wait">
-<motion.main
+      <motion.main
         key={location.pathname}
-        className="w-full px-6 pt-6 pb-6" 
+        className="w-full flex-1 min-h-0 px-6 pt-6 pb-6 overflow-hidden"
         style={{ position: "relative" }}
         variants={pageVariants}
         initial="initial"
@@ -40,7 +40,7 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="h-screen w-full text-pink-100 font-sans site-hero overflow-y-auto xl:overflow-hidden custom-scrollbar">
+      <div className="h-screen w-full flex flex-col overflow-hidden text-pink-100 font-sans site-hero custom-scrollbar">
         <Navbar />
         <AnimatedRoutes />
       </div>
