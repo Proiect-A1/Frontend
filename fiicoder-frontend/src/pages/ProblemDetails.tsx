@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
@@ -7,6 +7,7 @@ import { submissionService } from "../services/submissionService";
 import { problemService } from "../services/problemService"; 
 import type { Problem } from "../types/problem";
 import Editor, { type OnMount } from "@monaco-editor/react";
+import { useTheme } from "../services/ThemeContext";
 
 // mapare limbaj UI -> identificator Monaco
 const monacoLanguageMap: Record<string, string> = {
@@ -17,12 +18,26 @@ const monacoLanguageMap: Record<string, string> = {
   "Rust": "rust",
 };
 
+function toHexColor(input: string): string {
+  const normalized = input.trim();
+  if (normalized.startsWith("#")) return normalized;
+  const parts = normalized.match(/\d+/g);
+  if (!parts || parts.length < 3) return "#ffffff";
+  const [r, g, b] = parts.slice(0, 3).map((value) => Number(value).toString(16).padStart(2, "0"));
+  return `#${r}${g}${b}`;
+}
+
+function withAlpha(hexColor: string, alphaHex: string): string {
+  return `${hexColor.replace("#", "#")}${alphaHex}`;
+}
+
 export default function ProblemDetails() {
   const { problemId } = useParams(); // iau id-ul(titlul) problemei din URL (/problems/:title)
   
   const { lang } = useLanguage();
   const t = translations[lang];
   const { isAuthenticated } = useAuth();
+  const { theme } = useTheme();
 
   // State-uri pentru preluarea datelor problemei
   const [problem, setProblem] = useState<Problem | null>(null);
@@ -34,44 +49,60 @@ export default function ProblemDetails() {
   const [language, setLanguage] = useState("C++");
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState<null | "pending" | "valid" | "invalid">(null);
+  const monacoRef = useRef<any>(null);
 
   const languages = ["C++", "Python", "Java", "JavaScript", "Rust"];
 
   // Definim tema custom pentru Monaco la mount
   const handleEditorMount: OnMount = (_editor, monaco) => {
+    monacoRef.current = monaco;
+    const rootStyles = getComputedStyle(document.documentElement);
+    const accent = toHexColor(rootStyles.getPropertyValue("--accent"));
+    const text = toHexColor(rootStyles.getPropertyValue("--text-h"));
+    const textMuted = toHexColor(rootStyles.getPropertyValue("--text-muted"));
+    const textSubtle = toHexColor(rootStyles.getPropertyValue("--text-subtle"));
+    const codeBg = toHexColor(rootStyles.getPropertyValue("--code-bg"));
+    const editorBg = toHexColor(rootStyles.getPropertyValue("--surface-editor"));
+
     monaco.editor.defineTheme("fiicoder-dark", {
       base: "vs-dark",
       inherit: true,
       rules: [
-        { token: "comment", foreground: "6b5a8a", fontStyle: "italic" },
-        { token: "keyword", foreground: "ec4899" },
-        { token: "string", foreground: "a78bfa" },
-        { token: "number", foreground: "f9a8d4" },
-        { token: "type", foreground: "c084fc" },
-        { token: "function", foreground: "f0abfc" },
-        { token: "variable", foreground: "fce7f3" },
+        { token: "comment", foreground: textMuted.replace("#", "") },
+        { token: "keyword", foreground: accent.replace("#", "") },
+        { token: "string", foreground: accent.replace("#", "") },
+        { token: "number", foreground: accent.replace("#", "") },
+        { token: "type", foreground: accent.replace("#", "") },
+        { token: "function", foreground: accent.replace("#", "") },
+        { token: "variable", foreground: text.replace("#", "") },
       ],
       colors: {
-        "editor.background": "#0a0812",
-        "editor.foreground": "#fce7f3",
-        "editor.lineHighlightBackground": "#1a1229",
-        "editor.selectionBackground": "#ec489930",
-        "editor.inactiveSelectionBackground": "#ec489915",
-        "editorLineNumber.foreground": "#6b5a8a",
-        "editorLineNumber.activeForeground": "#ec4899",
-        "editorCursor.foreground": "#ec4899",
-        "editorIndentGuide.background": "#1e1830",
-        "editorIndentGuide.activeBackground": "#ec489940",
-        "editor.selectionHighlightBackground": "#ec489920",
-        "editorBracketMatch.background": "#ec489925",
-        "editorBracketMatch.border": "#ec489960",
-        "scrollbarSlider.background": "#ec489915",
-        "scrollbarSlider.hoverBackground": "#ec489930",
-        "scrollbarSlider.activeBackground": "#ec489950",
+        "editor.background": editorBg,
+        "editor.foreground": text,
+        "editor.lineHighlightBackground": codeBg,
+        "editor.selectionBackground": withAlpha(accent, "4d"),
+        "editor.inactiveSelectionBackground": withAlpha(accent, "26"),
+        "editorLineNumber.foreground": textSubtle,
+        "editorLineNumber.activeForeground": accent,
+        "editorCursor.foreground": accent,
+        "editorIndentGuide.background": withAlpha(accent, "1f"),
+        "editorIndentGuide.activeBackground": withAlpha(accent, "59"),
+        "editor.selectionHighlightBackground": withAlpha(accent, "33"),
+        "editorBracketMatch.background": withAlpha(accent, "40"),
+        "editorBracketMatch.border": withAlpha(accent, "99"),
+        "scrollbarSlider.background": withAlpha(accent, "26"),
+        "scrollbarSlider.hoverBackground": withAlpha(accent, "4d"),
+        "scrollbarSlider.activeBackground": withAlpha(accent, "80"),
       },
     });
     monaco.editor.setTheme("fiicoder-dark");
   };
+
+  useEffect(() => {
+    if (monacoRef.current) {
+      handleEditorMount(undefined as any, monacoRef.current);
+    }
+  }, [theme]);
 
   // iau datele din backend cand se incarca pagina sau cand se schimba problemId (URL)
   useEffect(() => {
@@ -167,7 +198,7 @@ export default function ProblemDetails() {
 
   if (error || !problem) {
     return (
-      <div className="w-full text-center p-8 text-red-400 bg-[#151221]/80 backdrop-blur-lg border-2 border-red-500/30 rounded-2xl">
+      <div className="w-full text-center p-8 text-red-400 theme-surface-card backdrop-blur-lg border-2 border-red-500/30 rounded-2xl">
         <h2 className="text-xl font-bold mb-2">Eroare</h2>
         <p>{error || "Problema nu a fost găsită."}</p>
         <Link to="/problems" className="text-pink-300 underline mt-4 inline-block">Înapoi la lista de probleme</Link>
@@ -180,7 +211,7 @@ export default function ProblemDetails() {
       {/* 3-column grid */}
       <div className="grid gap-6 xl:grid-cols-3">
         {/* column 1 - Problem description */}
-        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow custom-scrollbar">
+        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow custom-scrollbar">
           <p className="text-xs font-semibold uppercase tracking-wider text-pink-400">
             {lang === "RO" ? "Problemă: " : "Problem: "} {problem.title}
           </p>
@@ -206,7 +237,7 @@ export default function ProblemDetails() {
         </div>
 
         {/* column 2 - Submission */}
-        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow custom-scrollbar flex flex-col">
+        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow custom-scrollbar flex flex-col">
           {isAuthenticated ? (
             <div className="flex-1 flex flex-col h-full">
               <div className="flex items-center justify-between mb-6 shrink-0">
@@ -216,7 +247,7 @@ export default function ProblemDetails() {
                 <div className="relative w-32">
                   <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="w-full flex items-center justify-between bg-[#0f0c18] border border-pink-500/30 rounded-xl px-4 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400"
+                    className="w-full flex items-center justify-between theme-surface-input border border-pink-500/30 rounded-xl px-4 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400"
                   >
                     {language}
                     <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
@@ -230,7 +261,7 @@ export default function ProblemDetails() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.12 }}
-                        className="absolute z-50 w-full bg-[#1a1629] border border-pink-500/40 rounded-xl shadow-2xl overflow-hidden"
+                        className="absolute z-50 w-full theme-surface-dropdown border border-pink-500/40 rounded-xl shadow-2xl overflow-hidden"
                       >
                         {languages.map((lang) => (
                           <button
@@ -254,7 +285,7 @@ export default function ProblemDetails() {
                 onSubmit={handleSubmit}
                 className="flex-1 flex flex-col gap-4"
               >
-                <div className="relative flex-1 rounded-2xl overflow-hidden border border-pink-500/20 bg-[#0a0812] min-h-[300px]">
+                <div className="relative flex-1 rounded-2xl overflow-hidden border border-pink-500/20 theme-surface-editor min-h-[300px]">
                   <Editor
                     height="100%"
                     language={monacoLanguageMap[language] || "cpp"}
@@ -334,7 +365,7 @@ export default function ProblemDetails() {
         </div>
 
         {/* column 3 - empty test panel */}
-        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow custom-scrollbar">
+        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow custom-scrollbar">
           <h2 className="text-xl font-bold text-pink-200 mb-2">Test Panel</h2>
           <div className="page-line-horizontal" />
           <p className="text-pink-100/85">
@@ -366,10 +397,10 @@ export default function ProblemDetails() {
             <div
               className={`relative overflow-hidden px-8 py-5 rounded-2xl border-2 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${
                 status === "pending"
-                  ? "border-pink-500/50 bg-[#151221]/90 text-pink-200"
+                  ? "border-pink-500/50 theme-surface-card text-pink-200"
                   : status === "valid"
-                    ? "border-green-500/50 bg-[#0d1a12]/90 text-green-300"
-                    : "border-red-500/50 bg-[#1a0d0d]/90 text-red-300"
+                    ? "border-green-500/50 bg-green-500/10 text-green-300"
+                    : "border-red-500/50 bg-red-500/10 text-red-300"
               }`}
             >
               <motion.div

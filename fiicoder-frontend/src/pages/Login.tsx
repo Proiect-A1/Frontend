@@ -109,7 +109,7 @@ export default function Login() {
   };
 
   return (
-    <div className="p-8 max-w-md mx-auto bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow">
+    <div className="p-8 max-w-md mx-auto theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow">
       <h1 className="text-3xl font-bold text-pink-200 mb-2">
         {isLogin ? t.loginTitle : t.registerTitle}
       </h1>
@@ -143,7 +143,7 @@ export default function Login() {
                 value={usernameOrEmail}
                 onChange={(e) => setUsernameOrEmail(e.target.value)}
                 placeholder="ex: fiicoder"
-                className="w-full rounded-xl border border-pink-500/30 bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400"
+                className="w-full rounded-xl border border-pink-500/30 theme-surface-input px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400"
               />
             </div>
             <div>
@@ -156,7 +156,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-pink-500/30 bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400"
+                className="w-full rounded-xl border border-pink-500/30 theme-surface-input px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400"
               />
             </div>
           </>
@@ -175,7 +175,7 @@ export default function Login() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="ex: fiicoder"
-                className={`w-full rounded-xl border bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
+                className={`w-full rounded-xl border theme-surface-input px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
                   fieldErrors.username ? "border-red-400/60" : "border-pink-500/30"
                 }`}
               />
@@ -195,7 +195,7 @@ export default function Login() {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder={t.namePlaceholder}
-                  className={`w-full rounded-xl border bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
+                  className={`w-full rounded-xl border theme-surface-input px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
                     fieldErrors.firstName ? "border-red-400/60" : "border-pink-500/30"
                   }`}
                 />
@@ -214,7 +214,7 @@ export default function Login() {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder={t.surnamePlaceholder}
-                  className={`w-full rounded-xl border bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
+                  className={`w-full rounded-xl border theme-surface-input px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
                     fieldErrors.lastName ? "border-red-400/60" : "border-pink-500/30"
                   }`}
                 />
@@ -233,7 +233,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t.emailPlaceholder}
-                className={`w-full rounded-xl border bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
+                className={`w-full rounded-xl border theme-surface-input px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
                   fieldErrors.email ? "border-red-400/60" : "border-pink-500/30"
                 }`}
               />
@@ -252,7 +252,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className={`w-full rounded-xl border bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
+                className={`w-full rounded-xl border theme-surface-input px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
                   fieldErrors.password ? "border-red-400/60" : "border-pink-500/30"
                 }`}
               />

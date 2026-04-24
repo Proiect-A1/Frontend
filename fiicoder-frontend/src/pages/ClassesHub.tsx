@@ -95,7 +95,7 @@ export default function ClassesHub() {
   return (
     <div className="h-full min-h-0 overflow-hidden">
       <motion.div
-        className="h-full overflow-y-auto custom-scrollbar rounded-[2rem] border border-pink-500/20 bg-[#0f0c18]/55 backdrop-blur-xl px-5 py-6 md:px-8 md:py-8 shadow-[0_0_60px_rgba(236,72,153,0.12)]"
+        className="h-full overflow-y-auto custom-scrollbar rounded-[2rem] border border-pink-500/20 theme-surface-page backdrop-blur-xl px-5 py-6 md:px-8 md:py-8 theme-page-aura"
         variants={pageVariants}
         initial="hidden"
         animate="visible"
@@ -129,7 +129,7 @@ export default function ClassesHub() {
         )}
 
         <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          <motion.section variants={itemVariants} className="rounded-3xl border border-pink-500/20 bg-[#151221]/75 p-6 shadow-lg shadow-black/20">
+          <motion.section variants={itemVariants} className="rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20">
             <h2 className="text-2xl font-bold text-pink-100">
               {lang === "RO" ? "Creează o clasă" : "Create a class"}
             </h2>
@@ -144,13 +144,13 @@ export default function ClassesHub() {
                 value={className}
                 onChange={(event) => setClassName(event.target.value)}
                 placeholder={lang === "RO" ? "Nume clasă" : "Class name"}
-                className="w-full rounded-2xl border border-pink-500/25 bg-[#100d19]/80 px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
+                className="w-full rounded-2xl border border-pink-500/25 theme-surface-muted px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
               />
               <textarea
                 value={classDescription}
                 onChange={(event) => setClassDescription(event.target.value)}
                 placeholder={lang === "RO" ? "Descriere opțională" : "Optional description"}
-                className="min-h-28 w-full rounded-2xl border border-pink-500/25 bg-[#100d19]/80 px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
+                className="min-h-28 w-full rounded-2xl border border-pink-500/25 theme-surface-muted px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
               />
               <button
                 type="submit"
@@ -161,7 +161,7 @@ export default function ClassesHub() {
             </form>
           </motion.section>
 
-          <motion.section variants={itemVariants} className="rounded-3xl border border-pink-500/20 bg-[#151221]/75 p-6 shadow-lg shadow-black/20">
+          <motion.section variants={itemVariants} className="rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20">
             <h2 className="text-2xl font-bold text-pink-100">
               {lang === "RO" ? "Găsește o clasă" : "Find a class"}
             </h2>
@@ -170,7 +170,7 @@ export default function ClassesHub() {
                 value={lookupId}
                 onChange={(event) => setLookupId(event.target.value)}
                 placeholder={lang === "RO" ? "UUID clasă" : "Class UUID"}
-                className="flex-1 rounded-2xl border border-pink-500/25 bg-[#100d19]/80 px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
+                className="flex-1 rounded-2xl border border-pink-500/25 theme-surface-muted px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
               />
               <button
                 type="submit"
@@ -181,7 +181,7 @@ export default function ClassesHub() {
             </form>
 
             {foundClass && (
-              <div className="mt-5 rounded-2xl border border-pink-500/20 bg-[#100d19]/80 p-4">
+              <div className="mt-5 rounded-2xl border border-pink-500/20 theme-surface-muted p-4">
                 <h3 className="text-xl font-bold text-pink-100">{foundClass.name}</h3>
                 <p className="mt-2 text-sm text-pink-200/70">{foundClass.description || (lang === "RO" ? "Fără descriere." : "No description.")}</p>
                 <div className="mt-4 grid gap-2 text-xs text-pink-200/70">
@@ -200,7 +200,7 @@ export default function ClassesHub() {
           </motion.section>
         </div>
 
-        <motion.section variants={itemVariants} className="mt-6 rounded-3xl border border-pink-500/20 bg-[#151221]/75 p-6 shadow-lg shadow-black/20">
+        <motion.section variants={itemVariants} className="mt-6 rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20">
           <div className="flex items-center justify-between gap-4">
             <h2 className="text-2xl font-bold text-pink-100">
               {lang === "RO" ? "Invitațiile mele" : "My invitations"}
@@ -210,13 +210,13 @@ export default function ClassesHub() {
 
           <div className="mt-4 grid gap-3">
             {invitations.length === 0 && !loadingInvitations && (
-              <div className="rounded-2xl border border-pink-500/20 bg-[#100d19]/80 p-4 text-pink-200/70">
+              <div className="rounded-2xl border border-pink-500/20 theme-surface-muted p-4 text-pink-200/70">
                 {lang === "RO" ? "Nu ai invitații active." : "You have no active invitations."}
               </div>
             )}
 
             {invitations.map((invitation) => (
-              <div key={invitation.id} className="rounded-2xl border border-pink-500/20 bg-[#100d19]/80 p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div key={invitation.id} className="rounded-2xl border border-pink-500/20 theme-surface-muted p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div>
                   <p className="text-lg font-semibold text-pink-100">{invitation.studyClass?.name || (lang === "RO" ? "Clasă invitată" : "Invited class")}</p>
                   <p className="text-sm text-pink-200/65">

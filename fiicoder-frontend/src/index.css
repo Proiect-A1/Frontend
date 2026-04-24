@@ -1,16 +1,33 @@
 @import "tailwindcss";
 
-:root {
+:root,
+[data-theme="rose"] {
+  --bg-color: #090812;
+  --surface-page: color-mix(in srgb, var(--bg-color) 78%, #151221 22%);
+  --surface-card: color-mix(in srgb, #151221 80%, transparent);
+  --surface-muted: color-mix(in srgb, #100d19 80%, transparent);
+  --surface-input: #0f0c18;
+  --surface-dropdown: #1a1629;
+  --surface-editor: #0a0812;
+  --surface-hover: color-mix(in srgb, #1a1530 80%, transparent);
+
   --text: #f5c8e4;
   --text-h: #ffe8f6;
-  --bg: #090812;
-  --border: #4a2641;
-  --code-bg: #1a1322;
+  --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
+  --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
+
+  --bg: var(--bg-color);
+  --code-bg: color-mix(in srgb, var(--bg-color) 55%, #1a1322 45%);
   --accent: #ff5eb6;
-  --accent-bg: rgba(255, 94, 182, 0.15);
-  --accent-border: rgba(255, 94, 182, 0.6);
-  --social-bg: rgba(255, 94, 182, 0.12);
-  --shadow: rgba(5, 4, 10, 0.75) 0 18px 38px -10px, rgba(255, 94, 182, 0.2) 0 6px 18px -8px;
+  --hero-start: #2f1630;
+  --hero-mid: #171124;
+  --hero-end: var(--bg-color);
+  --line-color: color-mix(in srgb, var(--accent) 75%, white 25%);
+  --accent-secondary: color-mix(in srgb, var(--accent) 72%, #a78bfa 28%);
+  --logo-filter: none;
+  --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%23ffe8f6' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%23ff5eb6'/%3E%3C/svg%3E");
+  --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%23ff5eb6' stroke='%231b1d22' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
+  --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%23ff5eb6' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%23ffe8f6'/%3E%3C/svg%3E");
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -19,6 +36,33 @@
   color-scheme: dark;
   color: var(--text);
   background: var(--bg);
+}
+
+[data-theme="nord"] {
+  --bg-color: #242933;
+  --surface-page: color-mix(in srgb, var(--bg-color) 78%, #1f2430 22%);
+  --surface-card: color-mix(in srgb, #2e3440 82%, transparent);
+  --surface-muted: color-mix(in srgb, #2e3440 88%, transparent);
+  --surface-input: color-mix(in srgb, var(--bg-color) 78%, #1f2430 22%);
+  --surface-dropdown: color-mix(in srgb, #2e3440 72%, #3b4252 28%);
+  --surface-editor: color-mix(in srgb, var(--bg-color) 85%, #1f2430 15%);
+  --accent: #88c0d0;
+  --surface-hover: color-mix(in srgb, var(--accent) 20%, var(--surface-card) 80%);
+  --text: #e5e9f0;
+  --text-h: #eceff4;
+  --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
+  --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
+  --bg: var(--bg-color);
+  --code-bg: color-mix(in srgb, var(--bg-color) 74%, #252b37 26%);
+  --hero-start: #2f3542;
+  --hero-mid: var(--bg-color);
+  --hero-end: #1f2430;
+  --line-color: color-mix(in srgb, var(--accent) 90%, white 10%);
+  --accent-secondary: color-mix(in srgb, var(--accent) 72%, #5e81ac 28%);
+  --logo-filter: brightness(0) saturate(100%) invert(89%) sepia(12%) saturate(575%) hue-rotate(152deg) brightness(89%) contrast(90%);
+  --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%23eceff4' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%2388c0d0'/%3E%3C/svg%3E");
+  --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%2388c0d0' stroke='%231b1d22' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
+  --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%2388c0d0' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%23eceff4'/%3E%3C/svg%3E");
 }
 
 #root {
@@ -36,20 +80,52 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--sans);
-  cursor: url('assets/pointer-cursor-24.png') 5 3, auto;
+  cursor: var(--cursor-default) 13 13, auto;
   -webkit-font-smoothing: antialiased;
 }
 
-a, button, [role="button"], select {
-  cursor: url('assets/hand-cursor-24.png') 10 1, pointer;
+.theme-surface-page {
+  background-color: var(--surface-page);
 }
 
-label {
-  cursor: url('assets/hand-cursor-24.png') 10 1, pointer;
+.theme-surface-card {
+  background-color: var(--surface-card);
+}
+
+.theme-surface-muted {
+  background-color: var(--surface-muted);
+}
+
+.theme-surface-input {
+  background-color: var(--surface-input);
+}
+
+.theme-surface-dropdown {
+  background-color: var(--surface-dropdown);
+}
+
+.theme-surface-editor {
+  background-color: var(--surface-editor);
+}
+
+.theme-surface-hover:hover {
+  background-color: var(--surface-hover);
+}
+
+.theme-page-aura {
+  box-shadow: 0 0 60px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.theme-logo-glow {
+  filter: drop-shadow(0 0 24px color-mix(in srgb, var(--accent) 40%, transparent));
+}
+
+a, button, [role="button"], select, label {
+  cursor: var(--cursor-pointer) 6 3, pointer;
 }
 
 input, textarea {
-  cursor: url('assets/text-cursor-24.png') 12 12, text;
+  cursor: var(--cursor-text) 13 13, text;
 }
 
 @keyframes expandLineHorizontal {
@@ -63,28 +139,155 @@ input, textarea {
 }
 
 .site-hero {
-  background: radial-gradient(circle at 20% 0%, #2f1630 0%, #171124 45%, #090812 100%);
+  background: radial-gradient(circle at 20% 0%, var(--hero-start) 0%, var(--hero-mid) 45%, var(--hero-end) 100%);
   background-size: 200% 200%;
 }
 
 .card-glow {
-  box-shadow: 0 15px 36px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 94, 182, 0.1);
+  box-shadow: 0 15px 36px color-mix(in srgb, black 50%, transparent), 0 0 0 1px color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .page-line-horizontal {
   width: 50px; 
   height: 3px;
-  background: #ff7bc8; 
+  background: var(--line-color);
   border-radius: 2px;
   margin: 12px 0px;
   transform-origin: left center;
   animation: expandLineHorizontal 0.4s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* Compatibility layer for legacy pink/purple Tailwind utilities. */
+/* New UI styles should prefer semantic classes + theme tokens above. */
+.text-pink-100 { color: var(--text-h) !important; }
+.text-pink-200 { color: color-mix(in srgb, var(--text-h) 88%, var(--text) 12%) !important; }
+.text-pink-300 { color: color-mix(in srgb, var(--accent) 84%, var(--text-h) 16%) !important; }
+.text-pink-400 { color: color-mix(in srgb, var(--accent) 92%, white 8%) !important; }
+
+.text-pink-100\/85 { color: color-mix(in srgb, var(--text-h) 85%, transparent) !important; }
+.text-pink-200\/70,
+.text-pink-200\/65,
+.text-pink-200\/60 { color: color-mix(in srgb, var(--text) 70%, transparent) !important; }
+.text-pink-300\/80,
+.text-pink-300\/60,
+.text-pink-300\/50 { color: color-mix(in srgb, var(--accent) 72%, transparent) !important; }
+.text-pink-400\/70,
+.text-pink-400\/60,
+.text-pink-400\/50 { color: color-mix(in srgb, var(--accent) 62%, transparent) !important; }
+
+.hover\:text-pink-100:hover { color: var(--text-h) !important; }
+.hover\:text-pink-300:hover { color: color-mix(in srgb, var(--accent) 90%, var(--text-h) 10%) !important; }
+.placeholder\:text-pink-200\/40::placeholder { color: color-mix(in srgb, var(--text) 42%, transparent) !important; }
+
+.border-pink-500\/20,
+.border-pink-500\/25,
+.border-pink-500\/30,
+.border-pink-500\/35,
+.border-pink-500\/40,
+.border-pink-500\/50,
+.border-pink-500\/60,
+.border-pink-500\/70,
+.border-pink-400\/25,
+.border-pink-400\/30,
+.border-pink-400\/40,
+.border-pink-400\/50,
+.border-pink-400\/60,
+.border-pink-400\/70,
+.border-pink-300,
+.border-pink-400 {
+  border-color: color-mix(in srgb, var(--accent) 70%, transparent) !important;
+}
+
+.hover\:border-pink-400:hover,
+.hover\:border-pink-300:hover,
+.focus\:border-pink-400:focus {
+  border-color: color-mix(in srgb, var(--accent) 82%, transparent) !important;
+}
+
+.focus\:border-pink-400:focus,
+input:focus,
+textarea:focus,
+select:focus,
+button:focus-visible,
+a:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset: 1px;
+}
+
+.border-t-pink-500 {
+  border-top-color: var(--accent) !important;
+}
+
+.bg-pink-500\/5,
+.bg-pink-500\/10,
+.bg-pink-500\/15,
+.bg-pink-500\/20,
+.bg-pink-500\/25,
+.bg-pink-500\/30,
+.bg-pink-500\/35,
+.bg-pink-500\/40,
+.bg-pink-500\/50 {
+  background-color: color-mix(in srgb, var(--accent) 20%, transparent) !important;
+}
+
+.hover\:bg-pink-500\/10:hover,
+.hover\:bg-pink-500\/15:hover,
+.hover\:bg-pink-500\/20:hover,
+.hover\:bg-pink-500\/35:hover,
+.hover\:bg-pink-500\/50:hover {
+  background-color: color-mix(in srgb, var(--accent) 28%, transparent) !important;
+}
+
+.from-pink-500\/30 {
+  --tw-gradient-from: color-mix(in srgb, var(--accent) 28%, transparent) var(--tw-gradient-from-position) !important;
+}
+.from-pink-500\/50 {
+  --tw-gradient-from: color-mix(in srgb, var(--accent) 40%, transparent) var(--tw-gradient-from-position) !important;
+}
+.from-pink-400 {
+  --tw-gradient-from: color-mix(in srgb, var(--accent) 88%, var(--text-h) 12%) var(--tw-gradient-from-position) !important;
+}
+.via-pink-500\/50 {
+  --tw-gradient-via: color-mix(in srgb, var(--accent) 22%, transparent) var(--tw-gradient-via-position) !important;
+}
+.to-purple-500\/20 {
+  --tw-gradient-to: color-mix(in srgb, var(--accent-secondary) 20%, transparent) var(--tw-gradient-to-position) !important;
+}
+.to-purple-500\/40 {
+  --tw-gradient-to: color-mix(in srgb, var(--accent-secondary) 34%, transparent) var(--tw-gradient-to-position) !important;
+}
+.to-purple-500 {
+  --tw-gradient-to: var(--accent-secondary) var(--tw-gradient-to-position) !important;
+}
+
+.shadow-pink-500\/30,
+.shadow-pink-500\/40,
+.shadow-red-500\/20 {
+  --tw-shadow-color: color-mix(in srgb, var(--accent) 20%, transparent) !important;
+}
+
+.hover\:shadow-pink-500\/30:hover,
+.hover\:shadow-pink-500\/40:hover {
+  --tw-shadow-color: color-mix(in srgb, var(--accent) 28%, transparent) !important;
+}
+
+.shadow-\[0_0_12px_rgba\(236\,72\,153\,0\.3\)\] {
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 30%, transparent) !important;
+}
+
+.shadow-\[0_10px_40px_rgba\(0\,0\,0\,0\.5\)\] {
+  box-shadow: 0 10px 40px color-mix(in srgb, black 50%, transparent) !important;
+}
+
+.theme-logo {
+  filter: var(--logo-filter)
+    drop-shadow(0 0 24px color-mix(in srgb, var(--accent) 40%, transparent));
+}
+
 .page-line-vertical {
   width: 3px; 
   height: 20px;
-  background: #ff7bc8; 
+  background: var(--line-color);
   border-radius: 2px;
   margin: 0 0;
   transform-origin: left center;
@@ -102,12 +305,13 @@ input, textarea {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 94, 182, 0.4);
+  background-color: color-mix(in srgb, var(--accent) 40%, transparent);
   border-radius: 10px;
   border: 4px solid transparent; 
   background-clip: padding-box; 
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 94, 182, 0.8);
+  background-color: color-mix(in srgb, var(--accent) 80%, transparent);
 }
+

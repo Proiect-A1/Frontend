@@ -91,7 +91,7 @@ export default function ProblemList() {
         totalCount={problems.length}
       />
 
-      <section className="h-auto xl:h-[calc(100svh-8.5rem)] overflow-visible xl:overflow-y-auto p-5 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow xl:col-start-2 custom-scrollbar">
+      <section className="h-auto xl:h-[calc(100svh-8.5rem)] overflow-visible xl:overflow-y-auto p-5 theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow xl:col-start-2 custom-scrollbar">
         <h1 className="text-3xl font-bold text-pink-200 mb-2">
           {t.problemsTitle}
         </h1>
@@ -102,14 +102,14 @@ export default function ProblemList() {
           {error && <p className="text-red-400">{error}</p>}
           
           {!loading && !error && filteredProblems.length === 0 && (
-            <p className="text-sm text-pink-100/85 bg-[#100d19]/80 p-4 rounded-xl border-2 border-pink-500/25">
+            <p className="text-sm text-pink-100/85 theme-surface-muted p-4 rounded-xl border-2 border-pink-500/25">
               {t.noProblemsFound}
             </p>
           )}
 
           {!loading && filteredProblems.map((problem, index) => (
             <Fragment key={problem.id}>
-              <div className="rounded-xl border border-pink-500/25 bg-[#100d19]/80 p-4 transition-all duration-200 hover:-translate-y-0.5  hover:border-pink-400">
+              <div className="rounded-xl border border-pink-500/25 theme-surface-muted p-4 transition-all duration-200 hover:-translate-y-0.5  hover:border-pink-400">
                 <div className="mb-2 flex items-center justify-between gap-3">
                   <Link
                     to={`/problems/${problem.id}`}
