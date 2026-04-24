@@ -34,7 +34,7 @@ jobs:
             # Ne întoarcem la root /home/github/sandbox și refacem containerul
             cd ../
             
-            docker compose down && docker compose up -d --build
+            docker compose down && docker compose up --quiet-build --build -d 
             
             docker image prune -f
             sleep 20
