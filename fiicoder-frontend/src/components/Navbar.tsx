@@ -58,6 +58,15 @@ export default function Navbar() {
               {t.archiveBtn}
             </Link>
 
+            {isAuthenticated && (
+              <>
+                <div className="page-line-vertical"></div>
+                <Link to="/classes" className={getNavLinkClass("/classes")}>
+                  {lang === "RO" ? "Clase" : "Classes"}
+                </Link>
+              </>
+            )}
+
             <div className="page-line-vertical"></div>
 
             {isAuthenticated ? (
@@ -166,6 +175,16 @@ export default function Navbar() {
               >
                 {t.archiveBtn}
               </Link>
+
+              {isAuthenticated && (
+                <Link
+                  to="/classes"
+                  onClick={closeMenu}
+                  className={getNavLinkClass("/classes") + " text-center"}
+                >
+                  {lang === "RO" ? "Clase" : "Classes"}
+                </Link>
+              )}
 
               <div className="w-full h-1 bg-linear-to-r from-transparent via-pink-500/50 blur-[5px]" />
 

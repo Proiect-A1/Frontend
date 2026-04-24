@@ -5,6 +5,9 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import ProblemList from "./pages/ProblemList";
 import ProblemDetails from "./pages/ProblemDetails";
+import ProtectedRoute from "./components/ProtectedRoute";
+import ClassesHub from "./pages/ClassesHub";
+import ClassDetails from "./pages/ClassDetails";
 
 const pageVariants: Variants = {
   initial: { y: -20, opacity: 0 },
@@ -31,6 +34,22 @@ function AnimatedRoutes() {
           <Route path="/login" element={<Login />} />
           <Route path="/problems" element={<ProblemList />} />
           <Route path="/problems/:problemId" element={<ProblemDetails />} />
+          <Route
+            path="/classes"
+            element={
+              <ProtectedRoute>
+                <ClassesHub />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/classes/:groupId"
+            element={
+              <ProtectedRoute>
+                <ClassDetails />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </motion.main>
     </AnimatePresence>

@@ -73,6 +73,14 @@ export const translations = {
     problemsCount: "Probleme",
     contestsCount: "Concursuri",
     satisfactionRate: "Satisfacție",
+    classesTitle: "Clase",
+    classesHubTitle: "Hub-ul de clase",
+    createClassBtn: "Creează clasa",
+    inviteStudentBtn: "Trimite invitație",
+    homeworkTitle: "Teme",
+    openClassBtn: "Deschide clasa",
+    myInvitations: "Invitațiile mele",
+    activeHomework: "Teme active",
   },
   EN: {
     // login
@@ -143,6 +151,14 @@ export const translations = {
     problemsCount: "Problems",
     contestsCount: "Contests",
     satisfactionRate: "Satisfaction",
+    classesTitle: "Classes",
+    classesHubTitle: "Class hub",
+    createClassBtn: "Create class",
+    inviteStudentBtn: "Send invite",
+    homeworkTitle: "Homework",
+    openClassBtn: "Open class",
+    myInvitations: "My invitations",
+    activeHomework: "Active homework",
   }
 };
 

@@ -31,6 +31,7 @@ function isTokenExpired(token: string): boolean {
 interface AuthContextType {
   token: string | null;
   username: string | null;
+  userId: string | null;
   isAuthenticated: boolean;
   login: (token: string) => void;
   logout: () => void;
@@ -39,6 +40,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   token: null,
   username: null,
+  userId: null,
   isAuthenticated: false,
   login: () => { },
   logout: () => { },
@@ -60,6 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const username = token ? (decodeJwt(token)?.sub ?? null) : null;
+  const userId = token ? (decodeJwt(token)?.sub ?? null) : null;
   const isAuthenticated = token !== null;
 
   const login = useCallback((newToken: string) => {
@@ -83,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [token, logout]);
 
   return (
-    <AuthContext.Provider value={{ token, username, isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ token, username, userId, isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
