@@ -38,5 +38,5 @@ jobs:
             # Curățăm imaginile nefolosite (dangling) ca să nu umplem discul
             docker image prune -f
             sleep 20
-            docker compose logs 2>&1
+            docker logs fiicoder-frontend 
             echo "✅ Frontend deployment has finished successfully!"
