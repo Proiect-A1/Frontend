@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import type { Difficulty, Problem } from "../types/problem";
 import { problemService } from "../services/problemService";
 import { getDifficultyLabel, useLanguage, translations } from "../language/Language";
@@ -107,42 +108,68 @@ export default function ProblemList() {
             </p>
           )}
 
-          {!loading && filteredProblems.map((problem, index) => (
-            <Fragment key={problem.id}>
-              <div className="rounded-xl border border-pink-500/25 theme-surface-muted p-4 transition-all duration-200 hover:-translate-y-0.5  hover:border-pink-400">
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <Link
-                    to={`/problems/${problem.id}`}
-                    className="text-lg font-semibold text-pink-200 underline decoration-2 decoration-pink-500/60 underline-offset-4 transition hover:text-pink-100 hover:decoration-pink-300 hover:decoration-3"
+          {!loading && (
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.05 },
+                },
+              }}
+            >
+              {filteredProblems.map((problem, index) => (
+                <Fragment key={problem.id}>
+                  <motion.div
+                    variants={{
+                      hidden: { opacity: 0, y: 15 },
+                      visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+                    }}
+                    className="rounded-xl border border-pink-500/25 theme-surface-muted p-4 transition-all duration-200 hover:-translate-y-0.5  hover:border-pink-400"
                   >
-                    {problem.title}
-                  </Link>
-                  <span className="rounded-full border border-pink-400/40 bg-pink-500/10 px-2.5 py-1 text-xs font-semibold text-pink-100">
-                    {getDifficultyLabel(lang, problem.difficulty)}
-                  </span>
-                </div>
-                <p className="text-sm text-pink-100/85">
-                  {problem.shortDescription}
-                </p>
-                {/* Tag-uri afisate pe card */}
-                {problem.tags.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {problem.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2 py-0.5 rounded-full text-[10px] font-semibold border border-pink-500/20 bg-pink-500/5 text-pink-300/80"
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <Link
+                        to={`/problems/${problem.id}`}
+                        className="text-lg font-semibold text-pink-200 underline decoration-2 decoration-pink-500/60 underline-offset-4 transition hover:text-pink-100 hover:decoration-pink-300 hover:decoration-3"
                       >
-                        {tag}
+                        {problem.title}
+                      </Link>
+                      <span className="rounded-full border border-pink-400/40 bg-pink-500/10 px-2.5 py-1 text-xs font-semibold text-pink-100">
+                        {getDifficultyLabel(lang, problem.difficulty)}
                       </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-              {index < filteredProblems.length - 1 && (
-                <div className="w-full h-1 bg-linear-to-r from-transparent via-pink-500/50 my-3 blur-[5px]" />
-              )}
-            </Fragment>
-          ))}
+                    </div>
+                    <p className="text-sm text-pink-100/85">
+                      {problem.shortDescription}
+                    </p>
+                    {/* Tag-uri afisate pe card */}
+                    {problem.tags.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {problem.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-2 py-0.5 rounded-full text-[10px] font-semibold border border-pink-500/20 bg-pink-500/5 text-pink-300/80"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
+                  {index < filteredProblems.length - 1 && (
+                    <motion.div
+                      variants={{
+                        hidden: { opacity: 0 },
+                        visible: { opacity: 1 },
+                      }}
+                      className="w-full h-1 bg-linear-to-r from-transparent via-pink-500/50 my-3 blur-[5px]"
+                    />
+                  )}
+                </Fragment>
+              ))}
+            </motion.div>
+          )}
         </div>
       </section>
 
