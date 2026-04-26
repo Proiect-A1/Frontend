@@ -321,7 +321,7 @@ export default function ProblemDetails() {
                 onSubmit={handleSubmit}
                 className="flex-1 flex flex-col gap-4"
               >
-                <div className="relative flex-1 rounded-2xl overflow-hidden border border-pink-500/20 theme-surface-editor min-h-[300px]">
+                <div className="relative flex-1 rounded-2xl overflow-hidden border border-pink-500/20 theme-surface-editor min-h-75">
                   <Editor
                     height="100%"
                     language={monacoLanguageMap[language] || "cpp"}

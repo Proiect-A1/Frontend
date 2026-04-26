@@ -73,9 +73,9 @@ export default function Landing() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="flex h-full min-h-0 w-full items-center justify-center overflow-hidden px-2 sm:px-4 lg:px-6">
+    <div className="w-full flex justify-center h-auto xl:h-full">
       <motion.div
-        className="h-[min(100%,calc(100svh-1.5rem))] w-full max-w-[clamp(68rem,92vw,96rem)] overflow-y-auto custom-scrollbar rounded-[2rem] border border-pink-500/20 theme-surface-page backdrop-blur-xl px-5 py-6 md:px-8 md:py-8 theme-page-aura"
+        className="w-full max-w-7xl rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg px-5 py-6 md:px-8 md:py-8 card-glow h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -94,14 +94,14 @@ export default function Landing() {
             variants={itemVariants}
             className="text-5xl md:text-7xl font-black text-pink-100 mb-4 tracking-tighter"
           >
-            {lang === "RO" ? t.welcomeTitle : t.welcomeTitle} <span className="text-pink-400">{`<_FiiCoder>`}</span>
+            {t.welcomeTitle} <span className="text-pink-400">{`<_FiiCoder>`}</span>
           </motion.h1>
 
           <motion.p
             variants={itemVariants}
             className="text-lg md:text-2xl text-pink-200/70 max-w-2xl mx-auto mb-8"
           >
-            {lang === "RO" ? t.welcomeDesc : t.welcomeDesc}
+            {t.welcomeDesc}
           </motion.p>
 
           <motion.div
@@ -112,7 +112,7 @@ export default function Landing() {
               to="/problems"
               className="px-8 py-4 rounded-2xl bg-pink-500/20 border-2 border-pink-400/60 text-pink-100 font-bold text-lg transition-all duration-200 hover:bg-pink-500/35 hover:border-pink-400 hover:-translate-y-1 shadow-lg hover:shadow-pink-500/30"
             >
-              {lang === "RO" ? t.viewProblems : t.viewProblems}
+              {t.viewProblems}
             </Link>
 
             {!isAuthenticated && (
@@ -120,7 +120,7 @@ export default function Landing() {
                 to="/login"
                 className="px-8 py-4 rounded-2xl bg-transparent border-2 border-pink-400/40 text-pink-300/80 font-bold text-lg transition-all duration-200 hover:bg-pink-500/15 hover:border-pink-400/60 hover:text-pink-100 hover:-translate-y-1"
               >
-                {lang === "RO" ? t.authenticateBtn : t.authenticateBtn}
+                {t.authenticateBtn}
               </Link>
             )}
           </motion.div>
@@ -129,7 +129,7 @@ export default function Landing() {
         {/* Announcements Section */}
         <motion.div variants={itemVariants} className="mt-10 mb-10">
           <h2 className="text-3xl md:text-4xl font-bold text-pink-100 mb-8 text-center">
-            {lang === "RO" ? t.announcementsTitle : t.announcementsTitle}
+            {t.announcementsTitle}
           </h2>
           <div className="grid gap-4 lg:grid-cols-3">
             {announcements.map((ann) => (
@@ -145,7 +145,7 @@ export default function Landing() {
                 }`}
               >
                 <div className="flex items-start gap-4">
-                  <div className="text-3xl flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                  <div className="text-3xl shrink-0 group-hover:scale-110 transition-transform duration-300">
                     {ann.icon}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -160,7 +160,7 @@ export default function Landing() {
                     </div>
                   </div>
                   {ann.priority === "high" && (
-                    <div className="flex-shrink-0 px-2 py-1 rounded-full bg-red-500/30 text-red-300 text-[10px] font-bold">
+                    <div className="shrink-0 px-2 py-1 rounded-full bg-red-500/30 text-red-300 text-[10px] font-bold">
                       {lang === "RO" ? "URGENT" : "URGENT"}
                     </div>
                   )}
@@ -175,18 +175,18 @@ export default function Landing() {
           {[
             {
               icon: "📚",
-              title: lang === "RO" ? t.newProblems : t.newProblems,
-              desc: lang === "RO" ? t.newProblemsDesc : t.newProblemsDesc,
+              title: t.newProblems,
+              desc: t.newProblemsDesc,
             },
             {
               icon: "🏆",
-              title: lang === "RO" ? t.dailyContests : t.dailyContests,
-              desc: lang === "RO" ? t.dailyContestsDesc : t.dailyContestsDesc,
+              title: t.dailyContests,
+              desc: t.dailyContestsDesc,
             },
             {
               icon: "💻",
-              title: lang === "RO" ? t.advancedEditor : t.advancedEditor,
-              desc: lang === "RO" ? t.advancedEditorDesc : t.advancedEditorDesc,
+              title: t.advancedEditor,
+              desc: t.advancedEditorDesc,
             },
           ].map((feature, index) => (
             <motion.div
@@ -210,10 +210,10 @@ export default function Landing() {
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
-              { num: "5000+", label: lang === "RO" ? t.activeStudents : t.activeStudents },
-              { num: "500+", label: lang === "RO" ? t.problemsCount : t.problemsCount },
-              { num: "150+", label: lang === "RO" ? t.contestsCount : t.contestsCount },
-              { num: "98%", label: lang === "RO" ? t.satisfactionRate : t.satisfactionRate },
+              { num: "5000+", label: t.activeStudents },
+              { num: "500+", label: t.problemsCount },
+              { num: "150+", label: t.contestsCount },
+              { num: "98%", label: t.satisfactionRate },
             ].map((stat, idx) => (
               <motion.div key={idx} variants={itemVariants}>
                 <div className="text-3xl md:text-4xl font-black text-pink-300 mb-1">
@@ -228,13 +228,13 @@ export default function Landing() {
         {/* CTA Section */}
         <motion.div variants={itemVariants} className="mt-10 text-center pb-4">
           <p className="text-pink-200/70 mb-4">
-            {lang === "RO" ? t.readyText : t.readyText}
+            {t.readyText}
           </p>
           <Link
             to="/problems"
             className="inline-block px-10 py-4 rounded-2xl bg-linear-to-r from-pink-500/30 to-purple-500/20 border-2 border-pink-400/70 text-pink-100 font-bold text-lg transition-all duration-200 hover:from-pink-500/50 hover:to-purple-500/40 hover:border-pink-400 hover:-translate-y-1 shadow-lg hover:shadow-pink-500/40"
           >
-            {lang === "RO" ? t.startBtn : t.startBtn}
+            {t.startBtn}
           </Link>
         </motion.div>
       </motion.div>
