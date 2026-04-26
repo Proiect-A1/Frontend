@@ -17,7 +17,7 @@ import "katex/dist/katex.min.css";
 // Utility to fix database indentation issues for Markdown
 function unindent(str: string): string {
   if (!str) return "";
-  const lines = str.split('\n');
+  const lines = str.split("\n");
 
   let minIndent = Infinity;
   for (let i = 1; i < lines.length; i++) {
@@ -31,12 +31,14 @@ function unindent(str: string): string {
 
   if (minIndent === Infinity || minIndent === 0) return str;
 
-  return lines.map((line, index) => {
-    if (index === 0) return line;
-    if (line.trim().length === 0) return "";
-    const regex = new RegExp(`^[ \\t]{1,${minIndent}}`);
-    return line.replace(regex, '');
-  }).join('\n');
+  return lines
+    .map((line, index) => {
+      if (index === 0) return line;
+      if (line.trim().length === 0) return "";
+      const regex = new RegExp(`^[ \\t]{1,${minIndent}}`);
+      return line.replace(regex, "");
+    })
+    .join("\n");
 }
 
 // mapare limbaj UI -> identificator Monaco
@@ -312,8 +314,9 @@ export default function ProblemDetails() {
             <ReactMarkdown
               remarkPlugins={[remarkMath]}
               rehypePlugins={[rehypeKatex]}
-              children={unindent(problem.statement.replace(/\\\\/g, '\\'))}
+              children={unindent(problem.statement.replace(/\\\\/g, "\\"))}
               components={{
+                // Titluri
                 h1: ({ ...props }) => (
                   <h1
                     className="text-2xl font-bold text-pink-200 mt-6 mb-3 border-b border-pink-500/20 pb-1"
@@ -327,28 +330,45 @@ export default function ProblemDetails() {
                   />
                 ),
 
+                // Paragrafe
                 p: ({ ...props }) => (
                   <p className="mb-4 whitespace-pre-wrap" {...props} />
                 ),
 
-                span: ({ className, children, ...props }) => {
-                  if (className?.includes("katex")) {
-                    return <span className={`${className} text-pink-100`} {...props}>{children}</span>;
-                  }
-                  return <span className={className} {...props}>{children}</span>;
+                // Liste
+                ul: ({ ...props }) => (
+                  <ul className="list-disc pl-6 mb-4 space-y-1" {...props} />
+                ),
+                ol: ({ ...props }) => (
+                  <ol className="list-decimal pl-6 mb-4 space-y-1" {...props} />
+                ),
+                li: ({ ...props }) => <li className="ml-2" {...props} />,
+
+                // Formule matematice inline
+                span: ({ className, ...props }) => {
+                  if (className?.includes("katex"))
+                    return <span className="text-pink-300" {...props} />;
+                  return <span {...props} />;
                 },
 
-                // AICI AM MODIFICAT randarea codului inline
-                code: ({ node, inline, className, children, ...props }: any) => {
+                // Blocuri de cod și Inline Code
+                code: ({
+                  node,
+                  inline,
+                  className,
+                  children,
+                  ...props
+                }: any) => {
                   return inline ? (
                     <code
-                      className="font-bold text-pink-300 border-b border-pink-500/30 pb-0.5 mx-1"
+                      className="bg-pink-500/10 text-pink-300 px-1.5 py-0.5 rounded-md text-sm font-mono border border-pink-500/20"
                       {...props}
                     >
                       {children}
                     </code>
                   ) : (
                     <div className="my-4">
+                      {/* Am scos div-ul cu "Exemplu" de aici */}
                       <div className="rounded-xl overflow-hidden border border-pink-500/20 theme-surface-editor shadow-inner bg-black/20">
                         <code
                           className="block p-4 text-sm font-mono text-pink-200 overflow-x-auto"
@@ -361,15 +381,7 @@ export default function ProblemDetails() {
                   );
                 },
 
-                ul: ({ ...props }) => (
-                  <ul className="list-disc pl-6 mb-4 space-y-1" {...props} />
-                ),
-                ol: ({ ...props }) => (
-                  <ol className="list-decimal pl-6 mb-4 space-y-1" {...props} />
-                ),
-                li: ({ ...props }) => <li className="ml-2" {...props} />,
-
-                // Wrapper-ul <pre> setat ca transparent
+                // Wrapper-ul <pre> setat ca transparent pentru a elimina dubla-casetare
                 pre: ({ children }) => <div className="mb-4">{children}</div>,
               }}
             />
@@ -534,32 +546,35 @@ export default function ProblemDetails() {
             className="fixed bottom-8 right-8 z-100"
           >
             <div
-              className={`relative overflow-hidden px-8 py-5 rounded-2xl border-2 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${status === "pending"
-                ? "border-pink-500/50 theme-surface-card text-pink-200"
-                : status === "valid"
-                  ? "border-green-500/50 bg-green-500/10 text-green-300"
-                  : "border-red-500/50 bg-red-500/10 text-red-300"
-                }`}
+              className={`relative overflow-hidden px-8 py-5 rounded-2xl border-2 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${
+                status === "pending"
+                  ? "border-pink-500/50 theme-surface-card text-pink-200"
+                  : status === "valid"
+                    ? "border-green-500/50 bg-green-500/10 text-green-300"
+                    : "border-red-500/50 bg-red-500/10 text-red-300"
+              }`}
             >
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: status === "pending" ? 2 : 4 }}
-                className={`absolute bottom-0 left-0 h-1 w-full origin-left ${status === "pending"
-                  ? "bg-pink-500"
-                  : status === "valid"
-                    ? "bg-green-500"
-                    : "bg-red-500"
-                  }`}
-              />
-              <div className="flex items-center gap-4">
-                <div
-                  className={`w-3 h-3 rounded-full animate-pulse ${status === "pending"
+                className={`absolute bottom-0 left-0 h-1 w-full origin-left ${
+                  status === "pending"
                     ? "bg-pink-500"
                     : status === "valid"
                       ? "bg-green-500"
                       : "bg-red-500"
-                    }`}
+                }`}
+              />
+              <div className="flex items-center gap-4">
+                <div
+                  className={`w-3 h-3 rounded-full animate-pulse ${
+                    status === "pending"
+                      ? "bg-pink-500"
+                      : status === "valid"
+                        ? "bg-green-500"
+                        : "bg-red-500"
+                  }`}
                 />
                 <div>
                   <h4 className="text-xs uppercase tracking-widest font-bold opacity-60">
