@@ -345,11 +345,20 @@ export default function ProblemDetails() {
                 li: ({ ...props }) => <li className="ml-2" {...props} />,
 
                 // Formule matematice inline
-                span: ({ className, ...props }) => {
-                  if (className?.includes("katex"))
-                    return <span className="text-pink-300" {...props} />;
-                  return <span {...props} />;
-                },
+                span: ({ className, children, ...props }: any) => {
+                  if (className && className.includes("katex")) {
+                    return (
+                      <span className={`${className} text-pink-300`} {...props}>
+                        {children}
+                      </span>
+                    );
+                  }
+                  return (
+                    <span className={className} {...props}>
+                      {children}
+                    </span>
+                  );
+                },      
 
                 // Blocuri de cod și Inline Code
                 code: ({
