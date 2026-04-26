@@ -1,0 +1,11 @@
+// Creăm un payload valid cu numele "dev" și data de expirare în anul 2033
+const payload = btoa(JSON.stringify({ sub: "dev", exp: 2000000000, iat: 1700000000 }));
+
+// Asamblăm un token cu cele 3 părți (header.payload.semnătură)
+const fakeToken = "fakeHeader." + payload + ".fakeSignature";
+
+// Salvăm în localStorage
+localStorage.setItem("fiicoder_jwt", fakeToken);
+
+// Reîncărcăm pagina pentru a inițializa AuthContext cu noul token
+window.location.reload();
