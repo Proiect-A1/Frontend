@@ -35,7 +35,6 @@
 
   color-scheme: dark;
   color: var(--text);
-  background: var(--bg);
 }
 
 [data-theme="nord"] {
@@ -65,23 +64,39 @@
   --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%2388c0d0' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%23eceff4'/%3E%3C/svg%3E");
 }
 
-#root {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
+/* xl: layout fix, scroll pe componente individuale */
+@media (min-width: 1280px) {
+  body  { overflow: hidden; }
+  #root { height: 100svh; overflow: hidden; }
+}
+
+html {
+  background-color: var(--bg);
 }
 
 body {
   margin: 0;
-  overflow-x: hidden;
-  background: var(--bg);
+  overflow: hidden;
   color: var(--text);
   font-family: var(--sans);
   cursor: var(--cursor-default) 13 13, auto;
   -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  height: 100svh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  
+  background-color: var(--bg);
+  background-image: radial-gradient(circle at 20% 0%, var(--hero-start) 0%, var(--hero-mid) 45%, var(--hero-end) 100%);
+  background-size: 200% 200%;
+  background-attachment: fixed;
 }
 
 .theme-surface-page {
@@ -157,12 +172,6 @@ input, textarea {
   animation: expandLineHorizontal 0.4s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   Compatibility layer — maps ALL legacy pink/purple Tailwind 
-   utilities to CSS custom properties so they adapt to any theme.
-   ═══════════════════════════════════════════════════════════════════ */
-
-/* ── TEXT ── */
 .text-pink-100 { color: var(--text-h) !important; }
 .text-pink-200 { color: color-mix(in srgb, var(--text-h) 88%, var(--text) 12%) !important; }
 .text-pink-300 { color: color-mix(in srgb, var(--accent) 84%, var(--text-h) 16%) !important; }
@@ -327,23 +336,35 @@ a:focus-visible {
   animation: expandLineVertical 0.4s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* ── SCROLLBAR ──────────────────────────────────────────────────────────────
+   Webkit (Chrome/Safari/Edge): stilizare completă via pseudo-elemente.
+   Firefox: @supports guard ca să nu afecteze Chrome 121+ care interpretează
+   scrollbar-width ca standard CSS și ignoră ::-webkit-scrollbar.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Webkit – global (html scroll pe mobile + componente cu custom-scrollbar pe xl) */
 ::-webkit-scrollbar {
-  width: 16px; 
+  width: 16px;
+  background-color: transparent !important;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent; 
-  /* top and bottom margins */
-  margin-block: 5px; 
+  background: transparent !important;
+  background-color: transparent !important;
+  margin-block: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
   background-color: color-mix(in srgb, var(--accent) 40%, transparent);
   border-radius: 10px;
-  border: 4px solid transparent; 
-  background-clip: padding-box; 
+  border: 4px solid transparent;
+  background-clip: padding-box;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background-color: color-mix(in srgb, var(--accent) 80%, transparent);
+/* Firefox only — ::-webkit-scrollbar nu există în Firefox */
+@supports not selector(::-webkit-scrollbar) {
+  html, .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--accent) 40%, transparent) transparent;
+  }
 }

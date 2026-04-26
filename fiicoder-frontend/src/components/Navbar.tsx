@@ -15,7 +15,8 @@ export default function Navbar() {
   const { theme, themes, toggleTheme } = useTheme();
   const currentThemeIndex = themes.indexOf(theme);
   const nextTheme = themes[(currentThemeIndex + 1) % themes.length];
-  const formatThemeLabel = (themeName: string) => themeName.charAt(0).toUpperCase() + themeName.slice(1);
+  const formatThemeLabel = (themeName: string) =>
+    themeName.charAt(0).toUpperCase() + themeName.slice(1);
 
   // State pentru meniul de telefon
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -38,7 +39,8 @@ export default function Navbar() {
   const closeMenu = () => setIsMobileOpen(false);
 
   return (
-   <div className="sticky top-0 z-50 w-full px-6 pt-4"> 
+    <div className="sticky top-0 z-50 w-full px-4 md:px-6 pt-4">
+      {" "}
       <nav className="w-full">
         <div className="theme-surface-card backdrop-blur-md border-2 border-pink-500/35 rounded-full px-5 py-2.5 flex items-center justify-between card-glow">
           <Link

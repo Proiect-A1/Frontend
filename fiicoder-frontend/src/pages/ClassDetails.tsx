@@ -2,13 +2,23 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../services/AuthContext";
-import { classService, type GroupFindResponseDTO } from "../services/classService";
-import { homeworkService, type HomeworkResponseDTO } from "../services/homeworkService";
+import {
+  classService,
+  type GroupFindResponseDTO,
+} from "../services/classService";
+import {
+  homeworkService,
+  type HomeworkResponseDTO,
+} from "../services/homeworkService";
 import { useLanguage } from "../language/Language";
 
 const pageVariants = {
   hidden: { opacity: 0, y: 18 },
-  visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.08, delayChildren: 0.08 } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { staggerChildren: 0.08, delayChildren: 0.08 },
+  },
 };
 
 const itemVariants = {
@@ -60,7 +70,13 @@ export default function ClassDetails() {
         setHomeworks(homeworkData);
       } catch (err: any) {
         if (isMounted) {
-          setError(err?.body?.message || err?.body?.error || (lang === "RO" ? "Nu am putut încărca clasa." : "Could not load the class."));
+          setError(
+            err?.body?.message ||
+              err?.body?.error ||
+              (lang === "RO"
+                ? "Nu am putut încărca clasa."
+                : "Could not load the class."),
+          );
         }
       } finally {
         if (isMounted) setLoading(false);
@@ -88,13 +104,23 @@ export default function ClassDetails() {
       setFeedback(null);
       await classService.inviteUser(groupId, { email: inviteEmail });
       setInviteEmail("");
-      setFeedback(lang === "RO" ? "Invitația a fost trimisă." : "Invitation sent.");
+      setFeedback(
+        lang === "RO" ? "Invitația a fost trimisă." : "Invitation sent.",
+      );
     } catch (err: any) {
-      setError(err?.body?.message || err?.body?.error || (lang === "RO" ? "Nu am putut trimite invitația." : "Could not send invitation."));
+      setError(
+        err?.body?.message ||
+          err?.body?.error ||
+          (lang === "RO"
+            ? "Nu am putut trimite invitația."
+            : "Could not send invitation."),
+      );
     }
   };
 
-  const handleCreateHomework = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateHomework = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
     event.preventDefault();
     if (!groupId) return;
     try {
@@ -111,7 +137,13 @@ export default function ClassDetails() {
       setFeedback(lang === "RO" ? "Tema a fost creată." : "Homework created.");
       await reloadHomeworks();
     } catch (err: any) {
-      setError(err?.body?.message || err?.body?.error || (lang === "RO" ? "Nu am putut crea tema." : "Could not create homework."));
+      setError(
+        err?.body?.message ||
+          err?.body?.error ||
+          (lang === "RO"
+            ? "Nu am putut crea tema."
+            : "Could not create homework."),
+      );
     }
   };
 
@@ -124,28 +156,39 @@ export default function ClassDetails() {
       setFeedback(lang === "RO" ? "Tema a fost ștearsă." : "Homework deleted.");
       await reloadHomeworks();
     } catch (err: any) {
-      setError(err?.body?.message || err?.body?.error || (lang === "RO" ? "Nu am putut șterge tema." : "Could not delete homework."));
+      setError(
+        err?.body?.message ||
+          err?.body?.error ||
+          (lang === "RO"
+            ? "Nu am putut șterge tema."
+            : "Could not delete homework."),
+      );
     }
   };
 
   return (
-    <div className="h-full min-h-0 overflow-hidden">
+    <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
       <motion.div
-        className="h-full overflow-y-auto custom-scrollbar rounded-[2rem] border border-pink-500/20 theme-surface-page backdrop-blur-xl px-5 py-6 md:px-8 md:py-8 theme-page-aura"
+        className="w-full max-w-7xl rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg px-5 py-6 md:px-8 md:py-8 card-glow h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
         variants={pageVariants}
         initial="hidden"
         animate="visible"
       >
-        <motion.div variants={itemVariants} className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between mb-8">
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between mb-8"
+        >
           <div>
             <p className="text-sm uppercase tracking-[0.35em] text-pink-300/60">
               {lang === "RO" ? "Clasă" : "Class"}
             </p>
             <h1 className="text-4xl md:text-5xl font-black text-pink-100 mt-2">
-              {group?.name || (lang === "RO" ? "Se încarcă clasa..." : "Loading class...")}
+              {group?.name ||
+                (lang === "RO" ? "Se încarcă clasa..." : "Loading class...")}
             </h1>
             <p className="text-pink-200/70 mt-3 max-w-3xl">
-              {group?.description || (lang === "RO" ? "Fără descriere." : "No description.")}
+              {group?.description ||
+                (lang === "RO" ? "Fără descriere." : "No description.")}
             </p>
           </div>
           <Link
@@ -157,30 +200,47 @@ export default function ClassDetails() {
         </motion.div>
 
         {(feedback || error) && (
-          <motion.div variants={itemVariants} className={`mb-6 rounded-2xl border-2 px-4 py-3 ${error ? "border-red-500/40 bg-red-500/10 text-red-100" : "border-pink-500/40 bg-pink-500/10 text-pink-100"}`}>
+          <motion.div
+            variants={itemVariants}
+            className={`mb-6 rounded-2xl border-2 px-4 py-3 ${error ? "border-red-500/40 bg-red-500/10 text-red-100" : "border-pink-500/40 bg-pink-500/10 text-pink-100"}`}
+          >
             {error || feedback}
           </motion.div>
         )}
 
         {loading && (
-          <motion.div variants={itemVariants} className="rounded-2xl border border-pink-500/20 theme-surface-card p-6 text-pink-200/70">
-            {lang === "RO" ? "Se încarcă datele clasei..." : "Loading class data..."}
+          <motion.div
+            variants={itemVariants}
+            className="rounded-2xl border border-pink-500/20 theme-surface-card p-6 text-pink-200/70"
+          >
+            {lang === "RO"
+              ? "Se încarcă datele clasei..."
+              : "Loading class data..."}
           </motion.div>
         )}
 
         {!loading && group && (
           <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-            <motion.section variants={itemVariants} className="rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20">
+            <motion.section
+              variants={itemVariants}
+              className="rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20"
+            >
               <h2 className="text-2xl font-bold text-pink-100">
                 {lang === "RO" ? "Detalii clasă" : "Class details"}
               </h2>
               <div className="mt-4 grid gap-3 text-sm text-pink-200/70">
-                <div>{lang === "RO" ? "Creată de" : "Created by"}: {group.creatorUsername}</div>
+                <div>
+                  {lang === "RO" ? "Creată de" : "Created by"}:{" "}
+                  {group.creatorUsername}
+                </div>
                 <div>ID: {group.id}</div>
                 <div>{group.createdAt}</div>
               </div>
 
-              <form onSubmit={handleInvite} className="mt-6 rounded-3xl border border-pink-500/20 theme-surface-muted p-5">
+              <form
+                onSubmit={handleInvite}
+                className="mt-6 rounded-3xl border border-pink-500/20 theme-surface-muted p-5"
+              >
                 <h3 className="text-xl font-semibold text-pink-100">
                   {lang === "RO" ? "Invită un elev" : "Invite a student"}
                 </h3>
@@ -188,7 +248,9 @@ export default function ClassDetails() {
                   <input
                     value={inviteEmail}
                     onChange={(event) => setInviteEmail(event.target.value)}
-                    placeholder={lang === "RO" ? "email@exemplu.com" : "email@example.com"}
+                    placeholder={
+                      lang === "RO" ? "email@exemplu.com" : "email@example.com"
+                    }
                     className="flex-1 rounded-2xl border border-pink-500/25 theme-surface-card px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
                   />
                   <button
@@ -201,7 +263,10 @@ export default function ClassDetails() {
               </form>
             </motion.section>
 
-            <motion.section variants={itemVariants} className="rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20">
+            <motion.section
+              variants={itemVariants}
+              className="rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20"
+            >
               <h2 className="text-2xl font-bold text-pink-100">
                 {lang === "RO" ? "Creează temă" : "Create homework"}
               </h2>
@@ -220,7 +285,9 @@ export default function ClassDetails() {
                 />
                 <textarea
                   value={homeworkDescription}
-                  onChange={(event) => setHomeworkDescription(event.target.value)}
+                  onChange={(event) =>
+                    setHomeworkDescription(event.target.value)
+                  }
                   placeholder={lang === "RO" ? "Descriere" : "Description"}
                   className="min-h-28 w-full rounded-2xl border border-pink-500/25 theme-surface-muted px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
                 />
@@ -241,7 +308,10 @@ export default function ClassDetails() {
           </div>
         )}
 
-        <motion.section variants={itemVariants} className="mt-6 rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20">
+        <motion.section
+          variants={itemVariants}
+          className="mt-6 rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20"
+        >
           <div className="flex items-center justify-between gap-4">
             <h2 className="text-2xl font-bold text-pink-100">
               {lang === "RO" ? "Teme active" : "Active homework"}
@@ -252,23 +322,38 @@ export default function ClassDetails() {
           <div className="mt-4 grid gap-3">
             {homeworks.length === 0 && !loading && (
               <div className="rounded-2xl border border-pink-500/20 theme-surface-muted p-4 text-pink-200/70">
-                {lang === "RO" ? "Nu există teme pentru această clasă." : "There is no homework for this class."}
+                {lang === "RO"
+                  ? "Nu există teme pentru această clasă."
+                  : "There is no homework for this class."}
               </div>
             )}
 
             {homeworks.map((homework) => (
-              <div key={homework.id} className="rounded-2xl border border-pink-500/20 theme-surface-muted p-4">
+              <div
+                key={homework.id}
+                className="rounded-2xl border border-pink-500/20 theme-surface-muted p-4"
+              >
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
-                      <h3 className="text-xl font-semibold text-pink-100">{homework.title}</h3>
-                      <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${getHomeworkBadge(homework.status)}`}>
+                      <h3 className="text-xl font-semibold text-pink-100">
+                        {homework.title}
+                      </h3>
+                      <span
+                        className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${getHomeworkBadge(homework.status)}`}
+                      >
                         {homework.status}
                       </span>
                     </div>
-                    <p className="mt-2 text-sm text-pink-200/70">{homework.description || (lang === "RO" ? "Fără descriere." : "No description.")}</p>
+                    <p className="mt-2 text-sm text-pink-200/70">
+                      {homework.description ||
+                        (lang === "RO" ? "Fără descriere." : "No description.")}
+                    </p>
                     <div className="mt-3 flex flex-wrap gap-3 text-xs text-pink-300/55">
-                      <span>{lang === "RO" ? "Deadline" : "Deadline"}: {homework.deadline}</span>
+                      <span>
+                        {lang === "RO" ? "Deadline" : "Deadline"}:{" "}
+                        {homework.deadline}
+                      </span>
                       <span>ID: {homework.id}</span>
                     </div>
                   </div>

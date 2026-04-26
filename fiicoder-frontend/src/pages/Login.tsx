@@ -65,7 +65,7 @@ export default function Login() {
         setSuccessMsg(
           lang === "RO"
             ? "Cont creat cu succes! Te poți autentifica."
-            : "Account created successfully! You can now log in."
+            : "Account created successfully! You can now log in.",
         );
         // Switch to login mode after successful registration
         setIsLogin(true);
@@ -85,7 +85,7 @@ export default function Login() {
         setError(
           lang === "RO"
             ? "Eroare de conexiune. Verifică serverul."
-            : "Connection error. Check if the server is running."
+            : "Connection error. Check if the server is running.",
         );
       }
     } finally {
@@ -109,26 +109,24 @@ export default function Login() {
   };
 
   return (
-    <div className="p-8 max-w-md mx-auto theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow">
+    <div className="p-8 w-full max-w-150 mx-auto theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow">
+      {" "}
       <h1 className="text-3xl font-bold text-pink-200 mb-2">
         {isLogin ? t.loginTitle : t.registerTitle}
       </h1>
       <div className="page-line-horizontal" />
-
       {/* Success message */}
       {successMsg && (
         <div className="mt-4 px-4 py-2.5 rounded-xl border border-green-400/40 bg-green-500/10 text-sm text-green-300">
           {successMsg}
         </div>
       )}
-
       {/* Error message */}
       {error && (
         <div className="mt-4 px-4 py-2.5 rounded-xl border border-red-400/40 bg-red-500/10 text-sm text-red-300">
           {error}
         </div>
       )}
-
       <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
         {/* ── Login fields ── */}
         {isLogin ? (
@@ -176,11 +174,15 @@ export default function Login() {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="ex: fiicoder"
                 className={`w-full rounded-xl border theme-surface-input px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
-                  fieldErrors.username ? "border-red-400/60" : "border-pink-500/30"
+                  fieldErrors.username
+                    ? "border-red-400/60"
+                    : "border-pink-500/30"
                 }`}
               />
               {fieldErrors.username && (
-                <p className="mt-1 text-xs text-red-400">{fieldErrors.username}</p>
+                <p className="mt-1 text-xs text-red-400">
+                  {fieldErrors.username}
+                </p>
               )}
             </div>
             <div className="flex gap-3">
@@ -196,11 +198,15 @@ export default function Login() {
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder={t.namePlaceholder}
                   className={`w-full rounded-xl border theme-surface-input px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
-                    fieldErrors.firstName ? "border-red-400/60" : "border-pink-500/30"
+                    fieldErrors.firstName
+                      ? "border-red-400/60"
+                      : "border-pink-500/30"
                   }`}
                 />
                 {fieldErrors.firstName && (
-                  <p className="mt-1 text-xs text-red-400">{fieldErrors.firstName}</p>
+                  <p className="mt-1 text-xs text-red-400">
+                    {fieldErrors.firstName}
+                  </p>
                 )}
               </div>
               <div className="flex-1">
@@ -215,11 +221,15 @@ export default function Login() {
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder={t.surnamePlaceholder}
                   className={`w-full rounded-xl border theme-surface-input px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
-                    fieldErrors.lastName ? "border-red-400/60" : "border-pink-500/30"
+                    fieldErrors.lastName
+                      ? "border-red-400/60"
+                      : "border-pink-500/30"
                   }`}
                 />
                 {fieldErrors.lastName && (
-                  <p className="mt-1 text-xs text-red-400">{fieldErrors.lastName}</p>
+                  <p className="mt-1 text-xs text-red-400">
+                    {fieldErrors.lastName}
+                  </p>
                 )}
               </div>
             </div>
@@ -253,11 +263,15 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className={`w-full rounded-xl border theme-surface-input px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400 ${
-                  fieldErrors.password ? "border-red-400/60" : "border-pink-500/30"
+                  fieldErrors.password
+                    ? "border-red-400/60"
+                    : "border-pink-500/30"
                 }`}
               />
               {fieldErrors.password && (
-                <p className="mt-1 text-xs text-red-400">{fieldErrors.password}</p>
+                <p className="mt-1 text-xs text-red-400">
+                  {fieldErrors.password}
+                </p>
               )}
             </div>
           </>
@@ -269,11 +283,14 @@ export default function Login() {
           className="mt-4 w-full rounded-xl border border-pink-400/50 bg-pink-500/20 px-4 py-2.5 text-sm font-bold text-pink-100 outline-none transition hover:border-pink-400 hover:bg-pink-500/30 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading
-            ? (lang === "RO" ? "Se încarcă..." : "Loading...")
-            : (isLogin ? t.loginBtn : t.registerBtn)}
+            ? lang === "RO"
+              ? "Se încarcă..."
+              : "Loading..."
+            : isLogin
+              ? t.loginBtn
+              : t.registerBtn}
         </button>
       </form>
-
       <div className="mt-6 text-center text-sm text-pink-200/70">
         {isLogin ? t.noAccount : t.hasAccount}{" "}
         <button
@@ -281,12 +298,15 @@ export default function Login() {
           onClick={toggleMode}
           className="font-semibold text-pink-300 underline underline-offset-4 hover:text-pink-100 transition-colors"
         >
-          {isLogin 
-            ? (lang === "RO" ? "Înregistrează-te" : "Sign Up") 
-            : (lang === "RO" ? "Autentifică-te" : "Login")}
+          {isLogin
+            ? lang === "RO"
+              ? "Înregistrează-te"
+              : "Sign Up"
+            : lang === "RO"
+              ? "Autentifică-te"
+              : "Login"}
         </button>
       </div>
-
       {/* Divider */}
       <div className="mt-5 flex items-center gap-3">
         <div className="flex-1 h-px bg-pink-500/20" />
@@ -295,7 +315,6 @@ export default function Login() {
         </span>
         <div className="flex-1 h-px bg-pink-500/20" />
       </div>
-
       {/* Guest button */}
       <button
         type="button"
