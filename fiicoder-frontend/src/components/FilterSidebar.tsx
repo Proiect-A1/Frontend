@@ -68,7 +68,7 @@ export default function FilterSidebar({
   };
 
   return (
-    <aside className="h-auto overflow-visible xl:h-fit xl:max-h-[calc(100svh-8.5rem)] xl:overflow-y-auto p-5 bg-[#151221]/80 backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow xl:sticky xl:top-0 xl:col-start-1 custom-scrollbar">
+    <aside className="h-auto overflow-visible xl:h-fit xl:max-h-[calc(100svh-8.5rem)] xl:overflow-y-auto p-5 theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow xl:sticky xl:top-0 xl:col-start-1 custom-scrollbar">
       <h2 className="text-xl font-bold text-pink-200 mb-2">{t.filterTitle}</h2>
 
       <div className="space-y-4">
@@ -86,7 +86,7 @@ export default function FilterSidebar({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={lang === "RO" ? "ex: Problema 3" : "ex: Problem 3"}
-            className="w-full rounded-xl border border-pink-500/30 bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 placeholder:text-pink-200/40 outline-none transition hover:border-pink-400"
+            className="w-full rounded-xl border border-pink-500/30 theme-surface-input px-3 py-2 text-sm text-pink-100 placeholder:text-pink-200/40 outline-none transition hover:border-pink-400"
           />
         </div>
 
@@ -99,7 +99,7 @@ export default function FilterSidebar({
             <button
               type="button"
               onClick={() => setIsOpen(!isOpen)}
-              className="w-full flex items-center justify-between rounded-xl border border-pink-500/30 bg-[#0f0c18] px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400"
+              className="w-full flex items-center justify-between rounded-xl border border-pink-500/30 theme-surface-input px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400"
             >
               {getOptionLabel(difficultyFilter)}
               <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
@@ -114,7 +114,7 @@ export default function FilterSidebar({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.12 }}
-                  className="absolute z-50 mt-1 w-full bg-[#1a1629] border border-pink-500/40 rounded-xl shadow-2xl overflow-hidden"
+                  className="absolute z-50 mt-1 w-full theme-surface-dropdown border border-pink-500/40 rounded-xl shadow-2xl overflow-hidden"
                 >
                   {difficultyOptions.map((option) => (
                     <button

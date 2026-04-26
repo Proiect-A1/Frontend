@@ -131,7 +131,7 @@ export default function ClassDetails() {
   return (
     <div className="h-full min-h-0 overflow-hidden">
       <motion.div
-        className="h-full overflow-y-auto custom-scrollbar rounded-[2rem] border border-pink-500/20 bg-[#0f0c18]/55 backdrop-blur-xl px-5 py-6 md:px-8 md:py-8 shadow-[0_0_60px_rgba(236,72,153,0.12)]"
+        className="h-full overflow-y-auto custom-scrollbar rounded-[2rem] border border-pink-500/20 theme-surface-page backdrop-blur-xl px-5 py-6 md:px-8 md:py-8 theme-page-aura"
         variants={pageVariants}
         initial="hidden"
         animate="visible"
@@ -163,14 +163,14 @@ export default function ClassDetails() {
         )}
 
         {loading && (
-          <motion.div variants={itemVariants} className="rounded-2xl border border-pink-500/20 bg-[#151221]/75 p-6 text-pink-200/70">
+          <motion.div variants={itemVariants} className="rounded-2xl border border-pink-500/20 theme-surface-card p-6 text-pink-200/70">
             {lang === "RO" ? "Se încarcă datele clasei..." : "Loading class data..."}
           </motion.div>
         )}
 
         {!loading && group && (
           <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-            <motion.section variants={itemVariants} className="rounded-3xl border border-pink-500/20 bg-[#151221]/75 p-6 shadow-lg shadow-black/20">
+            <motion.section variants={itemVariants} className="rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20">
               <h2 className="text-2xl font-bold text-pink-100">
                 {lang === "RO" ? "Detalii clasă" : "Class details"}
               </h2>
@@ -180,7 +180,7 @@ export default function ClassDetails() {
                 <div>{group.createdAt}</div>
               </div>
 
-              <form onSubmit={handleInvite} className="mt-6 rounded-3xl border border-pink-500/20 bg-[#100d19]/80 p-5">
+              <form onSubmit={handleInvite} className="mt-6 rounded-3xl border border-pink-500/20 theme-surface-muted p-5">
                 <h3 className="text-xl font-semibold text-pink-100">
                   {lang === "RO" ? "Invită un elev" : "Invite a student"}
                 </h3>
@@ -189,7 +189,7 @@ export default function ClassDetails() {
                     value={inviteEmail}
                     onChange={(event) => setInviteEmail(event.target.value)}
                     placeholder={lang === "RO" ? "email@exemplu.com" : "email@example.com"}
-                    className="flex-1 rounded-2xl border border-pink-500/25 bg-[#151221] px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
+                    className="flex-1 rounded-2xl border border-pink-500/25 theme-surface-card px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
                   />
                   <button
                     type="submit"
@@ -201,7 +201,7 @@ export default function ClassDetails() {
               </form>
             </motion.section>
 
-            <motion.section variants={itemVariants} className="rounded-3xl border border-pink-500/20 bg-[#151221]/75 p-6 shadow-lg shadow-black/20">
+            <motion.section variants={itemVariants} className="rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20">
               <h2 className="text-2xl font-bold text-pink-100">
                 {lang === "RO" ? "Creează temă" : "Create homework"}
               </h2>
@@ -216,19 +216,19 @@ export default function ClassDetails() {
                   value={homeworkTitle}
                   onChange={(event) => setHomeworkTitle(event.target.value)}
                   placeholder={lang === "RO" ? "Titlu temă" : "Homework title"}
-                  className="w-full rounded-2xl border border-pink-500/25 bg-[#100d19]/80 px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
+                  className="w-full rounded-2xl border border-pink-500/25 theme-surface-muted px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
                 />
                 <textarea
                   value={homeworkDescription}
                   onChange={(event) => setHomeworkDescription(event.target.value)}
                   placeholder={lang === "RO" ? "Descriere" : "Description"}
-                  className="min-h-28 w-full rounded-2xl border border-pink-500/25 bg-[#100d19]/80 px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
+                  className="min-h-28 w-full rounded-2xl border border-pink-500/25 theme-surface-muted px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
                 />
                 <input
                   type="date"
                   value={homeworkDeadline}
                   onChange={(event) => setHomeworkDeadline(event.target.value)}
-                  className="w-full rounded-2xl border border-pink-500/25 bg-[#100d19]/80 px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
+                  className="w-full rounded-2xl border border-pink-500/25 theme-surface-muted px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
                 />
                 <button
                   type="submit"
@@ -241,7 +241,7 @@ export default function ClassDetails() {
           </div>
         )}
 
-        <motion.section variants={itemVariants} className="mt-6 rounded-3xl border border-pink-500/20 bg-[#151221]/75 p-6 shadow-lg shadow-black/20">
+        <motion.section variants={itemVariants} className="mt-6 rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20">
           <div className="flex items-center justify-between gap-4">
             <h2 className="text-2xl font-bold text-pink-100">
               {lang === "RO" ? "Teme active" : "Active homework"}
@@ -251,13 +251,13 @@ export default function ClassDetails() {
 
           <div className="mt-4 grid gap-3">
             {homeworks.length === 0 && !loading && (
-              <div className="rounded-2xl border border-pink-500/20 bg-[#100d19]/80 p-4 text-pink-200/70">
+              <div className="rounded-2xl border border-pink-500/20 theme-surface-muted p-4 text-pink-200/70">
                 {lang === "RO" ? "Nu există teme pentru această clasă." : "There is no homework for this class."}
               </div>
             )}
 
             {homeworks.map((homework) => (
-              <div key={homework.id} className="rounded-2xl border border-pink-500/20 bg-[#100d19]/80 p-4">
+              <div key={homework.id} className="rounded-2xl border border-pink-500/20 theme-surface-muted p-4">
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div>
                     <div className="flex flex-wrap items-center gap-3">

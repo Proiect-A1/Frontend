@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
+import { useTheme } from "../services/ThemeContext";
 
 export default function Navbar() {
   const location = useLocation();
@@ -11,6 +12,10 @@ export default function Navbar() {
   const { lang, setLang } = useLanguage();
   const t = translations[lang];
   const { isAuthenticated, username, logout } = useAuth();
+  const { theme, themes, toggleTheme } = useTheme();
+  const currentThemeIndex = themes.indexOf(theme);
+  const nextTheme = themes[(currentThemeIndex + 1) % themes.length];
+  const formatThemeLabel = (themeName: string) => themeName.charAt(0).toUpperCase() + themeName.slice(1);
 
   // State pentru meniul de telefon
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -35,7 +40,7 @@ export default function Navbar() {
   return (
    <div className="sticky top-0 z-50 w-full px-6 pt-4"> 
       <nav className="w-full">
-        <div className="bg-[#12101c]/80 backdrop-blur-md border-2 border-pink-500/35 rounded-full px-5 py-2.5 flex items-center justify-between card-glow">
+        <div className="theme-surface-card backdrop-blur-md border-2 border-pink-500/35 rounded-full px-5 py-2.5 flex items-center justify-between card-glow">
           <Link
             to="/"
             onClick={closeMenu}
@@ -44,7 +49,7 @@ export default function Navbar() {
             <img
               src="/logo.svg"
               alt="Logo"
-              className="h-10 w-10 md:h-12 md:w-12 object-contain drop-shadow-[0_0_8px_rgba(255,94,182,0.6)]"
+              className="theme-logo h-10 w-10 md:h-12 md:w-12 object-contain theme-logo-glow"
             />
             <div className="page-line-vertical hidden md:block"></div>
             <h2 className="font-semibold text-pink-300 text-lg md:text-xl tracking-tight">
@@ -95,7 +100,7 @@ export default function Navbar() {
             <div className="page-line-vertical"></div>
 
             {/* lang toggle desktop */}
-            <div className="relative flex items-center bg-[#0f0c18] border-2 border-pink-400/50 rounded-full p-1 h-9.5 w-24 overflow-hidden">
+            <div className="relative flex items-center theme-surface-input border-2 border-pink-400/50 rounded-full p-1 h-9.5 w-24 overflow-hidden">
               <div
                 className={`absolute top-1 bottom-1 w-10 bg-pink-500/40 border border-pink-400/60 rounded-full transition-all duration-300 ease-out ${
                   lang === "RO" ? "left-1" : "left-11.5"
@@ -118,6 +123,14 @@ export default function Navbar() {
                 EN
               </button>
             </div>
+
+            <button
+              onClick={toggleTheme}
+              className="px-4 py-1.5 rounded-full text-xs font-bold border-2 border-pink-400/40 text-pink-100 bg-pink-500/10 transition-all duration-200 hover:bg-pink-500/20"
+              title={`Switch to ${formatThemeLabel(nextTheme)}`}
+            >
+              {formatThemeLabel(nextTheme)}
+            </button>
           </div>
 
           {/* mobile hamburger menu button */}
@@ -167,7 +180,7 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.12 }}
-              className="absolute top-full left-6 right-6 mt-3 p-6 bg-[#12101c]/95 backdrop-blur-xl border-2 border-pink-500/35 rounded-3xl flex flex-col gap-4 shadow-2xl z-10 md:hidden"
+              className="absolute top-full left-6 right-6 mt-3 p-6 theme-surface-card backdrop-blur-xl border-2 border-pink-500/35 rounded-3xl flex flex-col gap-4 shadow-2xl z-10 md:hidden"
             >
               <Link
                 to="/problems"
@@ -237,6 +250,18 @@ export default function Navbar() {
                   className={`px-6 py-2 rounded-xl text-sm font-bold border-2 transition-colors ${lang === "EN" ? "border-pink-400 text-pink-100 bg-pink-500/20" : "border-pink-500/20 text-pink-300/60"}`}
                 >
                   EN
+                </button>
+              </div>
+
+              <div className="flex justify-center">
+                <button
+                  onClick={() => {
+                    toggleTheme();
+                    closeMenu();
+                  }}
+                  className="px-6 py-2 rounded-xl text-sm font-bold border-2 border-pink-400/40 text-pink-100 bg-pink-500/15 hover:bg-pink-500/25 transition-colors"
+                >
+                  {`Switch to ${formatThemeLabel(nextTheme)}`}
                 </button>
               </div>
             </motion.div>

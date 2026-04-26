@@ -75,7 +75,7 @@ export default function Landing() {
   return (
     <div className="flex h-full min-h-0 w-full items-center justify-center overflow-hidden px-2 sm:px-4 lg:px-6">
       <motion.div
-        className="h-[min(100%,calc(100svh-1.5rem))] w-full max-w-[clamp(68rem,92vw,96rem)] overflow-y-auto custom-scrollbar rounded-[2rem] border border-pink-500/20 bg-[#0f0c18]/55 backdrop-blur-xl px-5 py-6 md:px-8 md:py-8 shadow-[0_0_60px_rgba(236,72,153,0.12)]"
+        className="h-[min(100%,calc(100svh-1.5rem))] w-full max-w-[clamp(68rem,92vw,96rem)] overflow-y-auto custom-scrollbar rounded-[2rem] border border-pink-500/20 theme-surface-page backdrop-blur-xl px-5 py-6 md:px-8 md:py-8 theme-page-aura"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -86,7 +86,7 @@ export default function Landing() {
             <img
               src="/logo.svg"
               alt="FiiCoder"
-              className="h-24 w-24 md:h-32 md:w-32 mx-auto drop-shadow-[0_0_24px_rgba(236,72,153,0.4)]"
+              className="theme-logo h-24 w-24 md:h-32 md:w-32 mx-auto theme-logo-glow"
             />
           </motion.div>
 
@@ -140,8 +140,8 @@ export default function Landing() {
                   ann.priority === "high"
                     ? "border-red-500/40 bg-red-500/10 hover:border-red-500/70 hover:bg-red-500/15 shadow-lg shadow-red-500/20"
                     : ann.priority === "medium"
-                      ? "border-pink-500/30 bg-[#151221]/60 hover:border-pink-500/60 hover:bg-[#1a1530]/80"
-                      : "border-pink-500/20 bg-[#100d19]/60 hover:border-pink-500/40 hover:bg-[#150d1f]/80"
+                      ? "border-pink-500/30 theme-surface-card hover:border-pink-500/60 theme-surface-hover"
+                      : "border-pink-500/20 theme-surface-muted hover:border-pink-500/40 theme-surface-hover"
                 }`}
               >
                 <div className="flex items-start gap-4">
@@ -192,7 +192,7 @@ export default function Landing() {
             <motion.div
               key={index}
               variants={itemVariants}
-              className="p-6 rounded-2xl border-2 border-pink-500/30 bg-[#151221]/60 backdrop-blur-sm hover:border-pink-500/60 hover:bg-[#1a1530]/80 transition-all duration-300 group"
+              className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-sm hover:border-pink-500/60 theme-surface-hover transition-all duration-300 group"
             >
               <div className="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">
                 {feature.icon}
@@ -206,7 +206,7 @@ export default function Landing() {
         {/* Stats Section */}
         <motion.div
           variants={itemVariants}
-          className="mt-10 p-8 rounded-2xl border-2 border-pink-500/25 bg-[#0f0c18]/40 backdrop-blur-sm"
+          className="mt-10 p-8 rounded-2xl border-2 border-pink-500/25 theme-surface-page backdrop-blur-sm"
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
