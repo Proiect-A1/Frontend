@@ -18,42 +18,67 @@ const monacoLanguageMap: Record<string, string> = {
   "Rust": "rust",
 };
 
-// Rezolvă ORICE format CSS (hex, rgb, color-mix etc.) la un hex valid #rrggbb
-// folosind un CanvasRenderingContext2D care normalizează totul
-function toHexColor(input: string): string {
-  const trimmed = input.trim();
-  if (!trimmed) return "#ffffff";
+// Palete de culori hardcodate per temă pentru Monaco Editor.
+// Mult mai fiabil decât parsarea CSS computed styles (color-mix crăpa).
+const monacoThemes: Record<string, {
+  accent: string; text: string; textMuted: string; textSubtle: string;
+  editorBg: string; codeBg: string; accentSecondary: string;
+}> = {
+  rose: {
+    accent: "#ff5eb6",
+    accentSecondary: "#a78bfa",
+    text: "#ffe8f6",
+    textMuted: "#b39aad",
+    textSubtle: "#8a7099",
+    editorBg: "#0a0812",
+    codeBg: "#120e1c",
+  },
+  nord: {
+    accent: "#88c0d0",
+    accentSecondary: "#5e81ac",
+    text: "#eceff4",
+    textMuted: "#7b88a1",
+    textSubtle: "#616e88",
+    editorBg: "#242933",
+    codeBg: "#2e3440",
+  },
+};
 
-  // hex simplu – returnează direct
-  if (/^#[0-9a-f]{3,8}$/i.test(trimmed)) return trimmed.substring(0, 7);
+function applyMonacoTheme(monaco: any, themeName: string) {
+  const palette = monacoThemes[themeName] || monacoThemes.rose;
 
-  // Dacă browserul a rezolvat deja la rgb/rgba, parsează manual
-  const rgbMatch = trimmed.match(/^rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)/);
-  if (rgbMatch) {
-    const [, r, g, b] = rgbMatch;
-    return `#${Number(r).toString(16).padStart(2, "0")}${Number(g).toString(16).padStart(2, "0")}${Number(b).toString(16).padStart(2, "0")}`;
-  }
-
-  // Fallback: lasă Canvas 2D să rezolve color-mix, oklch, etc.
-  try {
-    const ctx = document.createElement("canvas").getContext("2d");
-    if (ctx) {
-      ctx.fillStyle = "#000000"; // reset
-      ctx.fillStyle = trimmed;   // setează valoarea CSS
-      const resolved = ctx.fillStyle; // browserul returnează hex sau rgb
-      if (resolved.startsWith("#")) return resolved.substring(0, 7);
-      const m = resolved.match(/^rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)/);
-      if (m) return `#${Number(m[1]).toString(16).padStart(2, "0")}${Number(m[2]).toString(16).padStart(2, "0")}${Number(m[3]).toString(16).padStart(2, "0")}`;
-    }
-  } catch { /* ignore */ }
-
-  return "#ffffff";
-}
-
-function withAlpha(hexColor: string, alphaHex: string): string {
-  // Ne asigurăm că hex-ul e valid înainte de a adăuga alpha
-  const clean = hexColor.startsWith("#") ? hexColor.substring(0, 7) : `#${hexColor.substring(0, 6)}`;
-  return `${clean}${alphaHex}`;
+  monaco.editor.defineTheme("fiicoder-dark", {
+    base: "vs-dark",
+    inherit: true,
+    rules: [
+      { token: "comment", foreground: palette.textMuted.replace("#", ""), fontStyle: "italic" },
+      { token: "keyword", foreground: palette.accent.replace("#", "") },
+      { token: "string", foreground: palette.accentSecondary.replace("#", "") },
+      { token: "number", foreground: palette.accent.replace("#", "") },
+      { token: "type", foreground: palette.accentSecondary.replace("#", "") },
+      { token: "function", foreground: palette.accent.replace("#", "") },
+      { token: "variable", foreground: palette.text.replace("#", "") },
+    ],
+    colors: {
+      "editor.background": palette.editorBg,
+      "editor.foreground": palette.text,
+      "editor.lineHighlightBackground": palette.codeBg,
+      "editor.selectionBackground": `${palette.accent}4d`,
+      "editor.inactiveSelectionBackground": `${palette.accent}26`,
+      "editorLineNumber.foreground": palette.textSubtle,
+      "editorLineNumber.activeForeground": palette.accent,
+      "editorCursor.foreground": palette.accent,
+      "editorIndentGuide.background": `${palette.accent}1f`,
+      "editorIndentGuide.activeBackground": `${palette.accent}59`,
+      "editor.selectionHighlightBackground": `${palette.accent}33`,
+      "editorBracketMatch.background": `${palette.accent}40`,
+      "editorBracketMatch.border": `${palette.accent}99`,
+      "scrollbarSlider.background": `${palette.accent}26`,
+      "scrollbarSlider.hoverBackground": `${palette.accent}4d`,
+      "scrollbarSlider.activeBackground": `${palette.accent}80`,
+    },
+  });
+  monaco.editor.setTheme("fiicoder-dark");
 }
 
 export default function ProblemDetails() {
@@ -78,58 +103,16 @@ export default function ProblemDetails() {
 
   const languages = ["C++", "Python", "Java", "JavaScript", "Rust"];
 
-  // Definim tema custom pentru Monaco la mount
+  // La mount-ul editorului, salvăm referința Monaco și aplicăm tema
   const handleEditorMount: OnMount = (_editor, monaco) => {
     monacoRef.current = monaco;
-    const rootStyles = getComputedStyle(document.documentElement);
-    const accent = toHexColor(rootStyles.getPropertyValue("--accent"));
-    const text = toHexColor(rootStyles.getPropertyValue("--text-h"));
-    const textMuted = toHexColor(rootStyles.getPropertyValue("--text-muted"));
-    const textSubtle = toHexColor(rootStyles.getPropertyValue("--text-subtle"));
-    const codeBg = toHexColor(rootStyles.getPropertyValue("--code-bg"));
-    const editorBg = toHexColor(rootStyles.getPropertyValue("--surface-editor"));
-
-    monaco.editor.defineTheme("fiicoder-dark", {
-      base: "vs-dark",
-      inherit: true,
-      rules: [
-        { token: "comment", foreground: textMuted.replace("#", "") },
-        { token: "keyword", foreground: accent.replace("#", "") },
-        { token: "string", foreground: accent.replace("#", "") },
-        { token: "number", foreground: accent.replace("#", "") },
-        { token: "type", foreground: accent.replace("#", "") },
-        { token: "function", foreground: accent.replace("#", "") },
-        { token: "variable", foreground: text.replace("#", "") },
-      ],
-      colors: {
-        "editor.background": editorBg,
-        "editor.foreground": text,
-        "editor.lineHighlightBackground": codeBg,
-        "editor.selectionBackground": withAlpha(accent, "4d"),
-        "editor.inactiveSelectionBackground": withAlpha(accent, "26"),
-        "editorLineNumber.foreground": textSubtle,
-        "editorLineNumber.activeForeground": accent,
-        "editorCursor.foreground": accent,
-        "editorIndentGuide.background": withAlpha(accent, "1f"),
-        "editorIndentGuide.activeBackground": withAlpha(accent, "59"),
-        "editor.selectionHighlightBackground": withAlpha(accent, "33"),
-        "editorBracketMatch.background": withAlpha(accent, "40"),
-        "editorBracketMatch.border": withAlpha(accent, "99"),
-        "scrollbarSlider.background": withAlpha(accent, "26"),
-        "scrollbarSlider.hoverBackground": withAlpha(accent, "4d"),
-        "scrollbarSlider.activeBackground": withAlpha(accent, "80"),
-      },
-    });
-    monaco.editor.setTheme("fiicoder-dark");
+    applyMonacoTheme(monaco, theme);
   };
 
+  // Când se schimbă tema, re-aplicăm paleta Monaco
   useEffect(() => {
     if (monacoRef.current) {
-      try {
-        handleEditorMount(undefined as any, monacoRef.current);
-      } catch (err) {
-        console.warn("Failed to update Monaco theme:", err);
-      }
+      applyMonacoTheme(monacoRef.current, theme);
     }
   }, [theme]);
 
