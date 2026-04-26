@@ -4,27 +4,39 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
 import { submissionService } from "../services/submissionService";
-import { problemService } from "../services/problemService"; 
+import { problemService } from "../services/problemService";
 import type { Problem } from "../types/problem";
 import Editor, { type OnMount } from "@monaco-editor/react";
 import { useTheme } from "../services/ThemeContext";
 import { languageService, type LanguageDTO } from "../services/languageService";
+import ReactMarkdown from "react-markdown";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 
 // mapare limbaj UI -> identificator Monaco
 const monacoLanguageMap: Record<string, string> = {
   "C++": "cpp",
-  "Python": "python",
-  "Java": "java",
-  "JavaScript": "javascript",
-  "Rust": "rust",
+  Python: "python",
+  Java: "java",
+  JavaScript: "javascript",
+  Rust: "rust",
 };
 
 // Palete de culori hardcodate per temă pentru Monaco Editor.
 // Mult mai fiabil decât parsarea CSS computed styles (color-mix crăpa).
-const monacoThemes: Record<string, {
-  accent: string; text: string; textMuted: string; textSubtle: string;
-  editorBg: string; codeBg: string; accentSecondary: string;
-}> = {
+const monacoThemes: Record<
+  string,
+  {
+    accent: string;
+    text: string;
+    textMuted: string;
+    textSubtle: string;
+    editorBg: string;
+    codeBg: string;
+    accentSecondary: string;
+  }
+> = {
   rose: {
     accent: "#ff5eb6",
     accentSecondary: "#a78bfa",
@@ -52,7 +64,11 @@ function applyMonacoTheme(monaco: any, themeName: string) {
     base: "vs-dark",
     inherit: true,
     rules: [
-      { token: "comment", foreground: palette.textMuted.replace("#", ""), fontStyle: "italic" },
+      {
+        token: "comment",
+        foreground: palette.textMuted.replace("#", ""),
+        fontStyle: "italic",
+      },
       { token: "keyword", foreground: palette.accent.replace("#", "") },
       { token: "string", foreground: palette.accentSecondary.replace("#", "") },
       { token: "number", foreground: palette.accent.replace("#", "") },
@@ -84,7 +100,7 @@ function applyMonacoTheme(monaco: any, themeName: string) {
 
 export default function ProblemDetails() {
   const { problemId } = useParams(); // iau id-ul(titlul) problemei din URL (/problems/:title)
-  
+
   const { lang } = useLanguage();
   const t = translations[lang];
   const { isAuthenticated } = useAuth();
@@ -99,10 +115,14 @@ export default function ProblemDetails() {
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("C++");
   const [isOpen, setIsOpen] = useState(false);
-  const [status, setStatus] = useState<null | "pending" | "valid" | "invalid">(null);
+  const [status, setStatus] = useState<null | "pending" | "valid" | "invalid">(
+    null,
+  );
   const monacoRef = useRef<any>(null);
 
-  const [availableLanguages, setAvailableLanguages] = useState<LanguageDTO[]>([]);
+  const [availableLanguages, setAvailableLanguages] = useState<LanguageDTO[]>(
+    [],
+  );
   const [selectedLanguageId, setSelectedLanguageId] = useState<string>("");
 
   // La mount-ul editorului, salvăm referința Monaco și aplicăm tema
@@ -135,7 +155,9 @@ export default function ProblemDetails() {
       }
     }
     fetchLanguages();
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // iau datele din backend cand se incarca pagina sau cand se schimba problemId (URL)
@@ -153,14 +175,14 @@ export default function ProblemDetails() {
 
       try {
         const dto = await problemService.getProblemByTitle(problemId);
-        
+
         if (!isMounted) return;
 
-        // mapez raspunsul la interfata Problem 
+        // mapez raspunsul la interfata Problem
         const formattedProblem: Problem = {
-          id: dto.title, 
+          id: dto.title,
           title: dto.title,
-          shortDescription: dto.description.substring(0, 120) + "...", 
+          shortDescription: dto.description.substring(0, 120) + "...",
           statement: dto.description,
           difficulty: dto.difficulty || "MEDIUM",
           tags: dto.tags || [],
@@ -169,7 +191,10 @@ export default function ProblemDetails() {
 
         setProblem(formattedProblem);
       } catch (err) {
-        if (isMounted) setError("Problema nu a putut fi găsită sau a apărut o eroare de server.");
+        if (isMounted)
+          setError(
+            "Problema nu a putut fi găsită sau a apărut o eroare de server.",
+          );
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -181,7 +206,6 @@ export default function ProblemDetails() {
       isMounted = false;
     };
   }, [problemId]); // reapeleaza pe endpoint când se schimba problemId (url)
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -236,7 +260,12 @@ export default function ProblemDetails() {
       <div className="w-full text-center p-8 text-red-400 theme-surface-card backdrop-blur-lg border-2 border-red-500/30 rounded-2xl">
         <h2 className="text-xl font-bold mb-2">Eroare</h2>
         <p>{error || "Problema nu a fost găsită."}</p>
-        <Link to="/problems" className="text-pink-300 underline mt-4 inline-block">Înapoi la lista de probleme</Link>
+        <Link
+          to="/problems"
+          className="text-pink-300 underline mt-4 inline-block"
+        >
+          Înapoi la lista de probleme
+        </Link>
       </div>
     );
   }
@@ -266,9 +295,63 @@ export default function ProblemDetails() {
             </div>
           )}
           <div className="page-line-horizontal" />
-          <p className="text-pink-100/85 leading-relaxed whitespace-pre-wrap">
-            {problem.statement}
-          </p>
+          <div className="text-pink-100/85 leading-relaxed">
+            <ReactMarkdown
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeKatex]}
+              components={{
+                // spatiu intre paragrafe + pastreaza line breaks
+                p: ({ node, ...props }) => (
+                  <p className="mb-4 whitespace-pre-wrap" {...props} />
+                ),
+                // bold text
+                strong: ({ node, ...props }) => (
+                  <strong className="font-bold text-pink-100" {...props} />
+                ),
+                // stilizare titlurile din Markdown daca exista
+                h1: ({ node, ...props }) => (
+                  <h1
+                    className="text-2xl font-bold text-pink-200 mt-6 mb-3"
+                    {...props}
+                  />
+                ),
+                h2: ({ node, ...props }) => (
+                  <h2
+                    className="text-xl font-bold text-pink-200 mt-5 mb-3"
+                    {...props}
+                  />
+                ),
+                // stilizare exemplele de intrare/iesire
+                code: ({
+                  node,
+                  inline,
+                  className,
+                  children,
+                  ...props
+                }: any) => {
+                  return inline ? (
+                    <code
+                      className="bg-pink-500/10 text-pink-300 px-1.5 py-0.5 rounded-md text-sm font-mono border border-pink-500/20"
+                      {...props}
+                    >
+                      {children}
+                    </code>
+                  ) : (
+                    <div className="rounded-xl overflow-hidden border border-pink-500/20 my-4 theme-surface-editor shadow-inner">
+                      <code
+                        className="block p-4 text-sm font-mono text-pink-200 overflow-x-auto"
+                        {...props}
+                      >
+                        {children}
+                      </code>
+                    </div>
+                  );
+                },
+              }}
+            >
+              {problem.statement}
+            </ReactMarkdown>
+          </div>
         </div>
 
         {/* column 2 - Submission */}
@@ -308,7 +391,8 @@ export default function ProblemDetails() {
                             }}
                             className="w-full text-left px-4 py-2 text-sm text-pink-100 hover:bg-pink-500/20 transition-colors"
                           >
-                            {langItem.name} {langItem.version && `(${langItem.version})`}
+                            {langItem.name}{" "}
+                            {langItem.version && `(${langItem.version})`}
                           </button>
                         ))}
                       </motion.div>
@@ -336,7 +420,8 @@ export default function ProblemDetails() {
                     }
                     options={{
                       fontSize: 14,
-                      fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+                      fontFamily:
+                        "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
                       fontLigatures: true,
                       minimap: { enabled: false },
                       scrollBeyondLastLine: false,
@@ -408,7 +493,7 @@ export default function ProblemDetails() {
             This is an empty panel placeholder.
           </p>
         </div>
-        
+
         {/* ── BACK BUTTON ── */}
         <div className="flex justify-start shrink-0">
           <Link to="/problems" className="relative inline-block group">
