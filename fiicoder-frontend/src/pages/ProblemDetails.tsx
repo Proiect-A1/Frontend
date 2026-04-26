@@ -17,9 +17,8 @@ import "katex/dist/katex.min.css";
 // Utility to fix database indentation issues for Markdown
 function unindent(str: string): string {
   if (!str) return "";
-  const lines = str.split("\n");
+  const lines = str.split('\n');
 
-  // Find minimum indentation of non-empty lines starting from the second line
   let minIndent = Infinity;
   for (let i = 1; i < lines.length; i++) {
     if (lines[i].trim().length > 0) {
@@ -32,15 +31,12 @@ function unindent(str: string): string {
 
   if (minIndent === Infinity || minIndent === 0) return str;
 
-  // Remove up to `minIndent` spaces from all lines except the first
-  return lines
-    .map((line, index) => {
-      if (index === 0) return line;
-      if (line.trim().length === 0) return "";
-      const regex = new RegExp(`^[ \\t]{1,${minIndent}}`);
-      return line.replace(regex, "");
-    })
-    .join("\n");
+  return lines.map((line, index) => {
+    if (index === 0) return line;
+    if (line.trim().length === 0) return "";
+    const regex = new RegExp(`^[ \\t]{1,${minIndent}}`);
+    return line.replace(regex, '');
+  }).join('\n');
 }
 
 // mapare limbaj UI -> identificator Monaco
@@ -53,7 +49,6 @@ const monacoLanguageMap: Record<string, string> = {
 };
 
 // Palete de culori hardcodate per temă pentru Monaco Editor.
-// Mult mai fiabil decât parsarea CSS computed styles (color-mix crăpa).
 const monacoThemes: Record<
   string,
   {
@@ -128,19 +123,17 @@ function applyMonacoTheme(monaco: any, themeName: string) {
 }
 
 export default function ProblemDetails() {
-  const { problemId } = useParams(); // iau id-ul(titlul) problemei din URL (/problems/:title)
+  const { problemId } = useParams();
 
   const { lang } = useLanguage();
   const t = translations[lang];
   const { isAuthenticated } = useAuth();
   const { theme } = useTheme();
 
-  // State-uri pentru preluarea datelor problemei
   const [problem, setProblem] = useState<Problem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // state-uri pentru formularul de submisie
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("C++");
   const [isOpen, setIsOpen] = useState(false);
@@ -154,20 +147,17 @@ export default function ProblemDetails() {
   );
   const [selectedLanguageId, setSelectedLanguageId] = useState<string>("");
 
-  // La mount-ul editorului, salvăm referința Monaco și aplicăm tema
   const handleEditorMount: OnMount = (_editor, monaco) => {
     monacoRef.current = monaco;
     applyMonacoTheme(monaco, theme);
   };
 
-  // Când se schimbă tema, re-aplicăm paleta Monaco
   useEffect(() => {
     if (monacoRef.current) {
       applyMonacoTheme(monacoRef.current, theme);
     }
   }, [theme]);
 
-  // Fetch languages on mount
   useEffect(() => {
     let isMounted = true;
     async function fetchLanguages() {
@@ -189,7 +179,6 @@ export default function ProblemDetails() {
     };
   }, []);
 
-  // iau datele din backend cand se incarca pagina sau cand se schimba problemId (URL)
   useEffect(() => {
     let isMounted = true;
 
@@ -207,7 +196,6 @@ export default function ProblemDetails() {
 
         if (!isMounted) return;
 
-        // mapez raspunsul la interfata Problem
         const formattedProblem: Problem = {
           id: dto.title,
           title: dto.title,
@@ -215,7 +203,6 @@ export default function ProblemDetails() {
           statement: dto.description,
           difficulty: dto.difficulty || "MEDIUM",
           tags: dto.tags || [],
-          // time/memory limits?
         };
 
         setProblem(formattedProblem);
@@ -234,7 +221,7 @@ export default function ProblemDetails() {
     return () => {
       isMounted = false;
     };
-  }, [problemId]); // reapeleaza pe endpoint când se schimba problemId (url)
+  }, [problemId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -275,7 +262,6 @@ export default function ProblemDetails() {
     }
   };
 
-  // afisez loading sau eroare daca e cazul
   if (loading) {
     return (
       <div className="w-full flex justify-center items-center h-[calc(100svh-11rem)]">
@@ -301,9 +287,7 @@ export default function ProblemDetails() {
 
   return (
     <div className="w-full flex flex-col gap-6">
-      {/* 3-column grid */}
       <div className="grid gap-6 xl:grid-cols-3">
-        {/* column 1 - Problem description */}
         <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow custom-scrollbar">
           <p className="text-xs font-semibold uppercase tracking-wider text-pink-400">
             {lang === "RO" ? "Problemă: " : "Problem: "} {problem.title}
@@ -328,9 +312,8 @@ export default function ProblemDetails() {
             <ReactMarkdown
               remarkPlugins={[remarkMath]}
               rehypePlugins={[rehypeKatex]}
-              children={unindent(problem.statement)}
+              children={unindent(problem.statement.replace(/\\\\/g, '\\'))}
               components={{
-                // Titluri
                 h1: ({ ...props }) => (
                   <h1
                     className="text-2xl font-bold text-pink-200 mt-6 mb-3 border-b border-pink-500/20 pb-1"
@@ -344,47 +327,28 @@ export default function ProblemDetails() {
                   />
                 ),
 
-                // Paragrafe
                 p: ({ ...props }) => (
                   <p className="mb-4 whitespace-pre-wrap" {...props} />
                 ),
 
-                // Liste
-                ul: ({ ...props }) => (
-                  <ul className="list-disc pl-6 mb-4 space-y-1" {...props} />
-                ),
-                ol: ({ ...props }) => (
-                  <ol className="list-decimal pl-6 mb-4 space-y-1" {...props} />
-                ),
-                li: ({ ...props }) => <li className="ml-2" {...props} />,
-
-                // Formule matematice inline
-                span: ({ className, ...props }) => {
-                  if (className?.includes("katex"))
-                    return <span className="text-pink-300" {...props} />;
-                  return <span {...props} />;
+                span: ({ className, children, ...props }) => {
+                  if (className?.includes("katex")) {
+                    return <span className={`${className} text-pink-100`} {...props}>{children}</span>;
+                  }
+                  return <span className={className} {...props}>{children}</span>;
                 },
 
-                // Blocuri de cod și Inline Code
-                code: ({
-                  node,
-                  inline,
-                  className,
-                  children,
-                  ...props
-                }: any) => {
+                // AICI AM MODIFICAT randarea codului inline
+                code: ({ node, inline, className, children, ...props }: any) => {
                   return inline ? (
                     <code
-                      className="bg-pink-500/10 text-pink-300 px-1.5 py-0.5 rounded-md text-sm font-mono border border-pink-500/20"
+                      className="font-bold text-pink-300 border-b border-pink-500/30 pb-0.5 mx-1"
                       {...props}
                     >
                       {children}
                     </code>
                   ) : (
-                    <div className="relative group my-4">
-                      <div className="absolute -top-3 left-4 px-2 py-0.5 bg-pink-900/80 border border-pink-500/30 rounded text-[10px] text-pink-300 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                        {lang === "RO" ? "Exemplu" : "Example"}
-                      </div>
+                    <div className="my-4">
                       <div className="rounded-xl overflow-hidden border border-pink-500/20 theme-surface-editor shadow-inner bg-black/20">
                         <code
                           className="block p-4 text-sm font-mono text-pink-200 overflow-x-auto"
@@ -396,13 +360,22 @@ export default function ProblemDetails() {
                     </div>
                   );
                 },
+
+                ul: ({ ...props }) => (
+                  <ul className="list-disc pl-6 mb-4 space-y-1" {...props} />
+                ),
+                ol: ({ ...props }) => (
+                  <ol className="list-decimal pl-6 mb-4 space-y-1" {...props} />
+                ),
+                li: ({ ...props }) => <li className="ml-2" {...props} />,
+
+                // Wrapper-ul <pre> setat ca transparent
                 pre: ({ children }) => <div className="mb-4">{children}</div>,
               }}
             />
           </div>
         </div>
 
-        {/* column 2 - Submission */}
         <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow custom-scrollbar flex flex-col">
           {isAuthenticated ? (
             <div className="flex-1 flex flex-col h-full">
@@ -533,7 +506,6 @@ export default function ProblemDetails() {
           )}
         </div>
 
-        {/* column 3 - empty test panel */}
         <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow custom-scrollbar">
           <h2 className="text-xl font-bold text-pink-200 mb-2">Test Panel</h2>
           <div className="page-line-horizontal" />
@@ -542,7 +514,6 @@ export default function ProblemDetails() {
           </p>
         </div>
 
-        {/* ── BACK BUTTON ── */}
         <div className="flex justify-start shrink-0">
           <Link to="/problems" className="relative inline-block group">
             <div className="flex items-center gap-2 text-pink-300/60 font-semibold text-sm hover:text-pink-100 transition-colors cursor-pointer">
@@ -553,7 +524,6 @@ export default function ProblemDetails() {
         </div>
       </div>
 
-      {/* ── NOTIFICATION ── */}
       <AnimatePresence>
         {status && (
           <motion.div
@@ -564,35 +534,32 @@ export default function ProblemDetails() {
             className="fixed bottom-8 right-8 z-100"
           >
             <div
-              className={`relative overflow-hidden px-8 py-5 rounded-2xl border-2 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${
-                status === "pending"
-                  ? "border-pink-500/50 theme-surface-card text-pink-200"
-                  : status === "valid"
-                    ? "border-green-500/50 bg-green-500/10 text-green-300"
-                    : "border-red-500/50 bg-red-500/10 text-red-300"
-              }`}
+              className={`relative overflow-hidden px-8 py-5 rounded-2xl border-2 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${status === "pending"
+                ? "border-pink-500/50 theme-surface-card text-pink-200"
+                : status === "valid"
+                  ? "border-green-500/50 bg-green-500/10 text-green-300"
+                  : "border-red-500/50 bg-red-500/10 text-red-300"
+                }`}
             >
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: status === "pending" ? 2 : 4 }}
-                className={`absolute bottom-0 left-0 h-1 w-full origin-left ${
-                  status === "pending"
+                className={`absolute bottom-0 left-0 h-1 w-full origin-left ${status === "pending"
+                  ? "bg-pink-500"
+                  : status === "valid"
+                    ? "bg-green-500"
+                    : "bg-red-500"
+                  }`}
+              />
+              <div className="flex items-center gap-4">
+                <div
+                  className={`w-3 h-3 rounded-full animate-pulse ${status === "pending"
                     ? "bg-pink-500"
                     : status === "valid"
                       ? "bg-green-500"
                       : "bg-red-500"
-                }`}
-              />
-              <div className="flex items-center gap-4">
-                <div
-                  className={`w-3 h-3 rounded-full animate-pulse ${
-                    status === "pending"
-                      ? "bg-pink-500"
-                      : status === "valid"
-                        ? "bg-green-500"
-                        : "bg-red-500"
-                  }`}
+                    }`}
                 />
                 <div>
                   <h4 className="text-xs uppercase tracking-widest font-bold opacity-60">
