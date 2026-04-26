@@ -10,7 +10,6 @@ import {
 } from "../language/Language";
 import FilterSidebar from "../components/FilterSidebar";
 import StatsSidebar from "../components/StatsSidebar";
-import { motion } from "framer-motion";
 import { itemVariants, staggerConfig } from "../utils/motionConfig";
 
 export default function ProblemList() {
