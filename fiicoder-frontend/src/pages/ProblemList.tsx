@@ -14,14 +14,13 @@ export default function ProblemList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  
+
   const [problems, setProblems] = useState<Problem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
-
     async function fetchProblems() {
       try {
         setLoading(true);
@@ -34,10 +33,10 @@ export default function ProblemList() {
         } else {
           data = await problemService.getAllProblems(1, 100);
         }
-        
-        if (!isMounted) return; 
 
-        // mapez raspunsul la interfata Problem din frontend
+        if (!isMounted) return;
+
+        // mapez raspunsul la interfata Problem din front
         const formattedProblems: Problem[] = data.map((dto) => ({
           id: dto.title, // pun titlul ca identificator
           title: dto.title,
@@ -97,11 +96,11 @@ export default function ProblemList() {
           {t.problemsTitle}
         </h1>
         <div className="page-line-horizontal" />
-        
+
         <div className="">
           {loading && <p className="text-pink-200">Se încarcă problemele...</p>}
           {error && <p className="text-red-400">{error}</p>}
-          
+
           {!loading && !error && filteredProblems.length === 0 && (
             <p className="text-sm text-pink-100/85 theme-surface-muted p-4 rounded-xl border-2 border-pink-500/25">
               {t.noProblemsFound}
