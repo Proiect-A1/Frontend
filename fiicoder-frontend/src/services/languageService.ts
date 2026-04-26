@@ -7,8 +7,5 @@ export interface LanguageDTO {
 }
 
 export const languageService = {
-  getAll: async () => {
-    const response = await apiClient.get<LanguageDTO[]>("/languages");
-    return response.data;
-  },
+  getAll: () => apiClient.get<LanguageDTO[]>("/languages"),
 };
