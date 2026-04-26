@@ -360,38 +360,29 @@ export default function ProblemDetails() {
                   );
                 },      
 
-                // Blocuri de cod și Inline Code
-                code: ({
-                  node,
-                  inline,
-                  className,
-                  children,
-                  ...props
-                }: any) => {
-                  return inline ? (
+                // Cod inline (ex: `sortare.in`)
+                code: ({ className, children, ...props }: any) => {
+                  return (
                     <code
-                      className="bg-pink-500/10 text-pink-300 px-1.5 py-0.5 rounded-md text-sm font-mono border border-pink-500/20"
+                      className={`text-pink-400 font-mono ${className || ""}`}
                       {...props}
                     >
                       {children}
                     </code>
-                  ) : (
-                    <div className="my-4">
-                      {/* Am scos div-ul cu "Exemplu" de aici */}
-                      <div className="rounded-xl overflow-hidden border border-pink-500/20 theme-surface-editor shadow-inner bg-black/20">
-                        <code
-                          className="block p-4 text-sm font-mono text-pink-200 overflow-x-auto"
-                          {...props}
-                        >
-                          {children}
-                        </code>
-                      </div>
-                    </div>
                   );
                 },
 
-                // Wrapper-ul <pre> setat ca transparent pentru a elimina dubla-casetare
-                pre: ({ children }) => <div className="mb-4">{children}</div>,
+                // Wrapper-ul <pre> pentru blocuri de cod mari (ex: Input/Output)
+                pre: ({ children, ...props }: any) => (
+                  <div className="relative group my-4">
+                    <pre
+                      className="theme-surface-input p-4 rounded-xl border border-pink-500/20 overflow-x-auto text-sm text-pink-200 shadow-inner [&>code]:text-pink-200"
+                      {...props}
+                    >
+                      {children}
+                    </pre>
+                  </div>
+                ),
               }}
             />
           </div>
