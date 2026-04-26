@@ -4,6 +4,7 @@ import { Suspense, lazy } from "react";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { pageVariants } from "./utils/motionConfig";
+import Profile from "./pages/Profile";
 
 // Lazy load pages - se vor încărca doar când e nevoie
 const Landing = lazy(() => import("./pages/Landing"));
@@ -42,16 +43,15 @@ function AnimatedRoutes() {
             <Route path="/login" element={<Login />} />
             <Route path="/problems" element={<ProblemList />} />
             <Route path="/problems/:problemId" element={<ProblemDetails />} />
-            <Route
-              path="/classes"
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/classes"
               element={
                 <ProtectedRoute>
                   <ClassesHub />
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/classes/:groupId"
+            <Route path="/classes/:groupId"
               element={
                 <ProtectedRoute>
                   <ClassDetails />

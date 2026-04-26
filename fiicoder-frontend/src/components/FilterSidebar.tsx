@@ -7,6 +7,7 @@ import {
 import { useState, useEffect } from "react";
 import type { Difficulty } from "../types/problem";
 import { tagService, type TagResponseDTO } from "../services/tagService";
+import { itemVariants, staggerConfig } from "../utils/motionConfig";
 
 interface FilterSidebarProps {
   searchQuery: string;
@@ -68,12 +69,19 @@ export default function FilterSidebar({
   };
 
   return (
-    <aside className="h-auto overflow-visible xl:h-fit xl:max-h-[calc(100svh-8.5rem)] xl:overflow-y-auto p-5 theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow xl:sticky xl:top-0 xl:col-start-1 custom-scrollbar">
-      <h2 className="text-xl font-bold text-pink-200 mb-2">{t.filterTitle}</h2>
-
+  <motion.aside 
+    initial="hidden"
+    animate="visible"
+    variants={{ visible: { transition: staggerConfig } }}
+    className="h-auto overflow-visible xl:h-fit xl:max-h-[calc(100svh-8.5rem)] xl:overflow-y-auto p-5 theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow xl:sticky xl:top-0 xl:col-start-1 custom-scrollbar"
+  >
+    <motion.h2 variants={itemVariants} className="text-xl font-bold text-pink-200 mb-2">
+      {t.filterTitle}
+    </motion.h2>
+    <div className="page-line-horizontal" />
       <div className="space-y-4">
         {/* input cautare */}
-        <div>
+        <motion.div variants={itemVariants}>
           <label
             htmlFor="problem-search"
             className="mb-1 block text-sm font-semibold text-pink-200"
@@ -88,10 +96,10 @@ export default function FilterSidebar({
             placeholder={lang === "RO" ? "ex: Problema 3" : "ex: Problem 3"}
             className="w-full rounded-xl border border-pink-500/30 theme-surface-input px-3 py-2 text-sm text-pink-100 placeholder:text-pink-200/40 outline-none transition hover:border-pink-400"
           />
-        </div>
+        </motion.div>
 
         {/* dropdown dificultate */}
-        <div>
+        <motion.div variants={itemVariants}>
           <label className="mb-1 block text-sm font-semibold text-pink-200">
             {t.difficultyLabel}
           </label>
@@ -133,10 +141,10 @@ export default function FilterSidebar({
               )}
             </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
 
         {/* tag-uri */}
-        <div>
+        <motion.div variants={itemVariants}>
           <label className="mb-1 block text-sm font-semibold text-pink-200">
             {t.tagsLabel}
           </label>
@@ -173,10 +181,10 @@ export default function FilterSidebar({
               })}
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* delete filters */}
-        <button
+        <motion.button variants={itemVariants}
           type="button"
           onClick={() => {
             clearFilters();
@@ -185,15 +193,15 @@ export default function FilterSidebar({
           className="w-full rounded-xl border border-pink-400/50 bg-pink-500/10 px-3 py-2 text-sm font-semibold text-pink-100 outline-none transition hover:border-pink-400 hover:bg-pink-500/30 hover:-translate-y-0.5"
         >
           {t.clearFilters}
-        </button>
+        </motion.button>
 
         {/* counter for search results */}
-        <p className="text-xs text-pink-100/70">
+        <motion.p variants={itemVariants} className="text-xs text-pink-100/70">
           {lang === "RO"
             ? `Afișate ${filteredCount} din ${totalCount} probleme`
             : `Showing ${filteredCount} out of ${totalCount} problems`}
-        </p>
+        </motion.p>
       </div>
-    </aside>
+    </motion.aside>
   );
 }

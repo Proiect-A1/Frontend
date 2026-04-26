@@ -21,14 +21,15 @@ export default function Navbar() {
   // State pentru meniul de telefon
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  const getNavLinkClass = (path: string) => {
-    const isActive = location.pathname.startsWith(path);
-    const baseClasses =
-      "px-4 py-1.5 rounded-full text-sm font-medium border-2 transition-all duration-200";
-    return isActive
-      ? `${baseClasses} bg-pink-500/25 border-pink-300 text-pink-100`
-      : `${baseClasses} bg-transparent border-pink-400/50 text-pink-200 hover:bg-pink-500/15 hover:text-pink-100 hover:-translate-y-1`;
-  };
+const getNavLinkClass = (path: string) => {
+  const isActive = location.pathname.startsWith(path);
+  
+  const baseClasses = "px-4 py-1.5 rounded-full text-sm font-medium border-2 transition-all duration-200 flex items-center justify-center gap-2";
+  
+  return isActive
+    ? `${baseClasses} bg-pink-500/25 border-pink-300 text-pink-100`
+    : `${baseClasses} bg-transparent border-pink-400/50 text-pink-200 hover:bg-pink-500/15 hover:text-pink-100 hover:-translate-y-0.5`;
+};
 
   const handleLogout = () => {
     logout();
@@ -40,8 +41,7 @@ export default function Navbar() {
 
   return (
     <div className="sticky top-0 z-50 w-full px-4 md:px-6 pt-4">
-      {" "}
-      <nav className="w-full">
+      <nav className="w-full relative">
         <div className="theme-surface-card backdrop-blur-md border-2 border-pink-500/35 rounded-full px-5 py-2.5 flex items-center justify-between card-glow">
           <Link
             to="/"
@@ -53,39 +53,36 @@ export default function Navbar() {
               alt="Logo"
               className="theme-logo h-10 w-10 md:h-12 md:w-12 object-contain theme-logo-glow"
             />
-            <div className="page-line-vertical hidden md:block"></div>
+            <div className="page-line-vertical"></div>
             <h2 className="font-semibold text-pink-300 text-lg md:text-xl tracking-tight">
               {`<_fiicoder>`}
             </h2>
           </Link>
 
           {/* desktop navigation */}
-          <div className="hidden md:flex gap-3 items-center">
+          <div className="hidden lg:flex gap-3 items-center">
             <Link to="/problems" className={getNavLinkClass("/problems")}>
               {t.archiveBtn}
             </Link>
 
             {isAuthenticated && (
               <>
-                <div className="page-line-vertical"></div>
                 <Link to="/classes" className={getNavLinkClass("/classes")}>
                   {lang === "RO" ? "Clase" : "Classes"}
                 </Link>
               </>
             )}
 
-            <div className="page-line-vertical"></div>
-
             {isAuthenticated ? (
               <>
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-pink-400/30 bg-pink-500/10">
-                  <div className="w-6 h-6 rounded-full bg-linear-to-br from-pink-400 to-purple-500 flex items-center justify-center text-[10px] font-bold text-white uppercase">
+                <Link to="/profile" className={getNavLinkClass("/profile")}>
+                  <div className="w-5 h-5 rounded-full bg-linear-to-br from-pink-400 to-purple-500 flex items-center justify-center text-[10px] font-bold text-white uppercase">
                     {username?.charAt(0) || "?"}
                   </div>
                   <span className="text-sm font-medium text-pink-200 max-w-25 truncate">
                     {username}
                   </span>
-                </div>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="px-4 py-1.5 rounded-full text-sm font-medium border-2 border-red-400/50 text-red-300 bg-red-500/10 transition-all duration-200 hover:bg-red-500/20 hover:border-red-400 hover:-translate-y-0.5"
@@ -98,8 +95,6 @@ export default function Navbar() {
                 {t.loginBtn}
               </Link>
             )}
-
-            <div className="page-line-vertical"></div>
 
             {/* lang toggle desktop */}
             <div className="relative flex items-center theme-surface-input border-2 border-pink-400/50 rounded-full p-1 h-9.5 w-24 overflow-hidden">
@@ -125,7 +120,7 @@ export default function Navbar() {
                 EN
               </button>
             </div>
-
+            <div className="page-line-vertical"></div>
             <button
               onClick={toggleTheme}
               className="px-4 py-1.5 rounded-full text-xs font-bold border-2 border-pink-400/40 text-pink-100 bg-pink-500/10 transition-all duration-200 hover:bg-pink-500/20"
@@ -137,7 +132,7 @@ export default function Navbar() {
 
           {/* mobile hamburger menu button */}
           <button
-            className="md:hidden p-2 text-pink-200 hover:text-pink-100 focus:outline-none"
+            className="lg:hidden p-2 text-pink-200 hover:text-pink-100 focus:outline-none"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
           >
             {isMobileOpen ? (
@@ -182,7 +177,7 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.12 }}
-              className="absolute top-full left-6 right-6 mt-3 p-6 theme-surface-card backdrop-blur-xl border-2 border-pink-500/35 rounded-3xl flex flex-col gap-4 shadow-2xl z-10 md:hidden"
+              className="absolute top-full left-0 right-0 mt-3 p-6 theme-surface-card backdrop-blur-xl border-2 border-pink-500/35 rounded-3xl flex flex-col gap-4 shadow-2xl z-10 lg:hidden"
             >
               <Link
                 to="/problems"

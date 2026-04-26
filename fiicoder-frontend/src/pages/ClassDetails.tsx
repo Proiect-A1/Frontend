@@ -11,19 +11,14 @@ import {
   type HomeworkResponseDTO,
 } from "../services/homeworkService";
 import { useLanguage } from "../language/Language";
+import { itemVariants, staggerConfig } from "../utils/motionConfig";
 
 const pageVariants = {
-  hidden: { opacity: 0, y: 18 },
+  hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    y: 0,
-    transition: { staggerChildren: 0.08, delayChildren: 0.08 },
+    transition: staggerConfig,
   },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 14 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.35 } },
 };
 
 function getHomeworkBadge(status: HomeworkResponseDTO["status"]) {

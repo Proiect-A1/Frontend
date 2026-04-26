@@ -8,21 +8,15 @@ import {
   type GroupInvitationResponseDTO,
 } from "../services/classService";
 import { useLanguage } from "../language/Language";
+import { itemVariants, staggerConfig } from "../utils/motionConfig";
 
 const pageVariants = {
-  hidden: { opacity: 0, y: 18 },
+  hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    y: 0,
-    transition: { staggerChildren: 0.08, delayChildren: 0.08 },
+    transition: staggerConfig,
   },
 };
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 14 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.35 } },
-};
-
 export default function ClassesHub() {
   const { lang } = useLanguage();
   const { userId, isAuthenticated } = useAuth();
@@ -164,10 +158,11 @@ export default function ClassesHub() {
           </motion.div>
         )}
 
-        <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <div className="grid gap-4 md:gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+          {" "}
           <motion.section
             variants={itemVariants}
-            className="rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20"
+            className="rounded-xl md:rounded-2xl border border-pink-500/20 theme-surface-card p-4 md:p-6 shadow-lg shadow-black/20"
           >
             <h2 className="text-2xl font-bold text-pink-100">
               {lang === "RO" ? "Creează o clasă" : "Create a class"}
@@ -201,15 +196,17 @@ export default function ClassesHub() {
               </button>
             </form>
           </motion.section>
-
           <motion.section
             variants={itemVariants}
-            className="rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20"
+            className="rounded-xl md:rounded-2xl border border-pink-500/20 theme-surface-card p-4 md:p-6 shadow-lg shadow-black/20"
           >
             <h2 className="text-2xl font-bold text-pink-100">
               {lang === "RO" ? "Găsește o clasă" : "Find a class"}
             </h2>
-            <form onSubmit={handleLookupClass} className="mt-5 flex gap-3">
+            <form
+              onSubmit={handleLookupClass}
+              className="mt-5 flex flex-col sm:flex-row gap-3"
+            >
               <input
                 value={lookupId}
                 onChange={(event) => setLookupId(event.target.value)}
@@ -254,7 +251,7 @@ export default function ClassesHub() {
 
         <motion.section
           variants={itemVariants}
-          className="mt-6 rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20"
+          className="mt-4 md:mt-6 rounded-xl md:rounded-2xl border border-pink-500/20 theme-surface-card p-4 md:p-6 shadow-lg shadow-black/20"
         >
           <div className="flex items-center justify-between gap-4">
             <h2 className="text-2xl font-bold text-pink-100">

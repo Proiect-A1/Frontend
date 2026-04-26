@@ -3,23 +3,13 @@ import { motion } from "framer-motion";
 import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
 
+import { itemVariants, staggerConfig } from "../utils/motionConfig";
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
+    transition: staggerConfig,
   },
 };
 
@@ -62,7 +52,7 @@ const announcements: Announcement[] = [
     titleEN: "Free Tutorials",
     descRO: "Noi cursuri video pe platforma noastră. Învață de la experți!",
     descEN: "New video courses on our platform. Learn from experts!",
-    priority: "medium",
+    priority: "low",
     timestamp: "1 day ago",
   },
 ];
@@ -110,15 +100,15 @@ export default function Landing() {
           >
             <Link
               to="/problems"
-              className="px-8 py-4 rounded-2xl bg-pink-500/20 border-2 border-pink-400/60 text-pink-100 font-bold text-lg transition-all duration-200 hover:bg-pink-500/35 hover:border-pink-400 hover:-translate-y-1 shadow-lg hover:shadow-pink-500/30"
+              className="px-8 py-4 rounded-full bg-pink-500/20 border-2 border-pink-400/60 text-pink-100 font-bold text-lg transition-all duration-200 hover:bg-pink-500/35 hover:border-pink-400 hover:-translate-y-1 shadow-lg hover:shadow-pink-500/30"
             >
               {t.viewProblems}
             </Link>
 
-            {!isAuthenticated && (
+            {isAuthenticated && (
               <Link
                 to="/login"
-                className="px-8 py-4 rounded-2xl bg-transparent border-2 border-pink-400/40 text-pink-300/80 font-bold text-lg transition-all duration-200 hover:bg-pink-500/15 hover:border-pink-400/60 hover:text-pink-100 hover:-translate-y-1"
+              className="px-8 py-4 rounded-full bg-pink-500/20 border-2 border-pink-400/60 text-pink-100 font-bold text-lg transition-all duration-200 hover:bg-pink-500/35 hover:border-pink-400 hover:-translate-y-1 shadow-lg hover:shadow-pink-500/30"
               >
                 {t.authenticateBtn}
               </Link>
@@ -136,7 +126,7 @@ export default function Landing() {
               <motion.div
                 key={ann.id}
                 variants={itemVariants}
-                className={`p-5 rounded-2xl border-2 backdrop-blur-sm cursor-pointer transition-all duration-300 group hover:-translate-y-1 ${
+                className={`p-5 rounded-xl border backdrop-blur-sm cursor-pointer transition-all duration-300 group hover:-translate-y-1 ${
                   ann.priority === "high"
                     ? "border-red-500/40 bg-red-500/10 hover:border-red-500/70 hover:bg-red-500/15 shadow-lg shadow-red-500/20"
                     : ann.priority === "medium"
@@ -192,7 +182,7 @@ export default function Landing() {
             <motion.div
               key={index}
               variants={itemVariants}
-              className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-sm hover:border-pink-500/60 theme-surface-hover transition-all duration-300 group"
+              className="p-6 rounded-xl border border-pink-500/30 theme-surface-card backdrop-blur-sm hover:border-pink-500/60 theme-surface-hover transition-all duration-300 group"
             >
               <div className="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">
                 {feature.icon}
@@ -223,19 +213,6 @@ export default function Landing() {
               </motion.div>
             ))}
           </div>
-        </motion.div>
-
-        {/* CTA Section */}
-        <motion.div variants={itemVariants} className="mt-10 text-center pb-4">
-          <p className="text-pink-200/70 mb-4">
-            {t.readyText}
-          </p>
-          <Link
-            to="/problems"
-            className="inline-block px-10 py-4 rounded-2xl bg-linear-to-r from-pink-500/30 to-purple-500/20 border-2 border-pink-400/70 text-pink-100 font-bold text-lg transition-all duration-200 hover:from-pink-500/50 hover:to-purple-500/40 hover:border-pink-400 hover:-translate-y-1 shadow-lg hover:shadow-pink-500/40"
-          >
-            {t.startBtn}
-          </Link>
         </motion.div>
       </motion.div>
     </div>
