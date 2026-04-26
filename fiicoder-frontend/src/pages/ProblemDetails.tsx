@@ -18,17 +18,42 @@ const monacoLanguageMap: Record<string, string> = {
   "Rust": "rust",
 };
 
+// Rezolvă ORICE format CSS (hex, rgb, color-mix etc.) la un hex valid #rrggbb
+// folosind un CanvasRenderingContext2D care normalizează totul
 function toHexColor(input: string): string {
-  const normalized = input.trim();
-  if (normalized.startsWith("#")) return normalized;
-  const parts = normalized.match(/\d+/g);
-  if (!parts || parts.length < 3) return "#ffffff";
-  const [r, g, b] = parts.slice(0, 3).map((value) => Number(value).toString(16).padStart(2, "0"));
-  return `#${r}${g}${b}`;
+  const trimmed = input.trim();
+  if (!trimmed) return "#ffffff";
+
+  // hex simplu – returnează direct
+  if (/^#[0-9a-f]{3,8}$/i.test(trimmed)) return trimmed.substring(0, 7);
+
+  // Dacă browserul a rezolvat deja la rgb/rgba, parsează manual
+  const rgbMatch = trimmed.match(/^rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)/);
+  if (rgbMatch) {
+    const [, r, g, b] = rgbMatch;
+    return `#${Number(r).toString(16).padStart(2, "0")}${Number(g).toString(16).padStart(2, "0")}${Number(b).toString(16).padStart(2, "0")}`;
+  }
+
+  // Fallback: lasă Canvas 2D să rezolve color-mix, oklch, etc.
+  try {
+    const ctx = document.createElement("canvas").getContext("2d");
+    if (ctx) {
+      ctx.fillStyle = "#000000"; // reset
+      ctx.fillStyle = trimmed;   // setează valoarea CSS
+      const resolved = ctx.fillStyle; // browserul returnează hex sau rgb
+      if (resolved.startsWith("#")) return resolved.substring(0, 7);
+      const m = resolved.match(/^rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)/);
+      if (m) return `#${Number(m[1]).toString(16).padStart(2, "0")}${Number(m[2]).toString(16).padStart(2, "0")}${Number(m[3]).toString(16).padStart(2, "0")}`;
+    }
+  } catch { /* ignore */ }
+
+  return "#ffffff";
 }
 
 function withAlpha(hexColor: string, alphaHex: string): string {
-  return `${hexColor.replace("#", "#")}${alphaHex}`;
+  // Ne asigurăm că hex-ul e valid înainte de a adăuga alpha
+  const clean = hexColor.startsWith("#") ? hexColor.substring(0, 7) : `#${hexColor.substring(0, 6)}`;
+  return `${clean}${alphaHex}`;
 }
 
 export default function ProblemDetails() {
@@ -100,7 +125,11 @@ export default function ProblemDetails() {
 
   useEffect(() => {
     if (monacoRef.current) {
-      handleEditorMount(undefined as any, monacoRef.current);
+      try {
+        handleEditorMount(undefined as any, monacoRef.current);
+      } catch (err) {
+        console.warn("Failed to update Monaco theme:", err);
+      }
     }
   }, [theme]);
 
