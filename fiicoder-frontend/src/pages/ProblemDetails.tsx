@@ -17,7 +17,7 @@ import "katex/dist/katex.min.css";
 // Utility to fix database indentation issues for Markdown
 function unindent(str: string): string {
   if (!str) return "";
-  const lines = str.split('\n');
+  const lines = str.split("\n");
 
   // Find minimum indentation of non-empty lines starting from the second line
   let minIndent = Infinity;
@@ -33,12 +33,14 @@ function unindent(str: string): string {
   if (minIndent === Infinity || minIndent === 0) return str;
 
   // Remove up to `minIndent` spaces from all lines except the first
-  return lines.map((line, index) => {
-    if (index === 0) return line;
-    if (line.trim().length === 0) return "";
-    const regex = new RegExp(`^[ \\t]{1,${minIndent}}`);
-    return line.replace(regex, '');
-  }).join('\n');
+  return lines
+    .map((line, index) => {
+      if (index === 0) return line;
+      if (line.trim().length === 0) return "";
+      const regex = new RegExp(`^[ \\t]{1,${minIndent}}`);
+      return line.replace(regex, "");
+    })
+    .join("\n");
 }
 
 // mapare limbaj UI -> identificator Monaco
@@ -355,33 +357,63 @@ export default function ProblemDetails() {
                 },
 
                 // Blocuri de cod / Exemple (între ```)
-                code: ({ node, inline, className, children, ...props }: any) => {
-  if (className === "language-stdin") {
-    return (
-      <div className="my-3">
-        <p className="text-xs font-bold uppercase tracking-widest text-pink-400 mb-1">Input</p>
-        <code className="block p-4 rounded-xl text-sm font-mono text-pink-200 bg-black/20 border border-pink-500/20" {...props}>{children}</code>
-      </div>
-    );
-  }
-  if (className === "language-stdout") {
-    return (
-      <div className="my-3">
-        <p className="text-xs font-bold uppercase tracking-widest text-pink-400 mb-1">Output</p>
-        <code className="block p-4 rounded-xl text-sm font-mono text-pink-200 bg-black/20 border border-pink-500/20" {...props}>{children}</code>
-      </div>
-    );
-  }
-  return inline ? (
-    <code className="bg-pink-500/10 text-pink-300 px-1.5 py-0.5 rounded-md text-sm font-mono border border-pink-500/20" {...props}>{children}</code>
-  ) : (
-    <div className="relative group my-4">
-      <div className="rounded-xl overflow-hidden border border-pink-500/20 theme-surface-editor shadow-inner bg-black/20">
-        <code className="block p-4 text-sm font-mono text-pink-200 overflow-x-auto" {...props}>{children}</code>
-      </div>
-    </div>
-  );
-},
+                code: ({
+                  node,
+                  inline,
+                  className,
+                  children,
+                  ...props
+                }: any) => {
+                  if (className === "language-stdin") {
+                    return (
+                      <div className="my-3">
+                        <p className="text-xs font-bold uppercase tracking-widest text-pink-400 mb-1">
+                          Input
+                        </p>
+                        <code
+                          className="block p-4 rounded-xl text-sm font-mono text-pink-200 bg-black/20 border border-pink-500/20"
+                          {...props}
+                        >
+                          {children}
+                        </code>
+                      </div>
+                    );
+                  }
+                  if (className === "language-stdout") {
+                    return (
+                      <div className="my-3">
+                        <p className="text-xs font-bold uppercase tracking-widest text-pink-400 mb-1">
+                          Output
+                        </p>
+                        <code
+                          className="block p-4 rounded-xl text-sm font-mono text-pink-200 bg-black/20 border border-pink-500/20"
+                          {...props}
+                        >
+                          {children}
+                        </code>
+                      </div>
+                    );
+                  }
+                  return inline ? (
+                    <code
+                      className="bg-pink-500/10 text-pink-300 px-1.5 py-0.5 rounded-md text-sm font-mono border border-pink-500/20"
+                      {...props}
+                    >
+                      {children}
+                    </code>
+                  ) : (
+                    <div className="relative group my-4">
+                      <div className="rounded-xl overflow-hidden border border-pink-500/20 theme-surface-editor shadow-inner bg-black/20">
+                        <code
+                          className="block p-4 text-sm font-mono text-pink-200 overflow-x-auto"
+                          {...props}
+                        >
+                          {children}
+                        </code>
+                      </div>
+                    </div>
+                  );
+                },
 
                 // Liste
                 ul: ({ ...props }) => (
@@ -393,12 +425,18 @@ export default function ProblemDetails() {
                 li: ({ ...props }) => <li className="ml-2" {...props} />,
 
                 // Blocuri de cod
-                pre: ({ ...props }) => (
-                  <pre
-                    className="theme-surface-input p-4 rounded-xl border border-pink-500/20 mb-4 overflow-x-auto text-sm text-pink-200 shadow-inner"
-                    {...props}
-                  />
-                ),
+               pre: ({ children, ...props }: any) => {
+                  const child = (children as any)?.props;
+                  if (child?.className === "language-stdin" || child?.className === "language-stdout") {
+                    return <>{children}</>;
+                  }
+                  return (
+                    <pre
+                      className="theme-surface-input p-4 rounded-xl border border-pink-500/20 mb-4 overflow-x-auto text-sm text-pink-200 shadow-inner"
+                      {...props}
+                    />
+                  );
+                },
               }}
             />
           </div>
@@ -566,32 +604,35 @@ export default function ProblemDetails() {
             className="fixed bottom-8 right-8 z-100"
           >
             <div
-              className={`relative overflow-hidden px-8 py-5 rounded-2xl border-2 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${status === "pending"
-                ? "border-pink-500/50 theme-surface-card text-pink-200"
-                : status === "valid"
-                  ? "border-green-500/50 bg-green-500/10 text-green-300"
-                  : "border-red-500/50 bg-red-500/10 text-red-300"
-                }`}
+              className={`relative overflow-hidden px-8 py-5 rounded-2xl border-2 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${
+                status === "pending"
+                  ? "border-pink-500/50 theme-surface-card text-pink-200"
+                  : status === "valid"
+                    ? "border-green-500/50 bg-green-500/10 text-green-300"
+                    : "border-red-500/50 bg-red-500/10 text-red-300"
+              }`}
             >
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: status === "pending" ? 2 : 4 }}
-                className={`absolute bottom-0 left-0 h-1 w-full origin-left ${status === "pending"
-                  ? "bg-pink-500"
-                  : status === "valid"
-                    ? "bg-green-500"
-                    : "bg-red-500"
-                  }`}
-              />
-              <div className="flex items-center gap-4">
-                <div
-                  className={`w-3 h-3 rounded-full animate-pulse ${status === "pending"
+                className={`absolute bottom-0 left-0 h-1 w-full origin-left ${
+                  status === "pending"
                     ? "bg-pink-500"
                     : status === "valid"
                       ? "bg-green-500"
                       : "bg-red-500"
-                    }`}
+                }`}
+              />
+              <div className="flex items-center gap-4">
+                <div
+                  className={`w-3 h-3 rounded-full animate-pulse ${
+                    status === "pending"
+                      ? "bg-pink-500"
+                      : status === "valid"
+                        ? "bg-green-500"
+                        : "bg-red-500"
+                  }`}
                 />
                 <div>
                   <h4 className="text-xs uppercase tracking-widest font-bold opacity-60">
