@@ -355,38 +355,33 @@ export default function ProblemDetails() {
                 },
 
                 // Blocuri de cod / Exemple (între ```)
-                code: ({
-                  node,
-                  inline,
-                  className,
-                  children,
-                  ...props
-                }: any) => {
-                  return inline ? (
-                    // Cod inline (ex: `n <= 100`)
-                    <code
-                      className="bg-pink-500/10 text-pink-300 px-1.5 py-0.5 rounded-md text-sm font-mono border border-pink-500/20"
-                      {...props}
-                    >
-                      {children}
-                    </code>
-                  ) : (
-                    // Bloc de cod (ex: exemple de Input/Output)
-                    <div className="relative group my-4">
-                      <div className="absolute -top-3 left-4 px-2 py-0.5 bg-pink-900/80 border border-pink-500/30 rounded text-[10px] text-pink-300 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                        {lang === "RO" ? "Exemplu" : "Example"}
-                      </div>
-                      <div className="rounded-xl overflow-hidden border border-pink-500/20 theme-surface-editor shadow-inner bg-black/20">
-                        <code
-                          className="block p-4 text-sm font-mono text-pink-200 overflow-x-auto"
-                          {...props}
-                        >
-                          {children}
-                        </code>
-                      </div>
-                    </div>
-                  );
-                },
+                code: ({ node, inline, className, children, ...props }: any) => {
+  if (className === "language-stdin") {
+    return (
+      <div className="my-3">
+        <p className="text-xs font-bold uppercase tracking-widest text-pink-400 mb-1">Input</p>
+        <code className="block p-4 rounded-xl text-sm font-mono text-pink-200 bg-black/20 border border-pink-500/20" {...props}>{children}</code>
+      </div>
+    );
+  }
+  if (className === "language-stdout") {
+    return (
+      <div className="my-3">
+        <p className="text-xs font-bold uppercase tracking-widest text-pink-400 mb-1">Output</p>
+        <code className="block p-4 rounded-xl text-sm font-mono text-pink-200 bg-black/20 border border-pink-500/20" {...props}>{children}</code>
+      </div>
+    );
+  }
+  return inline ? (
+    <code className="bg-pink-500/10 text-pink-300 px-1.5 py-0.5 rounded-md text-sm font-mono border border-pink-500/20" {...props}>{children}</code>
+  ) : (
+    <div className="relative group my-4">
+      <div className="rounded-xl overflow-hidden border border-pink-500/20 theme-surface-editor shadow-inner bg-black/20">
+        <code className="block p-4 text-sm font-mono text-pink-200 overflow-x-auto" {...props}>{children}</code>
+      </div>
+    </div>
+  );
+},
 
                 // Liste
                 ul: ({ ...props }) => (
