@@ -21,6 +21,8 @@ export default function Navbar() {
   // State pentru meniul de telefon
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
+  const logoSrc = theme === "rose" ? "/logo.svg" : "/logo_nord.svg";
+
 const getNavLinkClass = (path: string) => {
   const isActive = location.pathname.startsWith(path);
   
@@ -49,7 +51,7 @@ const getNavLinkClass = (path: string) => {
             className="flex items-center gap-3 transition-transform duration-200 hover:scale-105"
           >
             <img
-              src="/logo.svg"
+              src={logoSrc}
               alt="Logo"
               className="theme-logo h-10 w-10 md:h-12 md:w-12 object-contain theme-logo-glow"
             />

@@ -4,6 +4,7 @@ import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
 
 import { itemVariants, staggerConfig } from "../utils/motionConfig";
+import { useTheme } from "../services/ThemeContext"; 
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -62,6 +63,9 @@ export default function Landing() {
   const t = translations[lang];
   const { isAuthenticated } = useAuth();
 
+  const { theme } = useTheme();
+  const logoSrc = theme === "rose" ? "/logo.svg" : "/logo_nord.svg";
+
   return (
     <div className="w-full flex justify-center h-auto xl:h-full">
       <motion.div
@@ -74,7 +78,7 @@ export default function Landing() {
         <div className="text-center mb-10 md:mb-12">
           <motion.div variants={itemVariants} className="mb-6">
             <img
-              src="/logo.svg"
+              src={logoSrc}
               alt="FiiCoder"
               className="theme-logo h-24 w-24 md:h-32 md:w-32 mx-auto theme-logo-glow"
             />
@@ -105,7 +109,7 @@ export default function Landing() {
               {t.viewProblems}
             </Link>
 
-            {isAuthenticated && (
+            {!isAuthenticated && (
               <Link
                 to="/login"
               className="px-8 py-4 rounded-full bg-pink-500/20 border-2 border-pink-400/60 text-pink-100 font-bold text-lg transition-all duration-200 hover:bg-pink-500/35 hover:border-pink-400 hover:-translate-y-1 shadow-lg hover:shadow-pink-500/30"

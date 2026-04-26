@@ -300,28 +300,33 @@ export default function ProblemDetails() {
               remarkPlugins={[remarkMath]}
               rehypePlugins={[rehypeKatex]}
               components={{
-                // spatiu intre paragrafe + pastreaza line breaks
-                p: ({ node, ...props }) => (
+                // Titluri (ex: # Date de intrare)
+                h1: ({ ...props }) => (
+                  <h1
+                    className="text-2xl font-bold text-pink-200 mt-6 mb-3 border-b border-pink-500/20 pb-1"
+                    {...props}
+                  />
+                ),
+                h2: ({ ...props }) => (
+                  <h2
+                    className="text-xl font-bold text-pink-200 mt-5 mb-2"
+                    {...props}
+                  />
+                ),
+
+                // Paragrafe (asigură spațierea corectă)
+                p: ({ ...props }) => (
                   <p className="mb-4 whitespace-pre-wrap" {...props} />
                 ),
-                // bold text
-                strong: ({ node, ...props }) => (
-                  <strong className="font-bold text-pink-100" {...props} />
-                ),
-                // stilizare titlurile din Markdown daca exista
-                h1: ({ node, ...props }) => (
-                  <h1
-                    className="text-2xl font-bold text-pink-200 mt-6 mb-3"
-                    {...props}
-                  />
-                ),
-                h2: ({ node, ...props }) => (
-                  <h2
-                    className="text-xl font-bold text-pink-200 mt-5 mb-3"
-                    {...props}
-                  />
-                ),
-                // stilizare exemplele de intrare/iesire
+
+                // Formule matematice inline (între $)
+                span: ({ className, ...props }) => {
+                  if (className?.includes("katex"))
+                    return <span className="text-pink-300" {...props} />;
+                  return <span {...props} />;
+                },
+
+                // Blocuri de cod / Exemple (între ```)
                 code: ({
                   node,
                   inline,
@@ -330,6 +335,7 @@ export default function ProblemDetails() {
                   ...props
                 }: any) => {
                   return inline ? (
+                    // Cod inline (ex: `n <= 100`)
                     <code
                       className="bg-pink-500/10 text-pink-300 px-1.5 py-0.5 rounded-md text-sm font-mono border border-pink-500/20"
                       {...props}
@@ -337,16 +343,31 @@ export default function ProblemDetails() {
                       {children}
                     </code>
                   ) : (
-                    <div className="rounded-xl overflow-hidden border border-pink-500/20 my-4 theme-surface-editor shadow-inner">
-                      <code
-                        className="block p-4 text-sm font-mono text-pink-200 overflow-x-auto"
-                        {...props}
-                      >
-                        {children}
-                      </code>
+                    // Bloc de cod (ex: exemple de Input/Output)
+                    <div className="relative group my-4">
+                      <div className="absolute -top-3 left-4 px-2 py-0.5 bg-pink-900/80 border border-pink-500/30 rounded text-[10px] text-pink-300 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                        {lang === "RO" ? "Exemplu" : "Example"}
+                      </div>
+                      <div className="rounded-xl overflow-hidden border border-pink-500/20 theme-surface-editor shadow-inner bg-black/20">
+                        <code
+                          className="block p-4 text-sm font-mono text-pink-200 overflow-x-auto"
+                          {...props}
+                        >
+                          {children}
+                        </code>
+                      </div>
                     </div>
                   );
                 },
+
+                // Liste
+                ul: ({ ...props }) => (
+                  <ul
+                    className="list-disc list-inside mb-4 space-y-1 text-pink-200/90"
+                    {...props}
+                  />
+                ),
+                li: ({ ...props }) => <li className="ml-2" {...props} />,
               }}
             >
               {problem.statement}
