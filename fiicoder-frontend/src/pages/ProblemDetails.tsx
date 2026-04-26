@@ -263,7 +263,7 @@ export default function ProblemDetails() {
                 ul: ({ ...props }) => <ul className="list-disc list-inside mb-4 space-y-1 text-pink-200/90" {...props} />,
               }}
             >
-              {problem.statement}
+              {`# Test\n\nFormulă: $x^2 + y^2 = z^2$`}
             </ReactMarkdown>
           </div>
         </div>
