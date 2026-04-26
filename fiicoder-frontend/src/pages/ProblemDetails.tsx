@@ -425,9 +425,14 @@ export default function ProblemDetails() {
                 li: ({ ...props }) => <li className="ml-2" {...props} />,
 
                 // Blocuri de cod
-               pre: ({ children, ...props }: any) => {
-                  const child = (children as any)?.props;
-                  if (child?.className === "language-stdin" || child?.className === "language-stdout") {
+                pre: ({ children, ...props }: any) => {
+                  const child = Array.isArray(children)
+                    ? children[0]?.props
+                    : (children as any)?.props;
+                  if (
+                    child?.className === "language-stdin" ||
+                    child?.className === "language-stdout"
+                  ) {
                     return <>{children}</>;
                   }
                   return (
