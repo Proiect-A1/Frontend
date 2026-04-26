@@ -1,7 +1,8 @@
 import { apiClient } from "./apiClient";
 
 export interface SubmissionRequest {
-  problem_id: string;
+  problem_title: string;
+  languageId: string;
   code: string;
 }
 

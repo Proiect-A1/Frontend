@@ -8,6 +8,7 @@ import { problemService } from "../services/problemService";
 import type { Problem } from "../types/problem";
 import Editor, { type OnMount } from "@monaco-editor/react";
 import { useTheme } from "../services/ThemeContext";
+import { languageService, type LanguageDTO } from "../services/languageService";
 
 // mapare limbaj UI -> identificator Monaco
 const monacoLanguageMap: Record<string, string> = {
@@ -101,7 +102,8 @@ export default function ProblemDetails() {
   const [status, setStatus] = useState<null | "pending" | "valid" | "invalid">(null);
   const monacoRef = useRef<any>(null);
 
-  const languages = ["C++", "Python", "Java", "JavaScript", "Rust"];
+  const [availableLanguages, setAvailableLanguages] = useState<LanguageDTO[]>([]);
+  const [selectedLanguageId, setSelectedLanguageId] = useState<string>("");
 
   // La mount-ul editorului, salvăm referința Monaco și aplicăm tema
   const handleEditorMount: OnMount = (_editor, monaco) => {
@@ -115,6 +117,26 @@ export default function ProblemDetails() {
       applyMonacoTheme(monacoRef.current, theme);
     }
   }, [theme]);
+
+  // Fetch languages on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchLanguages() {
+      try {
+        const data = await languageService.getAll();
+        if (!isMounted) return;
+        setAvailableLanguages(data);
+        if (data.length > 0) {
+          setSelectedLanguageId(data[0].id);
+          setLanguage(data[0].name);
+        }
+      } catch (err) {
+        console.error("Eroare la încărcarea limbajelor:", err);
+      }
+    }
+    fetchLanguages();
+    return () => { isMounted = false; };
+  }, []);
 
   // iau datele din backend cand se incarca pagina sau cand se schimba problemId (URL)
   useEffect(() => {
@@ -163,12 +185,13 @@ export default function ProblemDetails() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!problem || !code.trim()) return;
+    if (!problem || !code.trim() || !selectedLanguageId) return;
     setStatus("pending");
 
     try {
       const response = await submissionService.submit({
-        problem_id: problem.id,
+        problem_title: problem.title,
+        languageId: selectedLanguageId,
         code: code,
       });
 
@@ -275,16 +298,17 @@ export default function ProblemDetails() {
                         transition={{ duration: 0.12 }}
                         className="absolute z-50 w-full theme-surface-dropdown border border-pink-500/40 rounded-xl shadow-2xl overflow-hidden"
                       >
-                        {languages.map((lang) => (
+                        {availableLanguages.map((langItem) => (
                           <button
-                            key={lang}
+                            key={langItem.id}
                             onClick={() => {
-                              setLanguage(lang);
+                              setSelectedLanguageId(langItem.id);
+                              setLanguage(langItem.name);
                               setIsOpen(false);
                             }}
                             className="w-full text-left px-4 py-2 text-sm text-pink-100 hover:bg-pink-500/20 transition-colors"
                           >
-                            {lang}
+                            {langItem.name} {langItem.version && `(${langItem.version})`}
                           </button>
                         ))}
                       </motion.div>
