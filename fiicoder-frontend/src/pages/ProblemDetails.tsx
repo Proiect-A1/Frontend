@@ -426,9 +426,11 @@ export default function ProblemDetails() {
 
                 // Blocuri de cod
                 pre: ({ children, ...props }: any) => {
+                  console.log("PRE children:", children);
                   const child = Array.isArray(children)
                     ? children[0]?.props
                     : (children as any)?.props;
+                    console.log("PRE child.className:", child?.className);
                   if (
                     child?.className === "language-stdin" ||
                     child?.className === "language-stdout"
