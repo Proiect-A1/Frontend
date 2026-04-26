@@ -388,7 +388,7 @@ export default function ProblemDetails() {
         {/* ── BACK BUTTON ── */}
         <div className="flex justify-start shrink-0">
           <Link to="/problems" className="relative inline-block group">
-            <div className="flex items-center gap-2 text-pink-300/70 font-semibold text-sm hover:text-pink-100 transition-colors cursor-pointer">
+            <div className="flex items-center gap-2 text-pink-300/60 font-semibold text-sm hover:text-pink-100 transition-colors cursor-pointer">
               <span>←</span>
               <span>{t.backToList}</span>
             </div>

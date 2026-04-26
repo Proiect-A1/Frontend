@@ -157,28 +157,52 @@ input, textarea {
   animation: expandLineHorizontal 0.4s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* Compatibility layer for legacy pink/purple Tailwind utilities. */
-/* New UI styles should prefer semantic classes + theme tokens above. */
+/* ═══════════════════════════════════════════════════════════════════
+   Compatibility layer — maps ALL legacy pink/purple Tailwind 
+   utilities to CSS custom properties so they adapt to any theme.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── TEXT ── */
 .text-pink-100 { color: var(--text-h) !important; }
 .text-pink-200 { color: color-mix(in srgb, var(--text-h) 88%, var(--text) 12%) !important; }
 .text-pink-300 { color: color-mix(in srgb, var(--accent) 84%, var(--text-h) 16%) !important; }
 .text-pink-400 { color: color-mix(in srgb, var(--accent) 92%, white 8%) !important; }
 
+.text-pink-100\/50 { color: color-mix(in srgb, var(--text-h) 50%, transparent) !important; }
+.text-pink-100\/70 { color: color-mix(in srgb, var(--text-h) 70%, transparent) !important; }
 .text-pink-100\/85 { color: color-mix(in srgb, var(--text-h) 85%, transparent) !important; }
-.text-pink-200\/70,
+
+.text-pink-200\/60,
 .text-pink-200\/65,
-.text-pink-200\/60 { color: color-mix(in srgb, var(--text) 70%, transparent) !important; }
-.text-pink-300\/80,
+.text-pink-200\/70 { color: color-mix(in srgb, var(--text) 70%, transparent) !important; }
+
+.text-pink-300\/50,
+.text-pink-300\/55,
 .text-pink-300\/60,
-.text-pink-300\/50 { color: color-mix(in srgb, var(--accent) 72%, transparent) !important; }
-.text-pink-400\/70,
+.text-pink-300\/80,
+.text-pink-300\/90 { color: color-mix(in srgb, var(--accent) 72%, transparent) !important; }
+
+.text-pink-400\/50,
 .text-pink-400\/60,
-.text-pink-400\/50 { color: color-mix(in srgb, var(--accent) 62%, transparent) !important; }
+.text-pink-400\/70 { color: color-mix(in srgb, var(--accent) 62%, transparent) !important; }
 
 .hover\:text-pink-100:hover { color: var(--text-h) !important; }
 .hover\:text-pink-300:hover { color: color-mix(in srgb, var(--accent) 90%, var(--text-h) 10%) !important; }
 .placeholder\:text-pink-200\/40::placeholder { color: color-mix(in srgb, var(--text) 42%, transparent) !important; }
 
+/* ── DECORATION (underline) ── */
+.decoration-pink-500\/60 { text-decoration-color: color-mix(in srgb, var(--accent) 60%, transparent) !important; }
+.hover\:decoration-pink-300:hover { text-decoration-color: color-mix(in srgb, var(--accent) 84%, var(--text-h) 16%) !important; }
+
+/* ── BORDER ── */
+.border-pink-300,
+.border-pink-400,
+.border-pink-400\/25,
+.border-pink-400\/30,
+.border-pink-400\/40,
+.border-pink-400\/50,
+.border-pink-400\/60,
+.border-pink-400\/70,
 .border-pink-500\/20,
 .border-pink-500\/25,
 .border-pink-500\/30,
@@ -186,20 +210,16 @@ input, textarea {
 .border-pink-500\/40,
 .border-pink-500\/50,
 .border-pink-500\/60,
-.border-pink-500\/70,
-.border-pink-400\/25,
-.border-pink-400\/30,
-.border-pink-400\/40,
-.border-pink-400\/50,
-.border-pink-400\/60,
-.border-pink-400\/70,
-.border-pink-300,
-.border-pink-400 {
+.border-pink-500\/70 {
   border-color: color-mix(in srgb, var(--accent) 70%, transparent) !important;
 }
 
-.hover\:border-pink-400:hover,
 .hover\:border-pink-300:hover,
+.hover\:border-pink-400:hover,
+.hover\:border-pink-400\/50:hover,
+.hover\:border-pink-400\/60:hover,
+.hover\:border-pink-500\/40:hover,
+.hover\:border-pink-500\/60:hover,
 .focus\:border-pink-400:focus {
   border-color: color-mix(in srgb, var(--accent) 82%, transparent) !important;
 }
@@ -218,6 +238,8 @@ a:focus-visible {
   border-top-color: var(--accent) !important;
 }
 
+/* ── BACKGROUND ── */
+.bg-pink-500 { background-color: var(--accent) !important; }
 .bg-pink-500\/5,
 .bg-pink-500\/10,
 .bg-pink-500\/15,
@@ -233,19 +255,25 @@ a:focus-visible {
 .hover\:bg-pink-500\/10:hover,
 .hover\:bg-pink-500\/15:hover,
 .hover\:bg-pink-500\/20:hover,
+.hover\:bg-pink-500\/25:hover,
+.hover\:bg-pink-500\/30:hover,
 .hover\:bg-pink-500\/35:hover,
 .hover\:bg-pink-500\/50:hover {
   background-color: color-mix(in srgb, var(--accent) 28%, transparent) !important;
 }
 
+/* ── GRADIENTS ── */
+.from-pink-400 {
+  --tw-gradient-from: color-mix(in srgb, var(--accent) 88%, var(--text-h) 12%) var(--tw-gradient-from-position) !important;
+}
 .from-pink-500\/30 {
   --tw-gradient-from: color-mix(in srgb, var(--accent) 28%, transparent) var(--tw-gradient-from-position) !important;
 }
 .from-pink-500\/50 {
   --tw-gradient-from: color-mix(in srgb, var(--accent) 40%, transparent) var(--tw-gradient-from-position) !important;
 }
-.from-pink-400 {
-  --tw-gradient-from: color-mix(in srgb, var(--accent) 88%, var(--text-h) 12%) var(--tw-gradient-from-position) !important;
+.hover\:from-pink-500\/50:hover {
+  --tw-gradient-from: color-mix(in srgb, var(--accent) 50%, transparent) var(--tw-gradient-from-position) !important;
 }
 .via-pink-500\/50 {
   --tw-gradient-via: color-mix(in srgb, var(--accent) 22%, transparent) var(--tw-gradient-via-position) !important;
@@ -260,6 +288,7 @@ a:focus-visible {
   --tw-gradient-to: var(--accent-secondary) var(--tw-gradient-to-position) !important;
 }
 
+/* ── SHADOWS ── */
 .shadow-pink-500\/30,
 .shadow-pink-500\/40,
 .shadow-red-500\/20 {
@@ -278,6 +307,10 @@ a:focus-visible {
 .shadow-\[0_10px_40px_rgba\(0\,0\,0\,0\.5\)\] {
   box-shadow: 0 10px 40px color-mix(in srgb, black 50%, transparent) !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   End compatibility layer
+   ═══════════════════════════════════════════════════════════════════ */
 
 .theme-logo {
   filter: var(--logo-filter)
@@ -314,4 +347,3 @@ a:focus-visible {
 ::-webkit-scrollbar-thumb:hover {
   background-color: color-mix(in srgb, var(--accent) 80%, transparent);
 }
-

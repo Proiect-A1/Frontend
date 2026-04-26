@@ -3,7 +3,7 @@ import { useLanguage, translations } from "../language/Language";
 function StatCard({ title, value }: { title: string; value: string }) {
   return (
     <div className="rounded-xl border border-pink-500/25 theme-surface-muted p-3">
-      <p className="text-xs uppercase tracking-wide text-pink-300/70">{title}</p>
+      <p className="text-xs uppercase tracking-wide text-pink-300/60">{title}</p>
       <p className="mt-1 text-2xl font-semibold text-pink-100">{value}</p>
     </div>
   );
