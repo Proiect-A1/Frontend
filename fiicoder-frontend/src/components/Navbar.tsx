@@ -163,7 +163,7 @@ export default function Navbar() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute right-0 top-full mt-3 w-32 py-2 theme-surface-dropdown border border-pink-500/40 rounded-2xl shadow-xl overflow-hidden z-50"
+                    className="absolute right-0 top-full mt-3 w-32 theme-surface-dropdown border border-pink-500/40 rounded-2xl shadow-xl overflow-hidden z-50"
                   >
                     {themes.map((t) => (
                       <button
