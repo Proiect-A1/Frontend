@@ -38,19 +38,22 @@
 }
 
 [data-theme="nord"] {
-  --bg-color: #242933;
-  --surface-page: color-mix(in srgb, var(--bg-color) 78%, #1f2430 22%);
-  --surface-card: color-mix(in srgb, #2e3440 82%, transparent);
-  --surface-muted: color-mix(in srgb, #2e3440 88%, transparent);
-  --surface-input: color-mix(in srgb, var(--bg-color) 78%, #1f2430 22%);
-  --surface-dropdown: color-mix(in srgb, #2e3440 72%, #3b4252 28%);
-  --surface-editor: color-mix(in srgb, var(--bg-color) 85%, #1f2430 15%);
+  --bg-color: #4c566a;
+
+  --surface-page: color-mix(in srgb, var(--bg-color) 90%, #000);
+  --surface-card: color-mix(in srgb, var(--bg-color) 65%, #000);
+  --surface-muted: color-mix(in srgb, #2e3440 80%, #000);
+  --surface-input: color-mix(in srgb, #2e3440 80%, #000);
+  --surface-editor: color-mix(in srgb, var(--bg-color) 40%, #000);
+  --surface-dropdown: color-mix(in srgb, #3b4252 95%, transparent);
+  --surface-hover: color-mix(in srgb, var(--accent) 15%, transparent);
+
   --accent: #88c0d0;
-  --surface-hover: color-mix(in srgb, var(--accent) 20%, var(--surface-card) 80%);
   --text: #e5e9f0;
   --text-h: #eceff4;
   --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
   --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
+
   --bg: var(--bg-color);
   --code-bg: color-mix(in srgb, var(--bg-color) 74%, #252b37 26%);
   --hero-start: #2f3542;
