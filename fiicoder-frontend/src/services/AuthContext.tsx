@@ -1,10 +1,11 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 
-// Helpers to decode a JWT payload
-
+// forma unui JWT
 interface JwtPayload {
-  sub: string;       // username
+  sub: string;       // username-ul care e UUID momentan
+  userId: string;    
+  role: string;      
   iat: number;
   exp: number;
 }
@@ -13,6 +14,7 @@ function decodeJwt(token: string): JwtPayload | null {
   try {
     const parts = token.split('.');
     if (parts.length !== 3) return null;
+    // Decodăm partea de payload a JWT-ului
     const payload = JSON.parse(atob(parts[1]));
     return payload as JwtPayload;
   } catch {
@@ -23,15 +25,15 @@ function decodeJwt(token: string): JwtPayload | null {
 function isTokenExpired(token: string): boolean {
   const payload = decodeJwt(token);
   if (!payload) return true;
+  // payload.exp este în secunde, Date.now() e în milisecunde
   return Date.now() >= payload.exp * 1000;
 }
-
-// Context structure
 
 interface AuthContextType {
   token: string | null;
   username: string | null;
   userId: string | null;
+  isAdmin: boolean;
   isAuthenticated: boolean;
   login: (token: string) => void;
   logout: () => void;
@@ -41,28 +43,29 @@ const AuthContext = createContext<AuthContextType>({
   token: null,
   username: null,
   userId: null,
+  isAdmin: false,
   isAuthenticated: false,
   login: () => { },
   logout: () => { },
 });
 
-// Local-storage key
-
 const TOKEN_KEY = 'fiicoder_jwt';
-
-// Provider
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() => {
     const stored = localStorage.getItem(TOKEN_KEY);
     if (stored && !isTokenExpired(stored)) return stored;
-    // Clean up stale token
+    // Curățăm token-ul expirat la inițializare
     localStorage.removeItem(TOKEN_KEY);
     return null;
   });
 
-  const username = token ? (decodeJwt(token)?.sub ?? null) : null;
-  const userId = token ? (decodeJwt(token)?.sub ?? null) : null;
+  const payload = token ? decodeJwt(token) : null;
+  
+  // scot valorile din payload
+  const username = payload?.sub ?? null;
+  const userId = payload?.userId ?? null;
+  const isAdmin = payload?.role === 'ADMIN'; 
   const isAuthenticated = token !== null;
 
   const login = useCallback((newToken: string) => {
@@ -75,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
   }, []);
 
-  // Periodically check for token expiry (every 60s)
+  // check if token is expired every 60s (might remove later)
   useEffect(() => {
     const id = setInterval(() => {
       if (token && isTokenExpired(token)) {
@@ -86,13 +89,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [token, logout]);
 
   return (
-    <AuthContext.Provider value={{ token, username, userId, isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ token, username, userId, isAdmin, isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 }
-
-// Hook
 
 export function useAuth() {
   return useContext(AuthContext);
