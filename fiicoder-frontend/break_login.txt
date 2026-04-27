@@ -1,11 +1,20 @@
-// Creăm un payload valid cu numele "dev" și data de expirare în anul 2033
-const payload = btoa(JSON.stringify({ sub: "dev", exp: 2000000000, iat: 1700000000 }));
+// 1. Creăm payload-ul cu datele de care are nevoie AuthContext-ul tău
+const mockPayload = {
+  sub: "admin_local",
+  userId: "123-admin",
+  role: "ADMIN",
+  iat: Math.floor(Date.now() / 1000),
+  exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24) // Expiră în 24 de ore
+};
 
-// Asamblăm un token cu cele 3 părți (header.payload.semnătură)
-const fakeToken = "fakeHeader." + payload + ".fakeSignature";
+// 2. Transformăm payload-ul în Base64 (exact cum se așteaptă atob să îl găsească)
+const base64Payload = btoa(JSON.stringify(mockPayload));
 
-// Salvăm în localStorage
-localStorage.setItem("fiicoder_jwt", fakeToken);
+// 3. Asamblăm un JWT fals (header.payload.semnătura). Frontend-ul ignoră header-ul și semnătura.
+const fakeToken = `dummy_header.${base64Payload}.dummy_signature`;
 
-// Reîncărcăm pagina pentru a inițializa AuthContext cu noul token
+// 4. Îl salvăm în cheia pe care o caută aplicația ta și dăm refresh
+localStorage.setItem('fiicoder_jwt', fakeToken);
 window.location.reload();
+
+console.log("Acum ești admin! 🚀");
