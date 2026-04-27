@@ -4,7 +4,7 @@ import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
 
 import { itemVariants, staggerConfig } from "../utils/motionConfig";
-import { useTheme } from "../services/ThemeContext"; 
+import { useTheme } from "../services/ThemeContext";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -75,25 +75,25 @@ export default function Landing() {
         animate="visible"
       >
         {/* Hero Section */}
-        <div className="text-center mb-10 md:mb-12">
-          <motion.div variants={itemVariants} className="mb-6">
+        <div className="text-center mb-8 md:mb-10">
+          <motion.div variants={itemVariants} className="mb-4">
             <img
               src={logoSrc}
               alt="FiiCoder"
-              className="theme-logo h-24 w-24 md:h-32 md:w-32 mx-auto theme-logo-glow"
+              className="theme-logo h-20 w-20 md:h-28 md:w-28 mx-auto theme-logo-glow"
             />
           </motion.div>
 
           <motion.h1
             variants={itemVariants}
-            className="text-5xl md:text-7xl font-black text-pink-100 mb-4 tracking-tighter"
+            className="text-4xl md:text-5xl font-black text-pink-100 mb-3 tracking-tight"
           >
             {t.welcomeTitle} <span className="text-pink-400">{`<_FiiCoder>`}</span>
           </motion.h1>
 
           <motion.p
             variants={itemVariants}
-            className="text-lg md:text-2xl text-pink-200/70 max-w-2xl mx-auto mb-8"
+            className="text-base md:text-lg text-pink-200/70 max-w-2xl mx-auto mb-6"
           >
             {t.welcomeDesc}
           </motion.p>
@@ -104,7 +104,7 @@ export default function Landing() {
           >
             <Link
               to="/problems"
-              className="px-8 py-4 rounded-full bg-pink-500/20 border-2 border-pink-400/60 text-pink-100 font-bold text-lg transition-all duration-200 hover:bg-pink-500/35 hover:border-pink-400 hover:-translate-y-1 shadow-lg hover:shadow-pink-500/30"
+              className="px-6 py-2.5 rounded-full bg-pink-500/20 border-2 border-pink-400/60 text-pink-100 font-bold text-sm transition-all duration-200 hover:bg-pink-500/35 hover:border-pink-400 hover:-translate-y-1 shadow-lg hover:shadow-pink-500/30"
             >
               {t.viewProblems}
             </Link>
@@ -112,7 +112,7 @@ export default function Landing() {
             {!isAuthenticated && (
               <Link
                 to="/login"
-              className="px-8 py-4 rounded-full bg-pink-500/20 border-2 border-pink-400/60 text-pink-100 font-bold text-lg transition-all duration-200 hover:bg-pink-500/35 hover:border-pink-400 hover:-translate-y-1 shadow-lg hover:shadow-pink-500/30"
+                className="px-6 py-2.5 rounded-full bg-pink-500/20 border-2 border-pink-400/60 text-pink-100 font-bold text-sm transition-all duration-200 hover:bg-pink-500/35 hover:border-pink-400 hover:-translate-y-1 shadow-lg hover:shadow-pink-500/30"
               >
                 {t.authenticateBtn}
               </Link>
@@ -121,8 +121,8 @@ export default function Landing() {
         </div>
 
         {/* Announcements Section */}
-        <motion.div variants={itemVariants} className="mt-10 mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-pink-100 mb-8 text-center">
+        <motion.div variants={itemVariants} className="mt-8 mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-pink-100 mb-6 text-center">
             {t.announcementsTitle}
           </h2>
           <div className="grid gap-4 lg:grid-cols-3">
@@ -130,31 +130,31 @@ export default function Landing() {
               <motion.div
                 key={ann.id}
                 variants={itemVariants}
-                className={`p-5 rounded-xl border backdrop-blur-sm cursor-pointer transition-all duration-300 group hover:-translate-y-1 ${
+                className={`p-4 rounded-xl border backdrop-blur-sm cursor-pointer transition-all duration-300 group hover:-translate-y-1 ${
                   ann.priority === "high"
                     ? "border-red-500/40 bg-red-500/10 hover:border-red-500/70 hover:bg-red-500/15 shadow-lg shadow-red-500/20"
                     : ann.priority === "medium"
-                      ? "border-pink-500/30 theme-surface-card hover:border-pink-500/60 theme-surface-hover"
-                      : "border-pink-500/20 theme-surface-muted hover:border-pink-500/40 theme-surface-hover"
+                    ? "border-pink-500/30 theme-surface-card hover:border-pink-500/60 theme-surface-hover"
+                    : "border-pink-500/20 theme-surface-muted hover:border-pink-500/40 theme-surface-hover"
                 }`}
               >
-                <div className="flex items-start gap-4">
-                  <div className="text-3xl shrink-0 group-hover:scale-110 transition-transform duration-300">
+                <div className="flex items-start gap-3">
+                  <div className="text-2xl shrink-0 group-hover:scale-110 transition-transform duration-300">
                     {ann.icon}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-pink-100 text-sm md:text-base mb-1 line-clamp-2">
+                    <h3 className="font-semibold text-pink-100 text-sm mb-1 line-clamp-2">
                       {lang === "RO" ? ann.titleRO : ann.titleEN}
                     </h3>
-                    <p className="text-xs md:text-sm text-pink-200/70 mb-3 line-clamp-3">
+                    <p className="text-xs text-pink-200/70 mb-2 line-clamp-3">
                       {lang === "RO" ? ann.descRO : ann.descEN}
                     </p>
-                    <div className="text-[10px] md:text-xs text-pink-300/50">
+                    <div className="text-[10px] text-pink-300/50">
                       {ann.timestamp}
                     </div>
                   </div>
                   {ann.priority === "high" && (
-                    <div className="shrink-0 px-2 py-1 rounded-full bg-red-500/30 text-red-300 text-[10px] font-bold">
+                    <div className="shrink-0 px-2 py-0.5 rounded-full bg-red-500/30 text-red-300 text-[10px] font-bold">
                       {lang === "RO" ? "URGENT" : "URGENT"}
                     </div>
                   )}
@@ -165,7 +165,7 @@ export default function Landing() {
         </motion.div>
 
         {/* Features Grid */}
-        <motion.div variants={itemVariants} className="grid md:grid-cols-3 gap-6 mt-8">
+        <motion.div variants={itemVariants} className="grid md:grid-cols-3 gap-4 mt-6">
           {[
             {
               icon: "📚",
@@ -186,13 +186,13 @@ export default function Landing() {
             <motion.div
               key={index}
               variants={itemVariants}
-              className="p-6 rounded-xl border border-pink-500/30 theme-surface-card backdrop-blur-sm hover:border-pink-500/60 theme-surface-hover transition-all duration-300 group"
+              className="p-5 rounded-xl border border-pink-500/30 theme-surface-card backdrop-blur-sm hover:border-pink-500/60 theme-surface-hover transition-all duration-300 group"
             >
-              <div className="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform duration-300">
                 {feature.icon}
               </div>
-              <h3 className="text-lg font-bold text-pink-100 mb-2">{feature.title}</h3>
-              <p className="text-sm text-pink-200/60">{feature.desc}</p>
+              <h3 className="text-base font-bold text-pink-100 mb-1">{feature.title}</h3>
+              <p className="text-xs text-pink-200/60">{feature.desc}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -200,9 +200,9 @@ export default function Landing() {
         {/* Stats Section */}
         <motion.div
           variants={itemVariants}
-          className="mt-10 p-8 rounded-2xl border-2 border-pink-500/25 theme-surface-page backdrop-blur-sm"
+          className="mt-8 p-6 rounded-xl border border-pink-500/25 theme-surface-page backdrop-blur-sm"
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             {[
               { num: "5000+", label: t.activeStudents },
               { num: "500+", label: t.problemsCount },
@@ -210,10 +210,10 @@ export default function Landing() {
               { num: "98%", label: t.satisfactionRate },
             ].map((stat, idx) => (
               <motion.div key={idx} variants={itemVariants}>
-                <div className="text-3xl md:text-4xl font-black text-pink-300 mb-1">
+                <div className="text-2xl md:text-3xl font-black text-pink-300 mb-1">
                   {stat.num}
                 </div>
-                <div className="text-xs md:text-sm text-pink-200/60">{stat.label}</div>
+                <div className="text-xs text-pink-200/60">{stat.label}</div>
               </motion.div>
             ))}
           </div>

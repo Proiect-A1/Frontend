@@ -56,7 +56,7 @@ export const translations = {
     // Navbar
     archiveBtn: "Arhivă probleme",
     // Landing
-    welcomeTitle: "Bine venit la",
+    welcomeTitle: "Bine ai venit la",
     welcomeDesc: "Platforma de concursuri de programare pentru studenți. Rezolvă probleme, participă la concursuri și devino maestru în coding.",
     viewProblems: "Vezi Problemele",
     authenticateBtn: "Autentificare",

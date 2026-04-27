@@ -129,13 +129,13 @@ export default function ClassesHub() {
           className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between mb-8"
         >
           <div>
-            <p className="text-sm uppercase tracking-[0.35em] text-pink-300/60">
+            <p className="text-xs uppercase tracking-widest text-pink-300/60">
               {lang === "RO" ? "Clase" : "Classes"}
             </p>
-            <h1 className="text-4xl md:text-5xl font-black text-pink-100 mt-2">
+            <h1 className="text-3xl font-bold text-pink-100 mt-1">
               {lang === "RO" ? "Hub-ul de clase" : "Class hub"}
             </h1>
-            <p className="text-pink-200/70 mt-3 max-w-2xl">
+            <p className="text-sm text-pink-200/70 mt-2 max-w-2xl">
               {lang === "RO"
                 ? "Creezi clase, verifici invitațiile și intri rapid într-o clasă existentă."
                 : "Create classes, review invitations, and jump into an existing class quickly."}
@@ -143,7 +143,7 @@ export default function ClassesHub() {
           </div>
           <Link
             to="/problems"
-            className="inline-flex items-center justify-center px-5 py-3 rounded-2xl border-2 border-pink-400/50 text-pink-100 bg-pink-500/10 hover:bg-pink-500/20 transition-colors"
+            className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl border-2 border-pink-400/50 text-pink-100 bg-pink-500/10 hover:bg-pink-500/20 transition-colors"
           >
             {lang === "RO" ? "Mergi la probleme" : "Go to problems"}
           </Link>
@@ -152,33 +152,32 @@ export default function ClassesHub() {
         {(feedback || error) && (
           <motion.div
             variants={itemVariants}
-            className={`mb-6 rounded-2xl border-2 px-4 py-3 ${error ? "border-red-500/40 bg-red-500/10 text-red-100" : "border-pink-500/40 bg-pink-500/10 text-pink-100"}`}
+            className={`mb-6 rounded-xl border-2 px-4 py-3 text-sm ${error ? "border-red-500/40 bg-red-500/10 text-red-100" : "border-pink-500/40 bg-pink-500/10 text-pink-100"}`}
           >
             {error || feedback}
           </motion.div>
         )}
 
         <div className="grid gap-4 md:gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          {" "}
           <motion.section
             variants={itemVariants}
-            className="rounded-xl md:rounded-2xl border border-pink-500/20 theme-surface-card p-4 md:p-6 shadow-lg shadow-black/20"
+            className="rounded-xl border border-pink-500/20 theme-surface-card p-4 md:p-6 shadow-lg shadow-black/20"
           >
-            <h2 className="text-2xl font-bold text-pink-100">
+            <h2 className="text-xl font-bold text-pink-100">
               {lang === "RO" ? "Creează o clasă" : "Create a class"}
             </h2>
-            <p className="mt-2 text-sm text-pink-200/65">
+            <p className="mt-2 text-xs text-pink-200/65">
               {lang === "RO"
                 ? "Backend-ul cere creatorId, deci folosim direct userul din JWT."
                 : "The backend expects creatorId, so we use the user id from the JWT."}
             </p>
 
-            <form onSubmit={handleCreateClass} className="mt-5 space-y-4">
+            <form onSubmit={handleCreateClass} className="mt-4 space-y-3">
               <input
                 value={className}
                 onChange={(event) => setClassName(event.target.value)}
                 placeholder={lang === "RO" ? "Nume clasă" : "Class name"}
-                className="w-full rounded-2xl border border-pink-500/25 theme-surface-muted px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
+                className="w-full rounded-xl border border-pink-500/25 theme-surface-muted px-3 py-2 text-sm text-pink-100 outline-none transition focus:border-pink-400"
               />
               <textarea
                 value={classDescription}
@@ -186,11 +185,11 @@ export default function ClassesHub() {
                 placeholder={
                   lang === "RO" ? "Descriere opțională" : "Optional description"
                 }
-                className="min-h-28 w-full rounded-2xl border border-pink-500/25 theme-surface-muted px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
+                className="min-h-24 w-full rounded-xl border border-pink-500/25 theme-surface-muted px-3 py-2 text-sm text-pink-100 outline-none transition focus:border-pink-400"
               />
               <button
                 type="submit"
-                className="rounded-2xl border-2 border-pink-400/60 bg-pink-500/20 px-5 py-3 font-semibold text-pink-100 transition hover:bg-pink-500/35"
+                className="rounded-xl border border-pink-400/60 bg-pink-500/20 px-4 py-2 text-sm font-semibold text-pink-100 transition hover:bg-pink-500/35"
               >
                 {lang === "RO" ? "Creează clasa" : "Create class"}
               </button>
@@ -198,39 +197,39 @@ export default function ClassesHub() {
           </motion.section>
           <motion.section
             variants={itemVariants}
-            className="rounded-xl md:rounded-2xl border border-pink-500/20 theme-surface-card p-4 md:p-6 shadow-lg shadow-black/20"
+            className="rounded-xl border border-pink-500/20 theme-surface-card p-4 md:p-6 shadow-lg shadow-black/20"
           >
-            <h2 className="text-2xl font-bold text-pink-100">
+            <h2 className="text-xl font-bold text-pink-100">
               {lang === "RO" ? "Găsește o clasă" : "Find a class"}
             </h2>
             <form
               onSubmit={handleLookupClass}
-              className="mt-5 flex flex-col sm:flex-row gap-3"
+              className="mt-4 flex flex-col sm:flex-row gap-3"
             >
               <input
                 value={lookupId}
                 onChange={(event) => setLookupId(event.target.value)}
                 placeholder={lang === "RO" ? "UUID clasă" : "Class UUID"}
-                className="flex-1 rounded-2xl border border-pink-500/25 theme-surface-muted px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
+                className="flex-1 rounded-xl border border-pink-500/25 theme-surface-muted px-3 py-2 text-sm text-pink-100 outline-none transition focus:border-pink-400"
               />
               <button
                 type="submit"
-                className="rounded-2xl border-2 border-pink-400/50 px-4 py-3 font-semibold text-pink-100 transition hover:bg-pink-500/15"
+                className="rounded-xl border border-pink-400/50 px-4 py-2 text-sm font-semibold text-pink-100 transition hover:bg-pink-500/15"
               >
                 {lang === "RO" ? "Caută" : "Search"}
               </button>
             </form>
 
             {foundClass && (
-              <div className="mt-5 rounded-2xl border border-pink-500/20 theme-surface-muted p-4">
-                <h3 className="text-xl font-bold text-pink-100">
+              <div className="mt-4 rounded-xl border border-pink-500/20 theme-surface-muted p-4">
+                <h3 className="text-lg font-semibold text-pink-100">
                   {foundClass.name}
                 </h3>
-                <p className="mt-2 text-sm text-pink-200/70">
+                <p className="mt-1 text-sm text-pink-200/70">
                   {foundClass.description ||
                     (lang === "RO" ? "Fără descriere." : "No description.")}
                 </p>
-                <div className="mt-4 grid gap-2 text-xs text-pink-200/70">
+                <div className="mt-3 grid gap-1 text-xs text-pink-200/70">
                   <div>
                     {lang === "RO" ? "Creată de" : "Created by"}:{" "}
                     {foundClass.creatorUsername}
@@ -240,7 +239,7 @@ export default function ClassesHub() {
                 </div>
                 <Link
                   to={`/classes/${foundClass.id}`}
-                  className="mt-4 inline-flex rounded-xl border border-pink-400/50 px-4 py-2 text-sm font-semibold text-pink-100 hover:bg-pink-500/15"
+                  className="mt-3 inline-flex rounded-lg border border-pink-400/50 px-3 py-1.5 text-xs font-semibold text-pink-100 hover:bg-pink-500/15"
                 >
                   {lang === "RO" ? "Deschide clasa" : "Open class"}
                 </Link>
@@ -251,14 +250,14 @@ export default function ClassesHub() {
 
         <motion.section
           variants={itemVariants}
-          className="mt-4 md:mt-6 rounded-xl md:rounded-2xl border border-pink-500/20 theme-surface-card p-4 md:p-6 shadow-lg shadow-black/20"
+          className="mt-4 md:mt-6 rounded-xl border border-pink-500/20 theme-surface-card p-4 md:p-6 shadow-lg shadow-black/20"
         >
           <div className="flex items-center justify-between gap-4">
-            <h2 className="text-2xl font-bold text-pink-100">
+            <h2 className="text-xl font-bold text-pink-100">
               {lang === "RO" ? "Invitațiile mele" : "My invitations"}
             </h2>
             {loadingInvitations && (
-              <span className="text-sm text-pink-200/60">
+              <span className="text-xs text-pink-200/60">
                 {lang === "RO" ? "Se încarcă..." : "Loading..."}
               </span>
             )}
@@ -266,7 +265,7 @@ export default function ClassesHub() {
 
           <div className="mt-4 grid gap-3">
             {invitations.length === 0 && !loadingInvitations && (
-              <div className="rounded-2xl border border-pink-500/20 theme-surface-muted p-4 text-pink-200/70">
+              <div className="rounded-xl border border-pink-500/20 theme-surface-muted p-3 text-sm text-pink-200/70">
                 {lang === "RO"
                   ? "Nu ai invitații active."
                   : "You have no active invitations."}
@@ -276,24 +275,24 @@ export default function ClassesHub() {
             {invitations.map((invitation) => (
               <div
                 key={invitation.id}
-                className="rounded-2xl border border-pink-500/20 theme-surface-muted p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+                className="rounded-xl border border-pink-500/20 theme-surface-muted p-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
               >
                 <div>
-                  <p className="text-lg font-semibold text-pink-100">
+                  <p className="text-base font-semibold text-pink-100">
                     {invitation.studyClass?.name ||
                       (lang === "RO" ? "Clasă invitată" : "Invited class")}
                   </p>
-                  <p className="text-sm text-pink-200/65">
+                  <p className="text-xs text-pink-200/65 mt-0.5">
                     {lang === "RO" ? "Status" : "Status"}: {invitation.status}
                   </p>
-                  <p className="text-xs text-pink-300/55">
+                  <p className="text-[10px] text-pink-300/55 mt-0.5">
                     {invitation.sentAt}
                   </p>
                 </div>
                 {invitation.studyClass?.id && (
                   <Link
                     to={`/classes/${invitation.studyClass.id}`}
-                    className="inline-flex self-start rounded-xl border border-pink-400/50 px-4 py-2 text-sm font-semibold text-pink-100 hover:bg-pink-500/15"
+                    className="inline-flex self-start rounded-lg border border-pink-400/50 px-3 py-1.5 text-xs font-semibold text-pink-100 hover:bg-pink-500/15"
                   >
                     {lang === "RO" ? "Vezi clasa" : "View class"}
                   </Link>

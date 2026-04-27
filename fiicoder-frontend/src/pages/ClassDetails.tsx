@@ -174,21 +174,21 @@ export default function ClassDetails() {
           className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between mb-8"
         >
           <div>
-            <p className="text-sm uppercase tracking-[0.35em] text-pink-300/60">
+            <p className="text-xs uppercase tracking-widest text-pink-300/60">
               {lang === "RO" ? "Clasă" : "Class"}
             </p>
-            <h1 className="text-4xl md:text-5xl font-black text-pink-100 mt-2">
+            <h1 className="text-3xl font-bold text-pink-100 mt-1">
               {group?.name ||
                 (lang === "RO" ? "Se încarcă clasa..." : "Loading class...")}
             </h1>
-            <p className="text-pink-200/70 mt-3 max-w-3xl">
+            <p className="text-sm text-pink-200/70 mt-2 max-w-3xl">
               {group?.description ||
                 (lang === "RO" ? "Fără descriere." : "No description.")}
             </p>
           </div>
           <Link
             to="/classes"
-            className="inline-flex items-center justify-center px-5 py-3 rounded-2xl border-2 border-pink-400/50 text-pink-100 bg-pink-500/10 hover:bg-pink-500/20 transition-colors"
+            className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl border-2 border-pink-400/50 text-pink-100 bg-pink-500/10 hover:bg-pink-500/20 transition-colors"
           >
             {lang === "RO" ? "Înapoi la hub" : "Back to hub"}
           </Link>
@@ -197,7 +197,7 @@ export default function ClassDetails() {
         {(feedback || error) && (
           <motion.div
             variants={itemVariants}
-            className={`mb-6 rounded-2xl border-2 px-4 py-3 ${error ? "border-red-500/40 bg-red-500/10 text-red-100" : "border-pink-500/40 bg-pink-500/10 text-pink-100"}`}
+            className={`mb-6 rounded-xl border-2 px-4 py-3 text-sm ${error ? "border-red-500/40 bg-red-500/10 text-red-100" : "border-pink-500/40 bg-pink-500/10 text-pink-100"}`}
           >
             {error || feedback}
           </motion.div>
@@ -206,7 +206,7 @@ export default function ClassDetails() {
         {loading && (
           <motion.div
             variants={itemVariants}
-            className="rounded-2xl border border-pink-500/20 theme-surface-card p-6 text-pink-200/70"
+            className="rounded-xl border border-pink-500/20 theme-surface-card p-4 text-sm text-pink-200/70"
           >
             {lang === "RO"
               ? "Se încarcă datele clasei..."
@@ -218,12 +218,12 @@ export default function ClassDetails() {
           <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
             <motion.section
               variants={itemVariants}
-              className="rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20"
+              className="rounded-xl border border-pink-500/20 theme-surface-card p-5 shadow-lg shadow-black/20"
             >
-              <h2 className="text-2xl font-bold text-pink-100">
+              <h2 className="text-xl font-bold text-pink-100">
                 {lang === "RO" ? "Detalii clasă" : "Class details"}
               </h2>
-              <div className="mt-4 grid gap-3 text-sm text-pink-200/70">
+              <div className="mt-3 grid gap-2 text-xs text-pink-200/70">
                 <div>
                   {lang === "RO" ? "Creată de" : "Created by"}:{" "}
                   {group.creatorUsername}
@@ -234,25 +234,25 @@ export default function ClassDetails() {
 
               <form
                 onSubmit={handleInvite}
-                className="mt-6 rounded-3xl border border-pink-500/20 theme-surface-muted p-5"
+                className="mt-5 rounded-xl border border-pink-500/20 theme-surface-muted p-4"
               >
-                <h3 className="text-xl font-semibold text-pink-100">
+                <h3 className="text-lg font-semibold text-pink-100">
                   {lang === "RO" ? "Invită un elev" : "Invite a student"}
                 </h3>
-                <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                <div className="mt-3 flex flex-col gap-3 sm:flex-row">
                   <input
                     value={inviteEmail}
                     onChange={(event) => setInviteEmail(event.target.value)}
                     placeholder={
                       lang === "RO" ? "email@exemplu.com" : "email@example.com"
                     }
-                    className="flex-1 rounded-2xl border border-pink-500/25 theme-surface-card px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
+                    className="flex-1 rounded-xl border border-pink-500/25 theme-surface-card px-3 py-2 text-sm text-pink-100 outline-none transition focus:border-pink-400"
                   />
                   <button
                     type="submit"
-                    className="rounded-2xl border-2 border-pink-400/60 bg-pink-500/20 px-5 py-3 font-semibold text-pink-100 transition hover:bg-pink-500/35"
+                    className="rounded-xl border border-pink-400/60 bg-pink-500/20 px-4 py-2 text-sm font-semibold text-pink-100 transition hover:bg-pink-500/35"
                   >
-                    {lang === "RO" ? "Trimite invitație" : "Send invite"}
+                    {lang === "RO" ? "Trimite" : "Send"}
                   </button>
                 </div>
               </form>
@@ -260,23 +260,23 @@ export default function ClassDetails() {
 
             <motion.section
               variants={itemVariants}
-              className="rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20"
+              className="rounded-xl border border-pink-500/20 theme-surface-card p-5 shadow-lg shadow-black/20"
             >
-              <h2 className="text-2xl font-bold text-pink-100">
+              <h2 className="text-xl font-bold text-pink-100">
                 {lang === "RO" ? "Creează temă" : "Create homework"}
               </h2>
-              <p className="mt-2 text-sm text-pink-200/65">
+              <p className="mt-1 text-xs text-pink-200/65">
                 {lang === "RO"
                   ? "Doar creatorul clasei poate adăuga teme, backend-ul validează asta automat."
                   : "Only the class creator can add homework; the backend validates it automatically."}
               </p>
 
-              <form onSubmit={handleCreateHomework} className="mt-5 space-y-4">
+              <form onSubmit={handleCreateHomework} className="mt-4 space-y-3">
                 <input
                   value={homeworkTitle}
                   onChange={(event) => setHomeworkTitle(event.target.value)}
                   placeholder={lang === "RO" ? "Titlu temă" : "Homework title"}
-                  className="w-full rounded-2xl border border-pink-500/25 theme-surface-muted px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
+                  className="w-full rounded-xl border border-pink-500/25 theme-surface-muted px-3 py-2 text-sm text-pink-100 outline-none transition focus:border-pink-400"
                 />
                 <textarea
                   value={homeworkDescription}
@@ -284,17 +284,17 @@ export default function ClassDetails() {
                     setHomeworkDescription(event.target.value)
                   }
                   placeholder={lang === "RO" ? "Descriere" : "Description"}
-                  className="min-h-28 w-full rounded-2xl border border-pink-500/25 theme-surface-muted px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
+                  className="min-h-24 w-full rounded-xl border border-pink-500/25 theme-surface-muted px-3 py-2 text-sm text-pink-100 outline-none transition focus:border-pink-400"
                 />
                 <input
                   type="date"
                   value={homeworkDeadline}
                   onChange={(event) => setHomeworkDeadline(event.target.value)}
-                  className="w-full rounded-2xl border border-pink-500/25 theme-surface-muted px-4 py-3 text-pink-100 outline-none transition focus:border-pink-400"
+                  className="w-full rounded-xl border border-pink-500/25 theme-surface-muted px-3 py-2 text-sm text-pink-100 outline-none transition focus:border-pink-400"
                 />
                 <button
                   type="submit"
-                  className="rounded-2xl border-2 border-pink-400/60 bg-pink-500/20 px-5 py-3 font-semibold text-pink-100 transition hover:bg-pink-500/35"
+                  className="rounded-xl border border-pink-400/60 bg-pink-500/20 px-4 py-2 text-sm font-semibold text-pink-100 transition hover:bg-pink-500/35"
                 >
                   {lang === "RO" ? "Publică tema" : "Publish homework"}
                 </button>
@@ -305,18 +305,18 @@ export default function ClassDetails() {
 
         <motion.section
           variants={itemVariants}
-          className="mt-6 rounded-3xl border border-pink-500/20 theme-surface-card p-6 shadow-lg shadow-black/20"
+          className="mt-6 rounded-xl border border-pink-500/20 theme-surface-card p-5 shadow-lg shadow-black/20"
         >
           <div className="flex items-center justify-between gap-4">
-            <h2 className="text-2xl font-bold text-pink-100">
+            <h2 className="text-xl font-bold text-pink-100">
               {lang === "RO" ? "Teme active" : "Active homework"}
             </h2>
-            <span className="text-sm text-pink-200/60">{homeworks.length}</span>
+            <span className="text-xs text-pink-200/60">{homeworks.length}</span>
           </div>
 
           <div className="mt-4 grid gap-3">
             {homeworks.length === 0 && !loading && (
-              <div className="rounded-2xl border border-pink-500/20 theme-surface-muted p-4 text-pink-200/70">
+              <div className="rounded-xl border border-pink-500/20 theme-surface-muted p-4 text-sm text-pink-200/70">
                 {lang === "RO"
                   ? "Nu există teme pentru această clasă."
                   : "There is no homework for this class."}
@@ -326,21 +326,21 @@ export default function ClassDetails() {
             {homeworks.map((homework) => (
               <div
                 key={homework.id}
-                className="rounded-2xl border border-pink-500/20 theme-surface-muted p-4"
+                className="rounded-xl border border-pink-500/20 theme-surface-muted p-4"
               >
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
-                      <h3 className="text-xl font-semibold text-pink-100">
+                      <h3 className="text-lg font-semibold text-pink-100">
                         {homework.title}
                       </h3>
                       <span
-                        className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${getHomeworkBadge(homework.status)}`}
+                        className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${getHomeworkBadge(homework.status)}`}
                       >
                         {homework.status}
                       </span>
                     </div>
-                    <p className="mt-2 text-sm text-pink-200/70">
+                    <p className="mt-1.5 text-sm text-pink-200/70">
                       {homework.description ||
                         (lang === "RO" ? "Fără descriere." : "No description.")}
                     </p>
@@ -356,7 +356,7 @@ export default function ClassDetails() {
                   {userId === group?.creatorId && (
                     <button
                       onClick={() => handleDeleteHomework(homework.id)}
-                      className="rounded-xl border border-red-400/50 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/10"
+                      className="rounded-lg border border-red-400/50 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/10"
                     >
                       {lang === "RO" ? "Șterge" : "Delete"}
                     </button>
