@@ -104,7 +104,7 @@ export default function Landing() {
           >
             <Link
               to="/problems"
-              className="px-6 py-2.5 rounded-full bg-pink-500/20 border-2 border-pink-400/60 text-pink-100 font-bold text-sm transition-all duration-200 hover:bg-pink-500/35 hover:border-pink-400 hover:-translate-y-1 shadow-lg hover:shadow-pink-500/30"
+              className="px-6 py-2.5 rounded-full bg-pink-500/20 border-2 border-pink-400/60 text-pink-100 font-bold text-sm transition-all duration-200 hover:bg-pink-500/35 hover:border-pink-400 hover:-translate-y-1"
             >
               {t.viewProblems}
             </Link>
@@ -134,7 +134,7 @@ export default function Landing() {
                   ann.priority === "high"
                     ? "border-red-500/40 bg-red-500/10 hover:border-red-500/70 hover:bg-red-500/15 shadow-lg shadow-red-500/20"
                     : ann.priority === "medium"
-                    ? "border-pink-500/30 theme-surface-card hover:border-pink-500/60 theme-surface-hover"
+                    ? "border-pink-500/30 theme-surface-muted hover:border-pink-500/60 theme-surface-hover"
                     : "border-pink-500/20 theme-surface-muted hover:border-pink-500/40 theme-surface-hover"
                 }`}
               >
@@ -200,7 +200,7 @@ export default function Landing() {
         {/* Stats Section */}
         <motion.div
           variants={itemVariants}
-          className="mt-8 p-6 rounded-xl border border-pink-500/25 theme-surface-page backdrop-blur-sm"
+          className="mt-8 p-6 rounded-xl border border-pink-500/25 theme-surface-muted backdrop-blur-sm"
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             {[
