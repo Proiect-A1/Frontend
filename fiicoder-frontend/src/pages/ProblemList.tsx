@@ -98,7 +98,7 @@ export default function ProblemList() {
   };
 
   return (
-    <div className="w-full grid gap-6 xl:grid-cols-[280px_1fr_280px] h-auto overflow-visible">
+    <div className="w-full grid gap-6 xl:grid-cols-[350px_1fr_350px] h-auto overflow-visible">
       <FilterSidebar
         difficultyFilter={difficultyFilter}
         setDifficultyFilter={setDifficultyFilter}
