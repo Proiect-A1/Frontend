@@ -20,7 +20,6 @@ export default function ProblemList() {
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-
   const [problems, setProblems] = useState<Problem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -105,11 +104,15 @@ export default function ProblemList() {
         </h1>
         <div className="page-line-horizontal" />
 
-
         <div className="">
-          {loading && <p className="text-pink-200">Se încarcă problemele...</p>}
+          {loading && (
+            <p className="text-pink-200">
+              {lang === "RO"
+                ? "Se încarcă problemele..."
+                : "Loading problems..."}
+            </p>
+          )}
           {error && <p className="text-red-400">{error}</p>}
-
 
           {!loading && !error && filteredProblems.length === 0 && (
             <p className="text-sm text-pink-100/85 theme-surface-muted p-4 rounded-xl border-2 border-pink-500/25">
@@ -117,16 +120,15 @@ export default function ProblemList() {
             </p>
           )}
 
-          {/* Containerul care dictează ordinea animațiilor (stagger) */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={{
-              visible: { transition: staggerConfig },
-            }}
-          >
-            {!loading &&
-              filteredProblems.map((problem, index) => (
+          {!loading && filteredProblems.length > 0 && (
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={{
+                visible: { transition: staggerConfig },
+              }}
+            >
+              {filteredProblems.map((problem, index) => (
                 <motion.div key={problem.id} variants={itemVariants}>
                   <div className="rounded-xl border border-pink-500/25 theme-surface-muted p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-pink-400">
                     <div className="mb-2 flex items-center justify-between gap-3">
@@ -158,16 +160,16 @@ export default function ProblemList() {
                     )}
                   </div>
 
-                  {/* Separatorul animat și el în cadrul grupului */}
+                  {/* separator */}
                   {index < filteredProblems.length - 1 && (
-                    <div className="w-full h-1 bg-linear-to-r from-transparent via-pink-500/50 my-3 blur-[5px]" />
+                    <div className="w-full h-1 bg-pink-500 my-3" />
                   )}
                 </motion.div>
               ))}
-          </motion.div>
+            </motion.div>
+          )}
         </div>
       </section>
-
       <StatsSidebar />
     </div>
   );
