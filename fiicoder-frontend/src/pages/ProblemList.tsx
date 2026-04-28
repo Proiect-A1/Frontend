@@ -1,13 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import type { Difficulty, Problem } from "../types/problem";
+import type { Problem } from "../types/problem"; 
 import { problemService } from "../services/problemService";
-import {
-  getDifficultyLabel,
-  useLanguage,
-  translations,
-} from "../language/Language";
+import { getDifficultyLabel, useLanguage, translations } from "../language/Language";
 import FilterSidebar from "../components/FilterSidebar";
 import StatsSidebar from "../components/StatsSidebar";
 import { itemVariants, staggerConfig } from "../utils/motionConfig";
@@ -15,7 +11,7 @@ import { itemVariants, staggerConfig } from "../utils/motionConfig";
 export default function ProblemList() {
   const { lang } = useLanguage();
   const t = translations[lang];
-  // TEMPORARY need backend filtering (because of pagination)
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -24,40 +20,50 @@ export default function ProblemList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const ITEMS_PER_PAGE = 20;
+  
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
   useEffect(() => {
     let isMounted = true;
+    
     async function fetchProblems() {
       try {
-        setLoading(true);
+        if (page === 1) {
+          setLoading(true);
+        } else {
+          setIsLoadingMore(true);
+        }
         setError(null);
 
         let data;
         if (selectedTags.length > 0) {
-          // foloseste endpoint-ul de filtrare pe tag-uri
-          data = await problemService.searchByTags(selectedTags, 1, 100);
+          data = await problemService.searchByTags(selectedTags, page, ITEMS_PER_PAGE);
         } else {
-          data = await problemService.getAllProblems(1, 100);
+          data = await problemService.getAllProblems(page, ITEMS_PER_PAGE);
         }
 
         if (!isMounted) return;
 
-        if (!isMounted) return;
+        setHasMore(data.length === ITEMS_PER_PAGE);
 
-        // mapez raspunsul la interfata Problem din front
-        const formattedProblems: Problem[] = data.map((dto) => ({
-          id: dto.title, // pun titlul ca identificator
-          title: dto.title,
-          shortDescription: dto.description.substring(0, 120) + "...", // extrag o scurta descriere
-          statement: dto.description,
-          difficulty: (dto.difficulty as Difficulty) || "MEDIUM", // daca nu e specificata dificultatea, o setez pe Medium
-          tags: dto.tags || [],
-        }));
+        // cast la vector de probleme
+        const mappedData = data as unknown as Problem[];
 
-        setProblems(formattedProblems);
+        if (page === 1) {
+          setProblems(mappedData); 
+        } else {
+          setProblems(prev => [...prev, ...mappedData]); 
+        }
       } catch (err) {
-        if (isMounted) setError("Nu s-au putut încărca problemele.");
+        if (isMounted) setError("Error loading problems.");
       } finally {
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+          setIsLoadingMore(false);
+        }
       }
     }
 
@@ -66,7 +72,7 @@ export default function ProblemList() {
     return () => {
       isMounted = false;
     };
-  }, [selectedTags]); // re-fetch cand se schimba tag-urile selectate
+  }, [selectedTags, page]);
 
   const filteredProblems = useMemo(() => {
     const normalized = searchQuery.trim().toLowerCase();
@@ -107,9 +113,7 @@ export default function ProblemList() {
         <div className="">
           {loading && (
             <p className="text-pink-200">
-              {lang === "RO"
-                ? "Se încarcă problemele..."
-                : "Loading problems..."}
+              {lang === "RO" ? "Se încarcă problemele..." : "Loading problems..."}
             </p>
           )}
           {error && <p className="text-red-400">{error}</p>}
@@ -124,9 +128,7 @@ export default function ProblemList() {
             <motion.div
               initial="hidden"
               animate="visible"
-              variants={{
-                visible: { transition: staggerConfig },
-              }}
+              variants={{ visible: { transition: staggerConfig } }}
             >
               {filteredProblems.map((problem, index) => (
                 <motion.div key={problem.id} variants={itemVariants}>
@@ -146,7 +148,7 @@ export default function ProblemList() {
                       {problem.shortDescription}
                     </p>
 
-                    {problem.tags.length > 0 && (
+                    {problem.tags && problem.tags.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {problem.tags.map((tag) => (
                           <span
@@ -162,11 +164,40 @@ export default function ProblemList() {
 
                   {/* separator */}
                   {index < filteredProblems.length - 1 && (
-                    <div className="w-full h-1 bg-pink-500 my-3" />
+                    <div className="w-full h-px my-5 bg-linear-to-r from-transparent via-[color-mix(in_srgb,var(--accent)_20%,transparent)] to-transparent shadow-[0_0_10px_color-mix(in_srgb,var(--accent)_25%,transparent)]" />
                   )}
                 </motion.div>
               ))}
             </motion.div>
+          )}
+
+          {/* load button */}
+          {!loading && !error && hasMore && filteredProblems.length > 0 && (
+            <div className="mt-8 mb-4 flex justify-center">
+              <button
+                onClick={() => setPage(p => p + 1)}
+                disabled={isLoadingMore}
+                className="group relative flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-pink-400/40 bg-pink-500/10 text-pink-100 font-bold text-sm transition-all duration-200 hover:bg-pink-500/20 hover:border-pink-400 hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
+              >
+                {isLoadingMore ? (
+                  <>
+                    <div className="w-4 h-4 rounded-full border-2 border-pink-200/30 border-t-pink-200 animate-spin" />
+                    {lang === "RO" ? "Se încarcă..." : "Loading..."}
+                  </>
+                ) : (
+                  <>
+                    {lang === "RO" ? "Afișează mai multe" : "Load more"}
+                    <span className="transition-transform group-hover:translate-y-0.5">▼</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+
+          {!loading && !hasMore && problems.length > 0 && (
+            <div className="mt-8 mb-4 text-center text-xs text-pink-300/50 uppercase tracking-widest font-bold">
+              {lang === "RO" ? "Ai ajuns la finalul listei" : "End of the list"}
+            </div>
           )}
         </div>
       </section>
