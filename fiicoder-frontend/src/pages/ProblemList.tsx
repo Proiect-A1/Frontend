@@ -10,7 +10,6 @@ import {
 } from "../language/Language";
 import FilterSidebar from "../components/FilterSidebar";
 import StatsSidebar from "../components/StatsSidebar";
-import { itemVariants } from "../utils/motionConfig";
 
 export default function ProblemList() {
   const { lang } = useLanguage();
@@ -139,10 +138,9 @@ export default function ProblemList() {
               {filteredProblems.map((problem, index) => (
                 <motion.div 
                   key={problem.id} 
-                  initial="hidden"
-                  animate="visible"
-                  variants={itemVariants}
-                  transition={{ delay: (index % 20) * 0.07 }}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: (index % 20) * 0.07, duration: 0.3 }}
                 >
                   <Link
                     to={`/problems/${problem.id}`}
