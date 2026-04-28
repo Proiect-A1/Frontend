@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() => {
     const stored = localStorage.getItem(TOKEN_KEY);
     if (stored && !isTokenExpired(stored)) return stored;
-    // Curățăm token-ul expirat la inițializare
+    // curat token-ul expirat la init
     localStorage.removeItem(TOKEN_KEY);
     return null;
   });
@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const username = payload?.sub ?? null;
   const userId = payload?.userId ?? null;
   const isAdmin = payload?.role === 'ADMIN'; 
-  const isAuthenticated = token !== null;
+  const isAuthenticated = token !== null && !isTokenExpired(token);
 
   const login = useCallback((newToken: string) => {
     localStorage.setItem(TOKEN_KEY, newToken);
