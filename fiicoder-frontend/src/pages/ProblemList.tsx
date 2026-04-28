@@ -10,7 +10,7 @@ import {
 } from "../language/Language";
 import FilterSidebar from "../components/FilterSidebar";
 import StatsSidebar from "../components/StatsSidebar";
-import { itemVariants, staggerConfig } from "../utils/motionConfig";
+import { itemVariants } from "../utils/motionConfig";
 
 export default function ProblemList() {
   const { lang } = useLanguage();
@@ -135,19 +135,20 @@ export default function ProblemList() {
           )}
 
           {!loading && filteredProblems.length > 0 && (
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={{ visible: { transition: staggerConfig } }}
-            >
+            <div className="w-full">
               {filteredProblems.map((problem, index) => (
-                <motion.div key={problem.id} variants={itemVariants}>
+                <motion.div 
+                  key={problem.id} 
+                  initial="hidden"
+                  animate="visible"
+                  variants={itemVariants}
+                  transition={{ delay: (index % 20) * 0.07 }}
+                >
                   <Link
                     to={`/problems/${problem.id}`}
                     className="block rounded-xl border border-pink-500/25 theme-surface-muted p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-pink-400 group cursor-pointer"
                   >
                     <div className="flex items-center justify-between gap-3">
-                      {/* Am transformat titlul în h3 și am adăugat group-hover pentru a păstra efectul de hover */}
                       <h3 className="text-lg font-semibold text-pink-200 underline decoration-2 decoration-pink-500/60 underline-offset-4 transition group-hover:text-pink-100 group-hover:decoration-pink-300 group-hover:decoration-3">
                         {problem.title}
                       </h3>
@@ -172,11 +173,11 @@ export default function ProblemList() {
 
                   {/* separator */}
                   {index < filteredProblems.length - 1 && (
-                    <div className="w-full h-0.5 my-2 rounded-full bg-[color-mix(in_srgb,var(--accent)_20%,transparent)] shadow-[0_0_5px_color-mix(in_srgb,var(--accent)_50%,transparent)]" />
+                    <div className="w-full h-0.5 my-3 rounded-full bg-[color-mix(in_srgb,var(--accent)_20%,transparent)] shadow-[0_0_5px_color-mix(in_srgb,var(--accent)_50%,transparent)]" />
                   )}
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           )}
 
           {/* load button */}
