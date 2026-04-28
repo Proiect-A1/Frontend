@@ -12,8 +12,6 @@ import { useNavigate } from "react-router-dom";
 import { problemService } from "../services/problemService";
 
 interface FilterSidebarProps {
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
   difficultyFilter: string;
   setDifficultyFilter: (difficulty: string) => void;
   selectedTags: string[];
@@ -24,8 +22,6 @@ interface FilterSidebarProps {
 }
 
 export default function FilterSidebar({
-  searchQuery,
-  setSearchQuery,
   difficultyFilter,
   setDifficultyFilter,
   selectedTags,
@@ -41,9 +37,13 @@ export default function FilterSidebar({
 
   const [isOpen, setIsOpen] = useState(false);
 
-  // Tag-uri din backend
+  // tag-uri din backend
   const [availableTags, setAvailableTags] = useState<TagResponseDTO[]>([]);
   const [tagsLoading, setTagsLoading] = useState(true);
+
+  // search
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -71,8 +71,6 @@ export default function FilterSidebar({
 
     return getDifficultyLabel(lang, val as Difficulty);
   };
-
-  const [searchError, setSearchError] = useState<string | null>(null);
 
   const handleSearchSubmit = async () => {
     const trimmedQuery = searchQuery.trim();
@@ -225,6 +223,8 @@ export default function FilterSidebar({
           type="button"
           onClick={() => {
             clearFilters();
+            setSearchQuery("");
+            setSearchError(null);
             setIsOpen(false);
           }}
           className="w-full rounded-xl border border-pink-400/50 bg-pink-500/10 px-3 py-2 text-sm font-semibold text-pink-100 outline-none transition hover:border-pink-400 hover:bg-pink-500/30 hover:-translate-y-0.5"

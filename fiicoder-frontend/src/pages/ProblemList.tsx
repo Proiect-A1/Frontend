@@ -15,7 +15,6 @@ export default function ProblemList() {
   const { lang } = useLanguage();
   const t = translations[lang];
 
-  const [searchQuery, setSearchQuery] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
@@ -82,14 +81,10 @@ export default function ProblemList() {
   }, [selectedTags, page]);
 
   const filteredProblems = useMemo(() => {
-    const normalized = searchQuery.trim().toLowerCase();
-    return problems.filter((problem) => {
-      const matchesName = problem.title.toLowerCase().includes(normalized);
-      const matchesDifficulty =
-        difficultyFilter === "ALL" || problem.difficulty === difficultyFilter;
-      return matchesName && matchesDifficulty;
-    });
-  }, [difficultyFilter, problems, searchQuery]);
+    return problems.filter((problem) =>
+      difficultyFilter === "ALL" || problem.difficulty === difficultyFilter
+    );
+  }, [difficultyFilter, problems]);
 
   const handleTagsChange = (newTags: string[]) => {
     setSelectedTags(newTags);
@@ -97,7 +92,6 @@ export default function ProblemList() {
   };
 
   const clearFilters = () => {
-    setSearchQuery("");
     setDifficultyFilter("ALL");
     setSelectedTags([]);
     setPage(1);
@@ -106,8 +100,6 @@ export default function ProblemList() {
   return (
     <div className="w-full grid gap-6 xl:grid-cols-[280px_1fr_280px] h-auto overflow-visible">
       <FilterSidebar
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
         difficultyFilter={difficultyFilter}
         setDifficultyFilter={setDifficultyFilter}
         selectedTags={selectedTags}
