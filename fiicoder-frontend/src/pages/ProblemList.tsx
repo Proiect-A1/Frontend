@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import type { Problem } from "../types/problem"; 
+import type { Problem } from "../types/problem";
 import { problemService } from "../services/problemService";
-import { getDifficultyLabel, useLanguage, translations } from "../language/Language";
+import {
+  getDifficultyLabel,
+  useLanguage,
+  translations,
+} from "../language/Language";
 import FilterSidebar from "../components/FilterSidebar";
 import StatsSidebar from "../components/StatsSidebar";
 import { itemVariants, staggerConfig } from "../utils/motionConfig";
@@ -11,7 +15,7 @@ import { itemVariants, staggerConfig } from "../utils/motionConfig";
 export default function ProblemList() {
   const { lang } = useLanguage();
   const t = translations[lang];
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -20,15 +24,15 @@ export default function ProblemList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const ITEMS_PER_PAGE = 20;
-  
+  const ITEMS_PER_PAGE = 2;
+
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
-    
+
     async function fetchProblems() {
       try {
         if (page === 1) {
@@ -40,7 +44,11 @@ export default function ProblemList() {
 
         let data;
         if (selectedTags.length > 0) {
-          data = await problemService.searchByTags(selectedTags, page, ITEMS_PER_PAGE);
+          data = await problemService.searchByTags(
+            selectedTags,
+            page,
+            ITEMS_PER_PAGE,
+          );
         } else {
           data = await problemService.getAllProblems(page, ITEMS_PER_PAGE);
         }
@@ -53,9 +61,9 @@ export default function ProblemList() {
         const mappedData = data as unknown as Problem[];
 
         if (page === 1) {
-          setProblems(mappedData); 
+          setProblems(mappedData);
         } else {
-          setProblems(prev => [...prev, ...mappedData]); 
+          setProblems((prev) => [...prev, ...mappedData]);
         }
       } catch (err) {
         if (isMounted) setError("Error loading problems.");
@@ -113,7 +121,9 @@ export default function ProblemList() {
         <div className="">
           {loading && (
             <p className="text-pink-200">
-              {lang === "RO" ? "Se încarcă problemele..." : "Loading problems..."}
+              {lang === "RO"
+                ? "Se încarcă problemele..."
+                : "Loading problems..."}
             </p>
           )}
           {error && <p className="text-red-400">{error}</p>}
@@ -132,24 +142,22 @@ export default function ProblemList() {
             >
               {filteredProblems.map((problem, index) => (
                 <motion.div key={problem.id} variants={itemVariants}>
-                  <div className="rounded-xl border border-pink-500/25 theme-surface-muted p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-pink-400">
-                    <div className="mb-2 flex items-center justify-between gap-3">
-                      <Link
-                        to={`/problems/${problem.id}`}
-                        className="text-lg font-semibold text-pink-200 underline decoration-2 decoration-pink-500/60 underline-offset-4 transition hover:text-pink-100 hover:decoration-pink-300 hover:decoration-3"
-                      >
+                  <Link
+                    to={`/problems/${problem.id}`}
+                    className="block rounded-xl border border-pink-500/25 theme-surface-muted p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-pink-400 group cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      {/* Am transformat titlul în h3 și am adăugat group-hover pentru a păstra efectul de hover */}
+                      <h3 className="text-lg font-semibold text-pink-200 underline decoration-2 decoration-pink-500/60 underline-offset-4 transition group-hover:text-pink-100 group-hover:decoration-pink-300 group-hover:decoration-3">
                         {problem.title}
-                      </Link>
+                      </h3>
                       <span className="rounded-full border border-pink-400/40 bg-pink-500/10 px-2.5 py-1 text-xs font-semibold text-pink-100">
                         {getDifficultyLabel(lang, problem.difficulty)}
                       </span>
                     </div>
-                    <p className="text-sm text-pink-100/85">
-                      {problem.shortDescription}
-                    </p>
 
                     {problem.tags && problem.tags.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-1.5">
+                      <div className="mt-3 flex flex-wrap gap-1.5">
                         {problem.tags.map((tag) => (
                           <span
                             key={tag}
@@ -160,11 +168,11 @@ export default function ProblemList() {
                         ))}
                       </div>
                     )}
-                  </div>
+                  </Link>
 
                   {/* separator */}
                   {index < filteredProblems.length - 1 && (
-                    <div className="w-full h-px my-5 bg-linear-to-r from-transparent via-[color-mix(in_srgb,var(--accent)_20%,transparent)] to-transparent shadow-[0_0_10px_color-mix(in_srgb,var(--accent)_25%,transparent)]" />
+                    <div className="w-full h-0.5 my-2 rounded-full bg-[color-mix(in_srgb,var(--accent)_20%,transparent)] shadow-[0_0_5px_color-mix(in_srgb,var(--accent)_50%,transparent)]" />
                   )}
                 </motion.div>
               ))}
@@ -175,7 +183,7 @@ export default function ProblemList() {
           {!loading && !error && hasMore && filteredProblems.length > 0 && (
             <div className="mt-8 mb-4 flex justify-center">
               <button
-                onClick={() => setPage(p => p + 1)}
+                onClick={() => setPage((p) => p + 1)}
                 disabled={isLoadingMore}
                 className="group relative flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-pink-400/40 bg-pink-500/10 text-pink-100 font-bold text-sm transition-all duration-200 hover:bg-pink-500/20 hover:border-pink-400 hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
               >
@@ -187,7 +195,9 @@ export default function ProblemList() {
                 ) : (
                   <>
                     {lang === "RO" ? "Afișează mai multe" : "Load more"}
-                    <span className="transition-transform group-hover:translate-y-0.5">▼</span>
+                    <span className="transition-transform group-hover:translate-y-0.5">
+                      ▼
+                    </span>
                   </>
                 )}
               </button>
