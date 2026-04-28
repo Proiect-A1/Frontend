@@ -46,7 +46,7 @@ export const translations = {
     // Problem list
     problemsTitle: "Probleme",
     noProblemsFound: "Nu am găsit nicio problemă.",
-    easyDifficulty: "Ușoară",
+    easyDifficulty: "Ușor",
     mediumDifficulty: "Mediu",
     hardDifficulty: "Greu",
     contestDifficulty: "Concurs",
