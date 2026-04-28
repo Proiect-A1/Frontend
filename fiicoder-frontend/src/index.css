@@ -142,6 +142,10 @@ a, button, [role="button"], select, label {
   cursor: var(--cursor-pointer) 6 3, pointer;
 }
 
+.cursor-custom-pointer {
+  cursor: var(--cursor-pointer), pointer;
+}
+
 input, textarea {
   cursor: var(--cursor-text) 13 13, text;
 }
