@@ -2,6 +2,9 @@ export const prefersReducedMotion = () => {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 };
 
+// for divs that dont support trasition-all and need transition-colors (those that are janky)
+export const hoverTransition = { type: "tween", duration: 0.2, ease: "linear" } as const;
+
 // main page fade + slide
 export const pageVariants = prefersReducedMotion()
   ? {
@@ -29,6 +32,18 @@ export const itemVariants = prefersReducedMotion()
   : {
       hidden: { opacity: 0, y: 15 },
       visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
+    };
+
+export const containerVariants = prefersReducedMotion()
+  ? {
+      hidden: { opacity: 0 },
+      visible: { opacity: 1 },
+      exit: { opacity: 0, transition: { duration: 0 } },
+    }
+  : {
+      hidden: { opacity: 0 },
+      visible: { opacity: 1, transition: staggerConfig },
+      exit: { opacity: 0, transition: { duration: 0.15 } },
     };
 
 // animatie pentru dropdowns

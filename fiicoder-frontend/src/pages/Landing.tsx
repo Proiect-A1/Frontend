@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
 
-import { itemVariants, staggerConfig } from "../utils/motionConfig";
+import { hoverTransition, itemVariants, staggerConfig } from "../utils/motionConfig";
 import { useTheme } from "../services/ThemeContext";
 
 const containerVariants = {
@@ -130,7 +130,8 @@ export default function Landing() {
               <motion.div
                 key={ann.id}
                 variants={itemVariants}
-                className={`p-4 rounded-xl border backdrop-blur-sm cursor-pointer transition-all duration-300 group hover:-translate-y-1 ${
+                whileHover={{ y: -4, transition: { hoverTransition } }}
+                className={`p-4 rounded-xl border backdrop-blur-sm cursor-custom-pointer transition-colors duration-300 group ${
                   ann.priority === "high"
                     ? "border-red-500/40 bg-red-500/10 hover:border-red-500/70 hover:bg-red-500/15 shadow-lg shadow-red-500/20"
                     : ann.priority === "medium"
@@ -139,10 +140,10 @@ export default function Landing() {
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  <div className="text-2xl shrink-0 group-hover:scale-110 transition-transform duration-300">
+                  <div className="text-2xl shrink-0 group-hover:scale-110 transition-all duration-300">
                     {ann.icon}
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0">  
                     <h3 className="font-semibold text-pink-100 text-sm mb-1 line-clamp-2">
                       {lang === "RO" ? ann.titleRO : ann.titleEN}
                     </h3>
@@ -186,9 +187,9 @@ export default function Landing() {
             <motion.div
               key={index}
               variants={itemVariants}
-              className="p-5 rounded-xl border border-pink-500/30 theme-surface-card backdrop-blur-sm hover:border-pink-500/60 theme-surface-hover transition-all duration-300 group"
+              className="p-5 rounded-xl border border-pink-500/30 theme-surface-card backdrop-blur-sm hover:border-pink-500/60 theme-surface-hover transition-colors duration-300 group"
             >
-              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform duration-300">
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-all duration-300">
                 {feature.icon}
               </div>
               <h3 className="text-base font-bold text-pink-100 mb-1">{feature.title}</h3>

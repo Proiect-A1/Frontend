@@ -4,7 +4,7 @@ import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
 import { authService, AuthError } from "../services/authService";
 import type { ValidationErrors } from "../services/authService";
-import { itemVariants, staggerConfig } from "../utils/motionConfig";
+import { containerVariants, itemVariants, hoverTransition } from "../utils/motionConfig";
 import { motion } from "framer-motion";
 
 export default function Login() {
@@ -115,14 +115,7 @@ export default function Login() {
       initial="hidden"
       animate="visible"
       exit="exit"
-      variants={{
-        hidden: { opacity: 0 },
-        visible: {
-          opacity: 1,
-          transition: staggerConfig,
-        },
-        exit: { opacity: 0, transition: { duration: 0.15 } },
-      }}
+      variants={containerVariants}
     >
       {/* titlul */}
       <motion.div variants={itemVariants}>
@@ -340,9 +333,10 @@ export default function Login() {
       {/* 5. Butonul Guest */}
       <motion.button
         variants={itemVariants}
+        whileHover={{ y: -3, transition: { hoverTransition } }}
         type="button"
         onClick={() => navigate("/problems")}
-        className="mt-5 w-full rounded-xl border border-pink-400/25 bg-transparent px-4 py-2.5 text-sm font-medium text-pink-300/80 outline-none transition hover:border-pink-400/50 hover:bg-pink-500/10 hover:text-pink-100 hover:-translate-y-0.5"
+        className="mt-5 w-full rounded-xl border border-pink-400/25 bg-transparent px-4 py-2.5 text-sm font-medium text-pink-300/80 outline-none transition-colors hover:border-pink-400/50 hover:bg-pink-500/10 hover:text-pink-100"
       >
         {t.continueAsGuest}
       </motion.button>
