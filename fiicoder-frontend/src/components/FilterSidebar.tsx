@@ -8,6 +8,8 @@ import { useState, useEffect } from "react";
 import type { Difficulty } from "../types/problem";
 import { tagService, type TagResponseDTO } from "../services/tagService";
 import { itemVariants, staggerConfig } from "../utils/motionConfig";
+import { useNavigate } from "react-router-dom";
+import { problemService } from "../services/problemService";
 
 interface FilterSidebarProps {
   searchQuery: string;
@@ -34,6 +36,8 @@ export default function FilterSidebar({
 }: FilterSidebarProps) {
   const { lang } = useLanguage();
   const t = translations[lang];
+
+  const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -68,6 +72,28 @@ export default function FilterSidebar({
     return getDifficultyLabel(lang, val as Difficulty);
   };
 
+  const [searchError, setSearchError] = useState<string | null>(null);
+
+  const handleSearchSubmit = async () => {
+    const trimmedQuery = searchQuery.trim();
+    if (!trimmedQuery) return;
+
+    setSearchError(null);
+
+    try {
+      const problem = await problemService.getProblemByTitle(trimmedQuery);
+      if (problem?.title) {
+        navigate(`/problems/${problem.title}`);
+      }
+    } catch {
+      setSearchError(
+        lang === "RO"
+          ? "Nicio problemă găsită cu acest titlu."
+          : "No problem found with this title."
+      );
+    }
+  };
+
   return (
   <motion.aside 
     initial="hidden"
@@ -92,10 +118,21 @@ export default function FilterSidebar({
             id="problem-search"
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setSearchError(null); // reseteza eroare la modificare input
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSearchSubmit();
+            }}
             placeholder={lang === "RO" ? "ex: Problema 3" : "ex: Problem 3"}
             className="w-full rounded-xl border border-pink-500/30 theme-surface-input px-3 py-2 text-sm text-pink-100 placeholder:text-pink-200/40 outline-none transition hover:border-pink-400"
           />
+
+          {/* mesaj eroare inline */}
+          {searchError && (
+            <p className="mt-1 text-xs text-red-400/80">{searchError}</p>
+          )}
         </motion.div>
 
         {/* dropdown dificultate */}
