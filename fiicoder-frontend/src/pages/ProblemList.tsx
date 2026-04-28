@@ -23,7 +23,7 @@ export default function ProblemList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const ITEMS_PER_PAGE = 2;
+  const ITEMS_PER_PAGE = 15;
 
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -91,10 +91,16 @@ export default function ProblemList() {
     });
   }, [difficultyFilter, problems, searchQuery]);
 
+  const handleTagsChange = (newTags: string[]) => {
+    setSelectedTags(newTags);
+    setPage(1); // resetare paginare la schimbarea tag-urilor
+  };
+
   const clearFilters = () => {
     setSearchQuery("");
     setDifficultyFilter("ALL");
     setSelectedTags([]);
+    setPage(1);
   };
 
   return (
@@ -105,7 +111,7 @@ export default function ProblemList() {
         difficultyFilter={difficultyFilter}
         setDifficultyFilter={setDifficultyFilter}
         selectedTags={selectedTags}
-        setSelectedTags={setSelectedTags}
+        setSelectedTags={handleTagsChange}
         clearFilters={clearFilters}
         filteredCount={filteredProblems.length}
         totalCount={problems.length}
@@ -140,7 +146,7 @@ export default function ProblemList() {
                   key={problem.id} 
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: (index % 20) * 0.07, duration: 0.3 }}
+                  transition={{ delay: (index % ITEMS_PER_PAGE) * 0.07, duration: 0.3 }}
                 >
                   <Link
                     to={`/problems/${problem.id}`}
