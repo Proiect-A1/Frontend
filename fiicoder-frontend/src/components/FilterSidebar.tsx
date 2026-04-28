@@ -7,7 +7,7 @@ import {
 import { useState, useEffect } from "react";
 import type { Difficulty } from "../types/problem";
 import { tagService, type TagResponseDTO } from "../services/tagService";
-import { itemVariants, staggerConfig } from "../utils/motionConfig";
+import { hoverTransition, itemVariants, staggerConfig } from "../utils/motionConfig";
 import { useNavigate } from "react-router-dom";
 import { problemService } from "../services/problemService";
 
@@ -219,7 +219,9 @@ export default function FilterSidebar({
         </motion.div>
 
         {/* delete filters */}
-        <motion.button variants={itemVariants}
+        <motion.button 
+          variants={itemVariants}
+          whileHover={{ y: -2, transition: { hoverTransition } }}
           type="button"
           onClick={() => {
             clearFilters();
@@ -227,7 +229,7 @@ export default function FilterSidebar({
             setSearchError(null);
             setIsOpen(false);
           }}
-          className="w-full rounded-xl border border-pink-400/50 bg-pink-500/10 px-3 py-2 text-sm font-semibold text-pink-100 outline-none transition hover:border-pink-400 hover:bg-pink-500/30 hover:-translate-y-0.5"
+          className="w-full rounded-xl border border-pink-400/50 bg-pink-500/10 px-3 py-2 text-sm font-semibold text-pink-100 outline-none transition-colors hover:border-pink-400 hover:bg-pink-500/30 hover:-translate-y-0.5"
         >
           {t.clearFilters}
         </motion.button>
