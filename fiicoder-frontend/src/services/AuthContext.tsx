@@ -3,8 +3,7 @@ import type { ReactNode } from 'react';
 
 // forma unui JWT
 interface JwtPayload {
-  sub: string;       // username-ul care e UUID momentan
-  userId: string;    
+  sub: string;       // userId-ul (UUID) venit de la backend în 'sub'
   role: string;      
   iat: number;
   exp: number;
@@ -63,8 +62,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const payload = token ? decodeJwt(token) : null;
   
   // scot valorile din payload
-  const username = payload?.sub ?? null;
-  const userId = payload?.userId ?? null;
+  // Backend-ul pune UUID-ul în 'sub' și nu trimite username-ul separat în token
+  const userId = payload?.sub ?? null;
+  const username = payload?.sub ? `User ${payload.sub.substring(0, 4)}` : null; 
   const isAdmin = payload?.role === 'ADMIN'; 
   const isAuthenticated = token !== null && !isTokenExpired(token);
 
