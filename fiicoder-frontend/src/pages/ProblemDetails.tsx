@@ -13,7 +13,6 @@ import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
-import { autoTranslateProblemTextAsync } from "../language/autoTranslateProblem";
 
 // Utility to fix database indentation issues for Markdown
 function unindent(str: string): string {
@@ -134,8 +133,6 @@ export default function ProblemDetails() {
   const { theme } = useTheme();
 
   const [problem, setProblem] = useState<ProblemFindResponseDTO | null>(null);
-  const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
-  const [translatedTags, setTranslatedTags] = useState<string[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -221,43 +218,6 @@ export default function ProblemDetails() {
     };
   }, [problemTitle]);
 
-  // Translate description and tags when language or problem changes
-  useEffect(() => {
-    let isMounted = true;
-    if (!problem) return;
-    
-    if (lang === "EN") {
-      // Translate description
-      autoTranslateProblemTextAsync(problem.description, "en").then((tr) => {
-        if (!isMounted) return;
-        setTranslatedDescription(tr);
-      }).catch(() => {
-        if (isMounted) setTranslatedDescription(null);
-      });
-
-      // Translate tags
-      if (problem.tags.length > 0) {
-        const tagsString = problem.tags.join(", ");
-        autoTranslateProblemTextAsync(tagsString, "en").then((tr) => {
-          if (!isMounted) return;
-          const translatedTagsArray = tr.split(",").map(tag => tag.trim());
-          setTranslatedTags(translatedTagsArray);
-        }).catch(() => {
-          if (isMounted) setTranslatedTags(null);
-        });
-      } else {
-        setTranslatedTags(null);
-      }
-    } else {
-      setTranslatedDescription(null);
-      setTranslatedTags(null);
-    }
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [lang, problem]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!problem || !code.trim() || !selectedLanguageId) return;
@@ -332,7 +292,7 @@ export default function ProblemDetails() {
           </h1>
           {problem.tags.length > 0 && (
             <div className="mb-3 flex flex-wrap gap-1.5">
-              {(translatedTags || problem.tags).map((tag) => (
+              {problem.tags.map((tag) => (
                 <span
                   key={tag}
                   className="px-2.5 py-0.5 rounded-full text-xs font-semibold border border-pink-500/25 bg-pink-500/10 text-pink-300/90"
@@ -347,9 +307,7 @@ export default function ProblemDetails() {
             <ReactMarkdown
               remarkPlugins={[remarkMath]}
               rehypePlugins={[rehypeKatex]}
-              children={unindent(
-                (translatedDescription || problem.description).replace(/\\\\/g, "\\")
-              )}
+              children={unindent(problem.description.replace(/\\\\/g, "\\"))}
               components={{
                 // Titluri
                 h1: ({ ...props }) => (
