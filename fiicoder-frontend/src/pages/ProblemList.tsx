@@ -8,7 +8,7 @@ import {
   useLanguage,
   translations,
 } from "../language/Language";
-import autoTranslateProblemText from "../language/autoTranslateProblem";
+import autoTranslateProblemText, { autoTranslateProblemTextAsync } from "../language/autoTranslateProblem";
 import { loadMapping } from "../language/mappingLoader";
 import FilterSidebar from "../components/FilterSidebar";
 import StatsSidebar from "../components/StatsSidebar";
@@ -21,6 +21,7 @@ export default function ProblemList() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const [problems, setProblems] = useState<ProblemFindResponseDTO[]>([]);
+  const [translatedProblems, setTranslatedProblems] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -87,6 +88,37 @@ export default function ProblemList() {
       isMounted = false;
     };
   }, [selectedTags, page]);
+
+  // Translate problem tags when language changes
+  useEffect(() => {
+    let isMounted = true;
+    if (lang === "RO" || problems.length === 0) {
+      setTranslatedProblems({});
+      return;
+    }
+
+    const translateAllTags = async () => {
+      const translations: Record<string, string[]> = {};
+      for (const problem of problems) {
+        if (problem.tags && problem.tags.length > 0) {
+          const tagsString = problem.tags.join(", ");
+          try {
+            const translated = await autoTranslateProblemTextAsync(tagsString, "en");
+            if (!isMounted) return;
+            translations[problem.title] = translated.split(",").map(t => t.trim());
+          } catch {
+            translations[problem.title] = problem.tags;
+          }
+        }
+      }
+      if (isMounted) setTranslatedProblems(translations);
+    };
+
+    translateAllTags();
+    return () => {
+      isMounted = false;
+    };
+  }, [lang, problems]);
 
   const filteredProblems = useMemo(() => {
     return problems.filter((problem) =>
@@ -163,7 +195,7 @@ export default function ProblemList() {
 
                     {problem.tags && problem.tags.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-1.5">
-                        {problem.tags.map((tag) => (
+                        {(translatedProblems[problem.title] || problem.tags).map((tag) => (
                           <span
                             key={tag}
                             className="px-2 py-0.5 rounded-full text-[10px] font-semibold border border-pink-500/20 bg-pink-500/5 text-pink-300/80"
