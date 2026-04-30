@@ -5,6 +5,23 @@
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><_fiicoder></title>
+    <script>
+      (() => {
+        const theme = localStorage.getItem("fiicoder_theme");
+        const faviconByTheme = {
+          rose: "/logo.svg",
+          nord: "/logo_nord.svg",
+        };
+        const href = faviconByTheme[theme] || faviconByTheme.rose;
+        const link = document.querySelector('link[rel="icon"]') || document.createElement("link");
+        link.rel = "icon";
+        link.type = "image/svg+xml";
+        link.href = href;
+        if (!link.parentNode) {
+          document.head.appendChild(link);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
