@@ -12,6 +12,10 @@ interface ThemeContextValue {
 }
 
 const THEME_STORAGE_KEY = "fiicoder_theme";
+const THEME_FAVICONS: Record<Theme, string> = {
+  rose: "/logo.svg",
+  nord: "/logo_nord.svg",
+};
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
@@ -28,6 +32,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem(THEME_STORAGE_KEY, theme);
+
+    const existingFavicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    const favicon = existingFavicon ?? document.createElement("link");
+    favicon.rel = "icon";
+    favicon.type = "image/svg+xml";
+    favicon.href = THEME_FAVICONS[theme];
+
+    if (!existingFavicon) {
+      document.head.appendChild(favicon);
+    }
   }, [theme]);
 
   const value = useMemo(
