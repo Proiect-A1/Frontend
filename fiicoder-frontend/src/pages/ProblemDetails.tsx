@@ -13,6 +13,7 @@ import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
+import autoTranslateProblemText, { autoTranslateProblemTextAsync } from "../language/autoTranslateProblem";
 
 // Utility to fix database indentation issues for Markdown
 function unindent(str: string): string {
@@ -133,6 +134,7 @@ export default function ProblemDetails() {
   const { theme } = useTheme();
 
   const [problem, setProblem] = useState<ProblemFindResponseDTO | null>(null);
+  const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -201,6 +203,18 @@ export default function ProblemDetails() {
         if (!isMounted) return;
 
         setProblem(dto);
+        // compute translated description for current UI language (async)
+        if (dto && lang === "EN") {
+          try {
+            const tr = await autoTranslateProblemTextAsync(dto.description, "en");
+            if (!isMounted) return;
+            setTranslatedDescription(tr);
+          } catch (e) {
+            setTranslatedDescription(null);
+          }
+        } else {
+          setTranslatedDescription(null);
+        }
       } catch (err) {
         if (isMounted)
           setError(
@@ -217,6 +231,23 @@ export default function ProblemDetails() {
       isMounted = false;
     };
   }, [problemTitle]);
+
+  // Recompute translated description when language or problem changes
+  useEffect(() => {
+    let isMounted = true;
+    if (!problem) return;
+    if (lang === "EN") {
+      autoTranslateProblemTextAsync(problem.description, "en").then((tr) => {
+        if (!isMounted) return;
+        setTranslatedDescription(tr);
+      });
+    } else {
+      setTranslatedDescription(null);
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [lang, problem]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

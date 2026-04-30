@@ -1,0 +1,24 @@
+{
+  "sourceLanguage": "ro",
+  "fallbackLanguage": "en",
+  "caseInsensitive": true,
+  "wordBoundary": true,
+  "mappings": {
+    "expresie": { "en": "expression" },
+    "sortare": { "en": "sorting" }
+  },
+  "regexMappings": [
+    {
+      "pattern": "\\bexpresie(ia|ile|le|s)?\\b",
+      "en": "expression"
+    },
+    {
+      "pattern": "\\bsortare(a|i|lor)?\\b",
+      "en": "sorting"
+    }
+  ],
+  "options": {
+    "preferTokenReplace": true,
+    "preserveCasing": true
+  }
+}

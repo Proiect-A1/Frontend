@@ -8,6 +8,8 @@ import {
   useLanguage,
   translations,
 } from "../language/Language";
+import autoTranslateProblemText from "../language/autoTranslateProblem";
+import { loadMapping } from "../language/mappingLoader";
 import FilterSidebar from "../components/FilterSidebar";
 import StatsSidebar from "../components/StatsSidebar";
 
@@ -27,6 +29,15 @@ export default function ProblemList() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  // Preload translation mappings when language changes
+  useEffect(() => {
+    if (lang === "EN") {
+      loadMapping("en").catch((err) => console.warn("Failed to load EN mapping:", err));
+    } else if (lang === "RO") {
+      loadMapping("ro").catch((err) => console.warn("Failed to load RO mapping:", err));
+    }
+  }, [lang]);
 
   useEffect(() => {
     let isMounted = true;
@@ -143,7 +154,7 @@ export default function ProblemList() {
                   >
                     <div className="flex items-center justify-between gap-3">
                       <h3 className="text-lg font-semibold text-pink-200 underline decoration-2 decoration-pink-500/60 underline-offset-4 transition group-hover:text-pink-100 group-hover:decoration-pink-300 group-hover:decoration-3">
-                        {problem.title}
+                        {lang === "EN" ? autoTranslateProblemText(problem.title, "en") : problem.title}
                       </h3>
                       <span className="rounded-full border border-pink-400/40 bg-pink-500/10 px-2.5 py-1 text-xs font-semibold text-pink-100">
                         {getDifficultyLabel(lang, problem.difficulty)}
