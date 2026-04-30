@@ -161,6 +161,8 @@ export default function ProblemDetails() {
   }, [theme]);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
+
     let isMounted = true;
     async function fetchLanguages() {
       try {
@@ -179,13 +181,13 @@ export default function ProblemDetails() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     let isMounted = true;
 
     async function fetchProblemDetails() {
-      if (!problemId) {
+      if (!problemId || problemId === "undefined") {
         if (isMounted) {
           setError("ID-ul problemei lipsește din URL.");
           setLoading(false);

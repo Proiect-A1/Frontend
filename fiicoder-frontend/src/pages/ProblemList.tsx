@@ -55,8 +55,15 @@ export default function ProblemList() {
 
         setHasMore(data.length === ITEMS_PER_PAGE);
 
-        // cast la vector de probleme
-        const mappedData = data as unknown as Problem[];
+        // mapare de la DTO la Problem
+        const mappedData: Problem[] = data.map((dto: any) => ({
+          id: dto.title,
+          title: dto.title,
+          shortDescription: dto.description ? dto.description.substring(0, 120) + "..." : "",
+          statement: dto.description,
+          difficulty: dto.difficulty || "MEDIUM",
+          tags: dto.tags || [],
+        }));
 
         if (page === 1) {
           setProblems(mappedData);
