@@ -135,6 +135,7 @@ export default function ProblemDetails() {
 
   const [problem, setProblem] = useState<ProblemFindResponseDTO | null>(null);
   const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
+  const [translatedTags, setTranslatedTags] = useState<string[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -220,20 +221,36 @@ export default function ProblemDetails() {
     };
   }, [problemTitle]);
 
-  // Translate description when language or problem changes
+  // Translate description and tags when language or problem changes
   useEffect(() => {
     let isMounted = true;
     if (!problem) return;
     
     if (lang === "EN") {
+      // Translate description
       autoTranslateProblemTextAsync(problem.description, "en").then((tr) => {
         if (!isMounted) return;
         setTranslatedDescription(tr);
       }).catch(() => {
         if (isMounted) setTranslatedDescription(null);
       });
+
+      // Translate tags
+      if (problem.tags.length > 0) {
+        const tagsString = problem.tags.join(", ");
+        autoTranslateProblemTextAsync(tagsString, "en").then((tr) => {
+          if (!isMounted) return;
+          const translatedTagsArray = tr.split(",").map(tag => tag.trim());
+          setTranslatedTags(translatedTagsArray);
+        }).catch(() => {
+          if (isMounted) setTranslatedTags(null);
+        });
+      } else {
+        setTranslatedTags(null);
+      }
     } else {
       setTranslatedDescription(null);
+      setTranslatedTags(null);
     }
     
     return () => {
@@ -315,7 +332,7 @@ export default function ProblemDetails() {
           </h1>
           {problem.tags.length > 0 && (
             <div className="mb-3 flex flex-wrap gap-1.5">
-              {problem.tags.map((tag) => (
+              {(translatedTags || problem.tags).map((tag) => (
                 <span
                   key={tag}
                   className="px-2.5 py-0.5 rounded-full text-xs font-semibold border border-pink-500/25 bg-pink-500/10 text-pink-300/90"
