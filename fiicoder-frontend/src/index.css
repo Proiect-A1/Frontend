@@ -1,214 +1,348 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root,
-[data-theme="rose"] {
-  --bg-color: #090812;
-  --surface-page: color-mix(in srgb, var(--bg-color) 78%, #151221 22%);
-  --surface-card: color-mix(in srgb, #151221 80%, transparent);
-  --surface-muted: color-mix(in srgb, #100d19 80%, transparent);
-  --surface-input: #0f0c18;
-  --surface-dropdown: #1a1629;
-  --surface-editor: #0a0812;
-  --surface-hover: color-mix(in srgb, #1a1530 80%, transparent);
+[data-theme='rose'] {
+    --bg-color: #090812;
+    --surface-page: color-mix(in srgb, var(--bg-color) 78%, #151221 22%);
+    --surface-card: color-mix(in srgb, #151221 80%, transparent);
+    --surface-muted: color-mix(in srgb, #100d19 80%, transparent);
+    --surface-input: #0f0c18;
+    --surface-dropdown: #1a1629;
+    --surface-editor: #0a0812;
+    --surface-hover: color-mix(in srgb, #1a1530 80%, transparent);
 
-  --text: #f5c8e4;
-  --text-h: #ffe8f6;
-  --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
-  --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
+    --text: #f5c8e4;
+    --text-h: #ffe8f6;
+    --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
+    --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
 
-  --bg: var(--bg-color);
-  --code-bg: color-mix(in srgb, var(--bg-color) 55%, #1a1322 45%);
-  --accent: #ff5eb6;
-  --hero-start: #2f1630;
-  --hero-mid: #171124;
-  --hero-end: var(--bg-color);
-  --line-color: color-mix(in srgb, var(--accent) 75%, white 25%);
-  --accent-secondary: color-mix(in srgb, var(--accent) 72%, #a78bfa 28%);
-  --logo-filter: none;
-  --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%23ffe8f6' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%23ff5eb6'/%3E%3C/svg%3E");
-  --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%23ff5eb6' stroke='%231b1d22' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
-  --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%23ff5eb6' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%23ffe8f6'/%3E%3C/svg%3E");
+    --bg: var(--bg-color);
+    --code-bg: color-mix(in srgb, var(--bg-color) 55%, #1a1322 45%);
+    --accent: #ff5eb6;
+    --hero-start: #2f1630;
+    --hero-mid: #171124;
+    --hero-end: var(--bg-color);
+    --line-color: color-mix(in srgb, var(--accent) 75%, white 25%);
+    --accent-secondary: color-mix(in srgb, var(--accent) 72%, #a78bfa 28%);
+    --logo-filter: none;
+    --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%23ffe8f6' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%23ff5eb6'/%3E%3C/svg%3E");
+    --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%23ff5eb6' stroke='%231b1d22' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
+    --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%23ff5eb6' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%23ffe8f6'/%3E%3C/svg%3E");
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+    --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+    --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+    --mono: ui-monospace, Consolas, monospace;
 
-  color-scheme: dark;
-  color: var(--text);
+    color-scheme: dark;
+    color: var(--text);
 }
 
-[data-theme="nord"] {
-  --bg-color: #4c566a;
+[data-theme='nord'] {
+    --bg-color: #4c566a;
 
-  --surface-page: color-mix(in srgb, var(--bg-color) 90%, #000);
-  --surface-card: color-mix(in srgb, var(--bg-color) 65%, #000);
-  --surface-muted: color-mix(in srgb, #2e3440 80%, #000);
-  --surface-input: color-mix(in srgb, #2e3440 80%, #000);
-  --surface-editor: color-mix(in srgb, var(--bg-color) 40%, #000);
-  --surface-dropdown: color-mix(in srgb, #3b4252 95%, transparent);
-  --surface-hover: color-mix(in srgb, var(--accent) 15%, transparent);
+    --surface-page: color-mix(in srgb, var(--bg-color) 90%, #000);
+    --surface-card: color-mix(in srgb, var(--bg-color) 65%, #000);
+    --surface-muted: color-mix(in srgb, #2e3440 80%, #000);
+    --surface-input: color-mix(in srgb, #2e3440 80%, #000);
+    --surface-editor: color-mix(in srgb, var(--bg-color) 40%, #000);
+    --surface-dropdown: color-mix(in srgb, #3b4252 95%, transparent);
+    --surface-hover: color-mix(in srgb, var(--accent) 15%, transparent);
 
-  --accent: #88c0d0;
-  --text: #e5e9f0;
-  --text-h: #eceff4;
-  --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
-  --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
+    --accent: #88c0d0;
+    --text: #e5e9f0;
+    --text-h: #eceff4;
+    --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
+    --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
 
-  --bg: var(--bg-color);
-  --code-bg: color-mix(in srgb, var(--bg-color) 74%, #252b37 26%);
-  --hero-start: #2f3542;
-  --hero-mid: var(--bg-color);
-  --hero-end: #1f2430;
-  --line-color: color-mix(in srgb, var(--accent) 90%, white 10%);
-  --accent-secondary: color-mix(in srgb, var(--accent) 72%, #5e81ac 28%);
-  --logo-filter: none;
-  --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%23eceff4' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%2388c0d0'/%3E%3C/svg%3E");
-  --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%2388c0d0' stroke='%231b1d22' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
-  --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%2388c0d0' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%23eceff4'/%3E%3C/svg%3E");
+    --bg: var(--bg-color);
+    --code-bg: color-mix(in srgb, var(--bg-color) 74%, #252b37 26%);
+    --hero-start: #2f3542;
+    --hero-mid: var(--bg-color);
+    --hero-end: #1f2430;
+    --line-color: color-mix(in srgb, var(--accent) 90%, white 10%);
+    --accent-secondary: color-mix(in srgb, var(--accent) 72%, #5e81ac 28%);
+    --logo-filter: none;
+    --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%23eceff4' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%2388c0d0'/%3E%3C/svg%3E");
+    --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%2388c0d0' stroke='%231b1d22' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
+    --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%2388c0d0' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%23eceff4'/%3E%3C/svg%3E");
+}
+
+[data-theme='cream'] {
+    --bg-color: #f5efe3;
+
+    --surface-page: color-mix(in srgb, var(--bg-color) 90%, #e7dccb 10%);
+    --surface-card: color-mix(in srgb, #fff9f0 86%, transparent);
+    --surface-muted: color-mix(in srgb, #f0e6d8 88%, transparent);
+    --surface-input: #f3e8d9;
+    --surface-editor: #efe3d2;
+    --surface-dropdown: color-mix(in srgb, #fff7ea 95%, transparent);
+    --surface-hover: color-mix(in srgb, var(--accent) 12%, transparent);
+
+    --accent: #c58a6a;
+    --text: #5f4c42;
+    --text-h: #3f322b;
+    --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
+    --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
+
+    --bg: var(--bg-color);
+    --code-bg: color-mix(in srgb, #e8d9c5 62%, #f7efe2 38%);
+    --hero-start: #e7d6bf;
+    --hero-mid: #f2e8da;
+    --hero-end: #f8f3e9;
+    --line-color: color-mix(in srgb, var(--accent) 72%, white 28%);
+    --accent-secondary: color-mix(in srgb, var(--accent) 66%, #9fb59a 34%);
+    --logo-filter: none;
+    --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%233f322b' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%23c58a6a'/%3E%3C/svg%3E");
+    --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%23c58a6a' stroke='%235f4c42' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
+    --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%23c58a6a' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%233f322b'/%3E%3C/svg%3E");
+
+    color-scheme: light;
+}
+
+[data-theme='sage'] {
+    --bg-color: #e8f1e8;
+
+    --surface-page: color-mix(in srgb, var(--bg-color) 92%, #d7e7d8 8%);
+    --surface-card: color-mix(in srgb, #f4fbf3 84%, transparent);
+    --surface-muted: color-mix(in srgb, #e1efe1 88%, transparent);
+    --surface-input: #e3efe3;
+    --surface-editor: #dbe8db;
+    --surface-dropdown: color-mix(in srgb, #f4fbf3 95%, transparent);
+    --surface-hover: color-mix(in srgb, var(--accent) 14%, transparent);
+
+    --accent: #6ea68a;
+    --text: #2f4a3b;
+    --text-h: #1f352a;
+    --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
+    --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
+
+    --bg: var(--bg-color);
+    --code-bg: color-mix(in srgb, #d4e6d7 66%, #ecf5ec 34%);
+    --hero-start: #d4e6d8;
+    --hero-mid: #e5f0e6;
+    --hero-end: #f2f8f2;
+    --line-color: color-mix(in srgb, var(--accent) 78%, white 22%);
+    --accent-secondary: color-mix(in srgb, var(--accent) 70%, #8caec8 30%);
+    --logo-filter: none;
+    --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%231f352a' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%236ea68a'/%3E%3C/svg%3E");
+    --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%236ea68a' stroke='%232f4a3b' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
+    --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%236ea68a' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%231f352a'/%3E%3C/svg%3E");
+
+    color-scheme: light;
 }
 
 /* xl: layout fix, scroll pe componente individuale */
 @media (min-width: 1280px) {
-  body  { overflow: hidden; }
-  #root { height: 100svh; overflow: hidden; }
+    body {
+        overflow: hidden;
+    }
+    #root {
+        height: 100svh;
+        overflow: hidden;
+    }
 }
 
 html {
-  background-color: var(--bg);
+    background-color: var(--bg);
 }
 
 body {
-  margin: 0;
-  overflow: hidden;
-  color: var(--text);
-  font-family: var(--sans);
-  cursor: var(--cursor-default) 13 13, auto;
-  -webkit-font-smoothing: antialiased;
+    margin: 0;
+    overflow: hidden;
+    color: var(--text);
+    font-family: var(--sans);
+    cursor:
+        var(--cursor-default) 13 13,
+        auto;
+    -webkit-font-smoothing: antialiased;
 }
 
 #root {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  height: 100svh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  
-  background-color: var(--bg);
-  background-image: radial-gradient(circle at 20% 0%, var(--hero-start) 0%, var(--hero-mid) 45%, var(--hero-end) 100%);
-  background-size: 200% 200%;
-  background-attachment: fixed;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    height: 100svh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+
+    background-color: var(--bg);
+    background-image: radial-gradient(
+        circle at 20% 0%,
+        var(--hero-start) 0%,
+        var(--hero-mid) 45%,
+        var(--hero-end) 100%
+    );
+    background-size: 200% 200%;
+    background-attachment: fixed;
 }
 
 .theme-surface-page {
-  background-color: var(--surface-page);
+    background-color: var(--surface-page);
 }
 
 .theme-surface-card {
-  background-color: var(--surface-card);
+    background-color: var(--surface-card);
 }
 
 .theme-surface-muted {
-  background-color: var(--surface-muted);
+    background-color: var(--surface-muted);
 }
 
 .theme-surface-input {
-  background-color: var(--surface-input);
+    background-color: var(--surface-input);
 }
 
 .theme-surface-dropdown {
-  background-color: var(--surface-dropdown);
+    background-color: var(--surface-dropdown);
 }
 
 .theme-surface-editor {
-  background-color: var(--surface-editor);
+    background-color: var(--surface-editor);
 }
 
 .theme-surface-hover:hover {
-  background-color: var(--surface-hover);
+    background-color: var(--surface-hover);
 }
 
 .theme-page-aura {
-  box-shadow: 0 0 60px color-mix(in srgb, var(--accent) 12%, transparent);
+    box-shadow: 0 0 60px color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 .theme-logo-glow {
-  filter: drop-shadow(0 0 24px color-mix(in srgb, var(--accent) 40%, transparent));
+    filter: drop-shadow(0 0 24px color-mix(in srgb, var(--accent) 40%, transparent));
 }
 
-a, button, [role="button"], select, label {
-  cursor: var(--cursor-pointer) 6 3, pointer;
+a,
+button,
+[role='button'],
+select,
+label {
+    cursor:
+        var(--cursor-pointer) 6 3,
+        pointer;
 }
 
 .cursor-custom-pointer {
-  cursor: var(--cursor-pointer), pointer;
+    cursor: var(--cursor-pointer), pointer;
 }
 
-input, textarea {
-  cursor: var(--cursor-text) 13 13, text;
+input,
+textarea {
+    cursor:
+        var(--cursor-text) 13 13,
+        text;
 }
 
 @keyframes expandLineHorizontal {
-  0%   { opacity: 0; transform: scaleX(0); }
-  100% { opacity: 1; transform: scaleX(1); }
+    0% {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+    100% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
 }
 
 @keyframes expandLineVertical {
-  0%   { opacity: 0; transform: scaleY(0); }
-  100% { opacity: 1; transform: scaleY(1); }
+    0% {
+        opacity: 0;
+        transform: scaleY(0);
+    }
+    100% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
 }
 
 .site-hero {
-  background: radial-gradient(circle at 20% 0%, var(--hero-start) 0%, var(--hero-mid) 45%, var(--hero-end) 100%);
-  background-size: 200% 200%;
+    background: radial-gradient(
+        circle at 20% 0%,
+        var(--hero-start) 0%,
+        var(--hero-mid) 45%,
+        var(--hero-end) 100%
+    );
+    background-size: 200% 200%;
 }
 
 .card-glow {
-  box-shadow: 0 15px 36px color-mix(in srgb, black 50%, transparent), 0 0 0 1px color-mix(in srgb, var(--accent) 10%, transparent);
+    box-shadow:
+        0 15px 36px color-mix(in srgb, black 50%, transparent),
+        0 0 0 1px color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .page-line-horizontal {
-  width: 50px; 
-  height: 3px;
-  background: var(--line-color);
-  border-radius: 2px;
-  margin: 12px 0px;
-  transform-origin: left center;
-  animation: expandLineHorizontal 0.4s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+    width: 50px;
+    height: 3px;
+    background: var(--line-color);
+    border-radius: 2px;
+    margin: 12px 0px;
+    transform-origin: left center;
+    animation: expandLineHorizontal 0.4s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.text-pink-100 { color: var(--text-h) !important; }
-.text-pink-200 { color: color-mix(in srgb, var(--text-h) 88%, var(--text) 12%) !important; }
-.text-pink-300 { color: color-mix(in srgb, var(--accent) 84%, var(--text-h) 16%) !important; }
-.text-pink-400 { color: color-mix(in srgb, var(--accent) 92%, white 8%) !important; }
+.text-pink-100 {
+    color: var(--text-h) !important;
+}
+.text-pink-200 {
+    color: color-mix(in srgb, var(--text-h) 88%, var(--text) 12%) !important;
+}
+.text-pink-300 {
+    color: color-mix(in srgb, var(--accent) 84%, var(--text-h) 16%) !important;
+}
+.text-pink-400 {
+    color: color-mix(in srgb, var(--accent) 92%, white 8%) !important;
+}
 
-.text-pink-100\/50 { color: color-mix(in srgb, var(--text-h) 50%, transparent) !important; }
-.text-pink-100\/70 { color: color-mix(in srgb, var(--text-h) 70%, transparent) !important; }
-.text-pink-100\/85 { color: color-mix(in srgb, var(--text-h) 85%, transparent) !important; }
+.text-pink-100\/50 {
+    color: color-mix(in srgb, var(--text-h) 50%, transparent) !important;
+}
+.text-pink-100\/70 {
+    color: color-mix(in srgb, var(--text-h) 70%, transparent) !important;
+}
+.text-pink-100\/85 {
+    color: color-mix(in srgb, var(--text-h) 85%, transparent) !important;
+}
 
 .text-pink-200\/60,
 .text-pink-200\/65,
-.text-pink-200\/70 { color: color-mix(in srgb, var(--text) 70%, transparent) !important; }
+.text-pink-200\/70 {
+    color: color-mix(in srgb, var(--text) 70%, transparent) !important;
+}
 
 .text-pink-300\/50,
 .text-pink-300\/55,
 .text-pink-300\/60,
 .text-pink-300\/80,
-.text-pink-300\/90 { color: color-mix(in srgb, var(--accent) 72%, transparent) !important; }
+.text-pink-300\/90 {
+    color: color-mix(in srgb, var(--accent) 72%, transparent) !important;
+}
 
 .text-pink-400\/50,
 .text-pink-400\/60,
-.text-pink-400\/70 { color: color-mix(in srgb, var(--accent) 62%, transparent) !important; }
+.text-pink-400\/70 {
+    color: color-mix(in srgb, var(--accent) 62%, transparent) !important;
+}
 
-.hover\:text-pink-100:hover { color: var(--text-h) !important; }
-.hover\:text-pink-300:hover { color: color-mix(in srgb, var(--accent) 90%, var(--text-h) 10%) !important; }
-.placeholder\:text-pink-200\/40::placeholder { color: color-mix(in srgb, var(--text) 42%, transparent) !important; }
+.hover\:text-pink-100:hover {
+    color: var(--text-h) !important;
+}
+.hover\:text-pink-300:hover {
+    color: color-mix(in srgb, var(--accent) 90%, var(--text-h) 10%) !important;
+}
+.placeholder\:text-pink-200\/40::placeholder {
+    color: color-mix(in srgb, var(--text) 42%, transparent) !important;
+}
 
 /* ── DECORATION (underline) ── */
-.decoration-pink-500\/60 { text-decoration-color: color-mix(in srgb, var(--accent) 60%, transparent) !important; }
-.hover\:decoration-pink-300:hover { text-decoration-color: color-mix(in srgb, var(--accent) 84%, var(--text-h) 16%) !important; }
+.decoration-pink-500\/60 {
+    text-decoration-color: color-mix(in srgb, var(--accent) 60%, transparent) !important;
+}
+.hover\:decoration-pink-300:hover {
+    text-decoration-color: color-mix(in srgb, var(--accent) 84%, var(--text-h) 16%) !important;
+}
 
 /* ── BORDER ── */
 .border-pink-300,
@@ -227,7 +361,7 @@ input, textarea {
 .border-pink-500\/50,
 .border-pink-500\/60,
 .border-pink-500\/70 {
-  border-color: color-mix(in srgb, var(--accent) 70%, transparent) !important;
+    border-color: color-mix(in srgb, var(--accent) 70%, transparent) !important;
 }
 
 .hover\:border-pink-300:hover,
@@ -237,7 +371,7 @@ input, textarea {
 .hover\:border-pink-500\/40:hover,
 .hover\:border-pink-500\/60:hover,
 .focus\:border-pink-400:focus {
-  border-color: color-mix(in srgb, var(--accent) 82%, transparent) !important;
+    border-color: color-mix(in srgb, var(--accent) 82%, transparent) !important;
 }
 
 .focus\:border-pink-400:focus,
@@ -246,16 +380,18 @@ textarea:focus,
 select:focus,
 button:focus-visible,
 a:focus-visible {
-  outline: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
-  outline-offset: 1px;
+    outline: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+    outline-offset: 1px;
 }
 
 .border-t-pink-500 {
-  border-top-color: var(--accent) !important;
+    border-top-color: var(--accent) !important;
 }
 
 /* ── BACKGROUND ── */
-.bg-pink-500 { background-color: var(--accent) !important; }
+.bg-pink-500 {
+    background-color: var(--accent) !important;
+}
 .bg-pink-500\/5,
 .bg-pink-500\/10,
 .bg-pink-500\/15,
@@ -265,7 +401,7 @@ a:focus-visible {
 .bg-pink-500\/35,
 .bg-pink-500\/40,
 .bg-pink-500\/50 {
-  background-color: color-mix(in srgb, var(--accent) 20%, transparent) !important;
+    background-color: color-mix(in srgb, var(--accent) 20%, transparent) !important;
 }
 
 .hover\:bg-pink-500\/10:hover,
@@ -275,53 +411,60 @@ a:focus-visible {
 .hover\:bg-pink-500\/30:hover,
 .hover\:bg-pink-500\/35:hover,
 .hover\:bg-pink-500\/50:hover {
-  background-color: color-mix(in srgb, var(--accent) 28%, transparent) !important;
+    background-color: color-mix(in srgb, var(--accent) 28%, transparent) !important;
 }
 
 /* ── GRADIENTS ── */
 .from-pink-400 {
-  --tw-gradient-from: color-mix(in srgb, var(--accent) 88%, var(--text-h) 12%) var(--tw-gradient-from-position) !important;
+    --tw-gradient-from: color-mix(in srgb, var(--accent) 88%, var(--text-h) 12%)
+        var(--tw-gradient-from-position) !important;
 }
 .from-pink-500\/30 {
-  --tw-gradient-from: color-mix(in srgb, var(--accent) 28%, transparent) var(--tw-gradient-from-position) !important;
+    --tw-gradient-from: color-mix(in srgb, var(--accent) 28%, transparent)
+        var(--tw-gradient-from-position) !important;
 }
 .from-pink-500\/50 {
-  --tw-gradient-from: color-mix(in srgb, var(--accent) 40%, transparent) var(--tw-gradient-from-position) !important;
+    --tw-gradient-from: color-mix(in srgb, var(--accent) 40%, transparent)
+        var(--tw-gradient-from-position) !important;
 }
 .hover\:from-pink-500\/50:hover {
-  --tw-gradient-from: color-mix(in srgb, var(--accent) 50%, transparent) var(--tw-gradient-from-position) !important;
+    --tw-gradient-from: color-mix(in srgb, var(--accent) 50%, transparent)
+        var(--tw-gradient-from-position) !important;
 }
 .via-pink-500\/50 {
-  --tw-gradient-via: color-mix(in srgb, var(--accent) 22%, transparent) var(--tw-gradient-via-position) !important;
+    --tw-gradient-via: color-mix(in srgb, var(--accent) 22%, transparent)
+        var(--tw-gradient-via-position) !important;
 }
 .to-purple-500\/20 {
-  --tw-gradient-to: color-mix(in srgb, var(--accent-secondary) 20%, transparent) var(--tw-gradient-to-position) !important;
+    --tw-gradient-to: color-mix(in srgb, var(--accent-secondary) 20%, transparent)
+        var(--tw-gradient-to-position) !important;
 }
 .to-purple-500\/40 {
-  --tw-gradient-to: color-mix(in srgb, var(--accent-secondary) 34%, transparent) var(--tw-gradient-to-position) !important;
+    --tw-gradient-to: color-mix(in srgb, var(--accent-secondary) 34%, transparent)
+        var(--tw-gradient-to-position) !important;
 }
 .to-purple-500 {
-  --tw-gradient-to: var(--accent-secondary) var(--tw-gradient-to-position) !important;
+    --tw-gradient-to: var(--accent-secondary) var(--tw-gradient-to-position) !important;
 }
 
 /* ── SHADOWS ── */
 .shadow-pink-500\/30,
 .shadow-pink-500\/40,
 .shadow-red-500\/20 {
-  --tw-shadow-color: color-mix(in srgb, var(--accent) 20%, transparent) !important;
+    --tw-shadow-color: color-mix(in srgb, var(--accent) 20%, transparent) !important;
 }
 
 .hover\:shadow-pink-500\/30:hover,
 .hover\:shadow-pink-500\/40:hover {
-  --tw-shadow-color: color-mix(in srgb, var(--accent) 28%, transparent) !important;
+    --tw-shadow-color: color-mix(in srgb, var(--accent) 28%, transparent) !important;
 }
 
 .shadow-\[0_0_12px_rgba\(236\,72\,153\,0\.3\)\] {
-  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 30%, transparent) !important;
+    box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 30%, transparent) !important;
 }
 
 .shadow-\[0_10px_40px_rgba\(0\,0\,0\,0\.5\)\] {
-  box-shadow: 0 10px 40px color-mix(in srgb, black 50%, transparent) !important;
+    box-shadow: 0 10px 40px color-mix(in srgb, black 50%, transparent) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -329,18 +472,18 @@ a:focus-visible {
    ═══════════════════════════════════════════════════════════════════ */
 
 .theme-logo {
-  filter: var(--logo-filter)
-    drop-shadow(0 0 24px color-mix(in srgb, var(--accent) 40%, transparent));
+    filter: var(--logo-filter)
+        drop-shadow(0 0 24px color-mix(in srgb, var(--accent) 40%, transparent));
 }
 
 .page-line-vertical {
-  width: 3px; 
-  height: 20px;
-  background: var(--line-color);
-  border-radius: 2px;
-  margin: 0 0;
-  transform-origin: left center;
-  animation: expandLineVertical 0.4s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+    width: 3px;
+    height: 20px;
+    background: var(--line-color);
+    border-radius: 2px;
+    margin: 0 0;
+    transform-origin: left center;
+    animation: expandLineVertical 0.4s 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* ── SCROLLBAR ──────────────────────────────────────────────────────────────
@@ -351,27 +494,28 @@ a:focus-visible {
 
 /* Webkit – global (html scroll pe mobile + componente cu custom-scrollbar pe xl) */
 ::-webkit-scrollbar {
-  width: 16px;
-  background-color: transparent !important;
+    width: 16px;
+    background-color: transparent !important;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent !important;
-  background-color: transparent !important;
-  margin-block: 5px;
+    background: transparent !important;
+    background-color: transparent !important;
+    margin-block: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: color-mix(in srgb, var(--accent) 40%, transparent);
-  border-radius: 10px;
-  border: 4px solid transparent;
-  background-clip: padding-box;
+    background-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    border-radius: 10px;
+    border: 4px solid transparent;
+    background-clip: padding-box;
 }
 
 /* Firefox only — ::-webkit-scrollbar nu există în Firefox */
 @supports not selector(::-webkit-scrollbar) {
-  html, .custom-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: color-mix(in srgb, var(--accent) 40%, transparent) transparent;
-  }
+    html,
+    .custom-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: color-mix(in srgb, var(--accent) 40%, transparent) transparent;
+    }
 }
