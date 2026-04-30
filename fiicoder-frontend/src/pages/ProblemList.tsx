@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import type { Problem } from "../types/problem";
+import type { ProblemFindResponseDTO } from "../services/problemService";
 import { problemService } from "../services/problemService";
 import {
   getDifficultyLabel,
@@ -18,7 +18,7 @@ export default function ProblemList() {
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const [problems, setProblems] = useState<Problem[]>([]);
+  const [problems, setProblems] = useState<ProblemFindResponseDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,20 +55,10 @@ export default function ProblemList() {
 
         setHasMore(data.length === ITEMS_PER_PAGE);
 
-        // mapare de la DTO la Problem
-        const mappedData: Problem[] = data.map((dto: any) => ({
-          id: dto.title,
-          title: dto.title,
-          shortDescription: dto.description ? dto.description.substring(0, 120) + "..." : "",
-          statement: dto.description,
-          difficulty: dto.difficulty || "MEDIUM",
-          tags: dto.tags || [],
-        }));
-
         if (page === 1) {
-          setProblems(mappedData);
+          setProblems(data);
         } else {
-          setProblems((prev) => [...prev, ...mappedData]);
+          setProblems((prev) => [...prev, ...data]);
         }
       } catch (err) {
         if (isMounted) setError("Error loading problems.");
@@ -142,13 +132,13 @@ export default function ProblemList() {
             <div className="w-full">
               {filteredProblems.map((problem, index) => (
                 <motion.div 
-                  key={problem.id} 
+                  key={problem.title} 
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: (index % ITEMS_PER_PAGE) * 0.07, duration: 0.3 }}
                 >
                   <Link
-                    to={`/problems/${problem.id}`}
+                    to={`/problems/${problem.title}`}
                     className="block rounded-xl border border-pink-500/25 theme-surface-muted p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-pink-400 group cursor-pointer"
                   >
                     <div className="flex items-center justify-between gap-3">

@@ -5,7 +5,7 @@ import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
 import { submissionService } from "../services/submissionService";
 import { problemService } from "../services/problemService";
-import type { Problem } from "../types/problem";
+import type { ProblemFindResponseDTO } from "../services/problemService";
 import Editor, { type OnMount } from "@monaco-editor/react";
 import { useTheme } from "../services/ThemeContext";
 import { languageService, type LanguageDTO } from "../services/languageService";
@@ -125,14 +125,14 @@ function applyMonacoTheme(monaco: any, themeName: string) {
 }
 
 export default function ProblemDetails() {
-  const { problemId } = useParams();
+  const { problemTitle} = useParams();
 
   const { lang } = useLanguage();
   const t = translations[lang];
   const { isAuthenticated } = useAuth();
   const { theme } = useTheme();
 
-  const [problem, setProblem] = useState<Problem | null>(null);
+  const [problem, setProblem] = useState<ProblemFindResponseDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -187,29 +187,20 @@ export default function ProblemDetails() {
     let isMounted = true;
 
     async function fetchProblemDetails() {
-      if (!problemId || problemId === "undefined") {
+      if (!problemTitle || problemTitle === "undefined") {
         if (isMounted) {
-          setError("ID-ul problemei lipsește din URL.");
+          setError("Titlul problemei lipsește din URL.");
           setLoading(false);
         }
         return;
       }
 
       try {
-        const dto = await problemService.getProblemByTitle(problemId);
+        const dto = await problemService.getProblemByTitle(problemTitle);
 
         if (!isMounted) return;
 
-        const formattedProblem: Problem = {
-          id: dto.title,
-          title: dto.title,
-          shortDescription: dto.description.substring(0, 120) + "...",
-          statement: dto.description,
-          difficulty: dto.difficulty || "MEDIUM",
-          tags: dto.tags || [],
-        };
-
-        setProblem(formattedProblem);
+        setProblem(dto);
       } catch (err) {
         if (isMounted)
           setError(
@@ -225,7 +216,7 @@ export default function ProblemDetails() {
     return () => {
       isMounted = false;
     };
-  }, [problemId]);
+  }, [problemTitle]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -316,7 +307,7 @@ export default function ProblemDetails() {
             <ReactMarkdown
               remarkPlugins={[remarkMath]}
               rehypePlugins={[rehypeKatex]}
-              children={unindent(problem.statement.replace(/\\\\/g, "\\"))}
+              children={unindent(problem.description.replace(/\\\\/g, "\\"))}
               components={{
                 // Titluri
                 h1: ({ ...props }) => (

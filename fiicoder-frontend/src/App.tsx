@@ -43,7 +43,7 @@ function AnimatedRoutes() {
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/problems" element={<ProblemList />} />
-            <Route path="/problems/:problemId" element={<ProblemDetails />} />
+            <Route path="/problems/:problemTitle" element={<ProblemDetails />} />
             <Route path="/profile" element={<Profile />} />
             <Route
               path="/classes"

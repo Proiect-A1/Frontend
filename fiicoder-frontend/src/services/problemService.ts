@@ -1,5 +1,6 @@
 import { apiClient } from "./apiClient";
-import type { Difficulty } from "../types/problem";
+export type Difficulty = "EASY" | "MEDIUM" | "HARD" | "CONTEST";
+
 
 // copie a interfetei ProblemFindResponseDTO din backend
 export interface ProblemFindResponseDTO {
