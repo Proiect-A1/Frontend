@@ -1,183 +1,833 @@
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useLanguage } from "../language/Language";
-import { adminService, type AdminOverview, type AdminUser, type ProblemProposal } from "../services/adminService";
-import { staggerConfig } from "../utils/motionConfig";
-import { Navigate } from "react-router-dom";
-import { useAuth } from "../services/AuthContext";
+import { useEffect, useState, type FormEvent } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Navigate } from 'react-router-dom';
+import { useLanguage } from '../language/Language';
+import {
+    adminService,
+    type AdminOverview,
+    type AdminUser,
+    type Announcement,
+    type AuditLogEntry,
+    type ProblemProposal,
+    type ProblemProposalDetail,
+} from '../services/adminService';
+import { useAuth } from '../services/AuthContext';
+import { containerVariants, itemVariants, staggerConfig } from '../utils/motionConfig';
 
 const tabs = [
-  { id: "overview", labelRO: "Overview", labelEN: "Overview" },
-  { id: "users", labelRO: "Utilizatori", labelEN: "Users" },
-  { id: "proposals", labelRO: "Propuneri", labelEN: "Proposals" },
-  { id: "announcements", labelRO: "Anunțuri", labelEN: "Announcements" },
+    { id: 'overview', labelRO: 'Overview', labelEN: 'Overview' },
+    { id: 'users', labelRO: 'Utilizatori', labelEN: 'Users' },
+    { id: 'proposals', labelRO: 'Propuneri', labelEN: 'Proposals' },
+    { id: 'announcements', labelRO: 'Anunțuri', labelEN: 'Announcements' },
+    { id: 'audit', labelRO: 'Audit', labelEN: 'Audit Log' },
 ];
 
+const USERS_PER_PAGE = 20;
+
+type TabId = (typeof tabs)[number]['id'];
+
 export default function AdminPanel() {
-  const { lang } = useLanguage();
-  const { isAdmin } = useAuth();
-  const [activeTab, setActiveTab] = useState("overview");
+    const { lang } = useLanguage();
+    const { isAdmin } = useAuth();
+    const [activeTab, setActiveTab] = useState<TabId>('overview');
 
-  // states
-  const [overview, setOverview] = useState<AdminOverview | null>(null);
-  const [users, setUsers] = useState<AdminUser[]>([]);
-  const [proposals, setProposals] = useState<ProblemProposal[]>([]);
+    const [overview, setOverview] = useState<AdminOverview | null>(null);
+    const [users, setUsers] = useState<AdminUser[]>([]);
+    const [userPage, setUserPage] = useState(1);
+    const [proposals, setProposals] = useState<ProblemProposal[]>([]);
+    const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
+    const [selectedProposal, setSelectedProposal] = useState<ProblemProposalDetail | null>(null);
+    const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+    const [editingAnnouncementId, setEditingAnnouncementId] = useState<string | null>(null);
+    const [announcementForm, setAnnouncementForm] = useState({ title: '', content: '' });
+    const [isSavingAnnouncement, setIsSavingAnnouncement] = useState(false);
+    const [auditLog, setAuditLog] = useState<AuditLogEntry[]>([]);
 
-  // non-admins cant acces the page, redirect to home
-  if (!isAdmin) return <Navigate to="/" replace />;
+    useEffect(() => {
+        if (!isAdmin) return;
 
-  useEffect(() => {
-    async function loadData() {
-      if (activeTab === "overview") setOverview(await adminService.getOverview());
-      if (activeTab === "users") setUsers(await adminService.getUsers(1));
-      if (activeTab === "proposals") setProposals(await adminService.getProposals());
-    }
-    loadData();
-  }, [activeTab]);
+        let cancelled = false;
 
-  const handleReview = async (id: string, action: "approve" | "reject") => {
-    await adminService.reviewProposal(id, action);
-    setProposals(prev => prev.filter(p => p.id !== id));
-  };
+        async function loadActiveTab() {
+            if (activeTab === 'overview') {
+                const data = await adminService.getOverview();
+                if (!cancelled) setOverview(data);
+                return;
+            }
 
-  const handleBanToggle = async (userId: string, isBanned: boolean) => {
-    await adminService.toggleBan(userId, isBanned);
-    setUsers(prev => prev.map(u => u.id === userId ? { ...u, isBanned: !isBanned } : u));
-  };
+            if (activeTab === 'users') {
+                const data = await adminService.getUsers(userPage, USERS_PER_PAGE);
+                if (!cancelled) setUsers(data);
+                return;
+            }
 
-  const handleRoleChange = async (userId: string, currentRole: string) => {
-    const newRole = currentRole === "ADMIN" ? "USER" : "ADMIN";
-    await adminService.changeRole(userId, newRole);
-    setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
-  };
+            if (activeTab === 'proposals') {
+                const data = await adminService.getProposals();
+                if (!cancelled) {
+                    const pending = data.filter((proposal) => proposal.status === 'PENDING');
+                    setProposals(pending);
 
-  return (
-    <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
-      <motion.div
-        className="w-full max-w-7xl rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg px-5 py-6 md:px-8 md:py-8 card-glow h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
-        variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: staggerConfig } }}
-        initial="hidden"
-        animate="visible"
-      >
-        <div className="mb-8 border-b border-pink-500/20 pb-6">
-          <h1 className="text-3xl font-bold text-pink-100 flex items-center gap-3">
-            {lang === "RO" ? "Panou Administrare" : "Admin Panel"}
-          </h1>
-          <p className="text-sm text-pink-200/70 mt-2">
-            {lang === "RO" ? "Gestionează platforma, aprobă probleme și administrează utilizatorii." : "Manage the platform, approve problems, and administer users."}
-          </p>
-        </div>
+                    if (pending.length > 0 && !selectedProposalId) {
+                        setSelectedProposalId(pending[0].id);
+                    }
 
-        {/* navigation */}
-        <div className="flex flex-wrap gap-3 mb-8">
-          {tabs.map(tab => {
-            const isActive = activeTab === tab.id;
-            const baseClasses = "px-4 py-1.5 rounded-full text-sm font-medium border-2 transition-all duration-200 flex items-center justify-center cursor-pointer outline-none";
-            
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`${baseClasses} ${
-                  isActive
-                    ? "bg-pink-500/25 border-pink-300 text-pink-100"
-                    : "bg-transparent border-pink-400/50 text-pink-200 hover:bg-pink-500/15 hover:text-pink-100 hover:-translate-y-0.5"
-                }`}
-              >
-                {lang === "RO" ? tab.labelRO : tab.labelEN}
-              </button>
-            );
-          })}
-        </div>
+                    if (pending.length === 0) {
+                        setSelectedProposalId(null);
+                        setSelectedProposal(null);
+                    }
+                }
+                return;
+            }
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-          >
-            {/* overview tab */}
-            {activeTab === "overview" && overview && (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {[
-                  { label: "Utilizatori", val: overview.usersCount },
-                  { label: "Probleme", val: overview.problemsCount },
-                  { label: "Submisii", val: overview.submissionsCount },
-                  { label: "Clase", val: overview.classesCount },
-                  { label: "Propuneri", val: overview.pendingProposals, highlight: true }
-                ].map((stat, i) => (
-                  <div key={i} className={`p-5 rounded-xl border theme-surface-muted flex flex-col items-center justify-center text-center ${stat.highlight ? "border-amber-400/50 bg-amber-500/10" : "border-pink-500/20"}`}>
-                    <span className={`text-3xl font-black mb-1 ${stat.highlight ? "text-amber-300" : "text-pink-300"}`}>{stat.val}</span>
-                    <span className="text-xs uppercase tracking-widest text-pink-200/60 font-bold">{stat.label}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+            if (activeTab === 'announcements') {
+                const data = await adminService.getAnnouncements();
+                if (!cancelled) setAnnouncements(data);
+                return;
+            }
 
-            {/* users tab */}
-            {activeTab === "users" && (
-              <div className="grid gap-4">
-                {users.map(u => (
-                  <div key={u.id} className="p-4 rounded-xl border border-pink-500/20 theme-surface-muted flex flex-col md:flex-row md:items-center justify-between gap-4">
+            if (activeTab === 'audit') {
+                const data = await adminService.getAuditLog();
+                if (!cancelled) setAuditLog(data);
+            }
+        }
+
+        void loadActiveTab();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [activeTab, isAdmin, userPage]);
+
+    useEffect(() => {
+        if (!isAdmin || activeTab !== 'proposals') {
+            return;
+        }
+
+        if (!selectedProposalId) {
+            setSelectedProposal(null);
+            return;
+        }
+
+        const proposalId = selectedProposalId;
+
+        let cancelled = false;
+
+        async function loadProposalDetail() {
+            const data = await adminService.getProblemProposal(proposalId);
+            if (!cancelled) setSelectedProposal(data);
+        }
+
+        void loadProposalDetail();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [activeTab, isAdmin, selectedProposalId]);
+
+    if (!isAdmin) return <Navigate to="/" replace />;
+
+    const handleReviewProposal = async (proposalId: string, action: 'approve' | 'reject') => {
+        if (action === 'approve') {
+            await adminService.approveProposal(proposalId);
+        } else {
+            await adminService.rejectProposal(proposalId);
+        }
+
+        const remainingProposals = proposals.filter((proposal) => proposal.id !== proposalId);
+        setProposals(remainingProposals);
+
+        if (selectedProposalId === proposalId) {
+            const nextProposalId = remainingProposals[0]?.id ?? null;
+            setSelectedProposal(null);
+            setSelectedProposalId(nextProposalId);
+        }
+
+        setOverview((previousOverview) =>
+            previousOverview
+                ? {
+                      ...previousOverview,
+                      pendingProposals: Math.max(previousOverview.pendingProposals - 1, 0),
+                      problemsCount:
+                          action === 'approve'
+                              ? previousOverview.problemsCount + 1
+                              : previousOverview.problemsCount,
+                  }
+                : previousOverview,
+        );
+    };
+
+    const handleBanToggle = async (userId: string, isBanned: boolean) => {
+        await adminService.toggleBan(userId, isBanned);
+        setUsers((previousUsers) =>
+            previousUsers.map((user) =>
+                user.id === userId ? { ...user, isBanned: !isBanned } : user,
+            ),
+        );
+    };
+
+    const handleDeleteUser = async (userId: string) => {
+        await adminService.deleteUser(userId);
+        setUsers((previousUsers) => previousUsers.filter((user) => user.id !== userId));
+        setOverview((previousOverview) =>
+            previousOverview
+                ? { ...previousOverview, usersCount: Math.max(previousOverview.usersCount - 1, 0) }
+                : previousOverview,
+        );
+    };
+
+    const handleRoleChange = async (userId: string, currentRole: string) => {
+        const newRole = currentRole === 'ADMIN' ? 'USER' : 'ADMIN';
+        await adminService.changeRole(userId, newRole);
+        setUsers((previousUsers) =>
+            previousUsers.map((user) => (user.id === userId ? { ...user, role: newRole } : user)),
+        );
+    };
+
+    const handleAnnouncementSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (!announcementForm.title.trim() || !announcementForm.content.trim()) {
+            return;
+        }
+
+        setIsSavingAnnouncement(true);
+
+        try {
+            if (editingAnnouncementId) {
+                const updatedAnnouncement = await adminService.updateAnnouncement(
+                    editingAnnouncementId,
+                    announcementForm,
+                );
+                setAnnouncements((previousAnnouncements) =>
+                    previousAnnouncements.map((announcement) =>
+                        announcement.id === editingAnnouncementId
+                            ? updatedAnnouncement
+                            : announcement,
+                    ),
+                );
+            } else {
+                const createdAnnouncement = await adminService.createAnnouncement(announcementForm);
+                setAnnouncements((previousAnnouncements) => [
+                    createdAnnouncement,
+                    ...previousAnnouncements,
+                ]);
+            }
+
+            setAnnouncementForm({ title: '', content: '' });
+            setEditingAnnouncementId(null);
+        } finally {
+            setIsSavingAnnouncement(false);
+        }
+    };
+
+    const handleEditAnnouncement = (announcement: Announcement) => {
+        setEditingAnnouncementId(announcement.id);
+        setAnnouncementForm({ title: announcement.title, content: announcement.content });
+    };
+
+    const handleDeleteAnnouncement = async (announcementId: string) => {
+        await adminService.deleteAnnouncement(announcementId);
+        setAnnouncements((previousAnnouncements) =>
+            previousAnnouncements.filter((announcement) => announcement.id !== announcementId),
+        );
+
+        if (editingAnnouncementId === announcementId) {
+            setEditingAnnouncementId(null);
+            setAnnouncementForm({ title: '', content: '' });
+        }
+    };
+
+    const overviewCards = [
+        { label: lang === 'RO' ? 'Utilizatori' : 'Users', value: overview?.usersCount ?? 0 },
+        { label: lang === 'RO' ? 'Probleme' : 'Problems', value: overview?.problemsCount ?? 0 },
+        {
+            label: lang === 'RO' ? 'Submisii' : 'Submissions',
+            value: overview?.submissionsCount ?? 0,
+        },
+        { label: lang === 'RO' ? 'Clase' : 'Classes', value: overview?.classesCount ?? 0 },
+        { label: lang === 'RO' ? 'Teme' : 'Homework', value: overview?.homeworksCount ?? 0 },
+        {
+            label: lang === 'RO' ? 'Propuneri pending' : 'Pending proposals',
+            value: overview?.pendingProposals ?? 0,
+            highlight: true,
+        },
+    ];  
+
+    return (
+        <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
+            <motion.div
+                className="w-full max-w-7xl rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg px-5 py-6 md:px-8 md:py-8 card-glow h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
+                variants={{
+                    hidden: { opacity: 0 },
+                    visible: { opacity: 1, transition: staggerConfig },
+                }}
+                initial="hidden"
+                animate="visible"
+            >
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                      <h3 className="text-pink-100 font-bold text-lg flex items-center gap-2">
-                        {u.username}
-                        {u.role === "ADMIN" && <span className="bg-purple-500/20 text-purple-300 border border-purple-500/40 text-xs px-2.5 py-1 rounded-full uppercase">Admin</span>}
-                        {u.isBanned && <span className="bg-red-500/20 text-red-300 border border-red-500/40 text-xs px-2.5 py-1 rounded-full uppercase">Banned</span>}
-                      </h3>
-                      <p className="text-pink-200/60 text-sm">{u.email}</p>
+                        <h1 className="text-3xl font-bold text-pink-100 flex items-center gap-3">
+                            {lang === 'RO' ? 'Panou Administrare' : 'Admin Panel'}
+                        </h1>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      <button onClick={() => handleRoleChange(u.id, u.role)} className="rounded-full border border-pink-400/40 bg-pink-500/10 hover:bg-pink-500/20 px-2.5 py-1 text-xs font-semibold text-pink-100">
-                        {u.role === "ADMIN" ? "Make User" : "Make Admin"}
-                      </button>
-                      <button onClick={() => handleBanToggle(u.id, u.isBanned)} className={`rounded-full border px-2.5 py-1 text-xs font-semibold text-pink-100 ${u.isBanned ? "border-green-500/40 bg-green-500/10 text-green-200 hover:bg-green-500/20" : "border-red-500/40 bg-red-500/10 text-red-200 hover:bg-red-500/20"}`}>
-                        {u.isBanned ? "Unban" : "Ban"}
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
 
-            {/* proposals tab */}
-            {activeTab === "proposals" && (
-              <div className="grid gap-4">
-                {proposals.length === 0 && <p className="text-pink-200/60 text-sm">Nu există propuneri în așteptare.</p>}
-                {proposals.map(p => (
-                  <div key={p.id} className="p-5 rounded-xl border border-pink-500/20 theme-surface-muted shadow-lg shadow-black/10">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-xl font-bold text-pink-100">{p.title}</h3>
-                      <span className="text-xs text-pink-300/50">{p.createdAt}</span>
-                    </div>
-                    <p className="text-sm text-pink-200/70 mb-4 line-clamp-2">{p.description}</p>
-                    <div className="flex items-center justify-between border-t border-pink-500/20 pt-4 mt-2">
-                      <span className="text-xs text-pink-300/60 font-semibold">Propus de: <span className="text-pink-200">{p.authorUsername}</span></span>
-                      <div className="flex gap-2">
-                        <button onClick={() => handleReview(p.id, "reject")} className="px-4 py-2 rounded-full border border-red-500/40 bg-red-500/10 text-red-200 text-xs font-bold hover:bg-red-500/20 transition-colors">
-                          Respinge
-                        </button>
-                        <button onClick={() => handleReview(p.id, "approve")} className="px-4 py-2 rounded-full border border-green-500/40 bg-green-500/10 text-green-200 text-xs font-bold hover:bg-green-500/20 transition-colors">
-                          Aprobă Problema
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                    <div className="flex flex-wrap gap-2 lg:justify-end">
+                        {tabs.map((tab) => {
+                            const isActive = activeTab === tab.id;
+                            const baseClasses =
+                                'px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center cursor-pointer outline-none';
 
-            {/* announcements tab */}
-            {activeTab === "announcements" && (
-              <div className="p-6 rounded-xl border border-pink-500/20 theme-surface-muted text-center">
-                <p className="text-pink-200/70">Panoul de creare a anunțurilor globale va apărea aici.</p>
-              </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </motion.div>
-    </div>
-  );
+                            return (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`${baseClasses} ${
+                                        isActive
+                                            ? 'bg-pink-500/25 border-pink-300 text-pink-100'
+                                            : 'bg-transparent border-pink-400/50 text-pink-200 hover:bg-pink-500/15 hover:text-pink-100 hover:-translate-y-0.5'
+                                    }`}
+                                >
+                                    {lang === 'RO' ? tab.labelRO : tab.labelEN}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        variants={containerVariants}
+                        key={activeTab}
+                        className="mt-6"
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                    >
+                        {activeTab === 'overview' && overview && (
+                            <motion.div
+                                variants={itemVariants}
+                                className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3"
+                            >
+                                {overviewCards.map((stat) => (
+                                    <div
+                                        key={stat.label}
+                                        className={`p-4 rounded-xl border theme-surface-muted flex flex-col items-center justify-center text-center ${stat.highlight ? 'border-amber-400/50 bg-amber-500/10' : 'border-pink-500/20'}`}
+                                    >
+                                        <span
+                                            className={`text-3xl font-black mb-1 ${stat.highlight ? 'text-amber-300' : 'text-pink-300'}`}
+                                        >
+                                            {stat.value}
+                                        </span>
+                                        <span className="text-[10px] uppercase tracking-widest text-pink-200/60 font-bold">
+                                            {stat.label}
+                                        </span>
+                                    </div>
+                                ))}
+                            </motion.div>
+                        )}
+
+                        {activeTab === 'users' && (
+                            <motion.div variants={containerVariants} className="space-y-4">
+                                <motion.div
+                                    variants={itemVariants}
+                                    className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-xs uppercase tracking-widest text-pink-200/55 font-bold"
+                                >
+                                    <span>
+                                        {lang === 'RO'
+                                            ? `Pagina ${userPage}`
+                                            : `Page ${userPage}`}
+                                    </span>
+                                    <span>
+                                        {users.length} {lang === 'RO' ? 'afișați' : 'shown'}
+                                    </span>
+                                </motion.div>   
+
+                                <motion.div variants={containerVariants} className="grid gap-3">
+                                    {users.map((user) => (
+                                        <motion.div
+                                            variants={itemVariants}
+                                            key={user.id}
+                                            className="p-4 rounded-xl border border-pink-500/20 theme-surface-muted flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+                                        >
+                                            <div className="min-w-0">
+                                                <h3 className="text-pink-100 font-bold text-lg flex flex-wrap items-center gap-2">
+                                                    <span className="truncate">
+                                                        {user.username}
+                                                    </span>
+                                                    {user.role === 'ADMIN' && (
+                                                        <span className="bg-purple-500/20 text-purple-300 border border-purple-500/40 text-xs px-2.5 py-1 rounded-full uppercase">
+                                                            Admin
+                                                        </span>
+                                                    )}
+                                                    {user.isBanned && (
+                                                        <span className="bg-red-500/20 text-red-300 border border-red-500/40 text-xs px-2.5 py-1 rounded-full uppercase">
+                                                            Banned
+                                                        </span>
+                                                    )}
+                                                </h3>
+                                                <p className="text-pink-200/60 text-sm truncate">
+                                                    {user.email}
+                                                </p>
+                                            </div>
+
+                                            <div className="flex flex-wrap gap-2">
+                                                <button
+                                                    onClick={() =>
+                                                        handleRoleChange(user.id, user.role)
+                                                    }
+                                                    className="rounded-full border border-pink-400/40 bg-pink-500/10 hover:bg-pink-500/20 px-3 py-1 text-xs font-semibold text-pink-100"
+                                                >
+                                                    {user.role === 'ADMIN'
+                                                        ? 'Make User'
+                                                        : 'Make Admin'}
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        handleBanToggle(user.id, user.isBanned)
+                                                    }
+                                                    className={`rounded-full border px-3 py-1 text-xs font-semibold text-pink-100 ${
+                                                        user.isBanned
+                                                            ? 'border-green-500/40 bg-green-500/10 text-green-200 hover:bg-green-500/20'
+                                                            : 'border-red-500/40 bg-red-500/10 text-red-200 hover:bg-red-500/20'
+                                                    }`}
+                                                >
+                                                    {user.isBanned ? 'Unban' : 'Ban'}
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteUser(user.id)}
+                                                    className="rounded-full border border-pink-400/30 bg-black/20 hover:bg-red-500/15 px-3 py-1 text-xs font-semibold text-pink-100"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </motion.div>
+
+                                <motion.div
+                                    variants={itemVariants}
+                                    className="flex items-center justify-between gap-3"
+                                >
+                                    <button
+                                        onClick={() =>
+                                            setUserPage((currentPage) =>
+                                                Math.max(currentPage - 1, 1),
+                                            )
+                                        }
+                                        disabled={userPage === 1}
+                                        className="rounded-full border border-pink-400/40 bg-pink-500/10 px-4 py-2 text-xs font-bold text-pink-100 disabled:cursor-not-allowed disabled:opacity-40"
+                                    >
+                                        {lang === 'RO' ? 'Pagina anterioară' : 'Previous'}
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            setUserPage((currentPage) => currentPage + 1)
+                                        }
+                                        disabled={users.length < USERS_PER_PAGE}
+                                        className="rounded-full border border-pink-400/40 bg-pink-500/10 px-4 py-2 text-xs font-bold text-pink-100 disabled:cursor-not-allowed disabled:opacity-40"
+                                    >
+                                        {lang === 'RO' ? 'Pagina următoare' : 'Next'}
+                                    </button>
+                                </motion.div>
+                            </motion.div>
+                        )}
+
+                        {activeTab === 'proposals' && (
+                            <motion.div
+                                variants={containerVariants}
+                                className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]"
+                            >
+                                <motion.div variants={containerVariants} className="space-y-3">
+                                    <motion.div
+                                        variants={itemVariants}
+                                        className="flex items-center justify-between text-xs uppercase tracking-widest text-pink-200/55 font-bold"
+                                    >
+                                        <span>
+                                            {lang === 'RO'
+                                                ? 'Propuneri în așteptare'
+                                                : 'Pending proposals'}
+                                        </span>
+                                        <span>{proposals.length}</span>
+                                    </motion.div>
+
+                                    <motion.div variants={containerVariants} className="grid gap-3">
+                                        {proposals.length === 0 && (
+                                            <motion.p
+                                                variants={itemVariants}
+                                                className="text-pink-200/60 text-sm"
+                                            >
+                                                {lang === 'RO'
+                                                    ? 'Nu există propuneri în așteptare.'
+                                                    : 'There are no pending proposals.'}
+                                            </motion.p>
+                                        )}
+
+                                        {proposals.map((proposal) => {
+                                            const isSelected = selectedProposalId === proposal.id;
+
+                                            return (
+                                                <motion.button
+                                                    variants={itemVariants}
+                                                    key={proposal.id}
+                                                    onClick={() =>
+                                                        setSelectedProposalId(proposal.id)
+                                                    }
+                                                    className={`text-left p-4 rounded-xl border transition-colors duration-200 ${
+                                                        isSelected
+                                                            ? 'border-pink-300 bg-pink-500/15 shadow-lg shadow-pink-500/10'
+                                                            : 'border-pink-500/20 theme-surface-muted hover:border-pink-300/40 hover:bg-pink-500/10'
+                                                    }`}
+                                                >
+                                                    <div className="flex items-start justify-between gap-3 mb-2">
+                                                        <h3 className="text-lg font-bold text-pink-100 line-clamp-1">
+                                                            {proposal.title}
+                                                        </h3>
+                                                        <span className="text-[10px] uppercase tracking-widest text-pink-300/60 font-bold whitespace-nowrap">
+                                                            {proposal.createdAt}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-sm text-pink-200/70 line-clamp-2 mb-3">
+                                                        {proposal.description}
+                                                    </p>
+                                                    <div className="flex items-center justify-between text-xs text-pink-300/60 font-semibold">
+                                                        <span>
+                                                            {lang === 'RO' ? 'Propus de' : 'By'}:{' '}
+                                                            <span className="text-pink-200">
+                                                                {proposal.authorUsername}
+                                                            </span>
+                                                        </span>
+                                                        <span className="rounded-full border border-amber-400/40 bg-amber-500/10 px-2.5 py-1 text-amber-200 uppercase tracking-widest">
+                                                            {proposal.status}
+                                                        </span>
+                                                    </div>
+                                                </motion.button>
+                                            );
+                                        })}
+                                    </motion.div>
+                                </motion.div>
+
+                                <motion.div
+                                    variants={itemVariants}
+                                    className="p-5 rounded-xl border border-pink-500/20 theme-surface-muted shadow-lg shadow-black/10"
+                                >
+                                    {!selectedProposal && selectedProposalId && (
+                                        <p className="text-pink-200/60 text-sm">
+                                            {lang === 'RO'
+                                                ? 'Se încarcă detaliile propunerii...'
+                                                : 'Loading proposal details...'}
+                                        </p>
+                                    )}
+
+                                    {!selectedProposal && !selectedProposalId && (
+                                        <p className="text-pink-200/60 text-sm">
+                                            {lang === 'RO'
+                                                ? 'Selectează o propunere pentru a vedea detaliile.'
+                                                : 'Select a proposal to see the details.'}
+                                        </p>
+                                    )}
+
+                                    {selectedProposal && (
+                                        <div className="space-y-4">
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div>
+                                                    <h3 className="text-2xl font-bold text-pink-100">
+                                                        {selectedProposal.title}
+                                                    </h3>
+                                                    <p className="text-sm text-pink-200/60 mt-1">
+                                                        {lang === 'RO' ? 'Propus de' : 'Author'}{' '}
+                                                        <span className="text-pink-100">
+                                                            {selectedProposal.authorUsername}
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                                <span className="rounded-full border border-amber-400/40 bg-amber-500/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-amber-200 whitespace-nowrap">
+                                                    {selectedProposal.status}
+                                                </span>
+                                            </div>
+
+                                            <p className="text-sm text-pink-200/75 leading-relaxed">
+                                                {selectedProposal.statement ??
+                                                    selectedProposal.description}
+                                            </p>
+
+                                            <div className="grid gap-3 sm:grid-cols-2">
+                                                <div className="rounded-xl border border-pink-500/20 bg-black/15 p-3">
+                                                    <p className="text-[10px] uppercase tracking-widest text-pink-300/55 font-bold mb-2">
+                                                        {lang === 'RO' ? 'Input' : 'Input'}
+                                                    </p>
+                                                    <p className="text-sm text-pink-200/75 whitespace-pre-wrap">
+                                                        {selectedProposal.inputDescription ?? '-'}
+                                                    </p>
+                                                </div>
+                                                <div className="rounded-xl border border-pink-500/20 bg-black/15 p-3">
+                                                    <p className="text-[10px] uppercase tracking-widest text-pink-300/55 font-bold mb-2">
+                                                        {lang === 'RO' ? 'Output' : 'Output'}
+                                                    </p>
+                                                    <p className="text-sm text-pink-200/75 whitespace-pre-wrap">
+                                                        {selectedProposal.outputDescription ?? '-'}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {selectedProposal.constraints &&
+                                                selectedProposal.constraints.length > 0 && (
+                                                    <div className="rounded-xl border border-pink-500/20 bg-black/15 p-3">
+                                                        <p className="text-[10px] uppercase tracking-widest text-pink-300/55 font-bold mb-2">
+                                                            {lang === 'RO'
+                                                                ? 'Restricții'
+                                                                : 'Constraints'}
+                                                        </p>
+                                                        <ul className="space-y-1 text-sm text-pink-200/75">
+                                                            {selectedProposal.constraints.map(
+                                                                (constraint) => (
+                                                                    <li key={constraint}>
+                                                                        • {constraint}
+                                                                    </li>
+                                                                ),
+                                                            )}
+                                                        </ul>
+                                                    </div>
+                                                )}
+
+                                            <div className="grid gap-3 sm:grid-cols-2">
+                                                <div className="rounded-xl border border-pink-500/20 bg-black/15 p-3">
+                                                    <p className="text-[10px] uppercase tracking-widest text-pink-300/55 font-bold mb-2">
+                                                        Sample Input
+                                                    </p>
+                                                    <pre className="text-xs text-pink-200/75 whitespace-pre-wrap font-mono">
+                                                        {selectedProposal.sampleInput ?? '-'}
+                                                    </pre>
+                                                </div>
+                                                <div className="rounded-xl border border-pink-500/20 bg-black/15 p-3">
+                                                    <p className="text-[10px] uppercase tracking-widest text-pink-300/55 font-bold mb-2">
+                                                        Sample Output
+                                                    </p>
+                                                    <pre className="text-xs text-pink-200/75 whitespace-pre-wrap font-mono">
+                                                        {selectedProposal.sampleOutput ?? '-'}
+                                                    </pre>
+                                                </div>
+                                            </div>
+
+                                            {selectedProposal.tags &&
+                                                selectedProposal.tags.length > 0 && (
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {selectedProposal.tags.map((tag) => (
+                                                            <span
+                                                                key={tag}
+                                                                className="rounded-full border border-pink-400/30 bg-pink-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-pink-100"
+                                                            >
+                                                                {tag}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                )}
+
+                                            <div className="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-pink-500/20">
+                                                <button
+                                                    onClick={() =>
+                                                        handleReviewProposal(
+                                                            selectedProposal.id,
+                                                            'reject',
+                                                        )
+                                                    }
+                                                    className="px-4 py-2 rounded-full border border-red-500/40 bg-red-500/10 text-red-200 text-xs font-bold hover:bg-red-500/20 transition-colors"
+                                                >
+                                                    {lang === 'RO' ? 'Respinge' : 'Reject'}
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        handleReviewProposal(
+                                                            selectedProposal.id,
+                                                            'approve',
+                                                        )
+                                                    }
+                                                    className="px-4 py-2 rounded-full border border-green-500/40 bg-green-500/10 text-green-200 text-xs font-bold hover:bg-green-500/20 transition-colors"
+                                                >
+                                                    {lang === 'RO'
+                                                        ? 'Aprobă Problema'
+                                                        : 'Approve and create problem'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            </motion.div>
+                        )}
+
+                        {activeTab === 'announcements' && (
+                            <motion.div
+                                variants={containerVariants}
+                                className="grid gap-4 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]"
+                            >
+                                <motion.form
+                                    variants={itemVariants}
+                                    onSubmit={handleAnnouncementSubmit}
+                                    className="p-5 rounded-xl border border-pink-500/20 theme-surface-muted space-y-4"
+                                >
+                                    <div>
+                                        <h3 className="text-xl font-bold text-pink-100">
+                                            {editingAnnouncementId
+                                                ? lang === 'RO'
+                                                    ? 'Editează anunțul'
+                                                    : 'Edit announcement'
+                                                : lang === 'RO'
+                                                  ? 'Creează anunț'
+                                                  : 'Create announcement'}
+                                        </h3>
+                                        <p className="text-sm text-pink-200/60 mt-1">
+                                            {lang === 'RO'
+                                                ? 'Folosește acest formular pentru a publica mesaje globale.'
+                                                : 'Use this form to publish global messages.'}
+                                        </p>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <input
+                                            value={announcementForm.title}
+                                            onChange={(event) =>
+                                                setAnnouncementForm((currentForm) => ({
+                                                    ...currentForm,
+                                                    title: event.target.value,
+                                                }))
+                                            }
+                                            placeholder={
+                                                lang === 'RO' ? 'Titlu anunț' : 'Announcement title'
+                                            }
+                                            className="w-full rounded-xl border border-pink-500/20 bg-black/20 px-3 py-2 text-sm text-pink-100 outline-none placeholder:text-pink-200/30 focus:border-pink-300/50"
+                                        />
+                                        <textarea
+                                            value={announcementForm.content}
+                                            onChange={(event) =>
+                                                setAnnouncementForm((currentForm) => ({
+                                                    ...currentForm,
+                                                    content: event.target.value,
+                                                }))
+                                            }
+                                            placeholder={
+                                                lang === 'RO'
+                                                    ? 'Conținut anunț'
+                                                    : 'Announcement content'
+                                            }
+                                            rows={6}
+                                            className="w-full rounded-xl border border-pink-500/20 bg-black/20 px-3 py-2 text-sm text-pink-100 outline-none placeholder:text-pink-200/30 focus:border-pink-300/50 resize-none"
+                                        />
+                                    </div>
+
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <button
+                                            type="submit"
+                                            disabled={isSavingAnnouncement}
+                                            className="rounded-full border border-pink-300/40 bg-pink-500/20 px-4 py-2 text-xs font-bold text-pink-100 hover:bg-pink-500/30 disabled:cursor-not-allowed disabled:opacity-60"
+                                        >
+                                            {isSavingAnnouncement
+                                                ? lang === 'RO'
+                                                    ? 'Se salvează...'
+                                                    : 'Saving...'
+                                                : editingAnnouncementId
+                                                  ? lang === 'RO'
+                                                      ? 'Salvează modificarea'
+                                                      : 'Save changes'
+                                                  : lang === 'RO'
+                                                    ? 'Publică anunțul'
+                                                    : 'Publish announcement'}
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setEditingAnnouncementId(null);
+                                                setAnnouncementForm({ title: '', content: '' });
+                                            }}
+                                            className="rounded-full border border-pink-400/30 bg-black/20 px-4 py-2 text-xs font-bold text-pink-100 hover:bg-pink-500/10"
+                                        >
+                                            {lang === 'RO' ? 'Resetează' : 'Reset'}
+                                        </button>
+                                    </div>
+                                </motion.form>
+
+                                <motion.div variants={containerVariants} className="grid gap-3">
+                                    {announcements.map((announcement) => (
+                                        <motion.div
+                                            variants={itemVariants}
+                                            key={announcement.id}
+                                            className="p-4 rounded-xl border border-pink-500/20 theme-surface-muted"
+                                        >
+                                            <div className="flex items-start justify-between gap-3 mb-2">
+                                                <div>
+                                                    <h3 className="text-pink-100 font-bold text-lg">
+                                                        {announcement.title}
+                                                    </h3>
+                                                    <p className="text-xs uppercase tracking-widest text-pink-300/50 font-bold mt-1">
+                                                        {announcement.createdAt}
+                                                    </p>
+                                                </div>
+
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() =>
+                                                            handleEditAnnouncement(announcement)
+                                                        }
+                                                        className="rounded-full border border-pink-400/40 bg-pink-500/10 px-3 py-1 text-xs font-bold text-pink-100 hover:bg-pink-500/20"
+                                                    >
+                                                        {lang === 'RO' ? 'Editează' : 'Edit'}
+                                                    </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleDeleteAnnouncement(
+                                                                announcement.id,
+                                                            )
+                                                        }
+                                                        className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1 text-xs font-bold text-red-200 hover:bg-red-500/20"
+                                                    >
+                                                        {lang === 'RO' ? 'Șterge' : 'Delete'}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <p className="text-sm text-pink-200/70 leading-relaxed line-clamp-3">
+                                                {announcement.content}
+                                            </p>
+                                        </motion.div>
+                                    ))}
+                                </motion.div>
+                            </motion.div>
+                        )}
+
+                        {activeTab === 'audit' && (
+                            <motion.div variants={containerVariants} className="grid gap-3">
+                                {auditLog.map((entry) => (
+                                    <motion.div
+                                        variants={itemVariants}
+                                        key={entry.id}
+                                        className="p-4 rounded-xl border border-pink-500/20 theme-surface-muted flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+                                    >
+                                        <div className="min-w-0">
+                                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                                                <span className="rounded-full border border-amber-400/40 bg-amber-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-amber-200">
+                                                    {entry.action}
+                                                </span>
+                                                <span className="text-xs uppercase tracking-widest text-pink-300/50 font-bold">
+                                                    {entry.createdAt}
+                                                </span>
+                                            </div>
+                                            <p className="text-pink-100 font-semibold truncate">
+                                                {entry.targetType}: {entry.targetName}
+                                            </p>
+                                            <p className="text-sm text-pink-200/65 mt-1">
+                                                {entry.details}
+                                            </p>
+                                        </div>
+
+                                        <div className="text-xs uppercase tracking-widest text-pink-300/55 font-bold">
+                                            {lang === 'RO' ? 'Utilizator:' : 'User:'} {entry.actorUsername}
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </motion.div>
+                        )}
+                    </motion.div>
+                </AnimatePresence>
+            </motion.div>
+        </div>
+    );
 }
