@@ -40,6 +40,7 @@ async function run() {
     const sourcePath = path.join(LOCALES_DIR, `${SOURCE_LANG}.json`);
     
     // Dacă nu ai încă ro.json, creăm unul de test
+    //
     if (!fs.existsSync(sourcePath)) {
         console.log(`📝 Nu am găsit ${sourcePath}. Creez un fișier de bază...`);
         fs.writeFileSync(sourcePath, JSON.stringify({ 
