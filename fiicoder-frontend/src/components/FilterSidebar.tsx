@@ -6,6 +6,7 @@ import { tagService, type TagResponseDTO } from '../services/tagService';
 import { hoverTransition, itemVariants, staggerConfig } from '../utils/motionConfig';
 import { useNavigate } from 'react-router-dom';
 import { problemService } from '../services/problemService';
+import { autoTranslateProblemTextAsync } from '../language/autoTranslateProblem';
 
 interface FilterSidebarProps {
     difficultyFilter: string;
@@ -35,6 +36,7 @@ export default function FilterSidebar({
 
     // tag-uri din backend
     const [availableTags, setAvailableTags] = useState<TagResponseDTO[]>([]);
+    const [translatedTagsMap, setTranslatedTagsMap] = useState<Record<string, string>>({});
     const [tagsLoading, setTagsLoading] = useState(true);
 
     // search
@@ -58,6 +60,36 @@ export default function FilterSidebar({
             mounted = false;
         };
     }, []);
+
+    // Translate tags when language changes
+    useEffect(() => {
+        let mounted = true;
+        if (!availableTags.length || lang === 'RO') {
+            setTranslatedTagsMap({});
+            return;
+        }
+
+        const translateTags = async () => {
+            const tagsString = availableTags.map(t => t.title).join(", ");
+            try {
+                const translated = await autoTranslateProblemTextAsync(tagsString, 'en');
+                if (!mounted) return;
+                const translatedList = translated.split(",").map(t => t.trim());
+                const map: Record<string, string> = {};
+                availableTags.forEach((tag, index) => {
+                    map[tag.title] = translatedList[index] || tag.title;
+                });
+                setTranslatedTagsMap(map);
+            } catch {
+                if (mounted) setTranslatedTagsMap({});
+            }
+        };
+
+        translateTags();
+        return () => {
+            mounted = false;
+        };
+    }, [lang, availableTags]);
 
     const toggleTag = (tagTitle: string) => {
         if (selectedTags.includes(tagTitle)) {
@@ -199,6 +231,7 @@ export default function FilterSidebar({
                         <div className="flex flex-wrap gap-2">
                             {availableTags.map((tag) => {
                                 const isSelected = selectedTags.includes(tag.title);
+                                const displayTag = translatedTagsMap[tag.title] || tag.title;
                                 return (
                                     <button
                                         key={tag.id}
@@ -211,7 +244,7 @@ export default function FilterSidebar({
                                         }`}
                                     >
                                         {isSelected && '✓ '}
-                                        {tag.title}
+                                        {displayTag}
                                     </button>
                                 );
                             })}
