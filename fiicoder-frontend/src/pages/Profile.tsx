@@ -8,28 +8,28 @@ const pageVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
 };
 
-// MOCK DATA
+// MOCK DATA for my profile :)
 const mockProfileData = {
   id: "u42432424u",
-  firstName: "Laura",
+  firstName: "Laura-Ioana",
   lastName: "Zuzu",
   email: "laura.zuzu.lz@gmail.com",
   createdAt: "15 Noiembrie 2023",
   stats: {
     solved: 215,
     submissions: 420,
-    acceptanceRate: "51.2%",
+    acceptanceRate: "71.2%",
     streak: 24,
-    rank: "Expert"
+    rank: "Master"
   },
   difficulty: {
     easy: 120,
     medium: 75,
     hard: 15,
-    contest: 5
+    contest: 20
   },
   recentActivity: [
-    { id: 1, problem: "Programare Dinamică pe Arbore", status: "Accepted", lang: "C++", time: "Acum 2 ore" },
+    { id: 1, problem: "Suma Gauss", status: "Accepted", lang: "C++", time: "Acum 2 ore" },
     { id: 2, problem: "Algoritmul lui Dijkstra", status: "Accepted", lang: "C++", time: "Acum 5 ore" },
     { id: 3, problem: "Rucsac", status: "Accepted", lang: "Python", time: "Acum 1 zi" },
     { id: 4, problem: "Subșir Crescător Maximal", status: "Wrong Answer", lang: "C++", time: "Acum 2 zile" }
@@ -40,13 +40,13 @@ const mockProfileData = {
     { name: "Java", percentage: 5 }
   ],
   skills: ["Programare Dinamică", "Grafuri", "Backtracking", "Structuri de Date"],
-  badges: ["🏆 Locul 1 Concurs", "🔥 20 Zile Streak", "💻 C++ Master", "⚡ Fast Solver"]
+  badges: ["🏆 Number 1 champion", "🔥 20 day streak", "💻 C++ Master", "⚡ Fast Solver"]
 };
 
-// Generare heatmap mock (12 săptămâni x 7 zile)
+// heatmap mock data (0-4) pentru ultimele 12 sapt
 const mockHeatmap = Array.from({ length: 84 }).map(() => Math.floor(Math.random() * 5));
 
-// Funcție pentru a genera culorile heatmap-ului adaptiv la TEMĂ
+// adaptive to our themes heatmap colors
 const getHeatmapStyle = (level: number) => {
   const baseAccent = "var(--accent)";
   switch (level) {
@@ -63,7 +63,7 @@ const getHeatmapStyle = (level: number) => {
 };
 
 export default function Profile() {
-  const { username, isAdmin } = useAuth(); // Am extras isAdmin din hook
+  const { username, isAdmin } = useAuth();
   const { lang } = useLanguage();
 
   return (
@@ -111,11 +111,7 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* ========================================= */}
-        {/* ZONA NOUĂ (MOCK DATA DASHBOARD)          */}
-        {/* ========================================= */}
-
-        {/* 1. Date User */}
+        {/* user details */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="p-4 rounded-xl border border-pink-500/20 bg-black/20">
             <p className="text-xs text-pink-400 uppercase font-bold tracking-wider mb-1">{lang === "RO" ? "Nume Complet" : "Full Name"}</p>
@@ -131,7 +127,7 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* 2. Statistici Generale */}
+        {/* stats */}
         <h2 className="text-xl font-bold text-pink-200 mb-4">{lang === "RO" ? "Statistici Generale" : "General Stats"}</h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
           <div className="p-4 flex flex-col items-center justify-center rounded-xl border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 transition-colors">
@@ -144,7 +140,7 @@ export default function Profile() {
           </div>
           <div className="p-4 flex flex-col items-center justify-center rounded-xl border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 transition-colors">
             <span className="text-2xl font-black text-pink-300">{mockProfileData.stats.acceptanceRate}</span>
-            <span className="text-[10px] uppercase tracking-widest text-pink-200/60 font-bold text-center mt-1">{lang === "RO" ? "Acceptare" : "Acceptance"}</span>
+            <span className="text-[10px] uppercase tracking-widest text-pink-200/60 font-bold text-center mt-1">{lang === "RO" ? "Rezolvări Acceptate" : "Acceptance Rate"}</span>
           </div>
           <div className="p-4 flex flex-col items-center justify-center rounded-xl border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 transition-colors">
             <span className="text-2xl font-black text-orange-400">{mockProfileData.stats.streak} 🔥</span>
@@ -157,13 +153,13 @@ export default function Profile() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          {/* 3. Breakdown pe dificultati */}
+          {/* number of solved problems of different difficulty levels */}
           <div>
-            <h2 className="text-xl font-bold text-pink-200 mb-4">{lang === "RO" ? "Dificultăți" : "Difficulty Breakdown"}</h2>
+            <h2 className="text-xl font-bold text-pink-200 mb-4">{lang === "RO" ? "Dificultăți rezolvate" : "Difficulty Breakdown"}</h2>
             <div className="flex flex-col gap-3 p-5 rounded-xl border border-pink-500/20 bg-black/10">
               
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-emerald-400">Easy</span>
+                <span className="text-sm font-semibold text-emerald-400">{lang === "RO" ? "Ușoare" : "Easy"}</span>
                 <span className="text-sm font-bold text-pink-100">{mockProfileData.difficulty.easy}</span>
               </div>
               <div className="w-full bg-pink-500/10 rounded-full h-2 mb-2">
@@ -171,7 +167,7 @@ export default function Profile() {
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-amber-400">Medium</span>
+                <span className="text-sm font-semibold text-amber-400">{lang === "RO" ? "Mediu" : "Medium"}</span>
                 <span className="text-sm font-bold text-pink-100">{mockProfileData.difficulty.medium}</span>
               </div>
               <div className="w-full bg-pink-500/10 rounded-full h-2 mb-2">
@@ -179,7 +175,7 @@ export default function Profile() {
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-red-400">Hard</span>
+                <span className="text-sm font-semibold text-red-400">{lang === "RO" ? "Grele" : "Hard"}</span>
                 <span className="text-sm font-bold text-pink-100">{mockProfileData.difficulty.hard}</span>
               </div>
               <div className="w-full bg-pink-500/10 rounded-full h-2 mb-2">
@@ -187,15 +183,15 @@ export default function Profile() {
               </div>
               
               <div className="flex items-center justify-between mt-2 pt-3 border-t border-pink-500/20">
-                <span className="text-sm font-semibold text-purple-400">Contest</span>
+                <span className="text-sm font-semibold text-purple-400">{lang === "RO" ? "Probleme de Concurs" : "Contest Problems"}</span>
                 <span className="text-sm font-bold text-pink-100">{mockProfileData.difficulty.contest}</span>
               </div>
             </div>
           </div>
 
-          {/* 4. Limbaje & Skill-uri */}
+          {/* lang & skills */}
           <div>
-            <h2 className="text-xl font-bold text-pink-200 mb-4">{lang === "RO" ? "Limbaje & Skills" : "Languages & Skills"}</h2>
+            <h2 className="text-xl font-bold text-pink-200 mb-4">{lang === "RO" ? "Limbaje de programare & Skills" : "Coding languages & Skills"}</h2>
             <div className="flex flex-col gap-4 p-5 rounded-xl border border-pink-500/20 bg-black/10 h-[calc(100%-2.5rem)]">
               <div>
                 {mockProfileData.languages.map(langItem => (
@@ -223,19 +219,35 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* 5. Heatmap adaptat la teme (Rose, Nord, Cream, Sage) */}
-        <h2 className="text-xl font-bold text-pink-200 mb-4">{lang === "RO" ? "Activitate (Heatmap)" : "Activity Heatmap"}</h2>
+        <h2 className="text-xl font-bold text-pink-200 mb-4">{lang === "RO" ? "Activitate pe zile" : "Activity by Day"}</h2>
         <div className="p-5 rounded-xl border border-pink-500/20 bg-black/10 mb-8 overflow-x-auto custom-scrollbar">
-          <div className="flex gap-1.5 min-w-max">
-            {mockHeatmap.map((level, i) => (
-              <div 
-                key={i} 
-                className="w-4 h-4 rounded-[3px] transition-transform hover:scale-125 cursor-pointer border border-pink-500/5"
-                style={getHeatmapStyle(level)}
-                title={`${level * 2} submissions`}
-              />
-            ))}
+          <div className="flex flex-col gap-1.5 min-w-max">
+            <div className="flex gap-1.5">
+              {mockHeatmap.map((level, i) => (
+                <div 
+                  key={i} 
+                  className="w-4 h-4 rounded-[3px] transition-transform hover:scale-125 cursor-pointer border border-pink-500/5 shrink-0"
+                  style={getHeatmapStyle(level)}
+                  title={`${level * 2} submissions`}
+                />
+              ))}
+            </div>
+            <div className="flex gap-1.5">
+              {mockHeatmap.map((_, i) => {
+                let dayLabel = "";
+                if (i % 14 === 0) dayLabel = "1";
+                else if (i % 14 === 7) dayLabel = "15";
+                
+                return (
+                  <div key={`label-${i}`} className="w-4 text-[9px] font-semibold text-pink-300/50 text-center shrink-0 flex items-start justify-center">
+                    {dayLabel}
+                  </div>
+                );
+              })}
+            </div>
+
           </div>
+          
           <div className="mt-3 flex items-center justify-end gap-2 text-xs text-pink-300/50 font-semibold">
             <span>Less</span>
             <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(0)} />
@@ -248,7 +260,7 @@ export default function Profile() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* 6. Activitate Recentă */}
+          {/* recent activity */}
           <div>
             <h2 className="text-xl font-bold text-pink-200 mb-4">{lang === "RO" ? "Submisii Recente" : "Recent Submissions"}</h2>
             <div className="flex flex-col gap-3">
@@ -278,9 +290,9 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* 7. Badge-uri / Achievements */}
+          {/* badges n achievements */}
           <div>
-            <h2 className="text-xl font-bold text-pink-200 mb-4">{lang === "RO" ? "Realizări & Insigne" : "Achievements & Badges"}</h2>
+            <h2 className="text-xl font-bold text-pink-200 mb-4">Achievements & Badges</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {mockProfileData.badges.map(badge => (
                 <div key={badge} className="p-4 flex items-center justify-center gap-3 rounded-xl border border-pink-400/30 bg-gradient-to-br from-pink-500/10 to-purple-500/10 shadow-lg hover:shadow-pink-500/20 transition-all hover:-translate-y-1">
