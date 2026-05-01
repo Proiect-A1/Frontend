@@ -8,43 +8,59 @@ const pageVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
 };
 
-// MOCK DATA - Conform cu lista de API-uri
+// MOCK DATA
 const mockProfileData = {
-  id: "u-1a2b3c",
-  firstName: "Turing",
-  lastName: "Alan",
-  email: "alan.turing@fiicoder.ro",
-  createdAt: "12 Octombrie 2023",
+  id: "u93593859rft394ut",
+  firstName: "Laura",
+  lastName: "Zuzu",
+  email: "laura.zuzu.lz@gmail.com",
+  createdAt: "15 Noiembrie 2023",
   stats: {
-    solved: 142,
-    submissions: 385,
-    acceptanceRate: "36.8%",
-    streak: 14,
-    rank: "Grandmaster"
+    solved: 215,
+    submissions: 420,
+    acceptanceRate: "71.2%",
+    streak: 24,
+    rank: "Master"
   },
   difficulty: {
-    easy: 85,
-    medium: 42,
-    hard: 10,
+    easy: 120,
+    medium: 75,
+    hard: 15,
     contest: 5
   },
   recentActivity: [
-    { id: 1, problem: "Suma a două numere", status: "Accepted", lang: "C++", time: "Acum 2 ore" },
-    { id: 2, problem: "Algoritmul lui Dijkstra", status: "Wrong Answer", lang: "C++", time: "Acum 5 ore" },
-    { id: 3, problem: "Problema Rucsacului", status: "Accepted", lang: "Python", time: "Acum 1 zi" },
-    { id: 4, problem: "Z Parcurgere", status: "Time Limit Exceeded", lang: "Java", time: "Acum 2 zile" }
+    { id: 1, problem: "Programare Dinamică pe Arbore", status: "Accepted", lang: "C++", time: "Acum 2 ore" },
+    { id: 2, problem: "Algoritmul lui Dijkstra", status: "Accepted", lang: "C++", time: "Acum 5 ore" },
+    { id: 3, problem: "Rucsac", status: "Accepted", lang: "Python", time: "Acum 1 zi" },
+    { id: 4, problem: "Subșir Crescător Maximal", status: "Wrong Answer", lang: "C++", time: "Acum 2 zile" }
   ],
   languages: [
-    { name: "C++", percentage: 75 },
-    { name: "Python", percentage: 15 },
-    { name: "Java", percentage: 10 }
+    { name: "C++", percentage: 85 },
+    { name: "Python", percentage: 10 },
+    { name: "Java", percentage: 5 }
   ],
-  skills: ["Programare Dinamică", "Grafuri", "Matematică", "Arbori", "Șiruri de caractere"],
-  badges: ["🏆 Primul Concurs", "🔥 10 Zile Streak", "💡 Pasionat de DP", "⚡ Fast Solver"]
+  skills: ["Programare Dinamică", "Grafuri", "Backtracking", "Structuri de Date"],
+  badges: ["🏆 Locul 1 Concurs", "🔥 20 Zile Streak", "💻 C++ Master", "⚡ Fast Solver"]
 };
 
 // Generare heatmap mock (12 săptămâni x 7 zile)
 const mockHeatmap = Array.from({ length: 84 }).map(() => Math.floor(Math.random() * 5));
+
+// Funcție pentru a genera culorile heatmap-ului adaptiv la TEMĂ (Rose, Nord, Cream, Sage)
+const getHeatmapStyle = (level: number) => {
+  const baseAccent = "var(--accent)";
+  switch (level) {
+    case 0: return { backgroundColor: `color-mix(in srgb, ${baseAccent} 8%, transparent)` };
+    case 1: return { backgroundColor: `color-mix(in srgb, ${baseAccent} 30%, transparent)` };
+    case 2: return { backgroundColor: `color-mix(in srgb, ${baseAccent} 60%, transparent)` };
+    case 3: return { backgroundColor: baseAccent };
+    case 4: return { 
+      backgroundColor: `color-mix(in srgb, ${baseAccent} 85%, white 15%)`,
+      boxShadow: `0 0 10px color-mix(in srgb, ${baseAccent} 70%, transparent)` 
+    };
+    default: return { backgroundColor: `color-mix(in srgb, ${baseAccent} 8%, transparent)` };
+  }
+};
 
 export default function Profile() {
   const { username, isAdmin } = useAuth(); // Am extras isAdmin din hook
@@ -58,11 +74,11 @@ export default function Profile() {
         variants={pageVariants}
       >
         <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-linear-to-br from-pink-400 to-purple-500 flex items-center justify-center text-4xl font-bold text-white uppercase shadow-lg outline-4 outline-offset-4 outline-(--accent)">
-          {username?.charAt(0) || "?"}
+          {username?.charAt(0) || "L"}
         </div>
                  
         <h1 className="text-3xl font-bold text-pink-100 mb-2 text-center">
-          {username}
+          {username || "Laura Zuzu"}
         </h1>
                  
         <p className="text-pink-300/60 mb-6 text-center">
@@ -206,35 +222,26 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* 5. Heatmap / Activitate pe zile */}
+        {/* 5. Heatmap adaptat la teme (Rose, Nord, Cream, Sage) */}
         <h2 className="text-xl font-bold text-pink-200 mb-4">{lang === "RO" ? "Activitate (Heatmap)" : "Activity Heatmap"}</h2>
         <div className="p-5 rounded-xl border border-pink-500/20 bg-black/10 mb-8 overflow-x-auto custom-scrollbar">
           <div className="flex gap-1.5 min-w-max">
-            {mockHeatmap.map((level, i) => {
-              // Culori heatmap derivate din nuante de pink
-              const colors = [
-                'bg-pink-500/5 border border-pink-500/10', 
-                'bg-pink-500/30 border border-pink-500/20', 
-                'bg-pink-500/60', 
-                'bg-pink-400', 
-                'bg-pink-300 shadow-[0_0_8px_rgba(244,114,182,0.6)]'
-              ];
-              return (
-                <div 
-                  key={i} 
-                  className={`w-4 h-4 rounded-[3px] transition-transform hover:scale-125 cursor-pointer ${colors[level]}`} 
-                  title={`${level * 2} submissions`}
-                />
-              );
-            })}
+            {mockHeatmap.map((level, i) => (
+              <div 
+                key={i} 
+                className="w-4 h-4 rounded-[3px] transition-transform hover:scale-125 cursor-pointer border border-pink-500/5"
+                style={getHeatmapStyle(level)}
+                title={`${level * 2} submissions`}
+              />
+            ))}
           </div>
           <div className="mt-3 flex items-center justify-end gap-2 text-xs text-pink-300/50 font-semibold">
             <span>Less</span>
-            <div className="w-3 h-3 rounded-[2px] bg-pink-500/5 border border-pink-500/10" />
-            <div className="w-3 h-3 rounded-[2px] bg-pink-500/30 border border-pink-500/20" />
-            <div className="w-3 h-3 rounded-[2px] bg-pink-500/60" />
-            <div className="w-3 h-3 rounded-[2px] bg-pink-400" />
-            <div className="w-3 h-3 rounded-[2px] bg-pink-300" />
+            <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(0)} />
+            <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(1)} />
+            <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(2)} />
+            <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(3)} />
+            <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(4)} />
             <span>More</span>
           </div>
         </div>
