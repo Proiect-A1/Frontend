@@ -8,38 +8,32 @@ const pageVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
 };
 
-// MOCK DATA for my profile :)
+// MOCK DATA
 const mockProfileData = {
   id: "u42432424u",
+  username: "LauraZuzu",
   firstName: "Laura-Ioana",
   lastName: "Zuzu",
   email: "laura.zuzu.lz@gmail.com",
-  createdAt: "15 Noiembrie 2023",
-  stats: {
-    solved: 215,
-    submissions: 420,
-    acceptanceRate: "71.2%",
-    streak: 24,
-    rank: "Master"
+  avatarUrl: null, 
+  createdAt: "2023-11-15T10:30:00",
+  problemsSolved: 215,
+  submissions: 420,
+  acceptanceRate: 71.2,
+  streak: 24,
+  rankEasy: 85.5,
+  rankMedium: 60.2,
+  rankHard: 15.0,
+  rankContest: 5.0,
+  recentSubmissions: {
+    "Suma Gauss": 100.0,
+    "Algoritmul lui Dijkstra": 100.0,
+    "Rucsac": 100.0,
+    "Subșir Crescător Maximal": 45.5,
+    "Parcurgere DFS": 0.0
   },
-  difficulty: {
-    easy: 120,
-    medium: 75,
-    hard: 15,
-    contest: 20
-  },
-  recentActivity: [
-    { id: 1, problem: "Suma Gauss", status: "Accepted", lang: "C++", time: "Acum 2 ore" },
-    { id: 2, problem: "Algoritmul lui Dijkstra", status: "Accepted", lang: "C++", time: "Acum 5 ore" },
-    { id: 3, problem: "Rucsac", status: "Accepted", lang: "Python", time: "Acum 1 zi" },
-    { id: 4, problem: "Subșir Crescător Maximal", status: "Wrong Answer", lang: "C++", time: "Acum 2 zile" }
-  ],
-  languages: [
-    { name: "C++", percentage: 85 },
-    { name: "Python", percentage: 10 },
-    { name: "Java", percentage: 5 }
-  ],
-  skills: ["Programare Dinamică", "Grafuri", "Backtracking", "Structuri de Date"],
+  mostUsedLanguages: ["C++", "Python", "Java"],
+  skillBreakdownTags: ["Programare Dinamică", "Grafuri", "Backtracking", "Structuri de Date"],
   badges: ["🏆 Number 1 champion", "🔥 20 day streak", "💻 C++ Master", "⚡ Fast Solver"]
 };
 
@@ -66,243 +60,249 @@ export default function Profile() {
   const { username, isAdmin } = useAuth();
   const { lang } = useLanguage();
 
+  const formatJoinDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(lang === 'RO' ? 'ro-RO' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
+
   return (
     <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0 mb-8 xl:mb-0">
       <motion.div
-        className="w-full max-w-5xl rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg p-6 md:p-8 card-glow h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
+        className="w-full max-w-7xl h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
         initial="hidden"
         animate="visible"
         variants={pageVariants}
       >
-        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-linear-to-br from-pink-400 to-purple-500 flex items-center justify-center text-4xl font-bold text-white uppercase shadow-lg outline-4 outline-offset-4 outline-(--accent)">
-          {username?.charAt(0) || "L"}
-        </div>
-                 
-        <h1 className="text-3xl font-bold text-pink-100 mb-2 text-center">
-          {username || "Laura Zuzu"}
-        </h1>
-                 
-        <p className="text-pink-300/60 mb-6 text-center">
-          {lang === "RO" ? "Pagina de profil folosește date mock momentan." : "Profile page is currently using mock data."}
-        </p>
-
-        {/* admin button visible only for admins */}
         {isAdmin && (
-          <div className="flex justify-center mb-8">
+          <div className="mb-4 flex justify-end">
             <Link
                to="/admin"
-               className="px-6 py-2.5 rounded-full border-2 border-pink-400/60 text-sm font-bold text-pink-100 transition hover:bg-pink-500/15 hover:-translate-y-0.5"
+               className="px-6 py-2 rounded-full border border-pink-400/60 text-xs font-bold text-pink-100 transition hover:bg-pink-500/15 hover:-translate-y-0.5 bg-pink-500/10"
             >
               {lang === "RO" ? "Panou Administrare" : "Admin Dashboard"}
             </Link>
           </div>
         )}
 
-        <div className="page-line-horizontal mb-8" />
-                 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mb-8">
-          <div className="p-4 rounded-xl border border-pink-500/20 bg-pink-500/5">
-            <p className="text-xs text-pink-400 uppercase font-bold tracking-wider">Status</p>
-            <p className="text-pink-100">Online</p>
-          </div>
-          <div className="p-4 rounded-xl border border-pink-500/20 bg-pink-500/5">
-            <p className="text-xs text-pink-400 uppercase font-bold tracking-wider">Role</p>
-            <p className="text-pink-100 font-semibold">{isAdmin ? "Administrator" : "User"}</p>
-          </div>
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
 
-        {/* user details */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="p-4 rounded-xl border border-pink-500/20 bg-black/20">
-            <p className="text-xs text-pink-400 uppercase font-bold tracking-wider mb-1">{lang === "RO" ? "Nume Complet" : "Full Name"}</p>
-            <p className="text-pink-100 font-medium">{mockProfileData.firstName} {mockProfileData.lastName}</p>
-          </div>
-          <div className="p-4 rounded-xl border border-pink-500/20 bg-black/20">
-            <p className="text-xs text-pink-400 uppercase font-bold tracking-wider mb-1">Email</p>
-            <p className="text-pink-100 font-medium">{mockProfileData.email}</p>
-          </div>
-          <div className="p-4 rounded-xl border border-pink-500/20 bg-black/20">
-            <p className="text-xs text-pink-400 uppercase font-bold tracking-wider mb-1">{lang === "RO" ? "Membru din" : "Joined"}</p>
-            <p className="text-pink-100 font-medium">{mockProfileData.createdAt}</p>
-          </div>
-        </div>
-
-        {/* stats */}
-        <h2 className="text-xl font-bold text-pink-200 mb-4">{lang === "RO" ? "Statistici Generale" : "General Stats"}</h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
-          <div className="p-4 flex flex-col items-center justify-center rounded-xl border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 transition-colors">
-            <span className="text-2xl font-black text-pink-300">{mockProfileData.stats.solved}</span>
-            <span className="text-[10px] uppercase tracking-widest text-pink-200/60 font-bold text-center mt-1">{lang === "RO" ? "Rezolvate" : "Solved"}</span>
-          </div>
-          <div className="p-4 flex flex-col items-center justify-center rounded-xl border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 transition-colors">
-            <span className="text-2xl font-black text-pink-300">{mockProfileData.stats.submissions}</span>
-            <span className="text-[10px] uppercase tracking-widest text-pink-200/60 font-bold text-center mt-1">{lang === "RO" ? "Submisii" : "Submissions"}</span>
-          </div>
-          <div className="p-4 flex flex-col items-center justify-center rounded-xl border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 transition-colors">
-            <span className="text-2xl font-black text-pink-300">{mockProfileData.stats.acceptanceRate}</span>
-            <span className="text-[10px] uppercase tracking-widest text-pink-200/60 font-bold text-center mt-1">{lang === "RO" ? "Rezolvări Acceptate" : "Acceptance Rate"}</span>
-          </div>
-          <div className="p-4 flex flex-col items-center justify-center rounded-xl border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 transition-colors">
-            <span className="text-2xl font-black text-orange-400">{mockProfileData.stats.streak} 🔥</span>
-            <span className="text-[10px] uppercase tracking-widest text-pink-200/60 font-bold text-center mt-1">Streak</span>
-          </div>
-          <div className="p-4 flex flex-col items-center justify-center rounded-xl border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 transition-colors">
-            <span className="text-xl font-black text-purple-300 text-center">{mockProfileData.stats.rank}</span>
-            <span className="text-[10px] uppercase tracking-widest text-pink-200/60 font-bold text-center mt-1">Rank</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          {/* number of solved problems of different difficulty levels */}
-          <div>
-            <h2 className="text-xl font-bold text-pink-200 mb-4">{lang === "RO" ? "Dificultăți rezolvate" : "Difficulty Breakdown"}</h2>
-            <div className="flex flex-col gap-3 p-5 rounded-xl border border-pink-500/20 bg-black/10">
+          <div className="flex flex-col gap-6">
+            
+            {/* user info card */}
+            <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow flex flex-col items-center lg:items-start text-center lg:text-left">
+              <div className="w-24 h-24 mb-4 rounded-full bg-linear-to-br from-pink-400 to-purple-500 flex items-center justify-center text-4xl font-bold text-white uppercase shadow-lg outline-4 outline-offset-4 outline-(--accent) overflow-hidden shrink-0">
+                {mockProfileData.avatarUrl ? (
+                  <img src={mockProfileData.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  (username?.charAt(0) || mockProfileData.firstName.charAt(0) || "L")
+                )}
+              </div>
+              <h1 className="text-2xl font-bold text-pink-100">{mockProfileData.firstName} {mockProfileData.lastName}</h1>
+              <p className="text-pink-300/60 font-mono text-sm mb-4">@{mockProfileData.username}</p>
               
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-emerald-400">{lang === "RO" ? "Ușoare" : "Easy"}</span>
-                <span className="text-sm font-bold text-pink-100">{mockProfileData.difficulty.easy}</span>
-              </div>
-              <div className="w-full bg-pink-500/10 rounded-full h-2 mb-2">
-                <div className="bg-emerald-400 h-2 rounded-full" style={{ width: '75%' }}></div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-amber-400">{lang === "RO" ? "Mediu" : "Medium"}</span>
-                <span className="text-sm font-bold text-pink-100">{mockProfileData.difficulty.medium}</span>
-              </div>
-              <div className="w-full bg-pink-500/10 rounded-full h-2 mb-2">
-                <div className="bg-amber-400 h-2 rounded-full" style={{ width: '40%' }}></div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-red-400">{lang === "RO" ? "Grele" : "Hard"}</span>
-                <span className="text-sm font-bold text-pink-100">{mockProfileData.difficulty.hard}</span>
-              </div>
-              <div className="w-full bg-pink-500/10 rounded-full h-2 mb-2">
-                <div className="bg-red-400 h-2 rounded-full" style={{ width: '15%' }}></div>
-              </div>
+              <div className="w-full border-t border-pink-500/20 my-2"></div>
               
-              <div className="flex items-center justify-between mt-2 pt-3 border-t border-pink-500/20">
-                <span className="text-sm font-semibold text-purple-400">{lang === "RO" ? "Probleme de Concurs" : "Contest Problems"}</span>
-                <span className="text-sm font-bold text-pink-100">{mockProfileData.difficulty.contest}</span>
+              <div className="w-full flex flex-col gap-2 mt-2 text-sm text-pink-200/80">
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-pink-300/60">Email</span>
+                  <span className="truncate ml-2">{mockProfileData.email}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-pink-300/60">{lang === "RO" ? "Membru din" : "Joined"}</span>
+                  <span>{formatJoinDate(mockProfileData.createdAt)}</span>
+                </div>
+                <div className="flex justify-between items-center mt-2">
+                  <span className="font-semibold text-pink-300/60">Role</span>
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase border border-pink-500/30 bg-pink-500/10 text-pink-200">
+                    {isAdmin ? "Admin" : "User"}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* lang & skills */}
-          <div>
-            <h2 className="text-xl font-bold text-pink-200 mb-4">{lang === "RO" ? "Limbaje de programare & Skills" : "Coding languages & Skills"}</h2>
-            <div className="flex flex-col gap-4 p-5 rounded-xl border border-pink-500/20 bg-black/10 h-[calc(100%-2.5rem)]">
-              <div>
-                {mockProfileData.languages.map(langItem => (
-                  <div key={langItem.name} className="mb-3">
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-pink-100 font-semibold">{langItem.name}</span>
-                      <span className="text-pink-300/60 font-bold">{langItem.percentage}%</span>
-                    </div>
-                    <div className="w-full bg-pink-500/10 rounded-full h-1.5">
-                      <div className="bg-pink-400 h-1.5 rounded-full" style={{ width: `${langItem.percentage}%` }}></div>
-                    </div>
-                  </div>
-                ))}
+            {/* Community Stats Card */}
+            <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow">
+              <h2 className="text-sm font-bold text-pink-100 mb-4 uppercase tracking-wider">{lang === "RO" ? "Statistici" : "Community Stats"}</h2>
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-pink-200/70">{lang === "RO" ? "Total Submisii" : "Total Submissions"}</span>
+                  <span className="font-bold text-pink-100">{mockProfileData.submissions}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-pink-200/70">{lang === "RO" ? "Rată de Acceptare" : "Acceptance Rate"}</span>
+                  <span className="font-bold text-pink-100">{mockProfileData.acceptanceRate}%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-pink-200/70">{lang === "RO" ? "Zile Consecutive" : "Daily Streak"}</span>
+                  <span className="font-bold text-orange-400">{mockProfileData.streak} 🔥</span>
+                </div>
               </div>
-              <div className="mt-auto pt-2">
+            </div>
+
+            {/* Languages & Skills Card */}
+            <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow">
+              <div className="mb-6">
+                <h2 className="text-sm font-bold text-pink-100 mb-3 uppercase tracking-wider">{lang === "RO" ? "Limbaje" : "Languages"}</h2>
                 <div className="flex flex-wrap gap-2">
-                  {mockProfileData.skills.map(skill => (
-                    <span key={skill} className="px-2.5 py-1 rounded-md text-[10px] font-bold border border-pink-500/30 bg-pink-500/10 text-pink-200">
+                  {mockProfileData.mostUsedLanguages.map(langItem => (
+                    <span key={langItem} className="px-3 py-1 rounded-full text-xs font-semibold border border-pink-500/20 bg-pink-500/5 text-pink-100">
+                      {langItem}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              
+              <div>
+                <h2 className="text-sm font-bold text-pink-100 mb-3 uppercase tracking-wider">Skills</h2>
+                <div className="flex flex-wrap gap-2">
+                  {mockProfileData.skillBreakdownTags.map(skill => (
+                    <span key={skill} className="px-2.5 py-1 rounded-md text-[10px] font-bold border border-pink-500/30 bg-pink-500/10 text-pink-200 hover:bg-pink-500/20 transition-colors cursor-pointer">
                       {skill}
                     </span>
                   ))}
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <h2 className="text-xl font-bold text-pink-200 mb-4">{lang === "RO" ? "Activitate pe zile" : "Activity by Day"}</h2>
-        <div className="p-5 rounded-xl border border-pink-500/20 bg-black/10 mb-8 overflow-x-auto custom-scrollbar">
-          <div className="flex flex-col gap-1.5 min-w-max">
-            <div className="flex gap-1.5">
-              {mockHeatmap.map((level, i) => (
-                <div 
-                  key={i} 
-                  className="w-4 h-4 rounded-[3px] transition-transform hover:scale-125 cursor-pointer border border-pink-500/5 shrink-0"
-                  style={getHeatmapStyle(level)}
-                  title={`${level * 2} submissions`}
-                />
-              ))}
-            </div>
-            <div className="flex gap-1.5">
-              {mockHeatmap.map((_, i) => {
-                let dayLabel = "";
-                if (i % 14 === 0) dayLabel = "1";
-                else if (i % 14 === 7) dayLabel = "15";
-                
-                return (
-                  <div key={`label-${i}`} className="w-4 text-[9px] font-semibold text-pink-300/50 text-center shrink-0 flex items-start justify-center">
-                    {dayLabel}
+          </div>
+
+          <div className="flex flex-col gap-6">
+            
+            {/* Solved Problems */}
+            <div className="p-6 md:p-8 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-8 items-center">
+              <div className="flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-pink-500/20 pb-6 md:pb-0 md:pr-6">
+                <span className="text-[10px] uppercase tracking-widest text-pink-200/60 font-bold mb-2">{lang === "RO" ? "Probleme Rezolvate" : "Problems Solved"}</span>
+                <span className="text-6xl font-black text-pink-300 drop-shadow-md">{mockProfileData.problemsSolved}</span>
+              </div>
+
+              <div className="flex flex-col gap-4">
+                <div>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="font-semibold text-emerald-400">Easy</span>
+                    <span className="font-bold text-emerald-300">{mockProfileData.rankEasy}%</span>
                   </div>
-                );
-              })}
-            </div>
-
-          </div>
-          
-          <div className="mt-3 flex items-center justify-end gap-2 text-xs text-pink-300/50 font-semibold">
-            <span>Less</span>
-            <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(0)} />
-            <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(1)} />
-            <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(2)} />
-            <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(3)} />
-            <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(4)} />
-            <span>More</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* recent activity */}
-          <div>
-            <h2 className="text-xl font-bold text-pink-200 mb-4">{lang === "RO" ? "Submisii Recente" : "Recent Submissions"}</h2>
-            <div className="flex flex-col gap-3">
-              {mockProfileData.recentActivity.map(activity => (
-                <div key={activity.id} className="p-4 rounded-xl border border-pink-500/20 bg-pink-500/5 flex justify-between items-center transition-colors hover:bg-pink-500/10">
-                  <div>
-                    <Link to={`/problems`} className="text-sm font-bold text-pink-100 hover:text-pink-300 hover:underline underline-offset-2 transition-colors">
-                      {activity.problem}
-                    </Link>
-                    <p className="text-[11px] text-pink-300/60 mt-1 font-semibold tracking-wider uppercase">
-                      {activity.time} • {activity.lang}
-                    </p>
-                  </div>
-                  <div>
-                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                      activity.status === "Accepted" 
-                        ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/30" 
-                        : activity.status === "Wrong Answer"
-                        ? "bg-red-500/10 text-red-300 border border-red-500/30"
-                        : "bg-amber-500/10 text-amber-300 border border-amber-500/30"
-                    }`}>
-                      {activity.status}
-                    </span>
+                  <div className="w-full bg-emerald-500/10 rounded-full h-2">
+                    <div className="bg-emerald-400 h-2 rounded-full" style={{ width: `${mockProfileData.rankEasy}%` }}></div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* badges n achievements */}
-          <div>
-            <h2 className="text-xl font-bold text-pink-200 mb-4">Achievements & Badges</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="font-semibold text-amber-400">Medium</span>
+                    <span className="font-bold text-amber-300">{mockProfileData.rankMedium}%</span>
+                  </div>
+                  <div className="w-full bg-amber-500/10 rounded-full h-2">
+                    <div className="bg-amber-400 h-2 rounded-full" style={{ width: `${mockProfileData.rankMedium}%` }}></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="font-semibold text-red-400">Hard</span>
+                    <span className="font-bold text-red-300">{mockProfileData.rankHard}%</span>
+                  </div>
+                  <div className="w-full bg-red-500/10 rounded-full h-2">
+                    <div className="bg-red-400 h-2 rounded-full" style={{ width: `${mockProfileData.rankHard}%` }}></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="font-semibold text-purple-400">Contest</span>
+                    <span className="font-bold text-purple-300">{mockProfileData.rankContest}%</span>
+                  </div>
+                  <div className="w-full bg-purple-500/10 rounded-full h-2">
+                    <div className="bg-purple-400 h-2 rounded-full" style={{ width: `${mockProfileData.rankContest}%` }}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {mockProfileData.badges.map(badge => (
-                <div key={badge} className="p-4 flex items-center justify-center gap-3 rounded-xl border border-pink-400/30 bg-gradient-to-br from-pink-500/10 to-purple-500/10 shadow-lg hover:shadow-pink-500/20 transition-all hover:-translate-y-1">
-                  <span className="text-sm font-bold text-pink-100">{badge}</span>
+                <div key={badge} className="p-3 flex items-center justify-center gap-2 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg hover:-translate-y-1 transition-transform cursor-pointer">
+                  <span className="text-xs font-bold text-pink-100 text-center">{badge}</span>
                 </div>
               ))}
             </div>
+
+            {/* heatmap */}
+            <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow">
+              <h2 className="text-sm font-bold text-pink-100 mb-4 uppercase tracking-wider">{lang === "RO" ? "Activitate pe zile" : "Activity by Day"}</h2>
+              <div className="overflow-x-auto custom-scrollbar pb-2">
+                <div className="flex flex-col gap-1.5 min-w-max">
+                  
+                  <div className="flex gap-1.5">
+                    {mockHeatmap.map((level, i) => (
+                      <div 
+                        key={i} 
+                        className="w-4 h-4 rounded-[3px] transition-transform hover:scale-125 cursor-pointer border border-pink-500/5 shrink-0"
+                        style={getHeatmapStyle(level)}
+                        title={`${level * 2} submissions`}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="flex gap-1.5">
+                    {mockHeatmap.map((_, i) => {
+                      let dayLabel = "";
+                      if (i % 14 === 0) dayLabel = "1";
+                      else if (i % 14 === 7) dayLabel = "14";
+                      
+                      return (
+                        <div key={`label-${i}`} className="w-4 text-[9px] font-semibold text-pink-300/50 text-center shrink-0 flex items-start justify-center">
+                          {dayLabel}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                </div>
+              </div>
+              
+              <div className="mt-2 flex items-center justify-end gap-2 text-xs text-pink-300/50 font-semibold">
+                <span>Less</span>
+                <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(0)} />
+                <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(1)} />
+                <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(2)} />
+                <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(3)} />
+                <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(4)} />
+                <span>More</span>
+              </div>
+            </div>
+
+            {/* Recent Submission */}
+            <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow mb-8">
+              <h2 className="text-sm font-bold text-pink-100 mb-4 uppercase tracking-wider">{lang === "RO" ? "Submisii Recente" : "Recent Submissions"}</h2>
+              <div className="flex flex-col gap-2">
+                {Object.entries(mockProfileData.recentSubmissions).map(([problemName, score], index) => {
+                  const isAccepted = score === 100.0;
+                  
+                  return (
+                    <div key={index} className="p-3 md:p-4 rounded-xl border border-pink-500/20 bg-pink-500/5 flex justify-between items-center transition-colors hover:bg-pink-500/10">
+                      <div>
+                        <Link to={`/problems`} className="text-sm md:text-base font-bold text-pink-100 hover:text-pink-300 hover:underline underline-offset-2 transition-colors line-clamp-1">
+                          {problemName}
+                        </Link>
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0 ml-2">
+                        <span className="text-[11px] font-mono text-pink-300/60 hidden sm:inline-block">Score: {score}</span>
+                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider whitespace-nowrap ${
+                          isAccepted 
+                            ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/30" 
+                            : "bg-red-500/10 text-red-300 border border-red-500/30"
+                        }`}>
+                          {isAccepted ? "Accepted" : "Partial / WA"}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
           </div>
         </div>
-
       </motion.div>
     </div>
   );
