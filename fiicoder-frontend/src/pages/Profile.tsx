@@ -2,20 +2,21 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useAuth } from "../services/AuthContext";
 import { useLanguage } from "../language/Language";
+import { useTheme } from "../services/ThemeContext";
 
 const pageVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
 };
 
-// MOCK DATA
+// MOCK DATA 
 const mockProfileData = {
   id: "u42432424u",
   username: "LauraZuzu",
   firstName: "Laura-Ioana",
   lastName: "Zuzu",
   email: "laura.zuzu.lz@gmail.com",
-  avatarUrl: null, 
+  avatarUrl: null, // no pfp
   createdAt: "2023-11-15T10:30:00",
   problemsSolved: 215,
   submissions: 420,
@@ -59,6 +60,9 @@ const getHeatmapStyle = (level: number) => {
 export default function Profile() {
   const { username, isAdmin } = useAuth();
   const { lang } = useLanguage();
+  const { theme } = useTheme();
+
+  const isLightTheme = theme === 'cream' || theme === 'sage';
 
   const formatJoinDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -73,6 +77,7 @@ export default function Profile() {
         animate="visible"
         variants={pageVariants}
       >
+        {/* admin button visible only for admins */}
         {isAdmin && (
           <div className="mb-4 flex justify-end">
             <Link
@@ -84,9 +89,9 @@ export default function Profile() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-6">
 
-          {/* Adăugat min-w-0 aici */}
+          {/* SIDEBAR */}
           <div className="flex flex-col gap-6 min-w-0">
             
             {/* user info card */}
@@ -121,7 +126,7 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Community Stats Card */}
+            {/* stats */}
             <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow">
               <h2 className="text-sm font-bold text-pink-100 mb-4 uppercase tracking-wider">{lang === "RO" ? "Statistici" : "Community Stats"}</h2>
               <div className="flex flex-col gap-4">
@@ -167,11 +172,11 @@ export default function Profile() {
 
           </div>
 
-          {/* Adăugat min-w-0 aici pe coloana din dreapta! */}
-          <div className="flex flex-col gap-6 min-w-0">
+          {/* MAIN CONTENT */}
+          <div className="flex flex-col gap-6 min-w-0 w-full">
             
-            {/* Solved Problems */}
-            <div className="p-6 md:p-8 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-8 items-center min-w-0">
+            {/* number of solved problems of different difficulty levels */}
+            <div className="p-6 md:p-8 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-8 items-center min-w-0">
               <div className="flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-pink-500/20 pb-6 md:pb-0 md:pr-6">
                 <span className="text-[10px] uppercase tracking-widest text-pink-200/60 font-bold mb-2">{lang === "RO" ? "Probleme Rezolvate" : "Problems Solved"}</span>
                 <span className="text-6xl font-black text-pink-300 drop-shadow-md">{mockProfileData.problemsSolved}</span>
@@ -180,8 +185,8 @@ export default function Profile() {
               <div className="flex flex-col gap-4">
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="font-semibold text-emerald-400">Easy</span>
-                    <span className="font-bold text-emerald-300">{mockProfileData.rankEasy}%</span>
+                    <span className={`font-semibold ${isLightTheme ? 'text-emerald-700' : 'text-emerald-400'}`}>{lang === "RO" ? "Ușoare" : "Easy"}</span>
+                    <span className={`font-bold ${isLightTheme ? 'text-emerald-600' : 'text-emerald-300'}`}>{mockProfileData.rankEasy}%</span>
                   </div>
                   <div className="w-full bg-emerald-500/10 rounded-full h-2">
                     <div className="bg-emerald-400 h-2 rounded-full" style={{ width: `${mockProfileData.rankEasy}%` }}></div>
@@ -190,8 +195,8 @@ export default function Profile() {
 
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="font-semibold text-amber-400">Medium</span>
-                    <span className="font-bold text-amber-300">{mockProfileData.rankMedium}%</span>
+                    <span className={`font-semibold ${isLightTheme ? 'text-amber-700' : 'text-amber-400'}`}>{lang === "RO" ? "Mediu" : "Medium"}</span>
+                    <span className={`font-bold ${isLightTheme ? 'text-amber-600' : 'text-amber-300'}`}>{mockProfileData.rankMedium}%</span>
                   </div>
                   <div className="w-full bg-amber-500/10 rounded-full h-2">
                     <div className="bg-amber-400 h-2 rounded-full" style={{ width: `${mockProfileData.rankMedium}%` }}></div>
@@ -200,8 +205,8 @@ export default function Profile() {
 
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="font-semibold text-red-400">Hard</span>
-                    <span className="font-bold text-red-300">{mockProfileData.rankHard}%</span>
+                    <span className={`font-semibold ${isLightTheme ? 'text-red-700' : 'text-red-400'}`}>{lang === "RO" ? "Grele" : "Hard"}</span>
+                    <span className={`font-bold ${isLightTheme ? 'text-red-600' : 'text-red-300'}`}>{mockProfileData.rankHard}%</span>
                   </div>
                   <div className="w-full bg-red-500/10 rounded-full h-2">
                     <div className="bg-red-400 h-2 rounded-full" style={{ width: `${mockProfileData.rankHard}%` }}></div>
@@ -210,8 +215,8 @@ export default function Profile() {
 
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="font-semibold text-purple-400">Contest</span>
-                    <span className="font-bold text-purple-300">{mockProfileData.rankContest}%</span>
+                    <span className={`font-semibold ${isLightTheme ? 'text-purple-700' : 'text-purple-400'}`}>{lang === "RO" ? "Concurs" : "Contest"}</span>
+                    <span className={`font-bold ${isLightTheme ? 'text-purple-600' : 'text-purple-300'}`}>{mockProfileData.rankContest}%</span>
                   </div>
                   <div className="w-full bg-purple-500/10 rounded-full h-2">
                     <div className="bg-purple-400 h-2 rounded-full" style={{ width: `${mockProfileData.rankContest}%` }}></div>
@@ -220,7 +225,8 @@ export default function Profile() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {/* badges */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 min-w-0">
               {mockProfileData.badges.map(badge => (
                 <div key={badge} className="p-3 flex items-center justify-center gap-2 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg hover:-translate-y-1 transition-transform cursor-pointer">
                   <span className="text-xs font-bold text-pink-100 text-center">{badge}</span>
@@ -229,9 +235,9 @@ export default function Profile() {
             </div>
 
             {/* heatmap */}
-            <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow">
+            <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow min-w-0">
               <h2 className="text-sm font-bold text-pink-100 mb-4 uppercase tracking-wider">{lang === "RO" ? "Activitate pe zile" : "Activity by Day"}</h2>
-              <div className="overflow-x-auto custom-scrollbar pb-2">
+              <div className="w-full overflow-x-auto custom-scrollbar pb-2">
                 <div className="flex flex-col gap-1.5 min-w-max">
                   
                   <div className="flex gap-1.5">
@@ -273,27 +279,27 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Recent Submission */}
-            <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow mb-8">
+            {/* recent submissions */}
+            <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow mb-8 min-w-0">
               <h2 className="text-sm font-bold text-pink-100 mb-4 uppercase tracking-wider">{lang === "RO" ? "Submisii Recente" : "Recent Submissions"}</h2>
               <div className="flex flex-col gap-2">
                 {Object.entries(mockProfileData.recentSubmissions).map(([problemName, score], index) => {
                   const isAccepted = score === 100.0;
                   
+                  const badgeClasses = isAccepted 
+                    ? (isLightTheme ? "bg-emerald-500/20 text-emerald-700 border-emerald-500/40" : "bg-emerald-500/10 text-emerald-300 border-emerald-500/30")
+                    : (isLightTheme ? "bg-red-500/20 text-red-700 border-red-500/40" : "bg-red-500/10 text-red-300 border-red-500/30");
+
                   return (
                     <div key={index} className="p-3 md:p-4 rounded-xl border border-pink-500/20 bg-pink-500/5 flex justify-between items-center transition-colors hover:bg-pink-500/10">
-                      <div className="min-w-0 pr-2"> {/* min-w-0 asigură că textul lung din titlul problemei nu rupe flexbox-ul */}
+                      <div className="min-w-0 pr-2"> 
                         <Link to={`/problems`} className="text-sm md:text-base font-bold text-pink-100 hover:text-pink-300 hover:underline underline-offset-2 transition-colors line-clamp-1 truncate block">
                           {problemName}
                         </Link>
                       </div>
                       <div className="flex items-center gap-3 shrink-0 ml-2">
                         <span className="text-[11px] font-mono text-pink-300/60 hidden sm:inline-block">Score: {score}</span>
-                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider whitespace-nowrap ${
-                          isAccepted 
-                            ? "bg-emerald-500/10 text-emerald-300 border border-emerald-500/30" 
-                            : "bg-red-500/10 text-red-300 border border-red-500/30"
-                        }`}>
+                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider whitespace-nowrap border ${badgeClasses}`}>
                           {isAccepted ? "Accepted" : "Partial / WA"}
                         </span>
                       </div>
