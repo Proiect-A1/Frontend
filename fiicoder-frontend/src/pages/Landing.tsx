@@ -127,7 +127,14 @@ export default function Landing() {
     const t = translations[lang];
     const { isAuthenticated } = useAuth();
     const { theme } = useTheme();
-    const logoSrc = theme === 'rose' ? '/logo.svg' : '/logo_nord.svg';
+    
+    const themeLogo: Record<string, string> = {
+        rose: '/logo.svg',
+        nord: '/logo_nord.svg',
+        cream: '/logo_cream.svg',
+        sage: '/logo_sage.svg',
+    };
+    const logoSrc = themeLogo[theme] || '/logo.svg';
 
     const [announcements, setAnnouncements] = useState<AnnouncementWithPriority[]>([]);
     const [selectedAnnouncement, setSelectedAnnouncement] =

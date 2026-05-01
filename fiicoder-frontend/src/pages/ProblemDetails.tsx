@@ -81,6 +81,24 @@ const monacoThemes: Record<
     editorBg: "#242933",
     codeBg: "#2e3440",
   },
+  cream: {
+    accent: "#d4a574",
+    accentSecondary: "#b76857",
+    text: "#f5f1e8",
+    textMuted: "#a89080",
+    textSubtle: "#8a7560",
+    editorBg: "#1a1612",
+    codeBg: "#2a2420",
+  },
+  sage: {
+    accent: "#7a9e7e",
+    accentSecondary: "#5a7e78",
+    text: "#e8ebe7",
+    textMuted: "#7a8f7c",
+    textSubtle: "#667069",
+    editorBg: "#1a1e1a",
+    codeBg: "#242823",
+  },
 };
 
 function applyMonacoTheme(monaco: any, themeName: string) {

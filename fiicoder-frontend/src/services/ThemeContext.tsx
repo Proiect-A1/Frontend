@@ -15,8 +15,8 @@ const THEME_STORAGE_KEY = 'fiicoder_theme';
 const THEME_FAVICONS: Record<Theme, string> = {
     rose: '/logo.svg',
     nord: '/logo_nord.svg',
-    cream: '/logo.svg',
-    sage: '/logo_nord.svg',
+    cream: '/logo_cream.svg',
+    sage: '/logo_sage.svg',
 };
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);

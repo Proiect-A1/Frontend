@@ -26,7 +26,13 @@ export default function Navbar() {
   // Ref pentru a putea închide dropdown-ul de teme când dăm click în afara lui
   const themeDropdownRef = useRef<HTMLDivElement>(null);
 
-  const logoSrc = theme === "rose" ? "/logo.svg" : "/logo_nord.svg";
+  const themeLogo: Record<string, string> = {
+    rose: '/logo.svg',
+    nord: '/logo_nord.svg',
+    cream: '/logo_cream.svg',
+    sage: '/logo_sage.svg',
+  };
+  const logoSrc = themeLogo[theme] || '/logo.svg';
 
   const getNavLinkClass = (path: string) => {
     const isActive = location.pathname.startsWith(path);
