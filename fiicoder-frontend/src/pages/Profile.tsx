@@ -10,7 +10,7 @@ const pageVariants = {
 
 // MOCK DATA
 const mockProfileData = {
-  id: "u93593859rft394ut",
+  id: "u42432424u",
   firstName: "Laura",
   lastName: "Zuzu",
   email: "laura.zuzu.lz@gmail.com",
@@ -18,9 +18,9 @@ const mockProfileData = {
   stats: {
     solved: 215,
     submissions: 420,
-    acceptanceRate: "71.2%",
+    acceptanceRate: "51.2%",
     streak: 24,
-    rank: "Master"
+    rank: "Expert"
   },
   difficulty: {
     easy: 120,
@@ -46,7 +46,7 @@ const mockProfileData = {
 // Generare heatmap mock (12 săptămâni x 7 zile)
 const mockHeatmap = Array.from({ length: 84 }).map(() => Math.floor(Math.random() * 5));
 
-// Funcție pentru a genera culorile heatmap-ului adaptiv la TEMĂ (Rose, Nord, Cream, Sage)
+// Funcție pentru a genera culorile heatmap-ului adaptiv la TEMĂ
 const getHeatmapStyle = (level: number) => {
   const baseAccent = "var(--accent)";
   switch (level) {
@@ -67,8 +67,9 @@ export default function Profile() {
   const { lang } = useLanguage();
 
   return (
-    <div className="p-6 md:p-8 w-full max-w-5xl mx-auto theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow mb-8">
+    <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0 mb-8 xl:mb-0">
       <motion.div
+        className="w-full max-w-5xl rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg p-6 md:p-8 card-glow h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
         initial="hidden"
         animate="visible"
         variants={pageVariants}
