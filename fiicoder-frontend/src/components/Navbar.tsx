@@ -97,6 +97,9 @@ export default function Navbar() {
                 <Link to="/classes" className={getNavLinkClass("/classes")}>
                   {lang === "RO" ? "Clase" : "Classes"}
                 </Link>
+                <Link to="/propose" className={getNavLinkClass("/propose")}>
+                  {lang === "RO" ? "Propune" : "Propose"}
+                </Link>
               </>
             )}
 
@@ -257,6 +260,16 @@ export default function Navbar() {
                   className={getNavLinkClass("/classes") + " text-center"}
                 >
                   {lang === "RO" ? "Clase" : "Classes"}
+                </Link>
+              )}
+
+              {isAuthenticated && (
+                <Link
+                  to="/propose"
+                  onClick={closeMenu}
+                  className={getNavLinkClass("/propose") + " text-center"}
+                >
+                  {lang === "RO" ? "Propune o Problemă" : "Propose Problem"}
                 </Link>
               )}
 

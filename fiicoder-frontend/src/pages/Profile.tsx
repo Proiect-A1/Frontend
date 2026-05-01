@@ -72,7 +72,7 @@ export default function Profile() {
   return (
     <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0 mb-8 xl:mb-0">
       <motion.div
-        className="w-full max-w-7xl h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
+        className="w-full max-w-[95vw] h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
         initial="hidden"
         animate="visible"
         variants={pageVariants}

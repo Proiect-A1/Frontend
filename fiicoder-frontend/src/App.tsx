@@ -14,6 +14,7 @@ const ProblemDetails = lazy(() => import("./pages/ProblemDetails"));
 const ClassesHub = lazy(() => import("./pages/ClassesHub"));
 const ClassDetails = lazy(() => import("./pages/ClassDetails"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
+const ProposeProblem = lazy(() => import("./pages/ProposeProblem"));
 
 // Loading component for Suspense fallback
 function PageLoader() {
@@ -45,6 +46,14 @@ function AnimatedRoutes() {
             <Route path="/problems" element={<ProblemList />} />
             <Route path="/problems/:problemTitle" element={<ProblemDetails />} />
             <Route path="/profile" element={<Profile />} />
+            <Route
+              path="/propose"
+              element={
+                <ProtectedRoute>
+                  <ProposeProblem />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/classes"
               element={

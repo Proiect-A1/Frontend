@@ -9,21 +9,19 @@ export default defineConfig({
   ],
   build: {
     target: 'esnext',
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-      },
-    },
+    minify: 'esbuild',
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Separă Monaco Editor în chunk propriu
-          monaco: ['@monaco-editor/react'],
-          // Separă Framer Motion
-          framer: ['framer-motion'],
-          // Libs rămân în vendor
-          vendor: ['react', 'react-dom', 'react-router-dom'],
+        manualChunks: (id) => {
+          if (id.includes('@monaco-editor/react')) {
+            return 'monaco';
+          }
+          if (id.includes('framer-motion')) {
+            return 'framer';
+          }
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
         },
       },
     },

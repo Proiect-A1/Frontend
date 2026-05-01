@@ -11,6 +11,8 @@ import {
     type ProblemProposal,
     type ProblemProposalDetail,
 } from '../services/adminService';
+import { proposeProblemService } from '../services/proposeProblemService';
+import { mockProposals } from '../services/mockProposals';
 import { useAuth } from '../services/AuthContext';
 import { containerVariants, itemVariants, staggerConfig } from '../utils/motionConfig';
 
@@ -62,18 +64,37 @@ export default function AdminPanel() {
             }
 
             if (activeTab === 'proposals') {
-                const data = await adminService.getProposals();
-                if (!cancelled) {
-                    const pending = data.filter((proposal) => proposal.status === 'PENDING');
-                    setProposals(pending);
+                try {
+                    const data = await proposeProblemService.getMyProposals(1, 100);
+                    if (!cancelled) {
+                        const pending = data.filter((proposal) => proposal.status === 'pending');
+                        setProposals(pending as unknown as ProblemProposal[]);
 
-                    if (pending.length > 0 && !selectedProposalId) {
-                        setSelectedProposalId(pending[0].id);
+                        if (pending.length > 0 && !selectedProposalId) {
+                            setSelectedProposalId(pending[0].id);
+                        }
+
+                        if (pending.length === 0) {
+                            setSelectedProposalId(null);
+                            setSelectedProposal(null);
+                        }
                     }
-
-                    if (pending.length === 0) {
-                        setSelectedProposalId(null);
-                        setSelectedProposal(null);
+                } catch (error) {
+                    console.log('Using mock proposals for development...');
+                    // Use mock proposals in development when API is not available
+                    if (!cancelled) {
+                        const mockData = mockProposals.map((proposal, index) => ({
+                            id: `mock_${index}`,
+                            title: proposal.title,
+                            difficulty: proposal.difficulty,
+                            status: 'pending',
+                            submittedAt: new Date().toISOString(),
+                        })) as unknown as ProblemProposal[];
+                        
+                        setProposals(mockData);
+                        if (mockData.length > 0 && !selectedProposalId) {
+                            setSelectedProposalId(mockData[0].id);
+                        }
                     }
                 }
                 return;
@@ -113,8 +134,30 @@ export default function AdminPanel() {
         let cancelled = false;
 
         async function loadProposalDetail() {
-            const data = await adminService.getProblemProposal(proposalId);
-            if (!cancelled) setSelectedProposal(data);
+            try {
+                const data = await adminService.getProblemProposal(proposalId);
+                if (!cancelled) setSelectedProposal(data);
+            } catch (error) {
+                // Use mock proposal data in development
+                if (proposalId.startsWith('mock_')) {
+                    const mockIndex = parseInt(proposalId.replace('mock_', ''));
+                    const mockProposal = mockProposals[mockIndex];
+                    if (mockProposal && !cancelled) {
+                        const fallbackProposal: ProblemProposalDetail = {
+                            id: proposalId,
+                            title: mockProposal.title,
+                            authorUsername: 'Mock User',
+                            description: mockProposal.statement.slice(0, 160),
+                            status: 'PENDING',
+                            createdAt: new Date().toISOString(),
+                            statement: mockProposal.statement,
+                            tags: mockProposal.tags,
+                        };
+
+                        setSelectedProposal(fallbackProposal);
+                    }
+                }
+            }
         }
 
         void loadProposalDetail();
@@ -256,7 +299,7 @@ export default function AdminPanel() {
     return (
         <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
             <motion.div
-                className="w-full max-w-7xl rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg px-5 py-6 md:px-8 md:py-8 card-glow h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
+                className="w-full max-w-[95vw] rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg px-5 py-6 md:px-8 md:py-8 card-glow h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
                 variants={{
                     hidden: { opacity: 0 },
                     visible: { opacity: 1, transition: staggerConfig },

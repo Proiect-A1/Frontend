@@ -28,7 +28,6 @@
     --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%23ffe8f6' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%23ff5eb6'/%3E%3C/svg%3E");
     --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%23ff5eb6' stroke='%231b1d22' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
     --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%23ff5eb6' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%23ffe8f6'/%3E%3C/svg%3E");
-
     --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
     --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
     --mono: ui-monospace, Consolas, monospace;
@@ -65,6 +64,8 @@
     --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%23eceff4' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%2388c0d0'/%3E%3C/svg%3E");
     --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%2388c0d0' stroke='%231b1d22' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
     --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%2388c0d0' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%23eceff4'/%3E%3C/svg%3E");
+
+    color-scheme: dark;
 }
 
 [data-theme='cream'] {
@@ -205,6 +206,66 @@ body {
 .theme-surface-hover:hover {
     background-color: var(--surface-hover);
 }
+
+/* Accent color utilities */
+.accent-text {
+    color: var(--accent);
+}
+
+.accent-border {
+    border-color: var(--accent);
+}
+
+.accent-bg {
+    background-color: var(--accent);
+}
+
+.accent-bg-subtle {
+    background-color: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.accent-bg-light {
+    background-color: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.accent-hover:hover {
+    background-color: color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.accent-ring {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+.accent-ring:focus {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 50%, transparent);
+
+}
+
+/* Adaptive info boxes for proposals - work on all themes */
+.info-box {
+    background-color: color-mix(in srgb, var(--accent) 8%, var(--surface-card));
+    border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    color: var(--text);
+}
+
+.success-box {
+    background-color: color-mix(in srgb, #10b981 8%, var(--surface-card));
+    border-color: color-mix(in srgb, #10b981 35%, transparent);
+    color: var(--text);
+}
+
+.warning-box {
+    background-color: color-mix(in srgb, #f59e0b 8%, var(--surface-card));
+    border-color: color-mix(in srgb, #f59e0b 35%, transparent);
+    color: var(--text);
+}
+
+.error-box {
+    background-color: color-mix(in srgb, #ef4444 8%, var(--surface-card));
+    border-color: color-mix(in srgb, #ef4444 35%, transparent);
+    color: var(--text);
+}
+
 
 .theme-page-aura {
     box-shadow: 0 0 60px color-mix(in srgb, var(--accent) 12%, transparent);
