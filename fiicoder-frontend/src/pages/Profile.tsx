@@ -86,7 +86,8 @@ export default function Profile() {
 
         <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
 
-          <div className="flex flex-col gap-6">
+          {/* Adăugat min-w-0 aici */}
+          <div className="flex flex-col gap-6 min-w-0">
             
             {/* user info card */}
             <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow flex flex-col items-center lg:items-start text-center lg:text-left">
@@ -166,10 +167,11 @@ export default function Profile() {
 
           </div>
 
-          <div className="flex flex-col gap-6">
+          {/* Adăugat min-w-0 aici pe coloana din dreapta! */}
+          <div className="flex flex-col gap-6 min-w-0">
             
             {/* Solved Problems */}
-            <div className="p-6 md:p-8 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-8 items-center">
+            <div className="p-6 md:p-8 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-8 items-center min-w-0">
               <div className="flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-pink-500/20 pb-6 md:pb-0 md:pr-6">
                 <span className="text-[10px] uppercase tracking-widest text-pink-200/60 font-bold mb-2">{lang === "RO" ? "Probleme Rezolvate" : "Problems Solved"}</span>
                 <span className="text-6xl font-black text-pink-300 drop-shadow-md">{mockProfileData.problemsSolved}</span>
@@ -280,8 +282,8 @@ export default function Profile() {
                   
                   return (
                     <div key={index} className="p-3 md:p-4 rounded-xl border border-pink-500/20 bg-pink-500/5 flex justify-between items-center transition-colors hover:bg-pink-500/10">
-                      <div>
-                        <Link to={`/problems`} className="text-sm md:text-base font-bold text-pink-100 hover:text-pink-300 hover:underline underline-offset-2 transition-colors line-clamp-1">
+                      <div className="min-w-0 pr-2"> {/* min-w-0 asigură că textul lung din titlul problemei nu rupe flexbox-ul */}
+                        <Link to={`/problems`} className="text-sm md:text-base font-bold text-pink-100 hover:text-pink-300 hover:underline underline-offset-2 transition-colors line-clamp-1 truncate block">
                           {problemName}
                         </Link>
                       </div>
