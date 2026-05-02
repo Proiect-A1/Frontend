@@ -78,7 +78,7 @@ export default function Profile() {
         variants={pageVariants}
       >
         {/* Main container card - same style as ProblemList */}
-        <div className="h-auto xl:h-[calc(100svh-8.5rem)] overflow-visible xl:overflow-y-auto p-5 theme-surface-card backdrop-blur-lg border-2 border-[var(--accent)]/30 rounded-2xl card-glow custom-scrollbar">
+        <div className="h-auto xl:h-[calc(100svh-8.5rem)] overflow-visible xl:overflow-y-auto p-5 theme-surface-card backdrop-blur-sm border border-[var(--accent)]/50 rounded-2xl card-glow custom-scrollbar">
 
           {/* admin button visible only for admins */}
           {isAdmin && (
@@ -98,7 +98,7 @@ export default function Profile() {
           <div className="flex flex-col gap-6 min-w-0">
             
             {/* user info card */}
-            <div className="p-6 rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card backdrop-blur-lg card-glow flex flex-col items-center lg:items-start text-center lg:text-left">
+            <div className="p-6 rounded-2xl border border-[var(--accent)]/50 theme-surface-card backdrop-blur-sm card-glow flex flex-col items-center lg:items-start text-center lg:text-left">
               <div className="w-24 h-24 mb-4 rounded-full bg-linear-to-br from-[var(--accent)] to-purple-500 flex items-center justify-center text-4xl font-bold text-white uppercase shadow-lg outline-4 outline-offset-4 outline-(--accent) overflow-hidden shrink-0">
                 {mockProfileData.avatarUrl ? (
                   <img src={mockProfileData.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
@@ -130,7 +130,7 @@ export default function Profile() {
             </div>
 
             {/* stats */}
-            <div className="p-6 rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card backdrop-blur-lg card-glow">
+            <div className="p-6 rounded-2xl border border-[var(--accent)]/50 theme-surface-card backdrop-blur-sm card-glow">
               <h2 className="text-sm font-bold text-[var(--text-h)] mb-4 uppercase tracking-wider">{lang === "RO" ? "Statistici" : "Community Stats"}</h2>
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
@@ -149,7 +149,7 @@ export default function Profile() {
             </div>
 
             {/* Languages & Skills Card */}
-            <div className="p-6 rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card backdrop-blur-lg card-glow">
+            <div className="p-6 rounded-2xl border border-[var(--accent)]/50 theme-surface-card backdrop-blur-sm card-glow">
               <div className="mb-6">
                 <h2 className="text-sm font-bold text-[var(--text-h)] mb-3 uppercase tracking-wider">{lang === "RO" ? "Limbaje" : "Languages"}</h2>
                 <div className="flex flex-wrap gap-2">
@@ -179,7 +179,7 @@ export default function Profile() {
           <div className="flex flex-col gap-6 min-w-0 w-full">
             
             {/* number of solved problems of different difficulty levels */}
-            <div className="p-6 md:p-8 rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card backdrop-blur-lg card-glow grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-8 items-center min-w-0">
+            <div className="p-6 md:p-8 rounded-2xl border border-[var(--accent)]/50 theme-surface-card backdrop-blur-sm card-glow grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-8 items-center min-w-0">
               <div className="flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-[var(--accent)]/20 pb-6 md:pb-0 md:pr-6">
                 <span className="text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-bold mb-2">{lang === "RO" ? "Probleme Rezolvate" : "Problems Solved"}</span>
                 <span className="text-6xl font-black accent-text drop-shadow-md">{mockProfileData.problemsSolved}</span>
@@ -231,14 +231,14 @@ export default function Profile() {
             {/* badges */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 min-w-0">
               {mockProfileData.badges.map(badge => (
-                <div key={badge} className="p-3 flex items-center justify-center gap-2 rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card backdrop-blur-lg hover:-translate-y-1 transition-transform cursor-pointer">
+                <div key={badge} className="p-3 flex items-center justify-center gap-2 rounded-2xl border border-[var(--accent)]/50 theme-surface-card backdrop-blur-sm hover:-translate-y-1 transition-transform cursor-pointer">
                   <span className="text-xs font-bold text-[var(--text-h)] text-center">{badge}</span>
                 </div>
               ))}
             </div>
 
             {/* heatmap */}
-            <div className="p-6 rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card backdrop-blur-lg card-glow min-w-0">
+            <div className="p-6 rounded-2xl border border-[var(--accent)]/50 theme-surface-card backdrop-blur-sm card-glow min-w-0">
               <h2 className="text-sm font-bold text-[var(--text-h)] mb-4 uppercase tracking-wider">{lang === "RO" ? "Activitate pe zile" : "Activity by Day"}</h2>
               <div className="w-full overflow-x-auto custom-scrollbar pb-2">
                 <div className="flex flex-col gap-1.5 min-w-max">
@@ -283,7 +283,7 @@ export default function Profile() {
             </div>
 
             {/* recent submissions */}
-            <div className="p-6 rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card backdrop-blur-lg card-glow mb-8 min-w-0">
+            <div className="p-6 rounded-2xl border border-[var(--accent)]/50 theme-surface-card backdrop-blur-sm card-glow mb-8 min-w-0">
               <h2 className="text-sm font-bold text-[var(--text-h)] mb-4 uppercase tracking-wider">{lang === "RO" ? "Submisii Recente" : "Recent Submissions"}</h2>
               <div className="flex flex-col gap-2">
                 {Object.entries(mockProfileData.recentSubmissions).map(([problemName, score], index) => {

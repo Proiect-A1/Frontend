@@ -111,7 +111,7 @@ export default function Login() {
 
   return (
     <motion.div
-      className="p-8 w-full max-w-150 mx-auto theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow"
+      className="p-8 w-full max-w-150 mx-auto theme-surface-card backdrop-blur-sm border border-[var(--accent)]/50 rounded-2xl card-glow"
       initial="hidden"
       animate="visible"
       exit="exit"

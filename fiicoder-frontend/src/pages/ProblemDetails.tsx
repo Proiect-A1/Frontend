@@ -285,7 +285,7 @@ export default function ProblemDetails() {
 
   if (error || !problem) {
     return (
-      <div className="w-full text-center p-8 text-red-400 theme-surface-card backdrop-blur-lg border-2 border-red-500/30 rounded-2xl">
+      <div className="w-full text-center p-8 text-red-400 theme-surface-card backdrop-blur-sm border-2 border-red-500/30 rounded-2xl">
         <h2 className="text-xl font-bold mb-2">Eroare</h2>
         <p>{error || "Problema nu a fost găsită."}</p>
         <Link
@@ -301,7 +301,7 @@ export default function ProblemDetails() {
   return (
     <div className="w-full flex flex-col gap-6">
       <div className="grid gap-6 xl:grid-cols-3">
-        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-lg border-2 border-[var(--accent)]/30 rounded-2xl card-glow custom-scrollbar">
+        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-sm border border-[var(--accent)]/50 rounded-2xl card-glow custom-scrollbar">
           <p className="text-xs font-semibold uppercase tracking-wider accent-text">
             {lang === "RO" ? "Problemă: " : "Problem: "} {problem.title}
           </p>
@@ -399,7 +399,7 @@ export default function ProblemDetails() {
           </div>
         </div>
 
-        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-lg border-2 border-[var(--accent)]/30 rounded-2xl card-glow custom-scrollbar flex flex-col">
+        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-sm border border-[var(--accent)]/50 rounded-2xl card-glow custom-scrollbar flex flex-col">
           {isAuthenticated ? (
             <div className="flex-1 flex flex-col h-full">
               <div className="flex items-center justify-between mb-6 shrink-0">
@@ -459,7 +459,7 @@ export default function ProblemDetails() {
                     onMount={handleEditorMount}
                     loading={
                       <div className="flex items-center justify-center h-full">
-                        <div className="animate-spin w-8 h-8 border-2 border-[var(--accent)]/30 border-t-[var(--accent)] rounded-full" />
+                        <div className="animate-spin w-8 h-8 border border-[var(--accent)]/50 border-t-[var(--accent)] rounded-full" />
                       </div>
                     }
                     options={{
@@ -493,7 +493,7 @@ export default function ProblemDetails() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full gap-5 py-12">
-              <div className="shrink-0 w-16 h-16 rounded-full bg-[var(--accent)]/10 border-2 border-[var(--accent)]/30 flex items-center justify-center">
+              <div className="shrink-0 w-16 h-16 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/50 flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="w-7 h-7 text-[var(--accent)]/70"
@@ -529,7 +529,7 @@ export default function ProblemDetails() {
           )}
         </div>
 
-        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-lg border-2 border-[var(--accent)]/30 rounded-2xl card-glow custom-scrollbar">
+        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-sm border border-[var(--accent)]/50 rounded-2xl card-glow custom-scrollbar">
           <h2 className="text-xl font-bold text-[var(--text)] mb-2">Test Panel</h2>
           <div className="page-line-horizontal" />
           <p className="text-[var(--text)]">

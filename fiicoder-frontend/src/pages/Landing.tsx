@@ -82,7 +82,7 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                     >
                         <div
                             onClick={(e) => e.stopPropagation()}
-                            className={`pointer-events-auto w-full max-w-lg rounded-2xl border-2 backdrop-blur-lg p-6 md:p-8 shadow-2xl ${
+                            className={`pointer-events-auto w-full max-w-lg rounded-2xl border-2 backdrop-blur-sm p-6 md:p-8 shadow-2xl ${
                                 announcement.priority === 'high'
                                     ? 'border-red-500 bg-red-950 text-red-50'
                                     : 'border-[var(--accent)]/40 theme-surface-card'
@@ -167,12 +167,12 @@ export default function Landing() {
     return (
         <div className="w-full flex justify-center h-auto xl:h-full">
             <motion.div
-                className="w-full max-w-[95vw] rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card px-0 py-0 card-glow h-full overflow-hidden xl:h-full relative flex flex-col"
+                className="w-full max-w-[95vw] rounded-2xl border border-[var(--accent)]/50 theme-surface-card px-0 py-0 card-glow h-full overflow-hidden xl:h-full relative flex flex-col"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
             >
-                <div className="w-full rounded-2xl backdrop-blur-lg px-5 py-6 md:px-8 md:py-8 flex-1 overflow-y-auto custom-scrollbar">
+                <div className="w-full rounded-2xl backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 flex-1 overflow-y-auto custom-scrollbar">
                     {/* Hero Section */}
                     <div className="text-center mb-8 md:mb-10">
                         <motion.div variants={itemVariants} className="mb-4">

@@ -102,9 +102,9 @@ export default function FilterSidebar({
             initial="hidden"
             animate="visible"
             variants={{ visible: { transition: staggerConfig } }}
-            className="h-auto overflow-visible xl:h-fit xl:max-h-[calc(100svh-8.5rem)] xl:overflow-y-auto p-5 theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow xl:sticky xl:top-0 xl:col-start-1 custom-scrollbar"
+            className="h-auto overflow-visible xl:h-fit xl:max-h-[calc(100svh-8.5rem)] xl:overflow-y-auto p-5 theme-surface-card backdrop-blur-sm border border-[var(--accent)]/50 rounded-2xl card-glow xl:sticky xl:top-0 xl:col-start-1 custom-scrollbar"
         >
-            <motion.h2 variants={itemVariants} className="text-xl font-bold text-pink-200 mb-2">
+            <motion.h2 variants={itemVariants} className="text-xl font-bold text-[var(--text-h)] mb-2">
                 {t.filterTitle}
             </motion.h2>
             <div className="page-line-horizontal" />
@@ -113,7 +113,7 @@ export default function FilterSidebar({
                 <motion.div variants={itemVariants}>
                     <label
                         htmlFor="problem-search"
-                        className="mb-1 block text-sm font-semibold text-pink-200"
+                        className="mb-1 block text-sm font-semibold text-[var(--text-h)]"
                     >
                         {t.searchLabel}
                     </label>
@@ -129,7 +129,7 @@ export default function FilterSidebar({
                             if (e.key === 'Enter') handleSearchSubmit();
                         }}
                         placeholder={lang === 'RO' ? 'ex: Problema 3' : 'ex: Problem 3'}
-                        className="w-full rounded-xl border border-pink-500/30 theme-surface-input px-3 py-2 text-sm text-pink-100 placeholder:text-pink-200/40 outline-none transition hover:border-pink-400"
+                        className="w-full rounded-xl border border-[var(--accent)]/30 theme-surface-input px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] outline-none transition hover:border-[var(--accent)]"
                     />
 
                     {/* mesaj eroare inline */}
@@ -138,14 +138,14 @@ export default function FilterSidebar({
 
                 {/* dropdown dificultate */}
                 <motion.div variants={itemVariants}>
-                    <label className="mb-1 block text-sm font-semibold text-pink-200">
+                    <label className="mb-1 block text-sm font-semibold text-[var(--text-h)]">
                         {t.difficultyLabel}
                     </label>
                     <div className="relative w-full">
                         <button
                             type="button"
                             onClick={() => setIsOpen(!isOpen)}
-                            className="w-full flex items-center justify-between rounded-xl border border-pink-500/30 theme-surface-input px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400"
+                            className="w-full flex items-center justify-between rounded-xl border border-[var(--accent)]/30 theme-surface-input px-3 py-2 text-sm text-[var(--text)] outline-none transition hover:border-[var(--accent)]"
                         >
                             {getOptionLabel(difficultyFilter)}
                             <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>▼</motion.span>
@@ -158,7 +158,7 @@ export default function FilterSidebar({
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.12 }}
-                                    className="absolute z-50 mt-1 w-full theme-surface-dropdown border border-pink-500/40 rounded-xl shadow-2xl overflow-hidden"
+                                    className="absolute z-50 mt-1 w-full theme-surface-dropdown border border-[var(--accent)]/40 rounded-xl shadow-2xl overflow-hidden"
                                 >
                                     {difficultyOptions.map((option) => (
                                         <button
@@ -168,7 +168,7 @@ export default function FilterSidebar({
                                                 setDifficultyFilter(option);
                                                 setIsOpen(false);
                                             }}
-                                            className="w-full text-left px-4 py-2 text-sm text-pink-100 hover:bg-pink-500/20 transition-colors"
+                                            className="w-full text-left px-4 py-2 text-sm text-[var(--text)] hover:bg-[var(--accent)]/20 transition-colors"
                                         >
                                             {getOptionLabel(option)}
                                         </button>
@@ -181,7 +181,7 @@ export default function FilterSidebar({
 
                 {/* tag-uri */}
                 <motion.div variants={itemVariants}>
-                    <label className="mb-1 block text-sm font-semibold text-pink-200">
+                    <label className="mb-1 block text-sm font-semibold text-[var(--text)]">
                         {t.tagsLabel}
                     </label>
                     {tagsLoading ? (
@@ -189,12 +189,12 @@ export default function FilterSidebar({
                             {[1, 2, 3].map((i) => (
                                 <div
                                     key={i}
-                                    className="h-7 w-16 rounded-full bg-pink-500/10 animate-pulse"
+                                    className="h-7 w-16 rounded-full bg-[var(--accent)]/10 animate-pulse"
                                 />
                             ))}
                         </div>
                     ) : availableTags.length === 0 ? (
-                        <p className="text-xs text-pink-100/50">{t.noTagsAvailable}</p>
+                        <p className="text-xs text-[var(--text-muted)]">{t.noTagsAvailable}</p>
                     ) : (
                         <div className="flex flex-wrap gap-2">
                             {availableTags.map((tag) => {
@@ -206,8 +206,8 @@ export default function FilterSidebar({
                                         onClick={() => toggleTag(tag.title)}
                                         className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-200 ${
                                             isSelected
-                                                ? 'bg-pink-500/30 border-pink-400 text-pink-100 shadow-[0_0_12px_rgba(236,72,153,0.3)]'
-                                                : 'bg-pink-500/5 border-pink-500/25 text-pink-200/70 hover:border-pink-400/60 hover:bg-pink-500/15'
+                                                ? 'bg-[var(--accent)]/30 border-[var(--accent)] text-[var(--text-h)] shadow-[0_0_12px_color-mix(in_srgb,var(--accent)_30%,transparent)]'
+                                                : 'bg-[var(--accent)]/5 border-[var(--accent)]/25 text-[var(--text-muted)] hover:border-[var(--accent)]/60 hover:bg-[var(--accent)]/15'
                                         }`}
                                     >
                                         {isSelected && '✓ '}
@@ -230,13 +230,13 @@ export default function FilterSidebar({
                         setSearchError(null);
                         setIsOpen(false);
                     }}
-                    className="w-full rounded-xl border border-pink-400/50 bg-pink-500/10 px-3 py-2 text-sm font-semibold text-pink-100 outline-none transition-colors hover:border-pink-400 hover:bg-pink-500/30 hover:-translate-y-0.5"
+                    className="w-full rounded-xl border border-[var(--accent)]/50 bg-[var(--accent)]/10 px-3 py-2 text-sm font-semibold text-[var(--text-h)] outline-none transition-colors hover:border-[var(--accent)] hover:bg-[var(--accent)]/30 hover:-translate-y-0.5"
                 >
                     {t.clearFilters}
                 </motion.button>
 
                 {/* counter for search results */}
-                <motion.p variants={itemVariants} className="text-xs text-pink-100/70">
+                <motion.p variants={itemVariants} className="text-xs text-[var(--text-muted)]">
                     {lang === 'RO'
                         ? `Afișate ${filteredCount} din ${totalCount} probleme`
                         : `Showing ${filteredCount} out of ${totalCount} problems`}

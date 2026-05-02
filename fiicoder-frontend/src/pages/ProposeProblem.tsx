@@ -66,14 +66,14 @@ export default function ProposeProblem() {
   return (
     <div className="w-full flex justify-center items-start min-h-screen py-2 px-2">
       <motion.div
-        className="w-full max-w-[95vw] rounded-2xl border-2 accent-border bg-theme-surface-card px-4 py-6 card-glow overflow-auto propose-problem-root"
+        className="w-full max-w-[95vw] rounded-2xl border border-[var(--accent)]/50 theme-surface-card backdrop-blur-sm px-4 py-6 card-glow overflow-auto custom-scrollbar"
         style={{ maxHeight: '90vh', marginTop: '-12px' }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
         {/* Header cu titlu stânga și tabs dreapta */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-          <h1 className="text-3xl font-bold text-theme-text">Propune o Problemă</h1>
+          <h1 className="text-3xl font-bold text-[var(--text-h)]">Propune o Problemă</h1>
 
           {/* Tabs Navigation */}
           <div className="flex flex-wrap gap-2">
@@ -82,10 +82,10 @@ export default function ProposeProblem() {
                 key={tab.value}
                 type="button"
                 onClick={() => setActiveTab(tab.value)}
-                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                className={`px-4 py-2 rounded-xl font-semibold text-sm transition-all duration-200 border ${
                   activeTab === tab.value
-                    ? "accent-bg-subtle accent-text accent-border border"
-                    : "text-theme-text-muted hover:text-theme-text hover:accent-hover"
+                    ? "bg-[var(--accent)]/30 border-[var(--accent)] text-[var(--text-h)] shadow-[0_0_12px_color-mix(in_srgb,var(--accent)_30%,transparent)]"
+                    : "bg-[var(--accent)]/5 border-[var(--accent)]/25 text-[var(--text-muted)] hover:border-[var(--accent)]/60 hover:bg-[var(--accent)]/15 hover:text-[var(--text-h)]"
                 }`}
               >
                 {tab.label}
@@ -93,6 +93,8 @@ export default function ProposeProblem() {
             ))}
           </div>
         </div>
+
+        <div className="page-line-horizontal mb-6" />
 
         {/* Status Messages */}
         {submitStatus === "success" && (
@@ -119,18 +121,18 @@ export default function ProposeProblem() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 justify-end pt-6 border-t accent-border">
+            <div className="flex gap-4 justify-end pt-6 border-t border-[var(--accent)]/30">
               <button
                 type="button"
                 onClick={() => methods.reset()}
-                className="px-6 py-2 border accent-border rounded-lg text-theme-text hover:accent-hover transition-colors font-semibold"
+                className="px-6 py-2 rounded-xl border border-[var(--accent)]/50 bg-[var(--accent)]/10 text-[var(--text-h)] font-semibold transition-all duration-200 hover:bg-[var(--accent)]/30 hover:border-[var(--accent)] hover:-translate-y-0.5 outline-none"
               >
                 Resetează
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-8 py-2 accent-bg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-semibold transition-all"
+                className="px-8 py-2 rounded-xl bg-[var(--accent)] text-[#090812] font-bold transition-all duration-200 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 shadow-[0_0_15px_color-mix(in_srgb,var(--accent)_50%,transparent)]"
               >
                 {isSubmitting ? "Se trimite..." : "Trimite Propunere"}
               </button>
