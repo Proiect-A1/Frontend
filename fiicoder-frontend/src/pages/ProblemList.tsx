@@ -106,15 +106,15 @@ export default function ProblemList() {
         totalCount={problems.length}
       />
 
-      <section className="h-auto xl:h-[calc(100svh-8.5rem)] overflow-visible xl:overflow-y-auto p-5 theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow xl:col-start-2 custom-scrollbar">
-        <h1 className="text-3xl font-bold text-pink-200 mb-2">
+      <section className="h-auto xl:h-[calc(100svh-8.5rem)] overflow-visible xl:overflow-y-auto p-5 theme-surface-card backdrop-blur-lg border-2 border-[var(--accent)]/30 rounded-2xl card-glow xl:col-start-2 custom-scrollbar">
+        <h1 className="text-3xl font-bold text-[var(--text)] mb-2">
           {t.problemsTitle}
         </h1>
         <div className="page-line-horizontal" />
 
         <div className="">
           {loading && (
-            <p className="text-pink-200">
+            <p className="text-[var(--text)]">
               {lang === "RO"
                 ? "Se încarcă problemele..."
                 : "Loading problems..."}
@@ -123,7 +123,7 @@ export default function ProblemList() {
           {error && <p className="text-red-400">{error}</p>}
 
           {!loading && !error && filteredProblems.length === 0 && (
-            <p className="text-sm text-pink-100/85 theme-surface-muted p-4 rounded-xl border-2 border-pink-500/25">
+            <p className="text-sm text-[var(--text-h)] theme-surface-muted p-4 rounded-xl border-2 border-[var(--accent)]/25">
               {t.noProblemsFound}
             </p>
           )}
@@ -139,13 +139,13 @@ export default function ProblemList() {
                 >
                   <Link
                     to={`/problems/${problem.title}`}
-                    className="block rounded-xl border border-pink-500/25 theme-surface-muted p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-pink-400 group cursor-pointer"
+                    className="block rounded-xl border border-[var(--accent)]/25 theme-surface-muted p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--accent)] group cursor-pointer"
                   >
                     <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-lg font-semibold text-pink-200 underline decoration-2 decoration-pink-500/60 underline-offset-4 transition group-hover:text-pink-100 group-hover:decoration-pink-300 group-hover:decoration-3">
+                      <h3 className="text-lg font-semibold text-[var(--text)] underline decoration-2 decoration-[var(--accent)]/60 underline-offset-4 transition group-hover:text-[var(--text-h)] group-hover:decoration-[var(--accent)] group-hover:decoration-3">
                         {problem.title}
                       </h3>
-                      <span className="rounded-full border border-pink-400/40 bg-pink-500/10 px-2.5 py-1 text-xs font-semibold text-pink-100">
+                      <span className="rounded-full border border-[var(--accent)]/40 bg-[var(--accent)]/10 px-2.5 py-1 text-xs font-semibold text-[var(--text-h)]">
                         {getDifficultyLabel(lang, problem.difficulty)}
                       </span>
                     </div>
@@ -155,7 +155,7 @@ export default function ProblemList() {
                         {problem.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="px-2 py-0.5 rounded-full text-[10px] font-semibold border border-pink-500/20 bg-pink-500/5 text-pink-300/80"
+                            className="px-2 py-0.5 rounded-full text-[10px] font-semibold border border-[var(--accent)]/20 bg-[var(--accent)]/5 text-[var(--text-muted)]"
                           >
                             {tag}
                           </span>
@@ -179,11 +179,11 @@ export default function ProblemList() {
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={isLoadingMore}
-                className="group relative flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-pink-400/40 bg-pink-500/10 text-pink-100 font-bold text-sm transition-all duration-200 hover:bg-pink-500/20 hover:border-pink-400 hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
+                className="group relative flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-[var(--accent)]/40 bg-[var(--accent)]/10 text-[var(--text-h)] font-bold text-sm transition-all duration-200 hover:bg-[var(--accent)]/20 hover:border-[var(--accent)] hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
               >
                 {isLoadingMore ? (
                   <>
-                    <div className="w-4 h-4 rounded-full border-2 border-pink-200/30 border-t-pink-200 animate-spin" />
+                    <div className="w-4 h-4 rounded-full border-2 border-[var(--text)]/30 border-t-[var(--text)] animate-spin" />
                     {lang === "RO" ? "Se încarcă..." : "Loading..."}
                   </>
                 ) : (
@@ -199,7 +199,7 @@ export default function ProblemList() {
           )}
 
           {!loading && !hasMore && problems.length > 0 && (
-            <div className="mt-8 mb-4 text-center text-xs text-pink-300/50 uppercase tracking-widest font-bold">
+            <div className="mt-8 mb-4 text-center text-xs text-[var(--text-subtle)] uppercase tracking-widest font-bold">
               {lang === "RO" ? "Ai ajuns la finalul listei" : "End of the list"}
             </div>
           )}

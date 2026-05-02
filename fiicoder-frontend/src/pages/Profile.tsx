@@ -82,7 +82,7 @@ export default function Profile() {
           <div className="mb-4 flex justify-end">
             <Link
                to="/admin"
-               className="px-6 py-2 rounded-full border border-pink-400/60 text-xs font-bold text-pink-100 transition hover:bg-pink-500/15 hover:-translate-y-0.5 bg-pink-500/10"
+               className="px-6 py-2 rounded-full border border-[var(--accent)]/60 text-xs font-bold text-[var(--text-h)] transition hover:bg-[var(--accent)]/15 hover:-translate-y-0.5 bg-[var(--accent)]/10"
             >
               {lang === "RO" ? "Panou Administrare" : "Admin Dashboard"}
             </Link>
@@ -95,31 +95,31 @@ export default function Profile() {
           <div className="flex flex-col gap-6 min-w-0">
             
             {/* user info card */}
-            <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow flex flex-col items-center lg:items-start text-center lg:text-left">
-              <div className="w-24 h-24 mb-4 rounded-full bg-linear-to-br from-pink-400 to-purple-500 flex items-center justify-center text-4xl font-bold text-white uppercase shadow-lg outline-4 outline-offset-4 outline-(--accent) overflow-hidden shrink-0">
+            <div className="p-6 rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card backdrop-blur-lg card-glow flex flex-col items-center lg:items-start text-center lg:text-left">
+              <div className="w-24 h-24 mb-4 rounded-full bg-linear-to-br from-[var(--accent)] to-purple-500 flex items-center justify-center text-4xl font-bold text-white uppercase shadow-lg outline-4 outline-offset-4 outline-(--accent) overflow-hidden shrink-0">
                 {mockProfileData.avatarUrl ? (
                   <img src={mockProfileData.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
                   (username?.charAt(0) || mockProfileData.firstName.charAt(0) || "L")
                 )}
               </div>
-              <h1 className="text-2xl font-bold text-pink-100">{mockProfileData.firstName} {mockProfileData.lastName}</h1>
-              <p className="text-pink-300/60 font-mono text-sm mb-4">@{mockProfileData.username}</p>
-              
-              <div className="w-full border-t border-pink-500/20 my-2"></div>
-              
-              <div className="w-full flex flex-col gap-2 mt-2 text-sm text-pink-200/80">
+              <h1 className="text-2xl font-bold text-[var(--text-h)]">{mockProfileData.firstName} {mockProfileData.lastName}</h1>
+              <p className="text-[var(--text-subtle)] font-mono text-sm mb-4">@{mockProfileData.username}</p>
+
+              <div className="w-full border-t border-[var(--accent)]/20 my-2"></div>
+
+              <div className="w-full flex flex-col gap-2 mt-2 text-sm text-[var(--text)]">
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold text-pink-300/60">Email</span>
+                  <span className="font-semibold text-[var(--text-muted)]">Email</span>
                   <span className="truncate ml-2">{mockProfileData.email}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold text-pink-300/60">{lang === "RO" ? "Membru din" : "Joined"}</span>
+                  <span className="font-semibold text-[var(--text-muted)]">{lang === "RO" ? "Membru din" : "Joined"}</span>
                   <span>{formatJoinDate(mockProfileData.createdAt)}</span>
                 </div>
                 <div className="flex justify-between items-center mt-2">
-                  <span className="font-semibold text-pink-300/60">Role</span>
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase border border-pink-500/30 bg-pink-500/10 text-pink-200">
+                  <span className="font-semibold text-[var(--text-muted)]">Role</span>
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase border border-[var(--accent)]/30 bg-[var(--accent)]/10 text-[var(--text)]">
                     {isAdmin ? "Admin" : "User"}
                   </span>
                 </div>
@@ -127,42 +127,42 @@ export default function Profile() {
             </div>
 
             {/* stats */}
-            <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow">
-              <h2 className="text-sm font-bold text-pink-100 mb-4 uppercase tracking-wider">{lang === "RO" ? "Statistici" : "Community Stats"}</h2>
+            <div className="p-6 rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card backdrop-blur-lg card-glow">
+              <h2 className="text-sm font-bold text-[var(--text-h)] mb-4 uppercase tracking-wider">{lang === "RO" ? "Statistici" : "Community Stats"}</h2>
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-pink-200/70">{lang === "RO" ? "Total Submisii" : "Total Submissions"}</span>
-                  <span className="font-bold text-pink-100">{mockProfileData.submissions}</span>
+                  <span className="text-sm text-[var(--text-muted)]">{lang === "RO" ? "Total Submisii" : "Total Submissions"}</span>
+                  <span className="font-bold text-[var(--text-h)]">{mockProfileData.submissions}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-pink-200/70">{lang === "RO" ? "Rată de Acceptare" : "Acceptance Rate"}</span>
-                  <span className="font-bold text-pink-100">{mockProfileData.acceptanceRate}%</span>
+                  <span className="text-sm text-[var(--text-muted)]">{lang === "RO" ? "Rată de Acceptare" : "Acceptance Rate"}</span>
+                  <span className="font-bold text-[var(--text-h)]">{mockProfileData.acceptanceRate}%</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-pink-200/70">{lang === "RO" ? "Zile Consecutive" : "Daily Streak"}</span>
+                  <span className="text-sm text-[var(--text-muted)]">{lang === "RO" ? "Zile Consecutive" : "Daily Streak"}</span>
                   <span className="font-bold text-orange-400">{mockProfileData.streak} 🔥</span>
                 </div>
               </div>
             </div>
 
             {/* Languages & Skills Card */}
-            <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow">
+            <div className="p-6 rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card backdrop-blur-lg card-glow">
               <div className="mb-6">
-                <h2 className="text-sm font-bold text-pink-100 mb-3 uppercase tracking-wider">{lang === "RO" ? "Limbaje" : "Languages"}</h2>
+                <h2 className="text-sm font-bold text-[var(--text-h)] mb-3 uppercase tracking-wider">{lang === "RO" ? "Limbaje" : "Languages"}</h2>
                 <div className="flex flex-wrap gap-2">
                   {mockProfileData.mostUsedLanguages.map(langItem => (
-                    <span key={langItem} className="px-3 py-1 rounded-full text-xs font-semibold border border-pink-500/20 bg-pink-500/5 text-pink-100">
+                    <span key={langItem} className="px-3 py-1 rounded-full text-xs font-semibold border border-[var(--accent)]/20 bg-[var(--accent)]/5 text-[var(--text-h)]">
                       {langItem}
                     </span>
                   ))}
                 </div>
               </div>
-              
+
               <div>
-                <h2 className="text-sm font-bold text-pink-100 mb-3 uppercase tracking-wider">Skills</h2>
+                <h2 className="text-sm font-bold text-[var(--text-h)] mb-3 uppercase tracking-wider">Skills</h2>
                 <div className="flex flex-wrap gap-2">
                   {mockProfileData.skillBreakdownTags.map(skill => (
-                    <span key={skill} className="px-2.5 py-1 rounded-md text-[10px] font-bold border border-pink-500/30 bg-pink-500/10 text-pink-200 hover:bg-pink-500/20 transition-colors cursor-pointer">
+                    <span key={skill} className="px-2.5 py-1 rounded-md text-[10px] font-bold border border-[var(--accent)]/30 bg-[var(--accent)]/10 text-[var(--text)] hover:bg-[var(--accent)]/20 transition-colors cursor-pointer">
                       {skill}
                     </span>
                   ))}
@@ -176,10 +176,10 @@ export default function Profile() {
           <div className="flex flex-col gap-6 min-w-0 w-full">
             
             {/* number of solved problems of different difficulty levels */}
-            <div className="p-6 md:p-8 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-8 items-center min-w-0">
-              <div className="flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-pink-500/20 pb-6 md:pb-0 md:pr-6">
-                <span className="text-[10px] uppercase tracking-widest text-pink-200/60 font-bold mb-2">{lang === "RO" ? "Probleme Rezolvate" : "Problems Solved"}</span>
-                <span className="text-6xl font-black text-pink-300 drop-shadow-md">{mockProfileData.problemsSolved}</span>
+            <div className="p-6 md:p-8 rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card backdrop-blur-lg card-glow grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-8 items-center min-w-0">
+              <div className="flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-[var(--accent)]/20 pb-6 md:pb-0 md:pr-6">
+                <span className="text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-bold mb-2">{lang === "RO" ? "Probleme Rezolvate" : "Problems Solved"}</span>
+                <span className="text-6xl font-black accent-text drop-shadow-md">{mockProfileData.problemsSolved}</span>
               </div>
 
               <div className="flex flex-col gap-4">
@@ -228,23 +228,23 @@ export default function Profile() {
             {/* badges */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 min-w-0">
               {mockProfileData.badges.map(badge => (
-                <div key={badge} className="p-3 flex items-center justify-center gap-2 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg hover:-translate-y-1 transition-transform cursor-pointer">
-                  <span className="text-xs font-bold text-pink-100 text-center">{badge}</span>
+                <div key={badge} className="p-3 flex items-center justify-center gap-2 rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card backdrop-blur-lg hover:-translate-y-1 transition-transform cursor-pointer">
+                  <span className="text-xs font-bold text-[var(--text-h)] text-center">{badge}</span>
                 </div>
               ))}
             </div>
 
             {/* heatmap */}
-            <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow min-w-0">
-              <h2 className="text-sm font-bold text-pink-100 mb-4 uppercase tracking-wider">{lang === "RO" ? "Activitate pe zile" : "Activity by Day"}</h2>
+            <div className="p-6 rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card backdrop-blur-lg card-glow min-w-0">
+              <h2 className="text-sm font-bold text-[var(--text-h)] mb-4 uppercase tracking-wider">{lang === "RO" ? "Activitate pe zile" : "Activity by Day"}</h2>
               <div className="w-full overflow-x-auto custom-scrollbar pb-2">
                 <div className="flex flex-col gap-1.5 min-w-max">
-                  
+
                   <div className="flex gap-1.5">
                     {mockHeatmap.map((level, i) => (
-                      <div 
-                        key={i} 
-                        className="w-4 h-4 rounded-[3px] transition-transform hover:scale-125 cursor-pointer border border-pink-500/5 shrink-0"
+                      <div
+                        key={i}
+                        className="w-4 h-4 rounded-[3px] transition-transform hover:scale-125 cursor-pointer border border-[var(--accent)]/5 shrink-0"
                         style={getHeatmapStyle(level)}
                         title={`${level * 2} submissions`}
                       />
@@ -256,9 +256,9 @@ export default function Profile() {
                       let dayLabel = "";
                       if (i % 14 === 0) dayLabel = "1";
                       else if (i % 14 === 7) dayLabel = "14";
-                      
+
                       return (
-                        <div key={`label-${i}`} className="w-4 text-[9px] font-semibold text-pink-300/50 text-center shrink-0 flex items-start justify-center">
+                        <div key={`label-${i}`} className="w-4 text-[9px] font-semibold text-[var(--text-subtle)] text-center shrink-0 flex items-start justify-center">
                           {dayLabel}
                         </div>
                       );
@@ -267,8 +267,8 @@ export default function Profile() {
 
                 </div>
               </div>
-              
-              <div className="mt-2 flex items-center justify-end gap-2 text-xs text-pink-300/50 font-semibold">
+
+              <div className="mt-2 flex items-center justify-end gap-2 text-xs text-[var(--text-subtle)] font-semibold">
                 <span>Less</span>
                 <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(0)} />
                 <div className="w-3 h-3 rounded-[2px]" style={getHeatmapStyle(1)} />
@@ -280,25 +280,25 @@ export default function Profile() {
             </div>
 
             {/* recent submissions */}
-            <div className="p-6 rounded-2xl border-2 border-pink-500/30 theme-surface-card backdrop-blur-lg card-glow mb-8 min-w-0">
-              <h2 className="text-sm font-bold text-pink-100 mb-4 uppercase tracking-wider">{lang === "RO" ? "Submisii Recente" : "Recent Submissions"}</h2>
+            <div className="p-6 rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card backdrop-blur-lg card-glow mb-8 min-w-0">
+              <h2 className="text-sm font-bold text-[var(--text-h)] mb-4 uppercase tracking-wider">{lang === "RO" ? "Submisii Recente" : "Recent Submissions"}</h2>
               <div className="flex flex-col gap-2">
                 {Object.entries(mockProfileData.recentSubmissions).map(([problemName, score], index) => {
                   const isAccepted = score === 100.0;
-                  
-                  const badgeClasses = isAccepted 
+
+                  const badgeClasses = isAccepted
                     ? (isLightTheme ? "bg-emerald-500/20 text-emerald-700 border-emerald-500/40" : "bg-emerald-500/10 text-emerald-300 border-emerald-500/30")
                     : (isLightTheme ? "bg-red-500/20 text-red-700 border-red-500/40" : "bg-red-500/10 text-red-300 border-red-500/30");
 
                   return (
-                    <div key={index} className="p-3 md:p-4 rounded-xl border border-pink-500/20 bg-pink-500/5 flex justify-between items-center transition-colors hover:bg-pink-500/10">
-                      <div className="min-w-0 pr-2"> 
-                        <Link to={`/problems`} className="text-sm md:text-base font-bold text-pink-100 hover:text-pink-300 hover:underline underline-offset-2 transition-colors line-clamp-1 truncate block">
+                    <div key={index} className="p-3 md:p-4 rounded-xl border border-[var(--accent)]/20 bg-[var(--accent)]/5 flex justify-between items-center transition-colors hover:bg-[var(--accent)]/10">
+                      <div className="min-w-0 pr-2">
+                        <Link to={`/problems`} className="text-sm md:text-base font-bold text-[var(--text-h)] hover:text-[var(--accent)] hover:underline underline-offset-2 transition-colors line-clamp-1 truncate block">
                           {problemName}
                         </Link>
                       </div>
                       <div className="flex items-center gap-3 shrink-0 ml-2">
-                        <span className="text-[11px] font-mono text-pink-300/60 hidden sm:inline-block">Score: {score}</span>
+                        <span className="text-[11px] font-mono text-[var(--text-subtle)] hidden sm:inline-block">Score: {score}</span>
                         <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider whitespace-nowrap border ${badgeClasses}`}>
                           {isAccepted ? "Accepted" : "Partial / WA"}
                         </span>

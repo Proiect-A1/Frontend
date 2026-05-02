@@ -85,30 +85,30 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                             className={`pointer-events-auto w-full max-w-lg rounded-2xl border-2 backdrop-blur-lg p-6 md:p-8 shadow-2xl ${
                                 announcement.priority === 'high'
                                     ? 'border-red-500/40 bg-red-500/10'
-                                    : 'border-pink-500/40 theme-surface-card'
+                                    : 'border-[var(--accent)]/40 theme-surface-card'
                             }`}
                         >
                             <div className="flex items-start justify-between gap-4 mb-4">
                                 <div className="text-4xl shrink-0">{announcement.icon}</div>
                                 {announcement.priority === 'high' && (
-                                    <span className="shrink-0 px-3 py-1 rounded-full bg-red-500/30 text-red-300 text-xs font-bold">
+                                    <span className="shrink-0 px-3 py-1 rounded-full bg-red-500/30 text-white text-xs font-bold border border-red-400/50">
                                         URGENT
                                     </span>
                                 )}
                             </div>
-                            <h2 className="text-2xl font-bold text-pink-100 mb-4">
+                            <h2 className="text-2xl font-bold text-[var(--text-h)] mb-4">
                                 {announcement.title}
                             </h2>
-                            <div className="text-sm text-pink-200/80 leading-relaxed mb-6 whitespace-pre-wrap max-h-96 overflow-y-auto">
+                            <div className="text-sm text-[var(--text)] leading-relaxed mb-6 whitespace-pre-wrap max-h-96 overflow-y-auto">
                                 {announcement.content}
                             </div>
-                            <div className="flex items-center justify-between pt-4 border-t border-pink-500/20">
-                                <span className="text-xs uppercase tracking-widest text-pink-300/50 font-bold">
+                            <div className="flex items-center justify-between pt-4 border-t border-[var(--accent)]/20">
+                                <span className="text-xs uppercase tracking-widest text-[var(--text-subtle)] font-bold">
                                     {announcement.createdAt}
                                 </span>
                                 <button
                                     onClick={onClose}
-                                    className="px-4 py-2 rounded-full border border-pink-400/40 bg-pink-500/10 text-pink-100 text-xs font-bold hover:bg-pink-500/20 transition-colors"
+                                    className="px-4 py-2 rounded-full border border-[var(--accent)]/40 bg-[var(--accent)]/10 text-[var(--text-h)] text-xs font-bold hover:bg-[var(--accent)]/20 transition-colors"
                                 >
                                     {lang === 'RO' ? 'Închide' : 'Close'}
                                 </button>
@@ -167,7 +167,7 @@ export default function Landing() {
     return (
         <div className="w-full flex justify-center h-auto xl:h-full">
             <motion.div
-                className="w-full max-w-[95vw] rounded-2xl border-2 border-pink-500/30 theme-surface-card px-0 py-0 card-glow h-full overflow-hidden xl:h-full relative flex flex-col"
+                className="w-full max-w-[95vw] rounded-2xl border-2 border-[var(--accent)]/30 theme-surface-card px-0 py-0 card-glow h-full overflow-hidden xl:h-full relative flex flex-col"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -185,14 +185,14 @@ export default function Landing() {
 
                         <motion.h1
                             variants={itemVariants}
-                            className="text-4xl md:text-5xl font-black text-pink-100 mb-3 tracking-tight"
+                            className="text-4xl md:text-5xl font-black text-[var(--text-h)] mb-3 tracking-tight"
                         >
-                            {t.welcomeTitle} <span className="text-pink-400">{`<_FiiCoder>`}</span>
+                            {t.welcomeTitle} <span className="accent-text">{`<_FiiCoder>`}</span>
                         </motion.h1>
 
                         <motion.p
                             variants={itemVariants}
-                            className="text-base md:text-lg text-pink-200/70 max-w-2xl mx-auto mb-6"
+                            className="text-base md:text-lg text-[var(--text-muted)] max-w-2xl mx-auto mb-6"
                         >
                             {t.welcomeDesc}
                         </motion.p>
@@ -203,7 +203,7 @@ export default function Landing() {
                         >
                             <Link
                                 to="/problems"
-                                className="px-6 py-2.5 rounded-full bg-pink-500/20 border-2 border-pink-400/60 text-pink-100 font-bold text-sm transition-all duration-200 hover:bg-pink-500/35 hover:border-pink-400 hover:-translate-y-1"
+                                className="px-6 py-2.5 rounded-full bg-[var(--accent)]/20 border-2 border-[var(--accent)]/60 text-[var(--text-h)] font-bold text-sm transition-all duration-200 hover:bg-[var(--accent)]/35 hover:border-[var(--accent)] hover:-translate-y-1"
                             >
                                 {t.viewProblems}
                             </Link>
@@ -211,7 +211,7 @@ export default function Landing() {
                             {!isAuthenticated && (
                                 <Link
                                     to="/login"
-                                    className="px-6 py-2.5 rounded-full bg-pink-500/20 border-2 border-pink-400/60 text-pink-100 font-bold text-sm transition-all duration-200 hover:bg-pink-500/35 hover:border-pink-400 hover:-translate-y-1 shadow-lg hover:shadow-pink-500/30"
+                                    className="px-6 py-2.5 rounded-full bg-[var(--accent)]/20 border-2 border-[var(--accent)]/60 text-[var(--text-h)] font-bold text-sm transition-all duration-200 hover:bg-[var(--accent)]/35 hover:border-[var(--accent)] hover:-translate-y-1 shadow-lg hover:shadow-[var(--accent)]/30"
                                 >
                                     {t.authenticateBtn}
                                 </Link>
@@ -221,7 +221,7 @@ export default function Landing() {
 
                     {/* Announcements Section */}
                     <motion.div variants={itemVariants} className="mt-8 mb-8">
-                        <h2 className="text-2xl md:text-3xl font-bold text-pink-100 mb-6 text-center">
+                        <h2 className="text-2xl md:text-3xl font-bold text-[var(--text-h)] mb-6 text-center">
                             {t.announcementsTitle}
                         </h2>
                         <div className="grid gap-4 lg:grid-cols-3">
@@ -236,8 +236,8 @@ export default function Landing() {
                                             ann.priority === 'high'
                                                 ? 'border-red-500/40 bg-red-500/10 hover:border-red-500/70 hover:bg-red-500/15 shadow-lg shadow-red-500/20'
                                                 : ann.priority === 'medium'
-                                                  ? 'border-pink-500/30 theme-surface-muted hover:border-pink-500/60 theme-surface-hover'
-                                                  : 'border-pink-500/20 theme-surface-muted hover:border-pink-500/40 theme-surface-hover'
+                                                  ? 'border-[var(--accent)]/30 theme-surface-muted hover:border-[var(--accent)]/60 theme-surface-hover'
+                                                  : 'border-[var(--accent)]/20 theme-surface-muted hover:border-[var(--accent)]/40 theme-surface-hover'
                                         }`}
                                     >
                                         <div className="flex items-start gap-3">
@@ -245,18 +245,18 @@ export default function Landing() {
                                                 {ann.icon}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-semibold text-pink-100 text-sm mb-1 line-clamp-2">
+                                                <h3 className="font-semibold text-[var(--text-h)] text-sm mb-1 line-clamp-2">
                                                     {ann.title}
                                                 </h3>
-                                                <p className="text-xs text-pink-200/70 mb-2 line-clamp-3">
+                                                <p className="text-xs text-[var(--text-muted)] mb-2 line-clamp-3">
                                                     {ann.content.slice(0, 120)}...
                                                 </p>
-                                                <div className="text-[10px] text-pink-300/50">
+                                                <div className="text-[10px] text-[var(--text-subtle)]">
                                                     {ann.createdAt}
                                                 </div>
                                             </div>
                                             {ann.priority === 'high' && (
-                                                <div className="shrink-0 px-2 py-0.5 rounded-full bg-red-500/30 text-red-300 text-[10px] font-bold">
+                                                <div className="shrink-0 px-2 py-0.5 rounded-full bg-red-500/30 text-white text-[10px] font-bold border border-red-400/50">
                                                     {lang === 'RO' ? 'URGENT' : 'URGENT'}
                                                 </div>
                                             )}
@@ -265,7 +265,7 @@ export default function Landing() {
                                 ))
                             ) : (
                                 <div className="col-span-full text-center py-8">
-                                    <p className="text-pink-200/60 text-sm">
+                                    <p className="text-[var(--text-muted)] text-sm">
                                         {lang === 'RO'
                                             ? 'Nu sunt anunțuri disponibile.'
                                             : 'No announcements available.'}
@@ -303,15 +303,15 @@ export default function Landing() {
                             <motion.div
                                 key={index}
                                 variants={itemVariants}
-                                className="p-5 rounded-xl border border-pink-500/30 theme-surface-card backdrop-blur-sm hover:border-pink-500/60 theme-surface-hover transition-colors duration-300 group"
+                                className="p-5 rounded-xl border border-[var(--accent)]/30 theme-surface-card backdrop-blur-sm hover:border-[var(--accent)]/60 theme-surface-hover transition-colors duration-300 group"
                             >
                                 <div className="text-3xl mb-2 group-hover:scale-110 transition-all duration-300">
                                     {feature.icon}
                                 </div>
-                                <h3 className="text-base font-bold text-pink-100 mb-1">
+                                <h3 className="text-base font-bold text-[var(--text-h)] mb-1">
                                     {feature.title}
                                 </h3>
-                                <p className="text-xs text-pink-200/60">{feature.desc}</p>
+                                <p className="text-xs text-[var(--text-muted)]">{feature.desc}</p>
                             </motion.div>
                         ))}
                     </motion.div>
@@ -319,7 +319,7 @@ export default function Landing() {
                     {/* Stats Section */}
                     <motion.div
                         variants={itemVariants}
-                        className="mt-8 p-6 rounded-xl border border-pink-500/25 theme-surface-muted backdrop-blur-sm"
+                        className="mt-8 p-6 rounded-xl border border-[var(--accent)]/25 theme-surface-muted backdrop-blur-sm"
                     >
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                             {[
@@ -329,10 +329,10 @@ export default function Landing() {
                                 { num: '98%', label: t.satisfactionRate },
                             ].map((stat, idx) => (
                                 <motion.div key={idx} variants={itemVariants}>
-                                    <div className="text-2xl md:text-3xl font-black text-pink-300 mb-1">
+                                    <div className="text-2xl md:text-3xl font-black accent-text mb-1">
                                         {stat.num}
                                     </div>
-                                    <div className="text-xs text-pink-200/60">{stat.label}</div>
+                                    <div className="text-xs text-[var(--text-muted)]">{stat.label}</div>
                                 </motion.div>
                             ))}
                         </div>

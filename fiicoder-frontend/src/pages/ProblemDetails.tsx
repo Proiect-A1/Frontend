@@ -278,7 +278,7 @@ export default function ProblemDetails() {
   if (loading) {
     return (
       <div className="w-full flex justify-center items-center h-[calc(100svh-11rem)]">
-        <div className="animate-spin w-12 h-12 border-4 border-pink-500/30 border-t-pink-500 rounded-full" />
+        <div className="animate-spin w-12 h-12 border-4 border-[var(--accent)]/30 border-t-[var(--accent)] rounded-full" />
       </div>
     );
   }
@@ -290,7 +290,7 @@ export default function ProblemDetails() {
         <p>{error || "Problema nu a fost găsită."}</p>
         <Link
           to="/problems"
-          className="text-pink-300 underline mt-4 inline-block"
+          className="text-[var(--accent)] underline mt-4 inline-block"
         >
           Înapoi la lista de probleme
         </Link>
@@ -301,11 +301,11 @@ export default function ProblemDetails() {
   return (
     <div className="w-full flex flex-col gap-6">
       <div className="grid gap-6 xl:grid-cols-3">
-        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow custom-scrollbar">
-          <p className="text-xs font-semibold uppercase tracking-wider text-pink-400">
+        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-lg border-2 border-[var(--accent)]/30 rounded-2xl card-glow custom-scrollbar">
+          <p className="text-xs font-semibold uppercase tracking-wider accent-text">
             {lang === "RO" ? "Problemă: " : "Problem: "} {problem.title}
           </p>
-          <h1 className="text-3xl font-bold text-pink-200 mb-2">
+          <h1 className="text-3xl font-bold text-[var(--text)] mb-2">
             {problem.title}
           </h1>
           {problem.tags.length > 0 && (
@@ -313,7 +313,7 @@ export default function ProblemDetails() {
               {problem.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-2.5 py-0.5 rounded-full text-xs font-semibold border border-pink-500/25 bg-pink-500/10 text-pink-300/90"
+                  className="px-2.5 py-0.5 rounded-full text-xs font-semibold border border-[var(--accent)]/25 bg-[var(--accent)]/10 text-[var(--text-muted)]"
                 >
                   {tag}
                 </span>
@@ -321,7 +321,7 @@ export default function ProblemDetails() {
             </div>
           )}
           <div className="page-line-horizontal" />
-          <div className="text-pink-100/85 leading-relaxed">
+          <div className="text-[var(--text)] leading-relaxed">
             <ReactMarkdown
               remarkPlugins={[remarkMath]}
               rehypePlugins={[rehypeKatex]}
@@ -330,13 +330,13 @@ export default function ProblemDetails() {
                 // Titluri
                 h1: ({ ...props }) => (
                   <h1
-                    className="text-2xl font-bold text-pink-200 mt-6 mb-3 border-b border-pink-500/20 pb-1"
+                    className="text-2xl font-bold text-[var(--text)] mt-6 mb-3 border-b border-[var(--accent)]/20 pb-1"
                     {...props}
                   />
                 ),
                 h2: ({ ...props }) => (
                   <h2
-                    className="text-xl font-bold text-pink-200 mt-5 mb-2"
+                    className="text-xl font-bold text-[var(--text)] mt-5 mb-2"
                     {...props}
                   />
                 ),
@@ -359,7 +359,7 @@ export default function ProblemDetails() {
                 span: ({ className, children, ...props }: any) => {
                   if (className && className.includes("katex")) {
                     return (
-                      <span className={`${className} text-pink-300`} {...props}>
+                      <span className={`${className} accent-text`} {...props}>
                         {children}
                       </span>
                     );
@@ -369,13 +369,13 @@ export default function ProblemDetails() {
                       {children}
                     </span>
                   );
-                },      
+                },
 
                 // Cod inline (ex: `sortare.in`)
                 code: ({ className, children, ...props }: any) => {
                   return (
                     <code
-                      className={`text-pink-400 font-mono ${className || ""}`}
+                      className={`accent-text font-mono ${className || ""}`}
                       {...props}
                     >
                       {children}
@@ -387,7 +387,7 @@ export default function ProblemDetails() {
                 pre: ({ children, ...props }: any) => (
                   <div className="relative group my-4">
                     <pre
-                      className="theme-surface-input p-4 rounded-xl border border-pink-500/20 overflow-x-auto text-sm text-pink-200 shadow-inner [&>code]:text-pink-200"
+                      className="theme-surface-input p-4 rounded-xl border border-[var(--accent)]/20 overflow-x-auto text-sm text-[var(--text)] shadow-inner [&>code]:text-[var(--text)]"
                       {...props}
                     >
                       {children}
@@ -399,17 +399,17 @@ export default function ProblemDetails() {
           </div>
         </div>
 
-        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow custom-scrollbar flex flex-col">
+        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-lg border-2 border-[var(--accent)]/30 rounded-2xl card-glow custom-scrollbar flex flex-col">
           {isAuthenticated ? (
             <div className="flex-1 flex flex-col h-full">
               <div className="flex items-center justify-between mb-6 shrink-0">
-                <h2 className="text-xl font-bold text-pink-200">
+                <h2 className="text-xl font-bold text-[var(--text)]">
                   {t.submitTitle}
                 </h2>
                 <div className="relative w-32">
                   <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="w-full flex items-center justify-between theme-surface-input border border-pink-500/30 rounded-xl px-4 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400"
+                    className="w-full flex items-center justify-between theme-surface-input border border-[var(--accent)]/30 rounded-xl px-4 py-2 text-sm text-[var(--text-h)] outline-none transition hover:border-[var(--accent)]"
                   >
                     {language}
                     <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
@@ -423,7 +423,7 @@ export default function ProblemDetails() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.12 }}
-                        className="absolute z-50 w-full theme-surface-dropdown border border-pink-500/40 rounded-xl shadow-2xl overflow-hidden"
+                        className="absolute z-50 w-full theme-surface-dropdown border border-[var(--accent)]/40 rounded-xl shadow-2xl overflow-hidden"
                       >
                         {availableLanguages.map((langItem) => (
                           <button
@@ -433,7 +433,7 @@ export default function ProblemDetails() {
                               setLanguage(langItem.name);
                               setIsOpen(false);
                             }}
-                            className="w-full text-left px-4 py-2 text-sm text-pink-100 hover:bg-pink-500/20 transition-colors"
+                            className="w-full text-left px-4 py-2 text-sm text-[var(--text-h)] hover:bg-[var(--accent)]/20 transition-colors"
                           >
                             {langItem.name}{" "}
                             {langItem.version && `(${langItem.version})`}
@@ -449,7 +449,7 @@ export default function ProblemDetails() {
                 onSubmit={handleSubmit}
                 className="flex-1 flex flex-col gap-4"
               >
-                <div className="relative flex-1 rounded-2xl overflow-hidden border border-pink-500/20 theme-surface-editor min-h-75">
+                <div className="relative flex-1 rounded-2xl overflow-hidden border border-[var(--accent)]/20 theme-surface-editor min-h-75">
                   <Editor
                     height="100%"
                     language={monacoLanguageMap[language] || "cpp"}
@@ -459,7 +459,7 @@ export default function ProblemDetails() {
                     onMount={handleEditorMount}
                     loading={
                       <div className="flex items-center justify-center h-full">
-                        <div className="animate-spin w-8 h-8 border-2 border-pink-500/30 border-t-pink-500 rounded-full" />
+                        <div className="animate-spin w-8 h-8 border-2 border-[var(--accent)]/30 border-t-[var(--accent)] rounded-full" />
                       </div>
                     }
                     options={{
@@ -485,7 +485,7 @@ export default function ProblemDetails() {
                 <button
                   type="submit"
                   disabled={status === "pending"}
-                  className="w-full shrink-0 bg-pink-500/20 border border-pink-400/50 py-4 rounded-2xl font-bold text-pink-100 outline-none transition hover:border-pink-400 hover:bg-pink-500/30 hover:-translate-y-0.5"
+                  className="w-full shrink-0 bg-[var(--accent)]/20 border border-[var(--accent)]/50 py-4 rounded-2xl font-bold text-[var(--text-h)] outline-none transition hover:border-[var(--accent)] hover:bg-[var(--accent)]/30 hover:-translate-y-0.5"
                 >
                   {status === "pending" ? t.evalPending : t.evalBtn}
                 </button>
@@ -493,10 +493,10 @@ export default function ProblemDetails() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full gap-5 py-12">
-              <div className="shrink-0 w-16 h-16 rounded-full bg-pink-500/10 border-2 border-pink-500/30 flex items-center justify-center">
+              <div className="shrink-0 w-16 h-16 rounded-full bg-[var(--accent)]/10 border-2 border-[var(--accent)]/30 flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="w-7 h-7 text-pink-400/70"
+                  className="w-7 h-7 text-[var(--accent)]/70"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -510,10 +510,10 @@ export default function ProblemDetails() {
                 </svg>
               </div>
               <div className="text-center">
-                <h3 className="text-lg font-bold text-pink-200 mb-1">
+                <h3 className="text-lg font-bold text-[var(--text)] mb-1">
                   {lang === "RO" ? "Trimite soluții" : "Submit Solutions"}
                 </h3>
-                <p className="text-sm text-pink-300/60 max-w-xs">
+                <p className="text-sm text-[var(--text-muted)] max-w-xs">
                   {lang === "RO"
                     ? "Trebuie să te autentifici pentru a trimite rezolvări la probleme."
                     : "You need to log in to submit solutions to problems."}
@@ -521,7 +521,7 @@ export default function ProblemDetails() {
               </div>
               <Link
                 to="/login"
-                className="px-6 py-2.5 rounded-xl border border-pink-400/50 bg-pink-500/20 text-sm font-bold text-pink-100 transition hover:border-pink-400 hover:bg-pink-500/30 hover:-translate-y-0.5"
+                className="px-6 py-2.5 rounded-xl border border-[var(--accent)]/50 bg-[var(--accent)]/20 text-sm font-bold text-[var(--text-h)] transition hover:border-[var(--accent)] hover:bg-[var(--accent)]/30 hover:-translate-y-0.5"
               >
                 {lang === "RO" ? "Autentifică-te" : "Log In"}
               </Link>
@@ -529,17 +529,17 @@ export default function ProblemDetails() {
           )}
         </div>
 
-        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-lg border-2 border-pink-500/30 rounded-2xl card-glow custom-scrollbar">
-          <h2 className="text-xl font-bold text-pink-200 mb-2">Test Panel</h2>
+        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-lg border-2 border-[var(--accent)]/30 rounded-2xl card-glow custom-scrollbar">
+          <h2 className="text-xl font-bold text-[var(--text)] mb-2">Test Panel</h2>
           <div className="page-line-horizontal" />
-          <p className="text-pink-100/85">
+          <p className="text-[var(--text)]">
             This is an empty panel placeholder.
           </p>
         </div>
 
         <div className="flex justify-start shrink-0">
           <Link to="/problems" className="relative inline-block group">
-            <div className="flex items-center gap-2 text-pink-300/60 font-semibold text-sm hover:text-pink-100 transition-colors cursor-pointer">
+            <div className="flex items-center gap-2 text-[var(--text-muted)] font-semibold text-sm hover:text-[var(--text-h)] transition-colors cursor-pointer">
               <span>←</span>
               <span>{t.backToList}</span>
             </div>
@@ -559,7 +559,7 @@ export default function ProblemDetails() {
             <div
               className={`relative overflow-hidden px-8 py-5 rounded-2xl border-2 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${
                 status === "pending"
-                  ? "border-pink-500/50 theme-surface-card text-pink-200"
+                  ? "border-[var(--accent)]/50 theme-surface-card text-[var(--text)]"
                   : status === "valid"
                     ? "border-green-500/50 bg-green-500/10 text-green-300"
                     : "border-red-500/50 bg-red-500/10 text-red-300"
@@ -571,7 +571,7 @@ export default function ProblemDetails() {
                 transition={{ duration: status === "pending" ? 2 : 4 }}
                 className={`absolute bottom-0 left-0 h-1 w-full origin-left ${
                   status === "pending"
-                    ? "bg-pink-500"
+                    ? "bg-[var(--accent)]"
                     : status === "valid"
                       ? "bg-green-500"
                       : "bg-red-500"
@@ -581,7 +581,7 @@ export default function ProblemDetails() {
                 <div
                   className={`w-3 h-3 rounded-full animate-pulse ${
                     status === "pending"
-                      ? "bg-pink-500"
+                      ? "bg-[var(--accent)]"
                       : status === "valid"
                         ? "bg-green-500"
                         : "bg-red-500"
