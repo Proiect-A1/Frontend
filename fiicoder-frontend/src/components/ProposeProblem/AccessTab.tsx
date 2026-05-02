@@ -25,9 +25,9 @@ export default function AccessTab() {
               {...field}
               className="w-full px-4 py-2 bg-theme-surface-secondary border accent-border rounded-lg text-theme-text focus:outline-none accent-ring transition-all"
             >
-              <option value="private">🔒 Privată - Doar tu și moderatorii</option>
-              <option value="unlisted">🔗 Ascunsă - Link pentru oameni selectați</option>
-              <option value="public">🌍 Publică - Vizibilă pentru toți</option>
+              <option value="private" className="bg-[var(--surface-page)] text-[var(--text)]">🔒 Privată - Doar tu și moderatorii</option>
+              <option value="unlisted" className="bg-[var(--surface-page)] text-[var(--text)]">🔗 Ascunsă - Link pentru oameni selectați</option>
+              <option value="public" className="bg-[var(--surface-page)] text-[var(--text)]">🌍 Publică - Vizibilă pentru toți</option>
             </select>
           )}
         />

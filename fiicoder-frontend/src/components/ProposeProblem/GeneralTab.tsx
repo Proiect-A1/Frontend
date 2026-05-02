@@ -42,7 +42,7 @@ export default function GeneralTab() {
                 className="w-full px-4 py-2 bg-theme-surface-secondary border accent-border rounded-lg text-theme-text focus:outline-none accent-ring transition-all cursor-pointer"
               >
                 {difficulties.map((diff) => (
-                  <option key={diff} value={diff}>
+                  <option key={diff} value={diff} className="bg-[var(--surface-page)] text-[var(--text)]">
                     {diff.charAt(0).toUpperCase() + diff.slice(1)}
                   </option>
                 ))}
