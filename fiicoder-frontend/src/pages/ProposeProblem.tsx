@@ -71,12 +71,27 @@ export default function ProposeProblem() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-theme-text mb-2">Propune o Problemă</h1>
-          <p className="text-theme-text-muted">
-            Creează o nouă problemă și propune-o comunității. Va fi revizuită de moderatori înainte de a fi publicată.
-          </p>
+        {/* Header cu titlu stânga și tabs dreapta */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+          <h1 className="text-3xl font-bold text-theme-text">Propune o Problemă</h1>
+
+          {/* Tabs Navigation */}
+          <div className="flex flex-wrap gap-2">
+            {TAB_OPTIONS.map((tab) => (
+              <button
+                key={tab.value}
+                type="button"
+                onClick={() => setActiveTab(tab.value)}
+                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                  activeTab === tab.value
+                    ? "accent-bg-subtle accent-text accent-border border"
+                    : "text-theme-text-muted hover:text-theme-text hover:accent-hover"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Status Messages */}
@@ -93,24 +108,6 @@ export default function ProposeProblem() {
 
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Tabs Navigation */}
-            <div className="flex flex-wrap gap-2 mb-6 accent-border pb-4 border-b">
-              {TAB_OPTIONS.map((tab) => (
-                <button
-                  key={tab.value}
-                  type="button"
-                  onClick={() => setActiveTab(tab.value)}
-                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
-                    activeTab === tab.value
-                      ? "accent-bg-subtle accent-text accent-border border"
-                      : "text-theme-text-muted hover:text-theme-text hover:accent-hover"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
             {/* Tabs Content */}
             <div>
               {activeTab === "general" && <GeneralTab />}

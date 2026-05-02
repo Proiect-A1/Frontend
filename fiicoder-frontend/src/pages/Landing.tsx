@@ -84,14 +84,14 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                             onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto w-full max-w-lg rounded-2xl border-2 backdrop-blur-lg p-6 md:p-8 shadow-2xl ${
                                 announcement.priority === 'high'
-                                    ? 'border-red-500/40 bg-red-500/10'
+                                    ? 'border-red-500 bg-red-950 text-red-50'
                                     : 'border-[var(--accent)]/40 theme-surface-card'
                             }`}
                         >
                             <div className="flex items-start justify-between gap-4 mb-4">
                                 <div className="text-4xl shrink-0">{announcement.icon}</div>
                                 {announcement.priority === 'high' && (
-                                    <span className="shrink-0 px-3 py-1 rounded-full bg-red-500/30 text-white text-xs font-bold border border-red-400/50">
+                                    <span className="shrink-0 px-3 py-1 rounded-full bg-red-600 text-white text-xs font-bold border border-red-400">
                                         URGENT
                                     </span>
                                 )}
@@ -234,7 +234,7 @@ export default function Landing() {
                                         onClick={() => handleOpenAnnouncement(ann)}
                                         className={`p-4 rounded-2xl border backdrop-blur-sm cursor-pointer transition-colors duration-300 group ${
                                             ann.priority === 'high'
-                                                ? 'border-red-500/40 bg-red-500/10 hover:border-red-500/70 hover:bg-red-500/15 shadow-lg shadow-red-500/20'
+                                                ? 'border-red-500 bg-red-950 hover:border-red-400 hover:bg-red-900 shadow-lg shadow-red-500/30'
                                                 : ann.priority === 'medium'
                                                   ? 'border-[var(--accent)]/30 theme-surface-muted hover:border-[var(--accent)]/60 theme-surface-hover'
                                                   : 'border-[var(--accent)]/20 theme-surface-muted hover:border-[var(--accent)]/40 theme-surface-hover'
@@ -256,7 +256,7 @@ export default function Landing() {
                                                 </div>
                                             </div>
                                             {ann.priority === 'high' && (
-                                                <div className="shrink-0 px-2 py-0.5 rounded-full bg-red-500/30 text-white text-[10px] font-bold border border-red-400/50">
+                                                <div className="shrink-0 px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold border border-red-400">
                                                     {lang === 'RO' ? 'URGENT' : 'URGENT'}
                                                 </div>
                                             )}

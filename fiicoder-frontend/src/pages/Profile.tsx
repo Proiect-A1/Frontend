@@ -70,26 +70,29 @@ export default function Profile() {
   };
 
   return (
-    <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0 mb-8 xl:mb-0">
+    <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
       <motion.div
-        className="w-full max-w-[95vw] h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
+        className="w-full max-w-[95vw] h-auto xl:h-full relative flex flex-col"
         initial="hidden"
         animate="visible"
         variants={pageVariants}
       >
-        {/* admin button visible only for admins */}
-        {isAdmin && (
-          <div className="mb-4 flex justify-end">
-            <Link
-               to="/admin"
-               className="px-6 py-2 rounded-full border border-[var(--accent)]/60 text-xs font-bold text-[var(--text-h)] transition hover:bg-[var(--accent)]/15 hover:-translate-y-0.5 bg-[var(--accent)]/10"
-            >
-              {lang === "RO" ? "Panou Administrare" : "Admin Dashboard"}
-            </Link>
-          </div>
-        )}
+        {/* Main container card - same style as ProblemList */}
+        <div className="h-auto xl:h-[calc(100svh-8.5rem)] overflow-visible xl:overflow-y-auto p-5 theme-surface-card backdrop-blur-lg border-2 border-[var(--accent)]/30 rounded-2xl card-glow custom-scrollbar">
 
-        <div className="w-full grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-6">
+          {/* admin button visible only for admins */}
+          {isAdmin && (
+            <div className="mb-4 flex justify-end">
+              <Link
+                 to="/admin"
+                 className="px-6 py-2 rounded-full border border-[var(--accent)]/60 text-xs font-bold text-[var(--text-h)] transition hover:bg-[var(--accent)]/15 hover:-translate-y-0.5 bg-[var(--accent)]/10"
+              >
+                {lang === "RO" ? "Panou Administrare" : "Admin Dashboard"}
+              </Link>
+            </div>
+          )}
+
+          <div className="w-full grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-6">
 
           {/* SIDEBAR */}
           <div className="flex flex-col gap-6 min-w-0">
@@ -310,6 +313,7 @@ export default function Profile() {
             </div>
 
           </div>
+        </div>
         </div>
       </motion.div>
     </div>

@@ -147,11 +147,11 @@ export default function Login() {
                 {t.emailLabel}
               </label>
               <input
-                type="text"
+                type="email"
                 required
                 value={usernameOrEmail}
                 onChange={(e) => setUsernameOrEmail(e.target.value)}
-                placeholder="ex: fiicoder"
+                placeholder="ex: nume@email.com"
                 className="w-full rounded-xl border border-pink-500/30 theme-surface-input px-3 py-2 text-sm text-pink-100 outline-none transition hover:border-pink-400 focus:border-pink-400"
               />
             </div>

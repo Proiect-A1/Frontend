@@ -9,7 +9,7 @@ export const translations = {
         // Login
         loginTitle: 'Autentificare',
         registerTitle: 'Înregistrare',
-        emailLabel: 'Email sau Nume utilizator',
+        emailLabel: 'Email',
         passwordLabel: 'Parolă',
         registerBtn: 'Creează cont',
         noAccount: 'Nu ai un cont?',
@@ -87,7 +87,7 @@ export const translations = {
         // login
         loginTitle: 'Login',
         registerTitle: 'Sign Up',
-        emailLabel: 'Email or Username',
+        emailLabel: 'Email',
         passwordLabel: 'Password',
         registerBtn: 'Create Account',
         noAccount: "Don't have an account?",
