@@ -1,11 +1,112 @@
 import { Controller, useFormContext } from "react-hook-form";
+import { useState, useEffect, useRef } from "react";
 import type { ProposeProblemForm } from "../../types/proposeProblem";
+import { tagService, type TagResponseDTO } from "../../services/tagService";
 
 const difficulties = ["easy", "medium", "hard"];
 
 export default function GeneralTab() {
-  const { control, watch } = useFormContext<ProposeProblemForm>();
+  const { control, watch, setValue } = useFormContext<ProposeProblemForm>();
   const formData = watch();
+
+  // Tag autocomplete state
+  const [availableTags, setAvailableTags] = useState<TagResponseDTO[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  const [suggestions, setSuggestions] = useState<TagResponseDTO[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  // Fetch tags on mount
+  useEffect(() => {
+    tagService.getAllTags().then(setAvailableTags).catch(console.error);
+  }, []);
+
+  // Filter suggestions based on input
+  useEffect(() => {
+    if (inputValue.trim()) {
+      const filtered = availableTags.filter(
+        (tag) =>
+          tag.title.toLowerCase().includes(inputValue.toLowerCase()) &&
+          !formData.tags.includes(tag.title)
+      );
+      setSuggestions(filtered.slice(0, 5)); // Max 5 suggestions
+      setShowSuggestions(filtered.length > 0);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+    setSelectedIndex(-1);
+  }, [inputValue, availableTags, formData.tags]);
+
+  // Click outside to close suggestions
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(e.target as Node) &&
+        !inputRef.current?.contains(e.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const addTag = (tag: string) => {
+    const trimmedTag = tag.trim();
+    // Doar tag-uri existente în baza de date
+    const tagExists = availableTags.some(
+      (t) => t.title.toLowerCase() === trimmedTag.toLowerCase()
+    );
+    if (trimmedTag && tagExists && !formData.tags.includes(trimmedTag)) {
+      setValue("tags", [...formData.tags, trimmedTag]);
+    }
+    setInputValue("");
+    setShowSuggestions(false);
+    inputRef.current?.focus();
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setValue(
+      "tags",
+      formData.tags.filter((t) => t !== tagToRemove)
+    );
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex((prev) =>
+        prev < suggestions.length - 1 ? prev + 1 : prev
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (selectedIndex >= 0 && suggestions[selectedIndex]) {
+        addTag(suggestions[selectedIndex].title);
+      }
+      // Dacă nu e selectată o sugestie validă, nu facem nimic (nu adăugăm tag-uri noi)
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false);
+    } else if (e.key === "Backspace" && !inputValue && formData.tags.length > 0) {
+      removeTag(formData.tags[formData.tags.length - 1]);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleInputFocus = () => {
+    if (inputValue.trim() && suggestions.length > 0) {
+      setShowSuggestions(true);
+    }
+  };
 
   return (
     <div className="space-y-6 p-6 bg-theme-surface-card rounded-lg border border-theme-border">
@@ -92,22 +193,65 @@ export default function GeneralTab() {
         </div>
       </div>
 
-      {/* Tags */}
+      {/* Tags with Autocomplete */}
       <div className="space-y-2">
-        <label className="text-theme-text font-semibold text-sm">Etichete (separate prin virgulă)</label>
-        <Controller
-          name="tags"
-          control={control}
-          render={({ field }) => (
+        <label className="text-theme-text font-semibold text-sm">Etichete</label>
+        <div className="relative">
+          {/* Selected tags display */}
+          <div className="w-full min-h-[42px] px-3 py-2 bg-theme-surface-secondary border accent-border rounded-lg flex flex-wrap gap-2 items-center">
+            {formData.tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-[var(--accent)]/20 text-[var(--text-h)] border border-[var(--accent)]/30"
+              >
+                {tag}
+                <button
+                  type="button"
+                  onClick={() => removeTag(tag)}
+                  className="hover:text-red-400 transition-colors"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
             <input
-              {...field}
-              placeholder="ex: Array, Dynamic Programming, Recursion"
-              className="w-full px-4 py-2 bg-theme-surface-secondary border accent-border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none accent-ring transition-all"
-              onChange={(e) => field.onChange(e.target.value.split(",").map((t) => t.trim()))}
-              value={field.value.join(", ")}
+              ref={inputRef}
+              type="text"
+              value={inputValue}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              onFocus={handleInputFocus}
+              placeholder={formData.tags.length === 0 ? "Scrie pentru a căuta etichete..." : ""}
+              className="flex-1 min-w-[120px] bg-transparent text-theme-text placeholder-theme-text-muted outline-none text-sm"
             />
+          </div>
+
+          {/* Suggestions dropdown */}
+          {showSuggestions && (
+            <div
+              ref={suggestionsRef}
+              className="absolute z-50 mt-1 w-full theme-surface-dropdown border border-[var(--accent)]/40 rounded-xl shadow-2xl overflow-hidden max-h-48 overflow-y-auto"
+            >
+              {suggestions.map((tag, index) => (
+                <button
+                  key={tag.id}
+                  type="button"
+                  onClick={() => addTag(tag.title)}
+                  className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                    index === selectedIndex
+                      ? "bg-[var(--accent)]/30 text-[var(--text-h)]"
+                      : "text-[var(--text)] hover:bg-[var(--accent)]/20"
+                  }`}
+                >
+                  {tag.title}
+                </button>
+              ))}
+            </div>
           )}
-        />
+        </div>
+        <p className="text-xs text-theme-text-muted">
+          Selectează din lista de etichete existente.
+        </p>
       </div>
 
       {/* Info Section */}
