@@ -23,8 +23,11 @@ export default function Navbar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   // State pentru dropdown-ul de teme pe desktop
   const [isThemeOpen, setIsThemeOpen] = useState(false);
+  // State pentru dropdown-ul de teme pe mobil
+  const [isMobileThemeOpen, setIsMobileThemeOpen] = useState(false);
   // Ref pentru a putea închide dropdown-ul de teme când dăm click în afara lui
   const themeDropdownRef = useRef<HTMLDivElement>(null);
+  const mobileThemeDropdownRef = useRef<HTMLDivElement>(null);
 
   const themeLogo: Record<string, string> = {
     rose: '/logo.svg',
@@ -53,13 +56,17 @@ export default function Navbar() {
   const closeMenu = () => {
     setIsMobileOpen(false);
     setIsThemeOpen(false);
+    setIsMobileThemeOpen(false);
   };
 
-  // Efect pentru a închide dropdown-ul de teme la click pe afară
+  // Efect pentru a închide dropdown-urile de teme la click pe afară
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (themeDropdownRef.current && !themeDropdownRef.current.contains(event.target as Node)) {
         setIsThemeOpen(false);
+      }
+      if (mobileThemeDropdownRef.current && !mobileThemeDropdownRef.current.contains(event.target as Node)) {
+        setIsMobileThemeOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -277,14 +284,18 @@ export default function Navbar() {
 
               {isAuthenticated ? (
                 <>
-                  <div className="flex items-center justify-center gap-3 px-3 py-2.5 rounded-2xl border-2 border-pink-400/30 bg-pink-500/10">
+                  <Link
+                    to="/profile"
+                    onClick={closeMenu}
+                    className="flex items-center justify-center gap-3 px-3 py-2.5 rounded-2xl border-2 border-pink-400/30 bg-pink-500/10 hover:bg-pink-500/20 transition-colors cursor-pointer"
+                  >
                     <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white uppercase outline-2 outline-offset-1 outline-(--accent)">
                       {username?.charAt(0) || "?"}
                     </div>
                     <span className="text-base font-medium text-pink-200 truncate">
                       {username}
                     </span>
-                  </div>
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="px-4 py-2.5 rounded-2xl text-sm font-bold border-2 border-red-400/50 text-red-300 bg-red-500/10 hover:bg-red-500/20"
@@ -332,28 +343,45 @@ export default function Navbar() {
               </div>
 
               {/* theme toggle mobile */}
-              <div className="flex flex-col items-center gap-2 mt-2">
-                 <span className="text-xs uppercase tracking-widest text-pink-300/60 font-bold">
-                    {lang === "RO" ? "Temă" : "Theme"}
-                 </span>
-                 <div className="flex justify-center gap-4">
-                    {themes.map((t) => (
-                      <button
-                        key={t}
-                        onClick={() => {
-                          setTheme(t);
-                          closeMenu();
-                        }}
-                        className={`px-6 py-2 rounded-xl text-sm font-bold border-2 transition-colors ${
-                          theme === t 
-                            ? "border-pink-400 text-pink-100 bg-pink-500/20" 
-                            : "border-pink-500/20 text-pink-300/60 hover:bg-pink-500/10"
-                        }`}
-                      >
-                        {formatThemeLabel(t)}
-                      </button>
-                    ))}
-                 </div>
+              <div className="relative w-full" ref={mobileThemeDropdownRef}>
+                <button
+                  onClick={() => setIsMobileThemeOpen(!isMobileThemeOpen)}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-bold border-2 border-pink-400/40 text-pink-100 bg-pink-500/10 transition-all duration-200 hover:bg-pink-500/20"
+                >
+                  {lang === "RO" ? "Temă:" : "Theme:"} {formatThemeLabel(theme)}
+                  <motion.span animate={{ rotate: isMobileThemeOpen ? 180 : 0 }}>
+                    ▼
+                  </motion.span>
+                </button>
+
+                <AnimatePresence>
+                  {isMobileThemeOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute left-0 right-0 top-full mt-2 theme-surface-dropdown border border-pink-500/40 rounded-2xl shadow-xl overflow-hidden z-50"
+                    >
+                      {themes.map((t) => (
+                        <button
+                          key={t}
+                          onClick={() => {
+                            setTheme(t);
+                            setIsMobileThemeOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-3 text-sm transition-colors ${
+                            theme === t
+                              ? "text-pink-100 bg-pink-500/20 font-bold"
+                              : "text-pink-200/70 hover:bg-pink-500/10 hover:text-pink-100"
+                          }`}
+                        >
+                          {formatThemeLabel(t)}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
             </motion.div>

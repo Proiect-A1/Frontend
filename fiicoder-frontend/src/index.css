@@ -580,3 +580,16 @@ a:focus-visible {
         scrollbar-color: color-mix(in srgb, var(--accent) 40%, transparent) transparent;
     }
 }
+
+/* Ascunde scrollbar-ul pe mobile pentru a economisi spațiu */
+@media (max-width: 768px) {
+    ::-webkit-scrollbar {
+        width: 0 !important;
+        display: none !important;
+    }
+
+    html {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+}
