@@ -8,15 +8,7 @@ import {
     type GroupInvitationResponseDTO,
 } from '../services/classService';
 import { useLanguage } from '../language/Language';
-import { itemVariants, staggerConfig } from '../utils/motionConfig';
-
-const pageVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: staggerConfig,
-    },
-};
+import { itemVariants, pageVariants } from '../utils/motionConfig';
 export default function ClassesHub() {
     const { lang } = useLanguage();
     const { userId, isAuthenticated } = useAuth();
@@ -178,7 +170,8 @@ export default function ClassesHub() {
                             />
                             <button
                                 type="submit"
-                                className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"                            >
+                                className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
+                            >
                                 {lang === 'RO' ? 'Creează clasa' : 'Create class'}
                             </button>
                         </form>
@@ -202,7 +195,8 @@ export default function ClassesHub() {
                             />
                             <button
                                 type="submit"
-                                className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"                            >
+                                className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
+                            >
                                 {lang === 'RO' ? 'Caută' : 'Search'}
                             </button>
                         </form>

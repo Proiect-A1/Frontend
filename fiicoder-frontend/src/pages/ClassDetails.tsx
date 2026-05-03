@@ -5,15 +5,7 @@ import { useAuth } from '../services/AuthContext';
 import { classService, type GroupFindResponseDTO } from '../services/classService';
 import { homeworkService, type HomeworkResponseDTO } from '../services/homeworkService';
 import { useLanguage } from '../language/Language';
-import { itemVariants, staggerConfig } from '../utils/motionConfig';
-
-const pageVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: staggerConfig,
-    },
-};
+import { itemVariants, pageVariants } from '../utils/motionConfig';
 
 function getHomeworkBadge(status: HomeworkResponseDTO['status']) {
     switch (status) {
