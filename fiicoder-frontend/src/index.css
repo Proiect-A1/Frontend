@@ -40,8 +40,8 @@
     --bg-color: #4c566a;
 
     --surface-page: color-mix(in srgb, var(--bg-color) 82%, #2e3440 18%);
-    --surface-card: color-mix(in srgb, var(--bg-color) 68%, #2e3440 32%);
-    --surface-muted: color-mix(in srgb, var(--bg-color) 56%, #2e3440 44%);
+    --surface-card: color-mix(in srgb, var(--bg-color) 80%, transparent);
+    --surface-muted: color-mix(in srgb, var(--bg-color) 56%, transparent);
     --surface-input: color-mix(in srgb, #2e3440 88%, #000 12%);
     --surface-editor: color-mix(in srgb, #2e3440 72%, #000 28%);
     --surface-dropdown: color-mix(in srgb, #3b4252 86%, #000 14%);

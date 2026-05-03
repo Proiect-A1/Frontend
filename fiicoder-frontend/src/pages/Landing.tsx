@@ -87,9 +87,9 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                             onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto w-full max-w-lg rounded-2xl border-2 backdrop-blur-sm p-6 md:p-8 ${
                                 isHighPriority
-                                    ? 'border-(--accent) bg-(--accent)/12 shadow-lg shadow-(--accent)/25'
+                                    ? 'border-(--accent) bg-(--surface-card)'
                                     : isMediumPriority
-                                      ? 'border-(--accent)/50 bg-(--accent)/8 shadow-lg shadow-(--accent)/15'
+                                      ? 'border-(--accent)/50 bg-(--surface-card)'
                                       : 'border-(--accent)/40 bg-(--surface-card)'
                             }`}
                         >
