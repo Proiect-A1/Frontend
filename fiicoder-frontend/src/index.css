@@ -11,14 +11,14 @@
     --surface-editor: #0a0812;
     --surface-hover: color-mix(in srgb, #1a1530 80%, transparent);
 
+    --accent: #ff5eb6;
     --text: #f5c8e4;
     --text-h: #ffe8f6;
     --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
     --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
 
-    --bg: var(--bg-color);
+    --bg: var(--surface-page);
     --code-bg: color-mix(in srgb, var(--bg-color) 55%, #1a1322 45%);
-    --accent: #ff5eb6;
     --hero-start: #2f1630;
     --hero-mid: #171124;
     --hero-end: var(--bg-color);
@@ -39,13 +39,13 @@
 [data-theme='nord'] {
     --bg-color: #4c566a;
 
-    --surface-page: color-mix(in srgb, var(--bg-color) 90%, #000);
-    --surface-card: color-mix(in srgb, var(--bg-color) 65%, #000);
-    --surface-muted: color-mix(in srgb, #2e3440 80%, #000);
-    --surface-input: color-mix(in srgb, #2e3440 80%, #000);
-    --surface-editor: color-mix(in srgb, var(--bg-color) 40%, #000);
-    --surface-dropdown: color-mix(in srgb, #3b4252 95%, transparent);
-    --surface-hover: color-mix(in srgb, var(--accent) 15%, transparent);
+    --surface-page: color-mix(in srgb, var(--bg-color) 82%, #2e3440 18%);
+    --surface-card: color-mix(in srgb, var(--bg-color) 68%, #2e3440 32%);
+    --surface-muted: color-mix(in srgb, var(--bg-color) 56%, #2e3440 44%);
+    --surface-input: color-mix(in srgb, #2e3440 88%, #000 12%);
+    --surface-editor: color-mix(in srgb, #2e3440 72%, #000 28%);
+    --surface-dropdown: color-mix(in srgb, #3b4252 86%, #000 14%);
+    --surface-hover: color-mix(in srgb, var(--accent) 12%, transparent);
 
     --accent: #88c0d0;
     --text: #e5e9f0;
@@ -53,11 +53,11 @@
     --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
     --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
 
-    --bg: var(--bg-color);
-    --code-bg: color-mix(in srgb, var(--bg-color) 74%, #252b37 26%);
-    --hero-start: #2f3542;
-    --hero-mid: var(--bg-color);
-    --hero-end: #1f2430;
+    --bg: var(--surface-page);
+    --code-bg: color-mix(in srgb, var(--bg-color) 62%, #2e3440 38%);
+    --hero-start: #3b4252;
+    --hero-mid: #4c566a;
+    --hero-end: #2e3440;
     --line-color: color-mix(in srgb, var(--accent) 90%, white 10%);
     --accent-secondary: color-mix(in srgb, var(--accent) 72%, #5e81ac 28%);
     --logo-filter: none;
@@ -85,7 +85,7 @@
     --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
     --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
 
-    --bg: var(--bg-color);
+    --bg: var(--surface-page);
     --code-bg: color-mix(in srgb, #e8d9c5 62%, #f7efe2 38%);
     --hero-start: #e7d6bf;
     --hero-mid: #f2e8da;
@@ -117,7 +117,7 @@
     --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
     --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
 
-    --bg: var(--bg-color);
+    --bg: var(--surface-page);
     --code-bg: color-mix(in srgb, #d4e6d7 66%, #ecf5ec 34%);
     --hero-start: #d4e6d8;
     --hero-mid: #e5f0e6;
@@ -179,68 +179,6 @@ body {
     background-attachment: fixed;
 }
 
-.theme-surface-page {
-    background-color: var(--surface-page);
-}
-
-.theme-surface-card {
-    background-color: var(--surface-card);
-}
-
-.theme-surface-muted {
-    background-color: var(--surface-muted);
-}
-
-.theme-surface-input {
-    background-color: var(--surface-input);
-}
-
-.theme-surface-dropdown {
-    background-color: var(--surface-dropdown);
-}
-
-.theme-surface-editor {
-    background-color: var(--surface-editor);
-}
-
-.theme-surface-hover:hover {
-    background-color: var(--surface-hover);
-}
-
-/* Accent color utilities */
-.accent-text {
-    color: var(--accent);
-}
-
-.accent-border {
-    border-color: var(--accent);
-}
-
-.accent-bg {
-    background-color: var(--accent);
-}
-
-.accent-bg-subtle {
-    background-color: color-mix(in srgb, var(--accent) 10%, transparent);
-}
-
-.accent-bg-light {
-    background-color: color-mix(in srgb, var(--accent) 20%, transparent);
-}
-
-.accent-hover:hover {
-    background-color: color-mix(in srgb, var(--accent) 15%, transparent);
-}
-
-.accent-ring {
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 50%, transparent);
-}
-
-.accent-ring:focus {
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 50%, transparent);
-
-}
-
 /* Adaptive info boxes for proposals - work on all themes */
 .info-box {
     background-color: color-mix(in srgb, var(--accent) 8%, var(--surface-card));
@@ -266,6 +204,45 @@ body {
     color: var(--text);
 }
 
+.bg-black {
+    background-color: color-mix(in srgb, var(--surface-card) 92%, transparent) !important;
+}
+
+.bg-black\/5 {
+    background-color: color-mix(in srgb, var(--surface-card) 12%, transparent) !important;
+}
+
+.bg-black\/10 {
+    background-color: color-mix(in srgb, var(--surface-card) 18%, transparent) !important;
+}
+
+.bg-black\/15 {
+    background-color: color-mix(in srgb, var(--surface-card) 24%, transparent) !important;
+}
+
+.bg-black\/20 {
+    background-color: color-mix(in srgb, var(--surface-card) 30%, transparent) !important;
+}
+
+.bg-black\/25 {
+    background-color: color-mix(in srgb, var(--surface-card) 36%, transparent) !important;
+}
+
+.bg-black\/30 {
+    background-color: color-mix(in srgb, var(--surface-card) 42%, transparent) !important;
+}
+
+.bg-black\/40 {
+    background-color: color-mix(in srgb, var(--surface-card) 52%, transparent) !important;
+}
+
+.bg-black\/50 {
+    background-color: color-mix(in srgb, var(--surface-card) 62%, transparent) !important;
+}
+
+.bg-black\/60 {
+    background-color: color-mix(in srgb, var(--surface-page) 58%, #000 42%) !important;
+}
 
 .theme-page-aura {
     box-shadow: 0 0 60px color-mix(in srgb, var(--accent) 12%, transparent);
@@ -326,12 +303,6 @@ textarea {
         var(--hero-end) 100%
     );
     background-size: 200% 200%;
-}
-
-.card-glow {
-    box-shadow:
-        0 15px 36px color-mix(in srgb, black 50%, transparent),
-        0 0 0 1px color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .page-line-horizontal {

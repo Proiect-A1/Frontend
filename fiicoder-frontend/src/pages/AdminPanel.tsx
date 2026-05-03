@@ -299,7 +299,7 @@ export default function AdminPanel() {
     return (
         <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
             <motion.div
-                className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) theme-surface-card backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
+                className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
                 variants={{
                     hidden: { opacity: 0 },
                     visible: { opacity: 1, transition: staggerConfig },
@@ -354,7 +354,7 @@ export default function AdminPanel() {
                                 {overviewCards.map((stat) => (
                                     <div
                                         key={stat.label}
-                                        className={`p-4 rounded-xl border theme-surface-muted flex flex-col items-center justify-center text-center ${stat.highlight ? 'border-amber-400/50 bg-amber-500/10' : 'border-(--accent)/20'}`}
+                                        className={`p-4 rounded-xl border bg-(--surface-muted) flex flex-col items-center justify-center text-center ${stat.highlight ? 'border-amber-400/50 bg-amber-500/10' : 'border-(--accent)/20'}`}
                                     >
                                         <span
                                             className={`text-3xl font-black mb-1 ${stat.highlight ? 'text-amber-300' : 'text-(--accent)'}`}
@@ -390,7 +390,7 @@ export default function AdminPanel() {
                                         <motion.div
                                             variants={itemVariants}
                                             key={user.id}
-                                            className="p-4 rounded-xl border border-(--accent)/20 theme-surface-muted flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+                                            className="p-4 rounded-xl border border-(--accent)/20 bg-(--surface-muted) flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
                                         >
                                             <div className="min-w-0">
                                                 <h3 className="text-(--text-h) font-bold text-lg flex flex-wrap items-center gap-2">
@@ -517,8 +517,8 @@ export default function AdminPanel() {
                                                     }
                                                     className={`text-left p-4 rounded-xl border transition-colors duration-200 ${
                                                         isSelected
-                                                            ? 'border-(--accent) bg-(--accent)/15 shadow-lg shadow-(--accent)/10'
-                                                            : 'border-(--accent)/20 theme-surface-muted hover:border-(--accent)/40 hover:bg-(--accent)/10'
+                                                            ? 'border-(--accent) bg-(--accent)/15'
+                                                            : 'border-(--accent)/20 bg-(--surface-muted) hover:border-(--accent)/40 hover:bg-(--accent)/10'
                                                     }`}
                                                 >
                                                     <div className="flex items-start justify-between gap-3 mb-2">
@@ -551,7 +551,7 @@ export default function AdminPanel() {
 
                                 <motion.div
                                     variants={itemVariants}
-                                    className="p-5 rounded-xl border border-(--accent)/20 theme-surface-muted shadow-lg shadow-black/10"
+                                    className="p-5 rounded-xl border border-(--accent)/20 bg-(--surface-muted)"
                                 >
                                     {!selectedProposal && selectedProposalId && (
                                         <p className="text-(--text-muted) text-sm">
@@ -705,7 +705,7 @@ export default function AdminPanel() {
                                 <motion.form
                                     variants={itemVariants}
                                     onSubmit={handleAnnouncementSubmit}
-                                    className="p-5 rounded-xl border border-(--accent)/20 theme-surface-muted space-y-4"
+                                    className="p-5 rounded-xl border border-(--accent)/20 bg-(--surface-muted) space-y-4"
                                 >
                                     <div>
                                         <h3 className="text-xl font-bold text-(--text-h)">
@@ -793,7 +793,7 @@ export default function AdminPanel() {
                                         <motion.div
                                             variants={itemVariants}
                                             key={announcement.id}
-                                            className="p-4 rounded-xl border border-(--accent)/20 theme-surface-muted"
+                                            className="p-4 rounded-xl border border-(--accent)/20 bg-(--surface-muted)"
                                         >
                                             <div className="flex items-start justify-between gap-3 mb-2">
                                                 <div>
@@ -842,7 +842,7 @@ export default function AdminPanel() {
                                     <motion.div
                                         variants={itemVariants}
                                         key={entry.id}
-                                        className="p-4 rounded-xl border border-(--accent)/20 theme-surface-muted flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+                                        className="p-4 rounded-xl border border-(--accent)/20 bg-(--surface-muted) flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
                                     >
                                         <div className="min-w-0">
                                             <div className="flex flex-wrap items-center gap-2 mb-2">

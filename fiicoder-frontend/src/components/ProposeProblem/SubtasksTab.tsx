@@ -31,9 +31,9 @@ export default function SubtasksTab() {
             {/* Info */}
             <motion.div
                 variants={itemVariants}
-                className="p-4 bg-theme-surface-secondary rounded-xl border border-(--accent)/20"
+                className="p-4 bg-(--surface-muted) rounded-xl border border-(--accent)/25"
             >
-                <p className="text-sm text-theme-text">
+                <p className="text-sm text-(--text)">
                     <strong>Instrucțiuni:</strong> Subtask-urile permit o scorare progresivă.
                     Definiți care teste aparțin fiecărui subtask.
                 </p>
@@ -43,17 +43,17 @@ export default function SubtasksTab() {
             <motion.div variants={itemVariants} className="overflow-x-auto">
                 <table className="w-full text-sm">
                     <thead>
-                        <tr className="border-b border-theme-border">
-                            <th className="text-left text-theme-text font-semibold py-3 px-4">
+                        <tr className="border-b border-(--accent)/20">
+                            <th className="text-left text-(--text) font-semibold py-3 px-4">
                                 Titlu Subtask
                             </th>
-                            <th className="text-left text-theme-text font-semibold py-3 px-4">
+                            <th className="text-left text-(--text) font-semibold py-3 px-4">
                                 Puncte
                             </th>
-                            <th className="text-left text-theme-text font-semibold py-3 px-4">
+                            <th className="text-left text-(--text) font-semibold py-3 px-4">
                                 Teste Asociate
                             </th>
-                            <th className="text-center text-theme-text font-semibold py-3 px-4 w-12">
+                            <th className="text-center text-(--text) font-semibold py-3 px-4 w-12">
                                 Acțiuni
                             </th>
                         </tr>
@@ -61,7 +61,7 @@ export default function SubtasksTab() {
                     <tbody>
                         {fields.length === 0 ? (
                             <tr>
-                                <td colSpan={4} className="text-center text-theme-text-muted py-8">
+                                <td colSpan={4} className="text-center text-(--text-muted) py-8">
                                     Nu ai adăugat niciun subtask. Fă clic pe butonul de mai jos
                                     pentru a adăuga.
                                 </td>
@@ -70,10 +70,10 @@ export default function SubtasksTab() {
                             fields.map((field, index) => (
                                 <tr
                                     key={field.id}
-                                    className="border-b border-theme-border hover:bg-theme-surface-secondary/50 transition-colors"
+                                    className="border-b border-(--accent)/25 hover:bg-(--surface-muted)/50 transition-colors"
                                 >
                                     {/* Title */}
-                                    <td className="text-theme-text py-4 px-4">
+                                    <td className="text-(--text) py-4 px-4">
                                         <Controller
                                             name={`subtasks.${index}.title`}
                                             control={control}
@@ -81,14 +81,14 @@ export default function SubtasksTab() {
                                                 <input
                                                     {...field}
                                                     placeholder="ex: Subtask 1 - Soluție Brute Force"
-                                                    className="w-full px-3 py-1 bg-theme-surface-secondary border accent-border rounded text-theme-text text-sm focus:outline-none accent-ring transition-all"
+                                                    className="w-full px-3 py-1 bg-(--surface-muted) border border-(--accent) rounded text-(--text) text-sm focus:outline-none focus:[box-shadow:0_0_0_2px_color-mix(in_srgb,var(--accent)_50%,transparent)] transition-all"
                                                 />
                                             )}
                                         />
                                     </td>
 
                                     {/* Points */}
-                                    <td className="text-theme-text py-4 px-4">
+                                    <td className="text-(--text) py-4 px-4">
                                         <Controller
                                             name={`subtasks.${index}.points`}
                                             control={control}
@@ -97,7 +97,7 @@ export default function SubtasksTab() {
                                                     {...field}
                                                     type="number"
                                                     min="0"
-                                                    className="w-24 px-2 py-1 bg-theme-surface-secondary border accent-border rounded text-theme-text text-center focus:outline-none accent-ring transition-all"
+                                                    className="w-24 px-2 py-1 bg-(--surface-muted) border border-(--accent) rounded text-(--text) text-center focus:outline-none focus:[box-shadow:0_0_0_2px_color-mix(in_srgb,var(--accent)_50%,transparent)] transition-all"
                                                     onChange={(e) =>
                                                         field.onChange(parseInt(e.target.value))
                                                     }
@@ -107,9 +107,9 @@ export default function SubtasksTab() {
                                     </td>
 
                                     {/* Test Selection */}
-                                    <td className="text-theme-text text-sm py-4 px-4">
+                                    <td className="text-(--text) text-sm py-4 px-4">
                                         {tests.length === 0 ? (
-                                            <span className="text-theme-text-muted italic">
+                                            <span className="text-(--text-muted) italic">
                                                 Adaugă teste mai sus
                                             </span>
                                         ) : (
@@ -140,9 +140,9 @@ export default function SubtasksTab() {
                                                                         );
                                                                 }
                                                             }}
-                                                            className="rounded border-theme-border cursor-pointer"
+                                                            className="rounded border-(--accent)/20 cursor-pointer"
                                                         />
-                                                        <span className="text-xs accent-bg-subtle accent-text px-2 py-1 rounded border border-(--accent)/30">
+                                                        <span className="text-xs bg-(--accent)/10 text-(--accent) px-2 py-1 rounded border border-(--accent)/25">
                                                             {test.id}
                                                         </span>
                                                     </label>
@@ -182,12 +182,12 @@ export default function SubtasksTab() {
             {/* Stats */}
             <motion.div
                 variants={itemVariants}
-                className="p-4 bg-theme-surface-secondary rounded-xl border border-(--accent)/20 space-y-2"
+                className="p-4 bg-(--surface-muted) rounded-xl border border-(--accent)/25 space-y-2"
             >
-                <p className="text-sm text-theme-text">
+                <p className="text-sm text-(--text)">
                     <strong>Total subtask-uri:</strong> {fields.length}
                 </p>
-                <p className="text-sm text-theme-text-muted">
+                <p className="text-sm text-(--text-muted)">
                     <strong>Punctaj total:</strong>{' '}
                     {fields.reduce((sum, f) => sum + (f.points || 0), 0)} puncte
                 </p>

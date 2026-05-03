@@ -25,26 +25,24 @@ export default function AccessTab() {
             {/* Info */}
             <motion.div
                 variants={itemVariants}
-                className="p-4 bg-theme-surface-secondary rounded-xl border border-(--accent)/20"
+                className="p-4 bg-(--surface-muted) rounded-xl border border-(--accent)/25"
             >
-                <p className="text-sm text-theme-text">
+                <p className="text-sm text-(--text)">
                     <strong>Instrucțiuni:</strong> Alege cine poate vedea și accesa propunerea ta.
                 </p>
             </motion.div>
 
             {/* Visibility (custom dropdown) */}
             <motion.div variants={itemVariants} className="space-y-2">
-                <label className="text-theme-text font-semibold text-sm">Vizibilitate</label>
+                <label className="text-(--text) font-semibold text-sm">Vizibilitate</label>
                 <div className="relative">
                     <button
                         type="button"
                         onClick={() => setIsOpen(!isOpen)}
-                        className="w-full flex items-center justify-between rounded-xl border border-(--accent)/30 theme-surface-input px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
+                        className="w-full flex items-center justify-between rounded-xl border border-(--accent)/25 bg-(--surface-input) px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
                     >
                         <span>{options.find((o) => o.value === visibility)?.label}</span>
-                        <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
-                          ▼
-                        </motion.span>
+                        <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>▼</motion.span>
                     </button>
 
                     <AnimatePresence>
@@ -54,7 +52,7 @@ export default function AccessTab() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -6 }}
                                 transition={{ duration: 0.12 }}
-                                className="absolute z-50 left-0 top-full mt-2 w-full theme-surface-dropdown border border-(--accent)/30 rounded-xl shadow-2xl overflow-hidden"
+                                className="absolute z-50 left-0 top-full mt-2 w-full bg-(--surface-dropdown) border border-(--accent)/25 rounded-xl shadow-2xl overflow-hidden"
                             >
                                 {options.map((opt) => (
                                     <button
@@ -74,7 +72,7 @@ export default function AccessTab() {
                     </AnimatePresence>
                 </div>
 
-                <p className="text-xs text-theme-text-muted">
+                <p className="text-xs text-(--text-muted)">
                     {visibility === 'private' &&
                         'Propunerea ta este privată. Va fi vizibilă doar pentru moderatori și pentru tine.'}
                     {visibility === 'unlisted' &&
@@ -87,7 +85,7 @@ export default function AccessTab() {
             {/* Allowed Users */}
             {visibility === 'unlisted' && (
                 <motion.div variants={itemVariants} className="space-y-2">
-                    <label className="text-theme-text font-semibold text-sm">
+                    <label className="text-(--text) font-semibold text-sm">
                         Utilizatori Permisi (opțional)
                     </label>
                     <Controller
@@ -98,7 +96,7 @@ export default function AccessTab() {
                                 <input
                                     type="text"
                                     placeholder="Introdu usernames separate prin virgulă"
-                                    className="w-full px-4 py-2 bg-theme-surface-secondary border border-(--accent)/30 rounded-xl text-theme-text placeholder-theme-text-muted focus:outline-none transition-all"
+                                    className="w-full px-4 py-2 bg-(--surface-muted) border border-(--accent)/25 rounded-xl text-(--text) placeholder:text-(--text-muted) focus:outline-none transition-all"
                                     onChange={(e) => {
                                         const usernames = e.target.value
                                             .split(',')
@@ -107,7 +105,7 @@ export default function AccessTab() {
                                     }}
                                     value={field.value?.join(', ') || ''}
                                 />
-                                <p className="text-xs text-theme-text-muted">
+                                <p className="text-xs text-(--text-muted)">
                                     Lasă gol pentru a permite accesul pentru oricine cu linkul.
                                 </p>
                             </div>
@@ -119,7 +117,7 @@ export default function AccessTab() {
             {/* Allowed Groups */}
             {visibility === 'unlisted' && (
                 <motion.div variants={itemVariants} className="space-y-2">
-                    <label className="text-theme-text font-semibold text-sm">
+                    <label className="text-(--text) font-semibold text-sm">
                         Clase/Grupuri Permise (opțional)
                     </label>
                     <Controller
@@ -130,7 +128,7 @@ export default function AccessTab() {
                                 <input
                                     type="text"
                                     placeholder="Introdu ID-uri de clase separate prin virgulă"
-                                    className="w-full px-4 py-2 bg-theme-surface-secondary border border-(--accent)/30 rounded-xl text-theme-text placeholder-theme-text-muted focus:outline-none transition-all"
+                                    className="w-full px-4 py-2 bg-(--surface-muted) border border-(--accent)/25 rounded-xl text-(--text) placeholder:text-(--text-muted) focus:outline-none transition-all"
                                     onChange={(e) => {
                                         const groupIds = e.target.value
                                             .split(',')
@@ -139,7 +137,7 @@ export default function AccessTab() {
                                     }}
                                     value={field.value?.join(', ') || ''}
                                 />
-                                <p className="text-xs text-theme-text-muted">
+                                <p className="text-xs text-(--text-muted)">
                                     Specifică clasele care pot accesa această propunere.
                                 </p>
                             </div>
@@ -151,10 +149,10 @@ export default function AccessTab() {
             {/* Preview */}
             <motion.div
                 variants={itemVariants}
-                className="p-4 bg-theme-surface-secondary rounded-xl border border-(--accent)/30 space-y-3"
+                className="p-4 bg-(--surface-muted) rounded-xl border border-(--accent)/25 space-y-3"
             >
-                <h3 className="font-semibold text-theme-text">Rezumat Acces:</h3>
-                <div className="space-y-2 text-sm text-theme-text-muted">
+                <h3 className="font-semibold text-(--text)">Rezumat Acces:</h3>
+                <div className="space-y-2 text-sm text-(--text-muted)">
                     <p>
                         <strong>Vizibilitate:</strong>{' '}
                         {visibility === 'private'
@@ -171,7 +169,7 @@ export default function AccessTab() {
                                     {watch('allowedUsers')?.join(', ')}
                                 </p>
                             ) : (
-                                <p className="italic text-theme-text-muted">
+                                <p className="italic text-(--text-muted)">
                                     Oricine cu linkul poate accesa.
                                 </p>
                             )}
@@ -189,10 +187,10 @@ export default function AccessTab() {
             {/* Info Box */}
             <motion.div
                 variants={itemVariants}
-                className="p-4 bg-theme-surface-secondary rounded-xl border border-(--accent)/20 space-y-2"
+                className="p-4 bg-(--surface-muted) rounded-xl border border-(--accent)/25 space-y-2"
             >
-                <h4 className="font-semibold text-theme-text">Sfaturi de Siguranță:</h4>
-                <ul className="text-xs text-theme-text-muted space-y-1 list-disc list-inside">
+                <h4 className="font-semibold text-(--text)">Sfaturi de Siguranță:</h4>
+                <ul className="text-xs text-(--text-muted) space-y-1 list-disc list-inside">
                     <li>
                         Propunerile private nu vor fi niciodată publicate fără consimțământul tău.
                     </li>

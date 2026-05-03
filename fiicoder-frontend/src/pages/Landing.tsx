@@ -82,10 +82,10 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                     >
                         <div
                             onClick={(e) => e.stopPropagation()}
-                            className={`pointer-events-auto w-full max-w-lg rounded-2xl border-2 backdrop-blur-sm p-6 md:p-8 shadow-2xl ${
+                            className={`pointer-events-auto w-full max-w-lg rounded-2xl border-2 backdrop-blur-sm p-6 md:p-8 ${
                                 announcement.priority === 'high'
                                     ? 'border-red-500 bg-red-950 text-red-50'
-                                    : 'border-(--accent)/40 theme-surface-card'
+                                    : 'border-(--accent)/40 bg-(--surface-card)'
                             }`}
                         >
                             <div className="flex items-start justify-between gap-4 mb-4">
@@ -118,7 +118,7 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                 </>
             )}
         </AnimatePresence>,
-        document.body  // randat direct in body, complet in afara oricarui transform
+        document.body, // randat direct in body, complet in afara oricarui transform
     );
 }
 
@@ -127,7 +127,7 @@ export default function Landing() {
     const t = translations[lang];
     const { isAuthenticated } = useAuth();
     const { theme } = useTheme();
-    
+
     const themeLogo: Record<string, string> = {
         rose: '/logo.svg',
         nord: '/logo_nord.svg',
@@ -167,12 +167,12 @@ export default function Landing() {
     return (
         <div className="w-full flex justify-center h-auto xl:h-full">
             <motion.div
-                className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) theme-surface-card px-0 py-0 h-full overflow-hidden xl:h-full relative flex flex-col"
+                className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) bg-(--surface-card) px-0 py-0 h-full overflow-hidden xl:h-full relative flex flex-col"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
             >
-                <div className="w-full rounded-2xl backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 flex-1 overflow-y-auto custom-scrollbar">
+                <div className="w-full rounded-2xl px-5 py-6 md:px-8 md:py-8 flex-1 overflow-y-auto custom-scrollbar">
                     {/* Hero Section */}
                     <div className="text-center mb-8 md:mb-10">
                         <motion.div variants={itemVariants} className="mb-4">
@@ -187,7 +187,7 @@ export default function Landing() {
                             variants={itemVariants}
                             className="text-4xl md:text-5xl font-black text-(--text-h) mb-3 tracking-tight"
                         >
-                            {t.welcomeTitle} <span className="accent-text">{`<_FiiCoder>`}</span>
+                            {t.welcomeTitle} <span className="text-(--accent)">{`<_FiiCoder>`}</span>
                         </motion.h1>
 
                         <motion.p
@@ -211,7 +211,7 @@ export default function Landing() {
                             {!isAuthenticated && (
                                 <Link
                                     to="/login"
-                                    className="px-6 py-2.5 rounded-full bg-(--accent)/20 border-2 border-(--accent)/60 text-(--text-h) font-bold text-sm transition-all duration-200 hover:bg-(--accent)/35 hover:border-(--accent) hover:-translate-y-1 shadow-lg hover:shadow-(--accent)/30"
+                                    className="px-6 py-2.5 rounded-full bg-(--accent)/20 border-2 border-(--accent)/60 text-(--text-h) font-bold text-sm transition-all duration-200 hover:bg-(--accent)/35 hover:border-(--accent) hover:-translate-y-1"
                                 >
                                     {t.authenticateBtn}
                                 </Link>
@@ -236,8 +236,8 @@ export default function Landing() {
                                             ann.priority === 'high'
                                                 ? 'border-red-500 bg-red-950 hover:border-red-400 hover:bg-red-900 shadow-lg shadow-red-500/30'
                                                 : ann.priority === 'medium'
-                                                  ? 'border-(--accent)/30 theme-surface-muted hover:border-(--accent)/60 theme-surface-hover'
-                                                  : 'border-(--accent)/20 theme-surface-muted hover:border-(--accent)/40 theme-surface-hover'
+                                                  ? 'border-(--accent)/30 bg-(--surface-muted) hover:border-(--accent)/60 hover:bg-(--surface-hover)'
+                                                  : 'border-(--accent)/20 bg-(--surface-muted) hover:border-(--accent)/40 hover:bg-(--surface-hover)'
                                         }`}
                                     >
                                         <div className="flex items-start gap-3">
@@ -303,7 +303,7 @@ export default function Landing() {
                             <motion.div
                                 key={index}
                                 variants={itemVariants}
-                                className="p-5 rounded-xl border border-(--accent)/30 theme-surface-card backdrop-blur-sm hover:border-(--accent)/60 theme-surface-hover transition-colors duration-300 group"
+                                className="p-5 rounded-xl border border-(--accent)/30 bg-(--surface-card) backdrop-blur-sm hover:border-(--accent)/60 hover:bg-(--surface-hover) transition-colors duration-300 group"
                             >
                                 <div className="text-3xl mb-2 group-hover:scale-110 transition-all duration-300">
                                     {feature.icon}
@@ -319,7 +319,7 @@ export default function Landing() {
                     {/* Stats Section */}
                     <motion.div
                         variants={itemVariants}
-                        className="mt-8 p-6 rounded-xl border border-(--accent)/25 theme-surface-muted backdrop-blur-sm"
+                        className="mt-8 p-6 rounded-xl border border-(--accent)/25 bg-(--surface-muted) backdrop-blur-sm"
                     >
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                             {[
@@ -329,7 +329,7 @@ export default function Landing() {
                                 { num: '98%', label: t.satisfactionRate },
                             ].map((stat, idx) => (
                                 <motion.div key={idx} variants={itemVariants}>
-                                    <div className="text-2xl md:text-3xl font-black accent-text mb-1">
+                                    <div className="text-2xl md:text-3xl font-black text-(--accent) mb-1">
                                         {stat.num}
                                     </div>
                                     <div className="text-xs text-(--text-muted)">{stat.label}</div>

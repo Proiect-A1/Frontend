@@ -121,7 +121,7 @@ export default function GeneralTab() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Title */}
                 <motion.div variants={itemVariants} className="space-y-2">
-                    <label className="text-theme-text font-semibold text-sm">Titlu Problemei</label>
+                    <label className="text-(--text) font-semibold text-sm">Titlu Problemei</label>
                     <Controller
                         name="title"
                         control={control}
@@ -131,7 +131,7 @@ export default function GeneralTab() {
                                 <input
                                     {...field}
                                     placeholder="ex: Two Sum, Fibonacci, DP Matrix"
-                                    className="w-full flex items-center justify-between rounded-xl border border-(--accent)/30 theme-surface-input px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
+                                    className="w-full flex items-center justify-between rounded-xl border border-(--accent)/30 bg-(--surface-input) px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
                                 />
                                 {error && (
                                     <p className="text-red-400 text-xs mt-1">{error.message}</p>
@@ -143,14 +143,14 @@ export default function GeneralTab() {
 
                 {/* Difficulty */}
                 <motion.div variants={itemVariants} className="space-y-2">
-                    <label className="text-theme-text font-semibold text-sm">
+                    <label className="text-(--text) font-semibold text-sm">
                         Nivel de Dificultate
                     </label>
                     <div className="relative w-full">
                         <button
                             type="button"
                             onClick={() => setIsDifficultyOpen(!isDifficultyOpen)}
-                            className="w-full flex items-center justify-between rounded-xl border border-(--accent)/30 theme-surface-input px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
+                            className="w-full flex items-center justify-between rounded-xl border border-(--accent)/30 bg-(--surface-input) px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
                         >
                             <span>
                                 {formData.difficulty
@@ -170,7 +170,7 @@ export default function GeneralTab() {
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.12 }}
-                                    className="absolute z-50 mt-1 w-full theme-surface-dropdown border border-(--accent)/30 rounded-xl shadow-2xl overflow-hidden"
+                                    className="absolute z-50 mt-1 w-full bg-(--surface-dropdown) border border-(--accent)/30 rounded-xl shadow-2xl overflow-hidden"
                                 >
                                     {difficulties.map((diff) => (
                                         <button
@@ -193,7 +193,7 @@ export default function GeneralTab() {
 
                 {/* Time Limit */}
                 <motion.div variants={itemVariants} className="space-y-2">
-                    <label className="text-theme-text font-semibold text-sm">
+                    <label className="text-(--text) font-semibold text-sm">
                         Limită de Timp (s)
                     </label>
                     <Controller
@@ -206,7 +206,7 @@ export default function GeneralTab() {
                                 min="0.1"
                                 step="0.1"
                                 placeholder="1.0"
-                                className="w-full flex items-center justify-between rounded-xl border border-(--accent)/30 theme-surface-input px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
+                                className="w-full flex items-center justify-between rounded-xl border border-(--accent)/30 bg-(--surface-input) px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
                                 onChange={(e) => field.onChange(parseFloat(e.target.value))}
                             />
                         )}
@@ -215,7 +215,7 @@ export default function GeneralTab() {
 
                 {/* Memory Limit */}
                 <motion.div variants={itemVariants} className="space-y-2">
-                    <label className="text-theme-text font-semibold text-sm">
+                    <label className="text-(--text) font-semibold text-sm">
                         Limită de Memorie (MB)
                     </label>
                     <Controller
@@ -228,7 +228,7 @@ export default function GeneralTab() {
                                 min="16"
                                 step="16"
                                 placeholder="256"
-                                className="w-full flex items-center justify-between rounded-xl border border-(--accent)/30 theme-surface-input px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
+                                className="w-full flex items-center justify-between rounded-xl border border-(--accent)/30 bg-(--surface-input) px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
                                 onChange={(e) => field.onChange(parseInt(e.target.value))}
                             />
                         )}
@@ -238,9 +238,9 @@ export default function GeneralTab() {
 
             {/* Tags with Autocomplete */}
             <motion.div variants={itemVariants} className="space-y-2">
-                <label className="text-theme-text font-semibold text-sm">Etichete</label>
+                <label className="text-(--text) font-semibold text-sm">Etichete</label>
                 <div className="relative">
-                    {/* Selected tags display */} 
+                    {/* Selected tags display */}
                     <>
                         {formData.tags.map((tag) => (
                             <span
@@ -265,7 +265,7 @@ export default function GeneralTab() {
                             placeholder={
                                 formData.tags.length === 0 ? 'Scrie pentru a căuta etichete...' : ''
                             }
-                            className="w-full rounded-xl border border-(--accent)/30 theme-surface-input px-3 py-2 text-sm text-(--text) placeholder:text-(--text-muted) outline-none transition hover:border-(--accent)"
+                            className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-input) px-3 py-2 text-sm text-(--text) placeholder:text-(--text-muted) outline-none transition hover:border-(--accent)"
                         />
                     </>
 
@@ -278,7 +278,7 @@ export default function GeneralTab() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -6 }}
                                 transition={{ duration: 0.12 }}
-                                className="absolute z-50 mt-1 w-full theme-surface-dropdown border border-(--accent)/40 rounded-2xl shadow-2xl overflow-hidden max-h-48 overflow-y-auto"
+                                className="absolute z-50 mt-1 w-full bg-(--surface-dropdown) border border-(--accent)/25 rounded-2xl overflow-hidden max-h-48 overflow-y-auto"
                             >
                                 {suggestions.map((tag, index) => (
                                     <motion.button
@@ -299,7 +299,7 @@ export default function GeneralTab() {
                         )}
                     </AnimatePresence>
                 </div>
-                <p className="text-xs text-theme-text-muted">
+                <p className="text-xs text-(--text-muted)">
                     Selectează din lista de etichete existente.
                 </p>
             </motion.div>
@@ -307,7 +307,7 @@ export default function GeneralTab() {
             {/* Info Section */}
             <motion.div
                 variants={itemVariants}
-                className="p-4 bg-theme-surface-secondary rounded-2xl border border-(--accent) text-sm text-theme-text-muted"
+                className="p-4 bg-(--surface-muted) rounded-2xl border border-(--accent)/25 text-sm text-(--text-muted)"
             >
                 <p>
                     <strong>Sfat:</strong> Alege limite care sunt realiste pentru problema ta. Timp
@@ -318,10 +318,10 @@ export default function GeneralTab() {
             {/* Preview */}
             <motion.div
                 variants={itemVariants}
-                className="p-4 rounded-2xl border border-(--accent) space-y-3"
+                className="p-4 rounded-2xl border border-(--accent)/25 bg-(--surface-muted) space-y-3"
             >
-                <h3 className="font-semibold text-theme-text">Previzualizare:</h3>
-                <div className="space-y-1 text-sm text-theme-text-muted">
+                <h3 className="font-semibold text-(--text)">Previzualizare:</h3>
+                <div className="space-y-1 text-sm text-(--text-muted)">
                     <p>
                         <strong>Titlu:</strong> {formData.title || '—'}
                     </p>

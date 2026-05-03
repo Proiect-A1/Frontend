@@ -285,7 +285,7 @@ export default function ProblemDetails() {
 
   if (error || !problem) {
     return (
-      <div className="w-full text-center p-8 text-red-400 theme-surface-card backdrop-blur-sm border-2 border-red-500/30 rounded-2xl">
+      <div className="w-full text-center p-8 text-red-400 bg-(--surface-card) backdrop-blur-sm border-2 border-red-500/30 rounded-2xl">
         <h2 className="text-xl font-bold mb-2">Eroare</h2>
         <p>{error || "Problema nu a fost găsită."}</p>
         <Link
@@ -301,8 +301,8 @@ export default function ProblemDetails() {
   return (
     <div className="w-full flex flex-col gap-6">
       <div className="grid gap-6 xl:grid-cols-3">
-        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-sm border-2 border-(--accent) rounded-2xl custom-scrollbar">
-          <p className="text-xs font-semibold uppercase tracking-wider accent-text">
+        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl custom-scrollbar">
+          <p className="text-xs font-semibold uppercase tracking-wider text-(--accent)">
             {lang === "RO" ? "Problemă: " : "Problem: "} {problem.title}
           </p>
           <h1 className="text-3xl font-bold text-(--text) mb-2">
@@ -359,7 +359,7 @@ export default function ProblemDetails() {
                 span: ({ className, children, ...props }: any) => {
                   if (className && className.includes("katex")) {
                     return (
-                      <span className={`${className} accent-text`} {...props}>
+                      <span className={`${className} text-(--accent)`} {...props}>
                         {children}
                       </span>
                     );
@@ -375,7 +375,7 @@ export default function ProblemDetails() {
                 code: ({ className, children, ...props }: any) => {
                   return (
                     <code
-                      className={`accent-text font-mono ${className || ""}`}
+                      className={`text-(--accent) font-mono ${className || ""}`}
                       {...props}
                     >
                       {children}
@@ -387,7 +387,7 @@ export default function ProblemDetails() {
                 pre: ({ children, ...props }: any) => (
                   <div className="relative group my-4">
                     <pre
-                      className="theme-surface-input p-4 rounded-xl border border-(--accent)/20 overflow-x-auto text-sm text-(--text) shadow-inner [&>code]:text-(--text)"
+                      className="bg-(--surface-input) p-4 rounded-xl border border-(--accent)/20 overflow-x-auto text-sm text-(--text) shadow-inner [&>code]:text-(--text)"
                       {...props}
                     >
                       {children}
@@ -399,7 +399,7 @@ export default function ProblemDetails() {
           </div>
         </div>
 
-        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-sm border border-(--accent)/50 rounded-2xl card-glow custom-scrollbar flex flex-col">
+        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl custom-scrollbar flex flex-col">
           {isAuthenticated ? (
             <div className="flex-1 flex flex-col h-full">
               <div className="flex items-center justify-between mb-6 shrink-0">
@@ -409,7 +409,7 @@ export default function ProblemDetails() {
                 <div className="relative w-32">
                   <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="w-full flex items-center justify-between theme-surface-input border border-(--accent)/30 rounded-xl px-4 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent)"
+                    className="w-full flex items-center justify-between bg-(--surface-input) border border-(--accent)/30 rounded-xl px-4 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent)"
                   >
                     {language}
                     <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
@@ -423,7 +423,7 @@ export default function ProblemDetails() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.12 }}
-                        className="absolute z-50 w-full theme-surface-dropdown border border-(--accent)/40 rounded-xl shadow-2xl overflow-hidden"
+                        className="absolute z-50 w-full bg-(--surface-dropdown) border border-(--accent)/40 rounded-xl shadow-2xl overflow-hidden"
                       >
                         {availableLanguages.map((langItem) => (
                           <button
@@ -449,7 +449,7 @@ export default function ProblemDetails() {
                 onSubmit={handleSubmit}
                 className="flex-1 flex flex-col gap-4"
               >
-                <div className="relative flex-1 rounded-2xl overflow-hidden border border-(--accent)/20 theme-surface-editor min-h-75">
+                <div className="relative flex-1 rounded-2xl overflow-hidden border border-(--accent)/20 bg-(--surface-editor) min-h-75">
                   <Editor
                     height="100%"
                     language={monacoLanguageMap[language] || "cpp"}
@@ -529,7 +529,7 @@ export default function ProblemDetails() {
           )}
         </div>
 
-        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 theme-surface-card backdrop-blur-sm border border-(--accent)/50 rounded-2xl card-glow custom-scrollbar">
+        <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl custom-scrollbar">
           <h2 className="text-xl font-bold text-(--text) mb-2">Test Panel</h2>
           <div className="page-line-horizontal" />
           <p className="text-(--text)">
@@ -559,7 +559,7 @@ export default function ProblemDetails() {
             <div
               className={`relative overflow-hidden px-8 py-5 rounded-2xl border-2 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${
                 status === "pending"
-                  ? "border-(--accent)/50 theme-surface-card text-(--text)"
+                  ? "border-(--accent)/50 bg-(--surface-card) text-(--text)"
                   : status === "valid"
                     ? "border-green-500/50 bg-green-500/10 text-green-300"
                     : "border-red-500/50 bg-red-500/10 text-red-300"

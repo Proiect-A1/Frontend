@@ -20,7 +20,7 @@ const ProposeProblem = lazy(() => import("./pages/ProposeProblem"));
 function PageLoader() {
   return (
     <div className="flex items-center justify-center h-full">
-      <div className="animate-pulse text-pink-300">Loading...</div>
+      <div className="animate-pulse text-(--text-muted)">Loading...</div>
     </div>
   );
 }
@@ -88,7 +88,7 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="flex-1 flex flex-col xl:overflow-hidden text-pink-100 font-sans custom-scrollbar">
+      <div className="flex-1 flex flex-col xl:overflow-hidden text-(--text) font-sans custom-scrollbar">
         <Navbar />
         <AnimatedRoutes />
       </div>

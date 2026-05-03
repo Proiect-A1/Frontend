@@ -102,7 +102,7 @@ export default function FilterSidebar({
             initial="hidden"
             animate="visible"
             variants={{ visible: { transition: staggerConfig } }}
-            className="h-auto overflow-visible xl:h-fit xl:max-h-[calc(100svh-8.5rem)] xl:overflow-y-auto p-5 theme-surface-card backdrop-blur-sm border-2 border-(--accent) rounded-2xl xl:sticky xl:top-0 xl:col-start-1 custom-scrollbar"
+            className="h-auto overflow-visible xl:h-fit xl:max-h-[calc(100svh-8.5rem)] xl:overflow-y-auto p-5 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl xl:sticky xl:top-0 xl:col-start-1 custom-scrollbar"
         >
             <motion.h2 variants={itemVariants} className="text-xl font-bold text-(--text-h) mb-2">
                 {t.filterTitle}
@@ -129,7 +129,7 @@ export default function FilterSidebar({
                             if (e.key === 'Enter') handleSearchSubmit();
                         }}
                         placeholder={lang === 'RO' ? 'ex: Problema 3' : 'ex: Problem 3'}
-                        className="w-full rounded-xl border border-(--accent)/30 theme-surface-input px-3 py-2 text-sm text-(--text) placeholder:text-(--text-muted) outline-none transition hover:border-(--accent)"
+                        className="w-full rounded-xl border border-(--accent)/30 bg-(--surface-input) px-3 py-2 text-sm text-(--text) placeholder:text-(--text-muted) outline-none transition hover:border-(--accent)"
                     />
 
                     {/* mesaj eroare inline */}
@@ -145,7 +145,7 @@ export default function FilterSidebar({
                         <button
                             type="button"
                             onClick={() => setIsOpen(!isOpen)}
-                            className="w-full flex items-center justify-between rounded-xl border border-(--accent)/30 theme-surface-input px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
+                            className="w-full flex items-center justify-between rounded-xl border border-(--accent)/30 bg-(--surface-input) px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
                         >
                             {getOptionLabel(difficultyFilter)}
                             <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>▼</motion.span>
@@ -158,7 +158,7 @@ export default function FilterSidebar({
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.12 }}
-                                    className="absolute z-50 mt-1 w-full theme-surface-dropdown border border-(--accent)/30 rounded-xl shadow-2xl overflow-hidden"
+                                    className="absolute z-50 mt-1 w-full bg-(--surface-dropdown) border border-(--accent)/30 rounded-xl shadow-2xl overflow-hidden"
                                 >
                                     {difficultyOptions.map((option) => (
                                         <button

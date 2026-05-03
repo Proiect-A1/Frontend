@@ -1,6 +1,7 @@
 import { Controller, useFormContext } from 'react-hook-form';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
+import type { OnMount } from '@monaco-editor/react';
 import Editor from '@monaco-editor/react';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
@@ -8,6 +9,98 @@ import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import type { ProposeProblemForm } from '../../types/proposeProblem';
 import { itemVariants, staggerConfig } from '../../utils/motionConfig';
+import { useTheme } from '../../services/ThemeContext';
+
+const monacoThemes: Record<
+    string,
+    {
+        accent: string;
+        text: string;
+        textMuted: string;
+        textSubtle: string;
+        editorBg: string;
+        codeBg: string;
+        accentSecondary: string;
+    }
+> = {
+    rose: {
+        accent: '#ff5eb6',
+        accentSecondary: '#a78bfa',
+        text: '#ffe8f6',
+        textMuted: '#b39aad',
+        textSubtle: '#8a7099',
+        editorBg: '#0a0812',
+        codeBg: '#120e1c',
+    },
+    nord: {
+        accent: '#88c0d0',
+        accentSecondary: '#5e81ac',
+        text: '#eceff4',
+        textMuted: '#7b88a1',
+        textSubtle: '#616e88',
+        editorBg: '#242933',
+        codeBg: '#2e3440',
+    },
+    cream: {
+        accent: '#d4a574',
+        accentSecondary: '#b76857',
+        text: '#f5f1e8',
+        textMuted: '#a89080',
+        textSubtle: '#8a7560',
+        editorBg: '#1a1612',
+        codeBg: '#2a2420',
+    },
+    sage: {
+        accent: '#7a9e7e',
+        accentSecondary: '#5a7e78',
+        text: '#e8ebe7',
+        textMuted: '#7a8f7c',
+        textSubtle: '#667069',
+        editorBg: '#1a1e1a',
+        codeBg: '#242823',
+    },
+};
+
+function applyMonacoTheme(monaco: any, themeName: string) {
+    const palette = monacoThemes[themeName] || monacoThemes.rose;
+
+    monaco.editor.defineTheme('fiicoder-dark', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [
+            {
+                token: 'comment',
+                foreground: palette.textMuted.replace('#', ''),
+                fontStyle: 'italic',
+            },
+            { token: 'keyword', foreground: palette.accent.replace('#', '') },
+            { token: 'string', foreground: palette.accentSecondary.replace('#', '') },
+            { token: 'number', foreground: palette.accent.replace('#', '') },
+            { token: 'type', foreground: palette.accentSecondary.replace('#', '') },
+            { token: 'function', foreground: palette.accent.replace('#', '') },
+            { token: 'variable', foreground: palette.text.replace('#', '') },
+        ],
+        colors: {
+            'editor.background': palette.editorBg,
+            'editor.foreground': palette.text,
+            'editor.lineHighlightBackground': palette.codeBg,
+            'editor.selectionBackground': `${palette.accent}4d`,
+            'editor.inactiveSelectionBackground': `${palette.accent}26`,
+            'editorLineNumber.foreground': palette.textSubtle,
+            'editorLineNumber.activeForeground': palette.accent,
+            'editorCursor.foreground': palette.accent,
+            'editorIndentGuide.background': `${palette.accent}1f`,
+            'editorIndentGuide.activeBackground': `${palette.accent}59`,
+            'editor.selectionHighlightBackground': `${palette.accent}33`,
+            'editorBracketMatch.background': `${palette.accent}40`,
+            'editorBracketMatch.border': `${palette.accent}99`,
+            'scrollbarSlider.background': `${palette.accent}26`,
+            'scrollbarSlider.hoverBackground': `${palette.accent}4d`,
+            'scrollbarSlider.activeBackground': `${palette.accent}80`,
+        },
+    });
+    monaco.editor.setTheme('fiicoder-dark');
+}
 
 // Utility to fix database indentation issues for Markdown
 function unindent(str: string): string {
@@ -38,7 +131,14 @@ function unindent(str: string): string {
 
 export default function StatementTab() {
     const { control } = useFormContext<ProposeProblemForm>();
+    const { theme } = useTheme();
     const [showPreview, setShowPreview] = useState(true);
+    const monacoRef = useRef<any>(null);
+
+    const handleEditorMount: OnMount = (_editor, monaco) => {
+        monacoRef.current = monaco;
+        applyMonacoTheme(monaco, theme);
+    };
 
     return (
         <motion.div
@@ -49,9 +149,7 @@ export default function StatementTab() {
         >
             {/* Source URL */}
             <motion.div variants={itemVariants} className="space-y-2">
-                <label className="text-theme-text font-semibold text-sm">
-                    URL Sursă (opțional)
-                </label>
+                <label className="text-(--text) font-semibold text-sm">URL Sursă (opțional)</label>
                 <Controller
                     name="sourceUrl"
                     control={control}
@@ -59,7 +157,7 @@ export default function StatementTab() {
                         <input
                             {...field}
                             placeholder="ex: https://codeforces.com/problemset/problem/1/A"
-                            className="w-full px-4 py-2 bg-theme-surface-secondary border border-(--accent)/30 rounded-xl text-theme-text placeholder-theme-text-muted focus:outline-none transition-all"
+                            className="w-full px-4 py-2 bg-(--surface-muted) border border-(--accent)/25 rounded-xl text-(--text) placeholder:text-(--text-muted) focus:outline-none transition-all"
                         />
                     )}
                 />
@@ -70,7 +168,7 @@ export default function StatementTab() {
                 <button
                     type="button"
                     onClick={() => setShowPreview(!showPreview)}
-                    className="px-4 py-2 bg-(--accent)/15 border border-(--accent)/40 rounded-xl text-(--text-h) hover:bg-(--accent)/25 transition-colors font-semibold text-sm"
+                    className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                 >
                     {showPreview ? 'Ascunde Preview' : 'Arăta Preview'}
                 </button>
@@ -82,20 +180,21 @@ export default function StatementTab() {
                 className={`grid ${showPreview ? 'grid-cols-2' : 'grid-cols-1'} gap-6`}
             >
                 {/* Monaco Editor */}
-                <motion.div variants={itemVariants} className="space-y-2">
-                    <label className="text-theme-text text-sm font-semibold">Markdown Enunț</label>
+                <div className="space-y-1">
+                    <label className="text-(--text) text-sm font-semibold">Markdown Enunț</label>
                     <Controller
                         name="statement"
                         control={control}
                         rules={{ required: 'Enunțul este obligatoriu' }}
                         render={({ field }) => (
-                            <div className="border border-(--accent)/30 rounded-xl overflow-hidden h-96">
+                            <div className="bg-(--surface-card) rounded-xl border border-(--accent)/25 overflow-hidden h-96">
                                 <Editor
                                     height="100%"
                                     defaultLanguage="markdown"
-                                    theme="vs-dark"
+                                    theme="fiicoder-dark"
                                     value={field.value}
                                     onChange={(val) => field.onChange(val || '')}
+                                    onMount={handleEditorMount}
                                     options={{
                                         minimap: { enabled: false },
                                         wordWrap: 'on',
@@ -106,23 +205,23 @@ export default function StatementTab() {
                             </div>
                         )}
                     />
-                    <p className="text-xs text-theme-text-muted">
+                    <p className="text-xs text-(--text-muted)">
                         Folosește <strong>Markdown</strong> pentru formatare. Poți folosi și{' '}
                         <strong>LaTeX</strong> cu $...$ pentru ecuații.
                     </p>
-                </motion.div>
+                </div>
 
                 {/* Live Preview */}
                 {showPreview && (
-                    <motion.div variants={itemVariants} className="space-y-2">
-                        <label className="text-theme-text text-sm font-semibold">
+                    <div className="space-y-1">
+                        <label className="text-(--text) text-sm font-semibold">
                             Previzualizare
                         </label>
                         <Controller
                             name="statement"
                             control={control}
                             render={({ field }) => (
-                                <div className="border border-(--accent)/30 rounded-xl p-4 h-96 overflow-y-auto bg-theme-surface-secondary custom-scrollbar text-theme-text leading-relaxed">
+                                <div className="border border-(--accent)/25 rounded-xl p-4 h-96 overflow-y-auto bg-(--surface-muted) custom-scrollbar text-(--text) leading-relaxed">
                                     <ReactMarkdown
                                         remarkPlugins={[remarkMath]}
                                         rehypePlugins={[rehypeKatex]}
@@ -130,19 +229,19 @@ export default function StatementTab() {
                                             // Titluri
                                             h1: ({ ...props }) => (
                                                 <h1
-                                                    className="text-2xl font-bold accent-text mt-6 mb-3 border-b accent-border/30 pb-1"
+                                                    className="text-2xl font-bold text-(--accent) mt-6 mb-3 border-b border-(--accent)/30 pb-1"
                                                     {...props}
                                                 />
                                             ),
                                             h2: ({ ...props }) => (
                                                 <h2
-                                                    className="text-xl font-bold accent-text mt-5 mb-2"
+                                                    className="text-xl font-bold text-(--accent) mt-5 mb-2"
                                                     {...props}
                                                 />
                                             ),
                                             h3: ({ ...props }) => (
                                                 <h3
-                                                    className="text-lg font-bold accent-text mt-4 mb-1"
+                                                    className="text-lg font-bold text-(--accent) mt-4 mb-1"
                                                     {...props}
                                                 />
                                             ),
@@ -177,7 +276,7 @@ export default function StatementTab() {
                                                 if (className && className.includes('katex')) {
                                                     return (
                                                         <span
-                                                            className={`${className} accent-text`}
+                                                            className={`${className} text-(--accent)`}
                                                             {...props}
                                                         >
                                                             {children}
@@ -197,7 +296,7 @@ export default function StatementTab() {
                                                     // Cod în bloc (cu pre)
                                                     return (
                                                         <code
-                                                            className={`${className} accent-text font-mono`}
+                                                            className={`${className} text-(--accent) font-mono`}
                                                             {...props}
                                                         >
                                                             {children}
@@ -207,7 +306,7 @@ export default function StatementTab() {
                                                 // Cod inline
                                                 return (
                                                     <code
-                                                        className="accent-text font-mono accent-bg-subtle px-1.5 py-0.5 rounded text-sm"
+                                                        className="text-(--accent) font-mono bg-(--accent)/10 px-1.5 py-0.5 rounded text-sm"
                                                         {...props}
                                                     >
                                                         {children}
@@ -219,7 +318,7 @@ export default function StatementTab() {
                                             pre: ({ children, ...props }: any) => (
                                                 <div className="relative group my-4">
                                                     <pre
-                                                        className="bg-theme-surface-card p-4 rounded-xl border accent-border/30 overflow-x-auto text-sm text-theme-text shadow-inner [&>code]:text-theme-text"
+                                                        className="bg-(--surface-card) p-4 rounded-xl border border-(--accent)/30 overflow-x-auto text-sm text-(--text) shadow-inner [&>code]:text-(--text)"
                                                         {...props}
                                                     >
                                                         {children}
@@ -230,7 +329,7 @@ export default function StatementTab() {
                                             // Citate
                                             blockquote: ({ ...props }) => (
                                                 <blockquote
-                                                    className="border-l-4 accent-border pl-4 italic text-theme-text-muted my-4"
+                                                    className="border-l-4 border-(--accent) pl-4 italic text-(--text-muted) my-4"
                                                     {...props}
                                                 />
                                             ),
@@ -238,7 +337,7 @@ export default function StatementTab() {
                                             // Link-uri
                                             a: ({ ...props }) => (
                                                 <a
-                                                    className="accent-text hover:opacity-80 underline"
+                                                    className="text-(--accent) hover:opacity-80 underline"
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     {...props}
@@ -251,17 +350,17 @@ export default function StatementTab() {
                                 </div>
                             )}
                         />
-                    </motion.div>
+                    </div>
                 )}
             </motion.div>
 
             {/* Template Helper */}
             <motion.div
                 variants={itemVariants}
-                className="p-4 bg-theme-surface-secondary rounded-xl border border-(--accent)/20 space-y-2"
+                className="p-4 bg-(--surface-muted) rounded-xl border border-(--accent)/25 space-y-2"
             >
-                <h4 className="font-semibold accent-text">Template Rapid:</h4>
-                <pre className="text-xs text-theme-text overflow-x-auto bg-theme-surface-secondary p-3 rounded">
+                <h4 className="font-semibold text-(--accent)">Template Rapid:</h4>
+                <pre className="text-xs text-(--text) overflow-x-auto bg-(--surface-muted) p-3 rounded">
                     {`# Descrierea Problemei
 
 ## Cerință
