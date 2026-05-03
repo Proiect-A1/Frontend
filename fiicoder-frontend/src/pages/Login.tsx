@@ -6,6 +6,7 @@ import { authService, AuthError } from "../services/authService";
 import type { ValidationErrors } from "../services/authService";
 import { containerVariants, itemVariants, hoverTransition } from "../utils/motionConfig";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 
 const USERNAME_KEY = 'fiicoder_username';
 
@@ -31,6 +32,16 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  useEffect(() => {
+  setUsernameOrEmail(localStorage.getItem("login_usernameOrEmail") || "");
+  setPassword(localStorage.getItem("login_password") || "");
+
+  setUsername(localStorage.getItem("register_username") || "");
+  setFirstName(localStorage.getItem("register_firstName") || "");
+  setLastName(localStorage.getItem("register_lastName") || "");
+  setEmail(localStorage.getItem("register_email") || "");
+}, []);
+
   // Helpers
 
   function clearMessages() {
@@ -38,6 +49,30 @@ export default function Login() {
     setFieldErrors({});
     setSuccessMsg(null);
   }
+
+  useEffect(() => {
+  localStorage.setItem("login_usernameOrEmail", usernameOrEmail);
+}, [usernameOrEmail]);
+
+useEffect(() => {
+  localStorage.setItem("login_password", password);
+}, [password]);
+
+useEffect(() => {
+  localStorage.setItem("register_username", username);
+}, [username]);
+
+useEffect(() => {
+  localStorage.setItem("register_firstName", firstName);
+}, [firstName]);
+
+useEffect(() => {
+  localStorage.setItem("register_lastName", lastName);
+}, [lastName]);
+
+useEffect(() => {
+  localStorage.setItem("register_email", email);
+}, [email]);
 
   function formatFieldErrors(errors: Record<string, string>): string {
     return Object.values(errors).join(". ");
