@@ -59,6 +59,9 @@ interface AnnouncementModalProps {
 function AnnouncementModal({ announcement, isOpen, onClose, lang }: AnnouncementModalProps) {
     if (!announcement) return null;
 
+    const isHighPriority = announcement.priority === 'high';
+    const isMediumPriority = announcement.priority === 'medium';
+
     return createPortal(
         <AnimatePresence>
             {isOpen && (
@@ -69,7 +72,7 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 z-9998 bg-black/60 backdrop-blur-sm"
+                        className="fixed inset-0 z-9998 bg-black/25 backdrop-blur-sm"
                     />
                     {/* modal */}
                     <motion.div
@@ -83,32 +86,51 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                         <div
                             onClick={(e) => e.stopPropagation()}
                             className={`pointer-events-auto w-full max-w-lg rounded-2xl border-2 backdrop-blur-sm p-6 md:p-8 ${
-                                announcement.priority === 'high'
-                                    ? 'border-red-500 bg-red-950 text-red-50'
-                                    : 'border-(--accent)/40 bg-(--surface-card)'
+                                isHighPriority
+                                    ? 'border-(--accent) bg-(--accent)/12 shadow-lg shadow-(--accent)/25'
+                                    : isMediumPriority
+                                      ? 'border-(--accent)/50 bg-(--accent)/8 shadow-lg shadow-(--accent)/15'
+                                      : 'border-(--accent)/40 bg-(--surface-card)'
                             }`}
                         >
                             <div className="flex items-start justify-between gap-4 mb-4">
                                 <div className="text-4xl shrink-0">{announcement.icon}</div>
-                                {announcement.priority === 'high' && (
-                                    <span className="shrink-0 px-3 py-1 rounded-full bg-red-600 text-white text-xs font-bold border border-red-400">
+                                {isHighPriority && (
+                                    <span className="shrink-0 px-3 py-1 rounded-full bg-(--accent) text-(--text-h) text-xs font-bold border border-(--accent)/60">
                                         URGENT
                                     </span>
                                 )}
+                                {isMediumPriority && (
+                                    <span className="shrink-0 px-3 py-1 rounded-full bg-(--accent)/20 text-(--accent) text-xs font-bold border border-(--accent)/40">
+                                        {lang === 'RO' ? 'IMPORTANT' : 'IMPORTANT'}
+                                    </span>
+                                )}
                             </div>
-                            <h2 className="text-2xl font-bold text-(--text-h) mb-4">
+                            <h2
+                                className={`text-2xl font-bold mb-4 ${
+                                    isHighPriority ? 'text-(--accent)' : 'text-(--text-h)'
+                                }`}
+                            >
                                 {announcement.title}
                             </h2>
                             <div className="text-sm text-(--text) leading-relaxed mb-6 whitespace-pre-wrap max-h-96 overflow-y-auto">
                                 {announcement.content}
                             </div>
-                            <div className="flex items-center justify-between pt-4 border-t border-(--accent)/20">
+                            <div
+                                className={`flex items-center justify-between pt-4 border-t ${
+                                    isHighPriority ? 'border-(--accent)/30' : 'border-(--accent)/20'
+                                }`}
+                            >
                                 <span className="text-xs uppercase tracking-widest text-(--text-subtle) font-bold">
                                     {announcement.createdAt}
                                 </span>
                                 <button
                                     onClick={onClose}
-                                    className="px-4 py-2 rounded-full border border-(--accent)/40 bg-(--accent)/10 text-(--text-h) text-xs font-bold hover:bg-(--accent)/20 transition-colors"
+                                    className={`px-4 py-2 rounded-full border text-xs font-bold transition-colors ${
+                                        isHighPriority
+                                            ? 'border-(--accent)/60 bg-(--accent)/20 text-(--accent) hover:bg-(--accent)/30'
+                                            : 'border-(--accent)/40 bg-(--accent)/10 text-(--text-h) hover:bg-(--accent)/20'
+                                    }`}
                                 >
                                     {lang === 'RO' ? 'Închide' : 'Close'}
                                 </button>
@@ -187,7 +209,8 @@ export default function Landing() {
                             variants={itemVariants}
                             className="text-4xl md:text-5xl font-black text-(--text-h) mb-3 tracking-tight"
                         >
-                            {t.welcomeTitle} <span className="text-(--accent)">{`<_FiiCoder>`}</span>
+                            {t.welcomeTitle}{' '}
+                            <span className="text-(--accent)">{`<_FiiCoder>`}</span>
                         </motion.h1>
 
                         <motion.p
@@ -234,32 +257,45 @@ export default function Landing() {
                                         onClick={() => handleOpenAnnouncement(ann)}
                                         className={`p-4 rounded-2xl border backdrop-blur-sm cursor-pointer transition-colors duration-300 group ${
                                             ann.priority === 'high'
-                                                ? 'border-red-500 bg-red-950 hover:border-red-400 hover:bg-red-900 shadow-lg shadow-red-500/30'
+                                                ? 'border-(--accent) bg-(--accent)/12 hover:border-(--accent) hover:bg-(--accent)/18 shadow-lg shadow-(--accent)/35'
                                                 : ann.priority === 'medium'
-                                                  ? 'border-(--accent)/30 bg-(--surface-muted) hover:border-(--accent)/60 hover:bg-(--surface-hover)'
+                                                  ? 'border-(--accent)/50 bg-(--accent)/8 hover:border-(--accent)/70 hover:bg-(--accent)/12 shadow-md shadow-(--accent)/20'
                                                   : 'border-(--accent)/20 bg-(--surface-muted) hover:border-(--accent)/40 hover:bg-(--surface-hover)'
                                         }`}
                                     >
-                                        <div className="flex items-start gap-3">
+                                        <div className="flex items-start gap-3 mb-3">
                                             <div className="text-2xl shrink-0 group-hover:scale-110 transition-all duration-300">
                                                 {ann.icon}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-semibold text-(--text-h) text-sm mb-1 line-clamp-2">
-                                                    {ann.title}
-                                                </h3>
+                                                <div className="flex items-start justify-between gap-2 mb-1">
+                                                    <h3
+                                                        className={`font-semibold text-sm line-clamp-2 ${
+                                                            ann.priority === 'high'
+                                                                ? 'text-(--accent)'
+                                                                : 'text-(--text-h)'
+                                                        }`}
+                                                    >
+                                                        {ann.title}
+                                                    </h3>
+                                                    {ann.priority === 'high' && (
+                                                        <span className="shrink-0 px-2 py-0.5 rounded-full bg-(--accent) text-white text-[10px] font-bold border border-(--accent)/60">
+                                                            URGENT
+                                                        </span>
+                                                    )}
+                                                    {ann.priority === 'medium' && (
+                                                        <span className="shrink-0 px-2 py-0.5 rounded-full bg-(--accent)/25 text-(--accent) text-[10px] font-bold border border-(--accent)/40">
+                                                            ★
+                                                        </span>
+                                                    )}
+                                                </div>
                                                 <p className="text-xs text-(--text-muted) mb-2 line-clamp-3">
                                                     {ann.content.slice(0, 120)}...
                                                 </p>
-                                                <div className="text-[10px] text-(--text-subtle)]">
+                                                <div className="text-[10px] text-(--text-subtle)">
                                                     {ann.createdAt}
                                                 </div>
                                             </div>
-                                            {ann.priority === 'high' && (
-                                                <div className="shrink-0 px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold border border-red-400">
-                                                    {lang === 'RO' ? 'URGENT' : 'URGENT'}
-                                                </div>
-                                            )}
                                         </div>
                                     </motion.div>
                                 ))
