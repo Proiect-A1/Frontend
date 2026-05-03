@@ -34,7 +34,7 @@ interface AuthContextType {
   userId: string | null;
   isAdmin: boolean;
   isAuthenticated: boolean;
-  login: (token: string) => void;
+  login: (token: string, username?: string) => void;
   logout: () => void;
 }
 
@@ -49,6 +49,7 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 const TOKEN_KEY = 'fiicoder_jwt';
+const USERNAME_KEY = 'fiicoder_username';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() => {
@@ -58,23 +59,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(TOKEN_KEY);
     return null;
   });
+  const [storedUsername, setStoredUsername] = useState<string | null>(() => {
+    return localStorage.getItem(USERNAME_KEY);
+  });
 
   const payload = token ? decodeJwt(token) : null;
   
   // scot valorile din payload
-  // Backend-ul pune UUID-ul în 'sub' și nu trimite username-ul separat în token
   const userId = payload?.sub ?? null;
-  const username = payload?.sub ? `User ${payload.sub.substring(0, 4)}` : null; 
+  const username = storedUsername;
   const isAdmin = payload?.role === 'ADMIN'; 
   const isAuthenticated = token !== null && !isTokenExpired(token);
 
-  const login = useCallback((newToken: string) => {
+  const login = useCallback((newToken: string, username?: string) => {
     localStorage.setItem(TOKEN_KEY, newToken);
+    if (username) {
+      localStorage.setItem(USERNAME_KEY, username);
+      setStoredUsername(username);
+    }
     setToken(newToken);
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USERNAME_KEY);
+    setStoredUsername(null);
     setToken(null);
   }, []);
 
