@@ -125,7 +125,7 @@ export default function AttachmentsTab() {
                       className="flex items-center justify-between p-3 bg-theme-surface-secondary border border-theme-border rounded-lg hover:bg-theme-surface-secondary/70 transition-colors"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <span className="text-lg flex-shrink-0">📄</span>
+                        <span className="text-lg shrink-0">📄</span>
                         <div className="min-w-0">
                           <p className="text-sm text-theme-text truncate font-mono">
                             {file.name}
@@ -141,7 +141,7 @@ export default function AttachmentsTab() {
                           const updated = attachments.filter((_, i) => i !== index);
                           field.onChange(updated);
                         }}
-                        className="p-2 text-red-400 hover:bg-red-500/20 rounded transition-colors flex-shrink-0"
+                        className="p-2 text-red-400 hover:bg-red-500/20 rounded transition-colors shrink-0"
                         title="Șterge fișier"
                       >
                         🗑️
@@ -157,7 +157,7 @@ export default function AttachmentsTab() {
               <p className="text-sm text-theme-text">
                 <strong>Total fișiere:</strong> {attachments.length}
               </p>
-              <p className="text-sm text-theme-text-muted text-xs mt-1">
+              <p className="text-sm text-theme-text-muted mt-1">
                 <strong>Dimensiune totală:</strong>{" "}
                 {formatFileSize(
                   attachments.reduce((sum, f) => sum + (f.size || 0), 0)

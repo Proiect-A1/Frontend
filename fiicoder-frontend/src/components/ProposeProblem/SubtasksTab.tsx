@@ -103,7 +103,7 @@ export default function SubtasksTab() {
                               }}
                               className="rounded border-theme-border cursor-pointer"
                             />
-                            <span className="text-xs accent-bg-subtle accent-text px-2 py-1 rounded border border-[var(--accent)]/30">
+                            <span className="text-xs accent-bg-subtle accent-text px-2 py-1 rounded border border-(--accent)/30">
                               {test.id}
                             </span>
                           </label>

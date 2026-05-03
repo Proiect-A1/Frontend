@@ -143,7 +143,7 @@ export default function GeneralTab() {
                 className="w-full px-4 py-2 bg-theme-surface-secondary border accent-border rounded-lg text-theme-text focus:outline-none accent-ring transition-all cursor-pointer"
               >
                 {difficulties.map((diff) => (
-                  <option key={diff} value={diff} className="bg-[var(--surface-page)] text-[var(--text)]">
+                  <option key={diff} value={diff} className="bg-(--surface-page) text-(--text)">
                     {diff.charAt(0).toUpperCase() + diff.slice(1)}
                   </option>
                 ))}
@@ -198,11 +198,11 @@ export default function GeneralTab() {
         <label className="text-theme-text font-semibold text-sm">Etichete</label>
         <div className="relative">
           {/* Selected tags display */}
-          <div className="w-full min-h-[42px] px-3 py-2 bg-theme-surface-secondary border accent-border rounded-lg flex flex-wrap gap-2 items-center">
+          <div className="w-full min-h-10.5 px-3 py-2 bg-theme-surface-secondary border accent-border rounded-lg flex flex-wrap gap-2 items-center">
             {formData.tags.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-[var(--accent)]/20 text-[var(--text-h)] border border-[var(--accent)]/30"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-(--accent)/20 text-(--text-h) border border-(--accent)/30"
               >
                 {tag}
                 <button
@@ -222,7 +222,7 @@ export default function GeneralTab() {
               onKeyDown={handleKeyDown}
               onFocus={handleInputFocus}
               placeholder={formData.tags.length === 0 ? "Scrie pentru a căuta etichete..." : ""}
-              className="flex-1 min-w-[120px] bg-transparent text-theme-text placeholder-theme-text-muted outline-none text-sm"
+              className="flex-1 min-w-30 bg-transparent text-theme-text placeholder-theme-text-muted outline-none text-sm"
             />
           </div>
 
@@ -230,7 +230,7 @@ export default function GeneralTab() {
           {showSuggestions && (
             <div
               ref={suggestionsRef}
-              className="absolute z-50 mt-1 w-full theme-surface-dropdown border border-[var(--accent)]/40 rounded-xl shadow-2xl overflow-hidden max-h-48 overflow-y-auto"
+              className="absolute z-50 mt-1 w-full theme-surface-dropdown border border-(--accent)/40 rounded-xl shadow-2xl overflow-hidden max-h-48 overflow-y-auto"
             >
               {suggestions.map((tag, index) => (
                 <button
@@ -239,8 +239,8 @@ export default function GeneralTab() {
                   onClick={() => addTag(tag.title)}
                   className={`w-full text-left px-4 py-2 text-sm transition-colors ${
                     index === selectedIndex
-                      ? "bg-[var(--accent)]/30 text-[var(--text-h)]"
-                      : "text-[var(--text)] hover:bg-[var(--accent)]/20"
+                      ? "bg-(--accent)/30 text-(--text-h)"
+                      : "text-(--text) hover:bg-(--accent)/20"
                   }`}
                 >
                   {tag.title}

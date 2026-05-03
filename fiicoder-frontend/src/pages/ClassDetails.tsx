@@ -164,7 +164,7 @@ export default function ClassDetails() {
   return (
     <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
       <motion.div
-        className="w-full max-w-7xl rounded-2xl border border-[var(--accent)]/50 theme-surface-card backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 card-glow h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
+        className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) theme-surface-card backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
         variants={pageVariants}
         initial="hidden"
         animate="visible"

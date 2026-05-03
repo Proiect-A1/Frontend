@@ -76,7 +76,7 @@ export default function Navbar() {
   return (
     <div className="sticky top-0 z-50 w-full px-4 md:px-6 pt-4">
       <nav className="w-full relative">
-        <div className="theme-surface-card backdrop-blur-sm border border-[var(--accent)]/50 rounded-full px-5 py-2.5 flex items-center justify-between card-glow">
+        <div className="theme-surface-card backdrop-blur-sm border-2 border-(--accent) rounded-full px-5 py-2.5 flex items-center justify-between">
           <Link
             to="/"
             onClick={closeMenu}
@@ -250,7 +250,7 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.12 }}
-              className="absolute top-full left-0 right-0 mt-3 p-6 theme-surface-card backdrop-blur-xl border border-[var(--accent)]/50 rounded-3xl flex flex-col gap-4 shadow-2xl z-10 lg:hidden"
+              className="absolute top-full left-0 right-0 mt-3 p-6 theme-surface-card backdrop-blur-xl border-2 border-(--accent) rounded-xl flex flex-col gap-4 shadow-2xl z-10 lg:hidden"
             >
               <Link
                 to="/problems"
