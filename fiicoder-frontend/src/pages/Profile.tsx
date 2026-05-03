@@ -3,11 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../services/AuthContext";
 import { useLanguage } from "../language/Language";
 import { useTheme } from "../services/ThemeContext";
-
-const pageVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-};
+import { pageVariants } from "../utils/motionConfig";
 
 // MOCK DATA 
 const mockProfileData = {
@@ -72,20 +68,18 @@ export default function Profile() {
   return (
     <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
       <motion.div
-        className="w-full max-w-7xl h-auto xl:h-full relative flex flex-col"
+        className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) theme-surface-card backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
+        variants={pageVariants}
         initial="hidden"
         animate="visible"
-        variants={pageVariants}
       >
-        {/* Main container card - same style as ProblemList */}
-        <div className="h-auto xl:h-[calc(100svh-8.5rem)] overflow-visible xl:overflow-y-auto p-5 theme-surface-card backdrop-blur-sm border-2 border-(--accent) rounded-2xl  custom-scrollbar">
-
+        <>
           {/* admin button visible only for admins */}
           {isAdmin && (
             <div className="mb-4 flex justify-end">
               <Link
                  to="/admin"
-                 className="px-6 py-2 rounded-full border border-(--accent)/60 text-xs font-bold text-(--text-h) transition hover:bg-(--accent)/15 hover:-translate-y-0.5 bg-(--accent)/10"
+                 className="px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center cursor-pointer bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5"
               >
                 {lang === "RO" ? "Panou Administrare" : "Admin Dashboard"}
               </Link>
@@ -165,7 +159,7 @@ export default function Profile() {
                 <h2 className="text-sm font-bold text-(--text-h) mb-3 uppercase tracking-wider">Skills</h2>
                 <div className="flex flex-wrap gap-2">
                   {mockProfileData.skillBreakdownTags.map(skill => (
-                    <span key={skill} className="px-2.5 py-1 rounded-md text-[10px] font-bold border border-(--accent)/30 bg-(--accent)/10 text-(--text) hover:bg-(--accent)/20 transition-colors cursor-pointer">
+                    <span key={skill} className="px-2.5 py-1 rounded-full text-xs font-semibold border border-(--accent)/30 bg-(--accent)/10 text-(--text) hover:bg-(--accent)/20 transition-colors cursor-pointer">
                       {skill}
                     </span>
                   ))}
@@ -181,7 +175,7 @@ export default function Profile() {
             {/* number of solved problems of different difficulty levels */}
             <div className="p-6 md:p-8 rounded-2xl border border-(--accent)/50 theme-surface-card backdrop-blur-sm card-glow grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-8 items-center min-w-0">
               <div className="flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-(--accent)/20 pb-6 md:pb-0 md:pr-6">
-                <span className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">{lang === "RO" ? "Probleme Rezolvate" : "Problems Solved"}</span>
+                <span className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-2">{lang === "RO" ? "Probleme Rezolvate" : "Problems Solved"}</span>
                 <span className="text-6xl font-black accent-text drop-shadow-md">{mockProfileData.problemsSolved}</span>
               </div>
 
@@ -302,7 +296,7 @@ export default function Profile() {
                       </div>
                       <div className="flex items-center gap-3 shrink-0 ml-2">
                         <span className="text-[11px] font-mono text-(--text-subtle) hidden sm:inline-block">Score: {score}</span>
-                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider whitespace-nowrap border ${badgeClasses}`}>
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap border ${badgeClasses}`}>
                           {isAccepted ? "Accepted" : "Partial / WA"}
                         </span>
                       </div>
@@ -314,7 +308,7 @@ export default function Profile() {
 
           </div>
         </div>
-        </div>
+        </>
       </motion.div>
     </div>
   );

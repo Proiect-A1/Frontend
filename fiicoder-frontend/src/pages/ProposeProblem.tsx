@@ -10,6 +10,8 @@ import TestsTab from "../components/ProposeProblem/TestsTab";
 import SubtasksTab from "../components/ProposeProblem/SubtasksTab";
 import AttachmentsTab from "../components/ProposeProblem/AttachmentsTab";
 import AccessTab from "../components/ProposeProblem/AccessTab";
+import { pageVariants } from "../utils/motionConfig";
+import { useLanguage } from "../language/Language";
 
 const defaultValues: ProposeProblemForm = {
   title: "",
@@ -27,13 +29,13 @@ const defaultValues: ProposeProblemForm = {
   allowedGroups: [],
 };
 
-const TAB_OPTIONS = [
-  { value: "general", label: "General" },
-  { value: "statement", label: "Enunț" },
-  { value: "tests", label: "Teste" },
-  { value: "subtasks", label: "Subtask-uri" },
-  { value: "attachments", label: "Fișiere" },
-  { value: "access", label: "Acces" },
+const tabs = [
+  { id: "general", labelRO: "General" , labelEN: "General"},
+  { id: "statement", labelRO: "Enunț" , labelEN: "Statement"},
+  { id: "tests", labelRO: "Teste" , labelEN: "Tests"},
+  { id: "subtasks", labelRO: "Subtask-uri" , labelEN: "Subtasks"},
+  { id: "attachments", labelRO: "Fișiere" , labelEN: "Attachments"},
+  { id: "access", labelRO: "Acces" , labelEN: "Access"},
 ];
 
 export default function ProposeProblem() {
@@ -63,36 +65,43 @@ export default function ProposeProblem() {
     }
   };
 
+  const { lang } = useLanguage();
+
   return (
-    <div className="w-full flex justify-center items-start min-h-screen py-2 px-2">
+    <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
       <motion.div
-        className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) theme-surface-card backdrop-blur-sm px-4 py-6 overflow-auto custom-scrollbar"
-        style={{ maxHeight: '90vh', marginTop: '-12px' }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) theme-surface-card backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
+        variants={pageVariants}
+        initial="hidden"
+        animate="visible"
       >
         {/* Header cu titlu stânga și tabs dreapta */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
           <h1 className="text-3xl font-bold text-(--text-h)">Propune o Problemă</h1>
 
           {/* Tabs Navigation */}
-          <div className="flex flex-wrap gap-2">
-            {TAB_OPTIONS.map((tab) => (
-              <button
-                key={tab.value}
-                type="button"
-                onClick={() => setActiveTab(tab.value)}
-                className={`px-4 py-2 rounded-xl font-semibold text-sm transition-all duration-200 border ${
-                  activeTab === tab.value
-                    ? "bg-(--accent)/30 border-(--accent) text-(--text-h) shadow-[0_0_12px_color-mix(in_srgb,var(--accent)_30%,transparent)]"
-                    : "bg-(--accent)/5 border-(--accent)/25 text-(--text-muted) hover:border-(--accent)/60 hover:bg-(--accent)/15 hover:text-(--text-h)"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+          <div className="flex flex-wrap gap-2 lg:justify-end">
+              {tabs.map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  const baseClasses =
+                      'px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center cursor-pointer outline-none';
+
+                  return (
+                      <button
+                          key={tab.id}
+                          onClick={() => setActiveTab(tab.id)}
+                          className={`${baseClasses} ${
+                              isActive
+                                  ? 'bg-(--accent)/25 border-(--accent) text-(--text-h)'
+                                  : 'bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5'
+                          }`}
+                      >
+                          {lang === 'RO' ? tab.labelRO : tab.labelEN}
+                      </button>
+                  );
+              })}
           </div>
-        </div>
+      </div>
 
         <div className="page-line-horizontal mb-6" />
 
@@ -121,7 +130,7 @@ export default function ProposeProblem() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 justify-end pt-6 border-t border-(--accent)/30">
+            <div className="flex gap-4 justify-end pt-6">
               <button
                 type="button"
                 onClick={() => methods.reset()}

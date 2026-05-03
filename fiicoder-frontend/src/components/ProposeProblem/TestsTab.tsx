@@ -1,5 +1,7 @@
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
+import { motion } from 'framer-motion';
 import type { ProposeProblemForm } from "../../types/proposeProblem";
+import { itemVariants, staggerConfig } from '../../utils/motionConfig';
 
 export default function TestsTab() {
   const { control } = useFormContext<ProposeProblemForm>();
@@ -21,16 +23,16 @@ export default function TestsTab() {
   };
 
   return (
-    <div className="space-y-6 p-6 bg-theme-surface-card rounded-lg border border-theme-border">
+    <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: staggerConfig } }} className="space-y-6">
       {/* Info */}
-      <div className="p-4 info-box border rounded-lg">
+      <motion.div variants={itemVariants} className="p-4 bg-theme-surface-secondary rounded-xl border border-(--accent)/20">
         <p className="text-sm text-theme-text">
           <strong>Instrucțiuni:</strong> Adaugă testele pe care va trebui să le treacă soluția. Fiecare test poate fi asignat unor subtask-uri.
         </p>
-      </div>
+      </motion.div>
 
       {/* Tests Table */}
-      <div className="overflow-x-auto">
+      <motion.div variants={itemVariants} className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-theme-border">
@@ -118,23 +120,24 @@ export default function TestsTab() {
             )}
           </tbody>
         </table>
-      </div>
+      </motion.div>
 
       {/* Add Test Button */}
-      <button
+      <motion.button
+        variants={itemVariants}
         type="button"
         onClick={addTest}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed accent-border rounded-lg accent-text hover:accent-hover transition-colors font-semibold"
+        className="w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-(--accent)/50 rounded-xl text-(--text-h) hover:border-(--accent) hover:bg-(--accent)/10 transition-colors font-semibold"
       >
         ➕ Adaugă Test
-      </button>
+      </motion.button>
 
       {/* Stats */}
-      <div className="p-4 bg-theme-surface-secondary rounded-lg border border-theme-border">
+      <motion.div variants={itemVariants} className="p-4 bg-theme-surface-secondary rounded-xl border border-(--accent)/20">
         <p className="text-sm text-theme-text">
           <strong>Total teste:</strong> {fields.length}
         </p>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

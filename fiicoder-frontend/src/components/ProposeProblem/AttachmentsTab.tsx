@@ -1,6 +1,8 @@
 import { Controller, useFormContext } from "react-hook-form";
 import { useState } from "react";
+import { motion } from 'framer-motion';
 import type { ProposeProblemForm } from "../../types/proposeProblem";
+import { itemVariants, staggerConfig } from '../../utils/motionConfig';
 
 export default function AttachmentsTab() {
   const { control, watch } = useFormContext<ProposeProblemForm>();
@@ -70,13 +72,13 @@ export default function AttachmentsTab() {
   };
 
   return (
-    <div className="space-y-6 p-6 bg-theme-surface-card rounded-lg border border-theme-border">
+    <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: staggerConfig } }} className="space-y-6">
       {/* Info */}
-      <div className="p-4 info-box border rounded-lg">
+      <motion.div variants={itemVariants} className="p-4 bg-theme-surface-secondary rounded-xl border border-(--accent)/20">
         <p className="text-sm text-theme-text">
           <strong>Instrucțiuni:</strong> Atașează fișiere suport (imagini, date, etc.). Dimensiune maximă: 10MB per fișier.
         </p>
-      </div>
+      </motion.div>
 
       {/* File Upload Area */}
       <Controller
@@ -90,7 +92,7 @@ export default function AttachmentsTab() {
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
               onDrop={(e) => handleDrop(e, field.onChange)}
-              className={`relative p-8 border-2 border-dashed rounded-lg transition-colors ${
+              className={`relative p-8 border-2 border-dashed rounded-xl transition-colors ${
                 dragActive
                   ? "accent-border accent-bg-light"
                   : "accent-border/50 hover:accent-border"
@@ -116,13 +118,13 @@ export default function AttachmentsTab() {
 
             {/* Uploaded Files List */}
             {attachments.length > 0 && (
-              <div className="space-y-2">
+              <motion.div variants={itemVariants} className="space-y-2">
                 <h3 className="text-sm font-semibold text-theme-text">Fișiere Atașate ({attachments.length})</h3>
                 <div className="space-y-2">
                   {attachments.map((file: any, index) => (
                     <div
                       key={file.id || index}
-                      className="flex items-center justify-between p-3 bg-theme-surface-secondary border border-theme-border rounded-lg hover:bg-theme-surface-secondary/70 transition-colors"
+                      className="flex items-center justify-between p-3 bg-theme-surface-secondary border border-(--accent)/20 rounded-xl hover:bg-theme-surface-secondary/70 transition-colors"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span className="text-lg shrink-0">📄</span>
@@ -149,11 +151,11 @@ export default function AttachmentsTab() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {/* Stats */}
-            <div className="p-4 bg-theme-surface-secondary rounded-lg border border-theme-border">
+            <motion.div variants={itemVariants} className="p-4 bg-theme-surface-secondary rounded-xl border border-(--accent)/20">
               <p className="text-sm text-theme-text">
                 <strong>Total fișiere:</strong> {attachments.length}
               </p>
@@ -163,10 +165,10 @@ export default function AttachmentsTab() {
                   attachments.reduce((sum, f) => sum + (f.size || 0), 0)
                 )}
               </p>
-            </div>
+            </motion.div>
 
             {/* Usage Examples */}
-            <div className="p-4 warning-box border rounded-lg space-y-2">
+            <motion.div variants={itemVariants} className="p-4 bg-theme-surface-secondary rounded-xl border border-(--accent)/20 space-y-2">
               <h4 className="font-semibold text-theme-text">Cazuri de Utilizare:</h4>
               <ul className="text-xs text-theme-text-muted space-y-1 list-disc list-inside">
                 <li>Imagine cu diagramă pentru enunț (PNG/JPG)</li>
@@ -174,10 +176,10 @@ export default function AttachmentsTab() {
                 <li>Note suplimentare (TXT/PDF)</li>
                 <li>Date de test în formă preformatată (TXT)</li>
               </ul>
-            </div>
+            </motion.div>
           </div>
         )}
       />
-    </div>
+    </motion.div>
   );
 }
