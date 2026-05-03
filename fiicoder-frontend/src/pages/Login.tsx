@@ -7,6 +7,8 @@ import type { ValidationErrors } from "../services/authService";
 import { containerVariants, itemVariants, hoverTransition } from "../utils/motionConfig";
 import { motion } from "framer-motion";
 
+const USERNAME_KEY = 'fiicoder_username';
+
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
@@ -41,6 +43,15 @@ export default function Login() {
     return Object.values(errors).join(". ");
   }
 
+  function deriveUsername(value: string): string {
+    const trimmed = value.trim();
+    if (!trimmed) return "";
+    if (trimmed.includes("@")) {
+      return trimmed.split("@")[0].trim();
+    }
+    return trimmed;
+  }
+
   // Submit handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +64,12 @@ export default function Login() {
           email: usernameOrEmail,
           password,
         });
-        login(token);
+        const displayUsername = deriveUsername(usernameOrEmail);
+        if (displayUsername) {
+          login(token, displayUsername);
+        } else {
+          login(token);
+        }
         navigate("/problems");
       } else {
         await authService.register({
@@ -63,6 +79,7 @@ export default function Login() {
           email,
           password,
         });
+        localStorage.setItem(USERNAME_KEY, username);
         setSuccessMsg(
           lang === "RO"
             ? "Cont creat cu succes! Te poți autentifica."
