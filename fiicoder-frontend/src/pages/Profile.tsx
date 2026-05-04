@@ -70,7 +70,41 @@ const mockProfileData: ProfileResponseDTO = {
     skillBreakdownTags: ['Programare Dinamică', 'Grafuri', 'Backtracking', 'Structuri de Date'],
 };
 
-const mockHeatmap = Array.from({ length: 84 }, (_, index) => index % 5);
+const generateHeatmapFromSubmissions = (submissions: RecentSubmissionDTO[] | undefined): number[] => {
+    if (!submissions || submissions.length === 0) {
+        return Array(84).fill(0);
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const heatmap = Array(84).fill(0);
+    const submissionCounts: Record<string, number> = {};
+
+    submissions.forEach((sub) => {
+        const subDate = new Date(sub.submissionDate);
+        subDate.setHours(0, 0, 0, 0);
+
+        const daysAgo = Math.floor((today.getTime() - subDate.getTime()) / (1000 * 60 * 60 * 24));
+
+        if (daysAgo >= 0 && daysAgo < 84) {
+            const dateKey = subDate.toISOString().split('T')[0];
+            if (sub.status === 'OK') {
+                submissionCounts[dateKey] = (submissionCounts[dateKey] || 0) + 1;
+            }
+        }
+    });
+
+    Object.keys(submissionCounts).forEach((dateKey) => {
+        const subDate = new Date(dateKey);
+        const daysAgo = Math.floor((today.getTime() - subDate.getTime()) / (1000 * 60 * 60 * 24));
+        const index = 83 - daysAgo;
+        const count = submissionCounts[dateKey];
+        heatmap[index] = Math.min(4, Math.ceil(count / 2));
+    });
+
+    return heatmap;
+};
 
 const getHeatmapStyle = (level: number) => {
     const baseAccent = 'var(--accent)';
@@ -178,7 +212,10 @@ export default function Profile() {
     };
 
     const displayProfile = profile ?? mockProfileData;
-    const heatmap = useMemo(() => mockHeatmap, []);
+    const heatmap = useMemo(
+        () => generateHeatmapFromSubmissions(displayProfile.recentSubmissions?.content),
+        [displayProfile.recentSubmissions?.content]
+    );
 
     return (
         <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
@@ -453,13 +490,20 @@ export default function Profile() {
                                 <div className="w-full overflow-x-auto custom-scrollbar pb-2">
                                     <div className="flex flex-col gap-1.5 min-w-max">
                                         <div className="flex gap-1.5">
-                                            {heatmap.map((level, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="w-4 h-4 rounded-[3px] transition-transform hover:scale-125 cursor-pointer border border-(--accent)/5 shrink-0"
-                                                    style={getHeatmapStyle(level)}
-                                                    title={`${level * 2} submissions`}
-                                                />
+                                            {heatmap.map((level, index) => {
+                                                const daysAgo = 83 - index;
+                                                const date = new Date();
+                                                date.setDate(date.getDate() - daysAgo);
+                                                const dateStr = date.toLocaleDateString();
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className="w-4 h-4 rounded-[3px] transition-transform hover:scale-125 cursor-pointer border border-(--accent)/5 shrink-0"
+                                                        style={getHeatmapStyle(level)}
+                                                        title={`${dateStr}: ${level > 0 ? level * 2 + '+' : 0} submissions`}
+                                                    />
+                                                );
+                                            })}
                                             ))}
                                         </div>
 
