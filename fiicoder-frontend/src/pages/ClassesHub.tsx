@@ -10,8 +10,11 @@ import {
 import { useLanguage } from '../language/Language';
 import { itemVariants, pageVariants } from '../utils/motionConfig';
 
-const RECENT_CLASSES_KEY = 'fiicoder_recent_classes';
 const MAX_RECENT_CLASSES = 12;
+
+function getRecentClassesKey(userId: string): string {
+    return `fiicoder_recent_classes_${userId}`;
+}
 
 type RecentClassItem = {
     id: string;
@@ -21,9 +24,10 @@ type RecentClassItem = {
     createdAt: string;
 };
 
-function loadRecentClasses(): RecentClassItem[] {
+function loadRecentClasses(userId: string): RecentClassItem[] {
     try {
-        const raw = localStorage.getItem(RECENT_CLASSES_KEY);
+        const key = getRecentClassesKey(userId);
+        const raw = localStorage.getItem(key);
         if (!raw) return [];
         const parsed = JSON.parse(raw) as RecentClassItem[];
         if (!Array.isArray(parsed)) return [];
@@ -33,8 +37,9 @@ function loadRecentClasses(): RecentClassItem[] {
     }
 }
 
-function saveRecentClasses(items: RecentClassItem[]) {
-    localStorage.setItem(RECENT_CLASSES_KEY, JSON.stringify(items));
+function saveRecentClasses(userId: string, items: RecentClassItem[]) {
+    const key = getRecentClassesKey(userId);
+    localStorage.setItem(key, JSON.stringify(items));
 }
 
 export default function ClassesHub() {
@@ -50,18 +55,23 @@ export default function ClassesHub() {
     const [loadingInvitations, setLoadingInvitations] = useState(false);
     const [feedback, setFeedback] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [recentClasses, setRecentClasses] = useState<RecentClassItem[]>(() =>
-        loadRecentClasses(),
-    );
+    const [recentClasses, setRecentClasses] = useState<RecentClassItem[]>([]);
 
     const storeRecentClass = (newItem: RecentClassItem) => {
+        if (!userId) return;
         setRecentClasses((previousItems) => {
             const deduped = previousItems.filter((item) => item.id !== newItem.id);
             const nextItems = [newItem, ...deduped].slice(0, MAX_RECENT_CLASSES);
-            saveRecentClasses(nextItems);
+            saveRecentClasses(userId, nextItems);
             return nextItems;
         });
     };
+
+    useEffect(() => {
+        if (!isAuthenticated || !userId) return;
+        const loaded = loadRecentClasses(userId);
+        setRecentClasses(loaded);
+    }, [isAuthenticated, userId]);
 
     useEffect(() => {
         if (!isAuthenticated) return;
@@ -297,8 +307,10 @@ export default function ClassesHub() {
                             <button
                                 type="button"
                                 onClick={() => {
-                                    setRecentClasses([]);
-                                    saveRecentClasses([]);
+                                    if (userId) {
+                                        setRecentClasses([]);
+                                        saveRecentClasses(userId, []);
+                                    }
                                 }}
                                 className="rounded-lg border border-(--accent)/35 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
                             >

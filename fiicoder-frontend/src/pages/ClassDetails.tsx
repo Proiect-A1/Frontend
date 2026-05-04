@@ -42,6 +42,8 @@ export default function ClassDetails() {
     const [homeworkTitle, setHomeworkTitle] = useState('');
     const [homeworkDescription, setHomeworkDescription] = useState('');
     const [homeworkDeadline, setHomeworkDeadline] = useState('');
+    const [homeworkCreationUsernames, setHomeworkCreationUsernames] = useState('');
+    const [homeworkCreationProblems, setHomeworkCreationProblems] = useState('');
     const [feedback, setFeedback] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -168,14 +170,28 @@ export default function ClassDetails() {
         try {
             setError(null);
             setFeedback(null);
-            await homeworkService.create(groupId, {
+            const response = await homeworkService.create(groupId, {
                 title: homeworkTitle,
                 description: homeworkDescription,
                 deadline: homeworkDeadline,
             });
+
+            const usernames = parseCsvValues(homeworkCreationUsernames);
+            const problemTitles = parseCsvValues(homeworkCreationProblems);
+
+            if (usernames.length > 0 || problemTitles.length > 0) {
+                const updateRequest: HomeworkUpdateRequestDTO = {};
+                if (usernames.length > 0) updateRequest.usernames = usernames;
+                if (problemTitles.length > 0) updateRequest.problemTitles = problemTitles;
+
+                await homeworkService.addToDraft(groupId, response.id, updateRequest);
+            }
+
             setHomeworkTitle('');
             setHomeworkDescription('');
             setHomeworkDeadline('');
+            setHomeworkCreationUsernames('');
+            setHomeworkCreationProblems('');
             setFeedback(lang === 'RO' ? 'Tema a fost creată.' : 'Homework created.');
             await reloadHomeworks();
         } catch (err: any) {
@@ -449,6 +465,7 @@ export default function ClassDetails() {
                                     value={homeworkTitle}
                                     onChange={(event) => setHomeworkTitle(event.target.value)}
                                     placeholder={lang === 'RO' ? 'Titlu temă' : 'Homework title'}
+                                    required
                                     className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-muted) px-3 py-2 text-sm text-(--text-h) outline-none transition focus:border-(--accent)"
                                 />
                                 <textarea
@@ -461,13 +478,41 @@ export default function ClassDetails() {
                                     type="date"
                                     value={homeworkDeadline}
                                     onChange={(event) => setHomeworkDeadline(event.target.value)}
+                                    required
                                     className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-muted) px-3 py-2 text-sm text-(--text-h) outline-none transition focus:border-(--accent)"
                                 />
+
+                                <div className="border-t border-(--accent)/20 pt-3">
+                                    <p className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-2">
+                                        {lang === 'RO' ? 'Detalii avansate' : 'Advanced details'}
+                                    </p>
+                                    <input
+                                        value={homeworkCreationUsernames}
+                                        onChange={(event) => setHomeworkCreationUsernames(event.target.value)}
+                                        placeholder={
+                                            lang === 'RO'
+                                                ? 'Utilizatori (opțional): user1, user2'
+                                                : 'Users (optional): user1, user2'
+                                        }
+                                        className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-muted) px-3 py-2 text-sm text-(--text-h) outline-none transition focus:border-(--accent) mb-2"
+                                    />
+                                    <input
+                                        value={homeworkCreationProblems}
+                                        onChange={(event) => setHomeworkCreationProblems(event.target.value)}
+                                        placeholder={
+                                            lang === 'RO'
+                                                ? 'Probleme (opțional): prob1, prob2'
+                                                : 'Problems (optional): prob1, prob2'
+                                        }
+                                        className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-muted) px-3 py-2 text-sm text-(--text-h) outline-none transition focus:border-(--accent)"
+                                    />
+                                </div>
+
                                 <button
                                     type="submit"
-                                    className="rounded-xl border border-(--accent)/60 bg-(--accent)/20 px-4 py-2 text-sm font-semibold text-(--text-h) transition hover:bg-(--accent)/35"
+                                    className="w-full rounded-xl border border-(--accent)/60 bg-(--accent)/20 px-4 py-2 text-sm font-semibold text-(--text-h) transition hover:bg-(--accent)/35"
                                 >
-                                    {lang === 'RO' ? 'Publică tema' : 'Publish homework'}
+                                    {lang === 'RO' ? 'Creează tema' : 'Create homework'}
                                 </button>
                             </form>
                         </motion.section>
