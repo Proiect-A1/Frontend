@@ -272,30 +272,11 @@ export default function AdminPanel() {
         setAnnouncementForm({ title: announcement.title, content: announcement.content });
     };
 
-    const handleViewAnnouncement = async (announcementId: string) => {
+    const handleViewAnnouncement = (announcementId: string) => {
         if (selectedAnnouncementId === announcementId) {
             setSelectedAnnouncementId(null);
-            setSelectedAnnouncement(null);
-            setAnnouncementDetailError(null);
-            return;
-        }
-
-        setAnnouncementDetailLoading(true);
-        setAnnouncementDetailError(null);
-        setSelectedAnnouncementId(announcementId);
-
-        try {
-            const data = await adminService.getAnnouncement(announcementId);
-            setSelectedAnnouncement(data);
-        } catch {
-            setSelectedAnnouncement(null);
-            setAnnouncementDetailError(
-                lang === 'RO'
-                    ? 'Nu am putut încărca detaliile anunțului.'
-                    : 'Could not load announcement details.',
-            );
-        } finally {
-            setAnnouncementDetailLoading(false);
+        } else {
+            setSelectedAnnouncementId(announcementId);
         }
     };
 
@@ -312,8 +293,6 @@ export default function AdminPanel() {
 
         if (selectedAnnouncementId === announcementId) {
             setSelectedAnnouncementId(null);
-            setSelectedAnnouncement(null);
-            setAnnouncementDetailError(null);
         }
     };
 
@@ -854,11 +833,11 @@ export default function AdminPanel() {
                                                         {selectedAnnouncementId ===
                                                         announcement.id
                                                             ? lang === 'RO'
-                                                                ? 'Ascunde'
-                                                                : 'Hide'
+                                                                ? 'Restrânge'
+                                                                : 'Collapse'
                                                             : lang === 'RO'
-                                                              ? 'Detalii'
-                                                              : 'Details'}
+                                                              ? 'Extinde'
+                                                              : 'Expand'}
                                                     </button>
                                                     <button
                                                         onClick={() =>
@@ -881,57 +860,13 @@ export default function AdminPanel() {
                                                 </div>
                                             </div>
 
-                                            <p className="text-sm text-(--text) leading-relaxed line-clamp-3">
+                                            <div className={`text-sm text-(--text) leading-relaxed break-words overflow-x-hidden whitespace-pre-wrap ${selectedAnnouncementId === announcement.id ? '' : 'line-clamp-3'}`}>
                                                 {announcement.content}
-                                            </p>
+                                            </div>
                                         </motion.div>
                                     ))}
 
-                                    {(announcementDetailLoading ||
-                                        announcementDetailError ||
-                                        selectedAnnouncement) && (
-                                        <motion.div
-                                            variants={itemVariants}
-                                            className="p-4 rounded-xl border border-(--accent)/20 bg-black/15"
-                                        >
-                                            <h3 className="text-sm font-bold uppercase tracking-widest text-(--text-muted) mb-3">
-                                                {lang === 'RO'
-                                                    ? 'Detalii anunț selectat'
-                                                    : 'Selected announcement details'}
-                                            </h3>
 
-                                            {announcementDetailLoading && (
-                                                <p className="text-sm text-(--text-muted)">
-                                                    {lang === 'RO'
-                                                        ? 'Se încarcă...'
-                                                        : 'Loading...'}
-                                                </p>
-                                            )}
-
-                                            {!announcementDetailLoading &&
-                                                announcementDetailError && (
-                                                    <p className="text-sm text-red-300">
-                                                        {announcementDetailError}
-                                                    </p>
-                                                )}
-
-                                            {!announcementDetailLoading &&
-                                                !announcementDetailError &&
-                                                selectedAnnouncement && (
-                                                    <div className="space-y-3">
-                                                        <h4 className="text-lg font-bold text-(--text-h)">
-                                                            {selectedAnnouncement.title}
-                                                        </h4>
-                                                        <p className="text-xs uppercase tracking-widest text-(--text-muted) font-bold">
-                                                            {selectedAnnouncement.createdAt}
-                                                        </p>
-                                                        <p className="text-sm leading-relaxed text-(--text)">
-                                                            {selectedAnnouncement.content}
-                                                        </p>
-                                                    </div>
-                                                )}
-                                        </motion.div>
-                                    )}
                                 </motion.div>
                             </motion.div>
                         )}
