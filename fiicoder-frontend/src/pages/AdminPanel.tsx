@@ -190,10 +190,10 @@ export default function AdminPanel() {
                 ? {
                       ...previousOverview,
                       pendingProposals: Math.max(previousOverview.pendingProposals - 1, 0),
-                      problemsCount:
+                      problems:
                           action === 'approve'
-                              ? previousOverview.problemsCount + 1
-                              : previousOverview.problemsCount,
+                              ? previousOverview.problems + 1
+                              : previousOverview.problems,
                   }
                 : previousOverview,
         );
@@ -213,7 +213,7 @@ export default function AdminPanel() {
         setUsers((previousUsers) => previousUsers.filter((user) => user.id !== userId));
         setOverview((previousOverview) =>
             previousOverview
-                ? { ...previousOverview, usersCount: Math.max(previousOverview.usersCount - 1, 0) }
+                ? { ...previousOverview, users: Math.max(previousOverview.users - 1, 0) }
                 : previousOverview,
         );
     };
@@ -281,14 +281,14 @@ export default function AdminPanel() {
     };
 
     const overviewCards = [
-        { label: lang === 'RO' ? 'Utilizatori' : 'Users', value: overview?.usersCount ?? 0 },
-        { label: lang === 'RO' ? 'Probleme' : 'Problems', value: overview?.problemsCount ?? 0 },
+        { label: lang === 'RO' ? 'Utilizatori' : 'Users', value: overview?.users ?? 0 },
+        { label: lang === 'RO' ? 'Probleme' : 'Problems', value: overview?.problems ?? 0 },
         {
             label: lang === 'RO' ? 'Submisii' : 'Submissions',
-            value: overview?.submissionsCount ?? 0,
+            value: overview?.submissions ?? 0,
         },
-        { label: lang === 'RO' ? 'Clase' : 'Classes', value: overview?.classesCount ?? 0 },
-        { label: lang === 'RO' ? 'Teme' : 'Homework', value: overview?.homeworksCount ?? 0 },
+        { label: lang === 'RO' ? 'Clase' : 'Classes', value: overview?.classes ?? 0 },
+        { label: lang === 'RO' ? 'Teme' : 'Homework', value: overview?.assignments ?? 0 },
         {
             label: lang === 'RO' ? 'Propuneri pending' : 'Pending proposals',
             value: overview?.pendingProposals ?? 0,

@@ -1,11 +1,11 @@
 import { apiClient } from './apiClient';
 
 export interface AdminOverview {
-    usersCount: number;
-    problemsCount: number;
-    submissionsCount: number;
-    classesCount: number;
-    homeworksCount?: number;
+    users: number;
+    problems: number;
+    submissions: number;
+    classes: number;
+    assignments: number;
     pendingProposals: number;
 }
 
@@ -41,6 +41,7 @@ export interface Announcement {
     title: string;
     content: string;
     createdAt: string;
+    updatedAt?: string;
 }
 
 export interface AnnouncementInput {
@@ -207,11 +208,11 @@ function cloneProposals(): ProblemProposalDetail[] {
 
 function getMockOverview(): AdminOverview {
     return {
-        usersCount: mockUsers.length,
-        problemsCount: mockProblemsCount,
-        submissionsCount: mockSubmissionsCount,
-        classesCount: mockClassesCount,
-        homeworksCount: mockHomeworksCount,
+        users: mockUsers.length,
+        problems: mockProblemsCount,
+        submissions: mockSubmissionsCount,
+        classes: mockClassesCount,
+        assignments: mockHomeworksCount,
         pendingProposals: mockProposalDetails.filter((proposal) => proposal.status === 'PENDING')
             .length,
     };
@@ -389,7 +390,7 @@ export const adminService = {
 
     async getAnnouncements(): Promise<Announcement[]> {
         try {
-            return await apiClient.get('/api/admin/announcements');
+            return await apiClient.get('/announcements');
         } catch {
             return cloneAnnouncements();
         }
@@ -397,7 +398,7 @@ export const adminService = {
 
     async createAnnouncement(input: AnnouncementInput): Promise<Announcement> {
         try {
-            return await apiClient.post('/api/admin/announcements', input);
+            return await apiClient.post('/announcements', input);
         } catch {
             const announcement: Announcement = {
                 id: `a-${Date.now()}`,
@@ -420,7 +421,7 @@ export const adminService = {
 
     async updateAnnouncement(id: string, input: AnnouncementInput): Promise<Announcement> {
         try {
-            return await apiClient.patch(`/api/admin/announcements/${id}`, input);
+            return await apiClient.put(`/announcements/${id}`, input);
         } catch {
             const announcement = mockAnnouncements.find((entry) => entry.id === id);
             if (!announcement) {
@@ -442,7 +443,7 @@ export const adminService = {
 
     async deleteAnnouncement(id: string): Promise<void> {
         try {
-            await apiClient.delete(`/api/admin/announcements/${id}`);
+            await apiClient.delete(`/announcements/${id}`);
         } catch {
             const index = mockAnnouncements.findIndex((entry) => entry.id === id);
             if (index !== -1) {

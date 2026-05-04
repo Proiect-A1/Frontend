@@ -1,43 +1,77 @@
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../services/AuthContext';
 import { useLanguage } from '../language/Language';
 import { useTheme } from '../services/ThemeContext';
 import { pageVariants } from '../utils/motionConfig';
+import {
+    profileService,
+    type ProfileResponseDTO,
+    type RecentSubmissionDTO,
+} from '../services/profileService';
 
-// MOCK DATA
-const mockProfileData = {
+const mockProfileData: ProfileResponseDTO = {
     id: 'u42432424u',
     username: 'LauraZuzu',
     firstName: 'Laura-Ioana',
     lastName: 'Zuzu',
     email: 'laura.zuzu.lz@gmail.com',
-    avatarUrl: null, // no pfp
     createdAt: '2023-11-15T10:30:00',
     problemsSolved: 215,
     submissions: 420,
-    acceptanceRate: 71.2,
+    acceptanceRate: 0.712,
     streak: 24,
-    rankEasy: 85.5,
-    rankMedium: 60.2,
-    rankHard: 15.0,
-    rankContest: 5.0,
+    streakCapped: false,
+    rankEasy: 0.855,
+    rankMedium: 0.602,
+    rankHard: 0.15,
+    rankContest: 0.05,
     recentSubmissions: {
-        'Suma Gauss': 100.0,
-        'Algoritmul lui Dijkstra': 100.0,
-        Rucsac: 100.0,
-        'Subșir Crescător Maximal': 45.5,
-        'Parcurgere DFS': 0.0,
+        content: [
+            {
+                problemTitle: 'Suma Gauss',
+                score: 100.0,
+                status: 'OK',
+                submissionDate: '2026-05-01T10:15:00',
+            },
+            {
+                problemTitle: 'Algoritmul lui Dijkstra',
+                score: 100.0,
+                status: 'OK',
+                submissionDate: '2026-04-30T18:42:00',
+            },
+            {
+                problemTitle: 'Rucsac',
+                score: 100.0,
+                status: 'OK',
+                submissionDate: '2026-04-29T14:09:00',
+            },
+            {
+                problemTitle: 'Subșir Crescător Maximal',
+                score: 45.5,
+                status: 'PA',
+                submissionDate: '2026-04-28T12:21:00',
+            },
+            {
+                problemTitle: 'Parcurgere DFS',
+                score: 0.0,
+                status: 'WA',
+                submissionDate: '2026-04-27T21:05:00',
+            },
+        ],
+        page: 1,
+        size: 5,
+        totalElements: 5,
+        totalPages: 1,
+        hasNext: false,
     },
     mostUsedLanguages: ['C++', 'Python', 'Java'],
     skillBreakdownTags: ['Programare Dinamică', 'Grafuri', 'Backtracking', 'Structuri de Date'],
-    badges: ['🏆 Number 1 champion', '🔥 20 day streak', '💻 C++ Master', '⚡ Fast Solver'],
 };
 
-// heatmap mock data (0-4) pentru ultimele 12 sapt
-const mockHeatmap = Array.from({ length: 84 }).map(() => Math.floor(Math.random() * 5));
+const mockHeatmap = Array.from({ length: 84 }, (_, index) => index % 5);
 
-// adaptive to our themes heatmap colors
 const getHeatmapStyle = (level: number) => {
     const baseAccent = 'var(--accent)';
     switch (level) {
@@ -59,12 +93,61 @@ const getHeatmapStyle = (level: number) => {
     }
 };
 
+const submissionStatusLabels: Record<RecentSubmissionDTO['status'], { ro: string; en: string }> = {
+    OK: { ro: 'Admis', en: 'Accepted' },
+    PA: { ro: 'Parțial', en: 'Partial' },
+    TLE: { ro: 'Depășire timp', en: 'Time limit' },
+    MLE: { ro: 'Memorie depășită', en: 'Memory limit' },
+    WA: { ro: 'Greșit', en: 'Wrong answer' },
+    RTE: { ro: 'Eroare rulare', en: 'Runtime error' },
+    CPE: { ro: 'Eroare compilare', en: 'Compile error' },
+    FAIL: { ro: 'Eșuat', en: 'Failed' },
+    SKIP: { ro: 'Sărit', en: 'Skipped' },
+    ILE: { ro: 'Limită internă', en: 'Internal limit' },
+    NONE: { ro: 'Nicio trimitere', en: 'No submission' },
+    IDLE: { ro: 'În așteptare', en: 'Queued' },
+};
+
 export default function Profile() {
     const { username, isAdmin } = useAuth();
     const { lang } = useLanguage();
     const { theme } = useTheme();
 
+    const [profile, setProfile] = useState<ProfileResponseDTO | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
     const isLightTheme = theme === 'cream' || theme === 'sage';
+
+    useEffect(() => {
+        let active = true;
+
+        async function loadProfile() {
+            try {
+                setLoading(true);
+                setError(null);
+                const data = await profileService.getMyProfile();
+                if (active) {
+                    setProfile(data);
+                }
+            } catch {
+                if (active) {
+                    setProfile(mockProfileData);
+                    setError(lang === 'RO' ? 'Se afișează date demonstrative.' : 'Showing demo data.');
+                }
+            } finally {
+                if (active) {
+                    setLoading(false);
+                }
+            }
+        }
+
+        void loadProfile();
+
+        return () => {
+            active = false;
+        };
+    }, [lang]);
 
     const formatJoinDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -75,6 +158,28 @@ export default function Profile() {
         });
     };
 
+    const formatSubmissionDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString(lang === 'RO' ? 'ro-RO' : 'en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
+    };
+
+    const formatPercent = (value: number) => {
+        const normalized = value <= 1 ? value * 100 : value;
+        return `${normalized.toFixed(normalized % 1 === 0 ? 0 : 1)}%`;
+    };
+
+    const formatStatus = (status: RecentSubmissionDTO['status']) => {
+        const label = submissionStatusLabels[status];
+        return lang === 'RO' ? label.ro : label.en;
+    };
+
+    const displayProfile = profile ?? mockProfileData;
+    const heatmap = useMemo(() => mockHeatmap, []);
+
     return (
         <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
             <motion.div
@@ -84,7 +189,6 @@ export default function Profile() {
                 animate="visible"
             >
                 <>
-                    {/* admin button visible only for admins */}
                     {isAdmin && (
                         <div className="mb-4 flex justify-end">
                             <Link
@@ -97,51 +201,35 @@ export default function Profile() {
                     )}
 
                     <div className="w-full grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-6">
-                        {/* SIDEBAR */}
                         <div className="flex flex-col gap-6 min-w-0">
-                            {/* user info card */}
                             <div className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm flex flex-col items-center lg:items-start text-center lg:text-left">
                                 <div className="w-24 h-24 mb-4 rounded-full bg-linear-to-br from-(--accent) to-purple-500 flex items-center justify-center text-4xl font-bold text-white uppercase shadow-lg outline-4 outline-offset-4 outline-(--accent) overflow-hidden shrink-0">
-                                    {mockProfileData.avatarUrl ? (
-                                        <img
-                                            src={mockProfileData.avatarUrl}
-                                            alt="Avatar"
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        username?.charAt(0) ||
-                                        mockProfileData.firstName.charAt(0) ||
-                                        'L'
-                                    )}
+                                    {(displayProfile.username || username || displayProfile.firstName)
+                                        .charAt(0)
+                                        .toUpperCase()}
                                 </div>
                                 <h1 className="text-2xl font-bold text-(--text-h)">
-                                    {mockProfileData.firstName} {mockProfileData.lastName}
+                                    {displayProfile.firstName} {displayProfile.lastName}
                                 </h1>
                                 <p className="text-(--text-subtle) font-mono text-sm mb-4">
-                                    @{mockProfileData.username}
+                                    @{displayProfile.username}
                                 </p>
 
                                 <div className="w-full border-t border-(--accent)/20 my-2"></div>
 
                                 <div className="w-full flex flex-col gap-2 mt-2 text-sm text-(--text)">
-                                    <div className="flex justify-between items-center">
-                                        <span className="font-semibold text-(--text-muted)">
-                                            Email
-                                        </span>
-                                        <span className="truncate ml-2">
-                                            {mockProfileData.email}
-                                        </span>
+                                    <div className="flex justify-between items-center gap-4">
+                                        <span className="font-semibold text-(--text-muted)">Email</span>
+                                        <span className="truncate text-right">{displayProfile.email}</span>
                                     </div>
-                                    <div className="flex justify-between items-center">
+                                    <div className="flex justify-between items-center gap-4">
                                         <span className="font-semibold text-(--text-muted)">
                                             {lang === 'RO' ? 'Membru din' : 'Joined'}
                                         </span>
-                                        <span>{formatJoinDate(mockProfileData.createdAt)}</span>
+                                        <span>{formatJoinDate(displayProfile.createdAt)}</span>
                                     </div>
-                                    <div className="flex justify-between items-center mt-2">
-                                        <span className="font-semibold text-(--text-muted)">
-                                            Role
-                                        </span>
+                                    <div className="flex justify-between items-center mt-2 gap-4">
+                                        <span className="font-semibold text-(--text-muted)">Role</span>
                                         <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase border border-(--accent)/30 bg-(--accent)/10 text-(--text)">
                                             {isAdmin ? 'Admin' : 'User'}
                                         </span>
@@ -149,54 +237,61 @@ export default function Profile() {
                                 </div>
                             </div>
 
-                            {/* stats */}
                             <div className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow">
                                 <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
                                     {lang === 'RO' ? 'Statistici' : 'Community Stats'}
                                 </h2>
+                                {loading && (
+                                    <p className="mb-3 text-xs text-(--text-subtle)">
+                                        {lang === 'RO' ? 'Se încarcă profilul...' : 'Loading profile...'}
+                                    </p>
+                                )}
+                                {error && <p className="mb-3 text-xs text-amber-300">{error}</p>}
                                 <div className="flex flex-col gap-4">
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-between gap-4">
                                         <span className="text-sm text-(--text-muted)">
                                             {lang === 'RO' ? 'Total Submisii' : 'Total Submissions'}
                                         </span>
                                         <span className="font-bold text-(--text-h)">
-                                            {mockProfileData.submissions}
+                                            {displayProfile.submissions}
                                         </span>
                                     </div>
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-between gap-4">
                                         <span className="text-sm text-(--text-muted)">
-                                            {lang === 'RO'
-                                                ? 'Rată de Acceptare'
-                                                : 'Acceptance Rate'}
+                                            {lang === 'RO' ? 'Rată de Acceptare' : 'Acceptance Rate'}
                                         </span>
                                         <span className="font-bold text-(--text-h)">
-                                            {mockProfileData.acceptanceRate}%
+                                            {formatPercent(displayProfile.acceptanceRate)}
                                         </span>
                                     </div>
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-between gap-4">
                                         <span className="text-sm text-(--text-muted)">
                                             {lang === 'RO' ? 'Zile Consecutive' : 'Daily Streak'}
                                         </span>
-                                        <span className="font-bold text-orange-400">
-                                            {mockProfileData.streak} 🔥
+                                        <span className="font-bold text-orange-400 flex items-center gap-2">
+                                            <span>{displayProfile.streak} 🔥</span>
+                                            {displayProfile.streakCapped && (
+                                                <span className="rounded-full border border-orange-400/40 bg-orange-400/10 px-2 py-0.5 text-[10px] uppercase tracking-widest text-orange-200">
+                                                    {lang === 'RO' ? 'Limitat' : 'Capped'}
+                                                </span>
+                                            )}
                                         </span>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Languages & Skills Card */}
                             <div className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow">
                                 <div className="mb-6">
                                     <h2 className="text-sm font-bold text-(--text-h) mb-3 uppercase tracking-wider">
                                         {lang === 'RO' ? 'Limbaje' : 'Languages'}
                                     </h2>
                                     <div className="flex flex-wrap gap-2">
-                                        {mockProfileData.mostUsedLanguages.map((langItem) => (
+                                        {displayProfile.mostUsedLanguages.map((language) => (
                                             <span
-                                                key={langItem}
+                                                key={language}
                                                 className="px-3 py-1 rounded-full text-xs font-semibold border border-(--accent)/20 bg-(--accent)/5 text-(--text-h)"
                                             >
-                                                {langItem}
+                                                {language}
                                             </span>
                                         ))}
                                     </div>
@@ -207,7 +302,7 @@ export default function Profile() {
                                         Skills
                                     </h2>
                                     <div className="flex flex-wrap gap-2">
-                                        {mockProfileData.skillBreakdownTags.map((skill) => (
+                                        {displayProfile.skillBreakdownTags.map((skill) => (
                                             <span
                                                 key={skill}
                                                 className="px-2.5 py-1 rounded-full text-xs font-semibold border border-(--accent)/30 bg-(--accent)/10 text-(--text) hover:bg-(--accent)/20 transition-colors cursor-pointer"
@@ -220,22 +315,20 @@ export default function Profile() {
                             </div>
                         </div>
 
-                        {/* MAIN CONTENT */}
                         <div className="flex flex-col gap-6 min-w-0 w-full">
-                            {/* number of solved problems of different difficulty levels */}
                             <div className="p-6 md:p-8 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-8 items-center min-w-0">
                                 <div className="flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-(--accent)/20 pb-6 md:pb-0 md:pr-6">
                                     <span className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-2">
                                         {lang === 'RO' ? 'Probleme Rezolvate' : 'Problems Solved'}
                                     </span>
                                     <span className="text-6xl font-black text-(--accent) drop-shadow-md">
-                                        {mockProfileData.problemsSolved}
+                                        {displayProfile.problemsSolved}
                                     </span>
                                 </div>
 
                                 <div className="flex flex-col gap-4">
                                     <div>
-                                        <div className="flex items-center justify-between text-xs mb-1">
+                                        <div className="flex items-center justify-between text-xs mb-1 gap-4">
                                             <span
                                                 className={`font-semibold ${isLightTheme ? 'text-emerald-700' : 'text-emerald-400'}`}
                                             >
@@ -244,19 +337,19 @@ export default function Profile() {
                                             <span
                                                 className={`font-bold ${isLightTheme ? 'text-emerald-600' : 'text-emerald-300'}`}
                                             >
-                                                {mockProfileData.rankEasy}%
+                                                {formatPercent(displayProfile.rankEasy)}
                                             </span>
                                         </div>
                                         <div className="w-full bg-emerald-500/10 rounded-full h-2">
                                             <div
                                                 className="bg-emerald-400 h-2 rounded-full"
-                                                style={{ width: `${mockProfileData.rankEasy}%` }}
+                                                style={{ width: formatPercent(displayProfile.rankEasy) }}
                                             ></div>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <div className="flex items-center justify-between text-xs mb-1">
+                                        <div className="flex items-center justify-between text-xs mb-1 gap-4">
                                             <span
                                                 className={`font-semibold ${isLightTheme ? 'text-amber-700' : 'text-amber-400'}`}
                                             >
@@ -265,19 +358,19 @@ export default function Profile() {
                                             <span
                                                 className={`font-bold ${isLightTheme ? 'text-amber-600' : 'text-amber-300'}`}
                                             >
-                                                {mockProfileData.rankMedium}%
+                                                {formatPercent(displayProfile.rankMedium)}
                                             </span>
                                         </div>
                                         <div className="w-full bg-amber-500/10 rounded-full h-2">
                                             <div
                                                 className="bg-amber-400 h-2 rounded-full"
-                                                style={{ width: `${mockProfileData.rankMedium}%` }}
+                                                style={{ width: formatPercent(displayProfile.rankMedium) }}
                                             ></div>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <div className="flex items-center justify-between text-xs mb-1">
+                                        <div className="flex items-center justify-between text-xs mb-1 gap-4">
                                             <span
                                                 className={`font-semibold ${isLightTheme ? 'text-red-700' : 'text-red-400'}`}
                                             >
@@ -286,19 +379,19 @@ export default function Profile() {
                                             <span
                                                 className={`font-bold ${isLightTheme ? 'text-red-600' : 'text-red-300'}`}
                                             >
-                                                {mockProfileData.rankHard}%
+                                                {formatPercent(displayProfile.rankHard)}
                                             </span>
                                         </div>
                                         <div className="w-full bg-red-500/10 rounded-full h-2">
                                             <div
                                                 className="bg-red-400 h-2 rounded-full"
-                                                style={{ width: `${mockProfileData.rankHard}%` }}
+                                                style={{ width: formatPercent(displayProfile.rankHard) }}
                                             ></div>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <div className="flex items-center justify-between text-xs mb-1">
+                                        <div className="flex items-center justify-between text-xs mb-1 gap-4">
                                             <span
                                                 className={`font-semibold ${isLightTheme ? 'text-purple-700' : 'text-purple-400'}`}
                                             >
@@ -307,34 +400,52 @@ export default function Profile() {
                                             <span
                                                 className={`font-bold ${isLightTheme ? 'text-purple-600' : 'text-purple-300'}`}
                                             >
-                                                {mockProfileData.rankContest}%
+                                                {formatPercent(displayProfile.rankContest)}
                                             </span>
                                         </div>
                                         <div className="w-full bg-purple-500/10 rounded-full h-2">
                                             <div
                                                 className="bg-purple-400 h-2 rounded-full"
-                                                style={{ width: `${mockProfileData.rankContest}%` }}
+                                                style={{ width: formatPercent(displayProfile.rankContest) }}
                                             ></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* badges */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 min-w-0">
-                                {mockProfileData.badges.map((badge) => (
+                                {[
+                                    {
+                                        label: lang === 'RO' ? 'Rezolvate' : 'Solved',
+                                        value: String(displayProfile.problemsSolved),
+                                    },
+                                    {
+                                        label: lang === 'RO' ? 'Submisii' : 'Submissions',
+                                        value: String(displayProfile.submissions),
+                                    },
+                                    {
+                                        label: lang === 'RO' ? 'Acceptare' : 'Acceptance',
+                                        value: formatPercent(displayProfile.acceptanceRate),
+                                    },
+                                    {
+                                        label: lang === 'RO' ? 'Serie' : 'Streak',
+                                        value: `${displayProfile.streak}${displayProfile.streakCapped ? '+' : ''}`,
+                                    },
+                                ].map((item) => (
                                     <div
-                                        key={badge}
-                                        className="p-3 flex items-center justify-center gap-2 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm hover:-translate-y-1 transition-transform cursor-pointer"
+                                        key={item.label}
+                                        className="p-3 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm hover:-translate-y-1 transition-transform cursor-pointer text-center"
                                     >
-                                        <span className="text-xs font-bold text-(--text-h) text-center">
-                                            {badge}
-                                        </span>
+                                        <div className="text-[10px] uppercase tracking-widest text-(--text-subtle) font-bold">
+                                            {item.label}
+                                        </div>
+                                        <div className="mt-1 text-sm font-bold text-(--text-h)">
+                                            {item.value}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
 
-                            {/* heatmap */}
                             <div className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow min-w-0">
                                 <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
                                     {lang === 'RO' ? 'Activitate pe zile' : 'Activity by Day'}
@@ -342,9 +453,9 @@ export default function Profile() {
                                 <div className="w-full overflow-x-auto custom-scrollbar pb-2">
                                     <div className="flex flex-col gap-1.5 min-w-max">
                                         <div className="flex gap-1.5">
-                                            {mockHeatmap.map((level, i) => (
+                                            {heatmap.map((level, index) => (
                                                 <div
-                                                    key={i}
+                                                    key={index}
                                                     className="w-4 h-4 rounded-[3px] transition-transform hover:scale-125 cursor-pointer border border-(--accent)/5 shrink-0"
                                                     style={getHeatmapStyle(level)}
                                                     title={`${level * 2} submissions`}
@@ -353,14 +464,14 @@ export default function Profile() {
                                         </div>
 
                                         <div className="flex gap-1.5">
-                                            {mockHeatmap.map((_, i) => {
+                                            {heatmap.map((_, index) => {
                                                 let dayLabel = '';
-                                                if (i % 14 === 0) dayLabel = '1';
-                                                else if (i % 14 === 7) dayLabel = '14';
+                                                if (index % 14 === 0) dayLabel = '1';
+                                                else if (index % 14 === 7) dayLabel = '14';
 
                                                 return (
                                                     <div
-                                                        key={`label-${i}`}
+                                                        key={`label-${index}`}
                                                         className="w-4 text-[9px] font-semibold text-(--text-subtle) text-center shrink-0 flex items-start justify-center"
                                                     >
                                                         {dayLabel}
@@ -373,39 +484,23 @@ export default function Profile() {
 
                                 <div className="mt-2 flex items-center justify-end gap-2 text-xs text-(--text-subtle) font-semibold">
                                     <span>Less</span>
-                                    <div
-                                        className="w-3 h-3 rounded-xs"
-                                        style={getHeatmapStyle(0)}
-                                    />
-                                    <div
-                                        className="w-3 h-3 rounded-xs"
-                                        style={getHeatmapStyle(1)}
-                                    />
-                                    <div
-                                        className="w-3 h-3 rounded-xs"
-                                        style={getHeatmapStyle(2)}
-                                    />
-                                    <div
-                                        className="w-3 h-3 rounded-xs"
-                                        style={getHeatmapStyle(3)}
-                                    />
-                                    <div
-                                        className="w-3 h-3 rounded-xs"
-                                        style={getHeatmapStyle(4)}
-                                    />
+                                    <div className="w-3 h-3 rounded-xs" style={getHeatmapStyle(0)} />
+                                    <div className="w-3 h-3 rounded-xs" style={getHeatmapStyle(1)} />
+                                    <div className="w-3 h-3 rounded-xs" style={getHeatmapStyle(2)} />
+                                    <div className="w-3 h-3 rounded-xs" style={getHeatmapStyle(3)} />
+                                    <div className="w-3 h-3 rounded-xs" style={getHeatmapStyle(4)} />
                                     <span>More</span>
                                 </div>
                             </div>
 
-                            {/* recent submissions */}
                             <div className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow mb-8 min-w-0">
                                 <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
                                     {lang === 'RO' ? 'Submisii Recente' : 'Recent Submissions'}
                                 </h2>
-                                <div className="flex flex-col gap-2">
-                                    {Object.entries(mockProfileData.recentSubmissions).map(
-                                        ([problemName, score], index) => {
-                                            const isAccepted = score === 100.0;
+                                {displayProfile.recentSubmissions.content.length > 0 ? (
+                                    <div className="flex flex-col gap-2">
+                                        {displayProfile.recentSubmissions.content.map((submission) => {
+                                            const isAccepted = submission.status === 'OK';
 
                                             const badgeClasses = isAccepted
                                                 ? isLightTheme
@@ -417,34 +512,41 @@ export default function Profile() {
 
                                             return (
                                                 <div
-                                                    key={index}
-                                                    className="p-3 md:p-4 rounded-xl border border-(--accent)/20 bg-(--accent)/5 flex justify-between items-center transition-colors hover:bg-(--accent)/10"
+                                                    key={`${submission.problemTitle}-${submission.submissionDate}`}
+                                                    className="p-3 md:p-4 rounded-xl border border-(--accent)/20 bg-(--accent)/5 flex justify-between items-center gap-3 transition-colors hover:bg-(--accent)/10"
                                                 >
                                                     <div className="min-w-0 pr-2">
                                                         <Link
-                                                            to={`/problems`}
+                                                            to={`/problems/${submission.problemTitle}`}
                                                             className="text-sm md:text-base font-bold text-(--text-h) hover:text-(--accent) hover:underline underline-offset-2 transition-colors line-clamp-1 truncate block"
                                                         >
-                                                            {problemName}
+                                                            {submission.problemTitle}
                                                         </Link>
+                                                        <p className="mt-1 text-[11px] text-(--text-subtle)">
+                                                            {formatSubmissionDate(submission.submissionDate)}
+                                                        </p>
                                                     </div>
-                                                    <div className="flex items-center gap-3 shrink-0 ml-2">
+                                                    <div className="flex items-center gap-3 shrink-0 ml-2 flex-wrap justify-end">
                                                         <span className="text-[11px] font-mono text-(--text-subtle) hidden sm:inline-block">
-                                                            Score: {score}
+                                                            Score: {submission.score}
                                                         </span>
                                                         <span
                                                             className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap border ${badgeClasses}`}
                                                         >
-                                                            {isAccepted
-                                                                ? 'Accepted'
-                                                                : 'Partial / WA'}
+                                                            {formatStatus(submission.status)}
                                                         </span>
                                                     </div>
                                                 </div>
                                             );
-                                        },
-                                    )}
-                                </div>
+                                        })}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-(--text-subtle)">
+                                        {lang === 'RO'
+                                            ? 'Nu există submisii recente.'
+                                            : 'No recent submissions.'}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>

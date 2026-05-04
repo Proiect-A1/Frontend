@@ -45,7 +45,14 @@ function AnimatedRoutes() {
             <Route path="/login" element={<Login />} />
             <Route path="/problems" element={<ProblemList />} />
             <Route path="/problems/:problemTitle" element={<ProblemDetails />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/propose"
               element={

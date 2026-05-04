@@ -17,14 +17,14 @@ export interface HomeworkRequestDTO {
 
 export const homeworkService = {
   getAll(groupId: string) {
-    return apiClient.get<HomeworkResponseDTO[]>(`/classes/${groupId}/homeworks`);
+    return apiClient.get<HomeworkResponseDTO[]>(`/group/${groupId}/homeworks`);
   },
 
   create(groupId: string, request: HomeworkRequestDTO) {
-    return apiClient.post<HomeworkResponseDTO>(`/classes/${groupId}/homeworks`, request);
+    return apiClient.post<HomeworkResponseDTO>(`/group/${groupId}/homeworks`, request);
   },
 
   delete(groupId: string, homeworkId: string) {
-    return apiClient.delete<void>(`/classes/${groupId}/homeworks/${homeworkId}`);
+    return apiClient.delete<void>(`/group/${groupId}/homeworks/${homeworkId}`);
   },
 };
