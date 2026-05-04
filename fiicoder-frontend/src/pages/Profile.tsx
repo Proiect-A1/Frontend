@@ -11,65 +11,6 @@ import {
     type RecentSubmissionDTO,
 } from '../services/profileService';
 
-const mockProfileData: ProfileResponseDTO = {
-    id: 'u42432424u',
-    username: 'LauraZuzu',
-    firstName: 'Laura-Ioana',
-    lastName: 'Zuzu',
-    email: 'laura.zuzu.lz@gmail.com',
-    createdAt: '2023-11-15T10:30:00',
-    problemsSolved: 215,
-    submissions: 420,
-    acceptanceRate: 0.712,
-    streak: 24,
-    streakCapped: false,
-    rankEasy: 0.855,
-    rankMedium: 0.602,
-    rankHard: 0.15,
-    rankContest: 0.05,
-    recentSubmissions: {
-        content: [
-            {
-                problemTitle: 'Suma Gauss',
-                score: 100.0,
-                status: 'OK',
-                submissionDate: '2026-05-01T10:15:00',
-            },
-            {
-                problemTitle: 'Algoritmul lui Dijkstra',
-                score: 100.0,
-                status: 'OK',
-                submissionDate: '2026-04-30T18:42:00',
-            },
-            {
-                problemTitle: 'Rucsac',
-                score: 100.0,
-                status: 'OK',
-                submissionDate: '2026-04-29T14:09:00',
-            },
-            {
-                problemTitle: 'Subșir Crescător Maximal',
-                score: 45.5,
-                status: 'PA',
-                submissionDate: '2026-04-28T12:21:00',
-            },
-            {
-                problemTitle: 'Parcurgere DFS',
-                score: 0.0,
-                status: 'WA',
-                submissionDate: '2026-04-27T21:05:00',
-            },
-        ],
-        page: 1,
-        size: 5,
-        totalElements: 5,
-        totalPages: 1,
-        hasNext: false,
-    },
-    mostUsedLanguages: ['C++', 'Python', 'Java'],
-    skillBreakdownTags: ['Programare Dinamică', 'Grafuri', 'Backtracking', 'Structuri de Date'],
-};
-
 const generateHeatmapFromSubmissions = (submissions: RecentSubmissionDTO[] | undefined): number[] => {
     if (!submissions || submissions.length === 0) {
         return Array(84).fill(0);
@@ -166,8 +107,11 @@ export default function Profile() {
                 }
             } catch {
                 if (active) {
-                    setProfile(mockProfileData);
-                    setError(lang === 'RO' ? 'Se afișează date demonstrative.' : 'Showing demo data.');
+                    setError(
+                        lang === 'RO'
+                            ? 'Nu am putut încărca profilul. Încearcă din nou.'
+                            : 'Could not load profile. Please try again.',
+                    );
                 }
             } finally {
                 if (active) {
@@ -211,11 +155,35 @@ export default function Profile() {
         return lang === 'RO' ? label.ro : label.en;
     };
 
-    const displayProfile = profile ?? mockProfileData;
+    const displayProfile = profile;
     const heatmap = useMemo(
-        () => generateHeatmapFromSubmissions(displayProfile.recentSubmissions?.content),
-        [displayProfile.recentSubmissions?.content]
+        () => generateHeatmapFromSubmissions(displayProfile?.recentSubmissions?.content),
+        [displayProfile?.recentSubmissions?.content]
     );
+
+    if (!displayProfile) {
+        return (
+            <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
+                <motion.div
+                    className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm px-5 py-6 md:px-8 md:py-8"
+                    variants={pageVariants}
+                    initial="hidden"
+                    animate="visible"
+                >
+                    <div className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-4 text-sm text-(--text-muted)">
+                        {loading
+                            ? lang === 'RO'
+                                ? 'Se încarcă profilul...'
+                                : 'Loading profile...'
+                            : error ??
+                              (lang === 'RO'
+                                  ? 'Profil indisponibil momentan.'
+                                  : 'Profile is currently unavailable.')}
+                    </div>
+                </motion.div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
