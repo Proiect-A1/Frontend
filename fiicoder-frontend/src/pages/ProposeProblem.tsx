@@ -6,9 +6,11 @@ import type { ProposeProblemForm } from '../types/proposeProblem';
 
 import GeneralTab from '../components/ProposeProblem/GeneralTab';
 import StatementTab from '../components/ProposeProblem/StatementTab';
+import GeneratorTab from '../components/ProposeProblem/GeneratorTab';
 import TestsTab from '../components/ProposeProblem/TestsTab';
 import SubtasksTab from '../components/ProposeProblem/SubtasksTab';
-import AttachmentsTab from '../components/ProposeProblem/AttachmentsTab';
+import FilesTab from '../components/ProposeProblem/AttachmentsTab';
+import RunTab from '../components/ProposeProblem/RunTab';
 import AccessTab from '../components/ProposeProblem/AccessTab';
 import { pageVariants } from '../utils/motionConfig';
 import { useLanguage } from '../language/Language';
@@ -21,8 +23,10 @@ const defaultValues: ProposeProblemForm = {
     tags: [],
     statement: '',
     sourceUrl: '',
+    generatorScript: '',
     tests: [],
     subtasks: [],
+    files: [],
     attachments: [],
     visibility: 'private',
     allowedUsers: [],
@@ -32,9 +36,11 @@ const defaultValues: ProposeProblemForm = {
 const tabs = [
     { id: 'general', labelRO: 'General', labelEN: 'General' },
     { id: 'statement', labelRO: 'Enunț', labelEN: 'Statement' },
-    { id: 'tests', labelRO: 'Teste', labelEN: 'Tests' },
+    { id: 'generator', labelRO: 'Generator', labelEN: 'Generator' },
+    { id: 'tests', labelRO: 'Teste Manuale', labelEN: 'Manual Tests' },
     { id: 'subtasks', labelRO: 'Subtask-uri', labelEN: 'Subtasks' },
-    { id: 'attachments', labelRO: 'Fișiere', labelEN: 'Attachments' },
+    { id: 'files', labelRO: 'Fișiere', labelEN: 'Files' },
+    { id: 'run', labelRO: 'Rulează', labelEN: 'Run' },
     { id: 'access', labelRO: 'Acces', labelEN: 'Access' },
 ];
 
@@ -124,9 +130,11 @@ export default function ProposeProblem() {
                         <div>
                             {activeTab === 'general' && <GeneralTab />}
                             {activeTab === 'statement' && <StatementTab />}
+                            {activeTab === 'generator' && <GeneratorTab />}
                             {activeTab === 'tests' && <TestsTab />}
                             {activeTab === 'subtasks' && <SubtasksTab />}
-                            {activeTab === 'attachments' && <AttachmentsTab />}
+                            {activeTab === 'files' && <FilesTab />}
+                            {activeTab === 'run' && <RunTab />}
                             {activeTab === 'access' && <AccessTab />}
                         </div>
 

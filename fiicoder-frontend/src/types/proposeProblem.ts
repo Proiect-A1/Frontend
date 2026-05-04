@@ -6,6 +6,7 @@ export interface TestCase {
   timeLimit?: number;
   memoryLimit?: number;
   points?: number;
+  source: 'manual' | 'generated';
 }
 
 export interface Subtask {
@@ -15,6 +16,57 @@ export interface Subtask {
   testIds: string[];
 }
 
+// ── File categories matching archive structure ──
+export type FileCategory = 'sources' | 'checkers' | 'validators' | 'generators';
+
+export interface ProblemFile {
+  id: string;
+  name: string;
+  size: number;
+  category: FileCategory;
+  content: string; // raw text content for code files
+  language?: string; // monaco language id (cpp, python, etc.)
+}
+
+// ── Generator ──
+export interface GeneratorValidationError {
+  line: number;
+  col: number;
+  message: string;
+}
+
+export interface GeneratorValidationResult {
+  valid: boolean;
+  errors: GeneratorValidationError[];
+}
+
+// ── Run results ──
+export interface TestRunResult {
+  testId: string;
+  verdict: 'AC' | 'WA' | 'TLE' | 'MLE' | 'RE' | 'CE' | 'PENDING';
+  time?: number;  // seconds
+  memory?: number; // MB
+  points: number;
+  maxPoints: number;
+}
+
+export interface SubtaskRunResult {
+  subtaskId: string;
+  name: string;
+  scored: number;
+  maxPoints: number;
+  tests: TestRunResult[];
+}
+
+export interface RunResult {
+  sourceFile: string;
+  totalScore: number;
+  maxScore: number;
+  subtasks: SubtaskRunResult[];
+  timestamp: string;
+}
+
+// ── Main form ──
 export interface ProposeProblemForm {
   // General Tab
   title: string;
@@ -22,20 +74,26 @@ export interface ProposeProblemForm {
   timeLimit: number;
   memoryLimit: number;
   tags: string[];
-  
+
   // Statement Tab
   statement: string;
   sourceUrl?: string;
-  
-  // Tests
+
+  // Generator Tab
+  generatorScript: string;
+
+  // Manual Tests
   tests: TestCase[];
-  
+
   // Subtasks
   subtasks: Subtask[];
-  
-  // Attachments
+
+  // Files (categorized)
+  files: ProblemFile[];
+
+  // Legacy — kept for compatibility but no longer used directly
   attachments: File[];
-  
+
   // Access
   visibility: 'private' | 'public' | 'unlisted';
   allowedUsers?: string[];

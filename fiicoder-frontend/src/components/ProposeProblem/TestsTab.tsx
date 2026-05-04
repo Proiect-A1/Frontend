@@ -12,13 +12,14 @@ export default function TestsTab() {
 
     const addTest = () => {
         append({
-            id: `test_${Date.now()}`,
+            id: `manual_${Date.now()}`,
             input: '',
             output: '',
             subtaskIds: [],
             timeLimit: undefined,
             memoryLimit: undefined,
             points: 1,
+            source: 'manual',
         });
     };
 
@@ -35,8 +36,8 @@ export default function TestsTab() {
                 className="p-4 bg-(--surface-muted) rounded-xl border border-(--accent)/20"
             >
                 <p className="text-sm text-(--text)">
-                    <strong>Instrucțiuni:</strong> Adaugă testele pe care va trebui să le treacă
-                    soluția. Fiecare test poate fi asignat unor subtask-uri.
+                    <strong>Teste Manuale:</strong> Adaugă teste individuale cu input/output.
+                    Aceste teste sunt mereu vizibile în Subtask-uri, independent de generator.
                 </p>
             </motion.div>
 
