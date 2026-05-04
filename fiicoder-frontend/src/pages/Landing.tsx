@@ -113,7 +113,7 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                             >
                                 {announcement.title}
                             </h2>
-                            <div className="text-sm text-(--text) leading-relaxed mb-6 whitespace-pre-wrap max-h-96 overflow-y-auto break-all">
+                            <div className="text-sm text-(--text) leading-relaxed mb-6 whitespace-pre-wrap max-h-96 overflow-y-auto [overflow-wrap:anywhere]">
                                 {announcement.content}
                             </div>
                             <div
@@ -289,7 +289,7 @@ export default function Landing() {
                                                         </span>
                                                     )}
                                                 </div>
-                                                <p className="text-xs text-(--text-muted) mb-2 line-clamp-3 break-all whitespace-pre-wrap">
+                                                <p className="text-xs text-(--text-muted) mb-2 line-clamp-3 [overflow-wrap:anywhere] whitespace-pre-wrap">
                                                     {ann.content}
                                                 </p>
                                                 <div className="text-[10px] text-(--text-subtle)">
