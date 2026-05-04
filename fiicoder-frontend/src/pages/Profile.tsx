@@ -504,7 +504,6 @@ export default function Profile() {
                                                     />
                                                 );
                                             })}
-                                            ))}
                                         </div>
 
                                         <div className="flex gap-1.5">
