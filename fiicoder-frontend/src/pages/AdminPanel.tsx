@@ -857,7 +857,7 @@ export default function AdminPanel() {
                                                 </div>
                                             </div>
 
-                                            <div className={`text-sm text-(--text) leading-relaxed break-words overflow-x-hidden whitespace-pre-wrap ${selectedAnnouncementId === announcement.id ? '' : 'line-clamp-3'}`}>
+                                            <div className={`text-sm text-(--text) leading-relaxed break-all whitespace-pre-wrap ${selectedAnnouncementId === announcement.id ? '' : 'line-clamp-3'}`}>
                                                 {announcement.content}
                                             </div>
                                         </motion.div>
