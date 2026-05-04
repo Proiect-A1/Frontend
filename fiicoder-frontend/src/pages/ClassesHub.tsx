@@ -9,9 +9,37 @@ import {
 } from '../services/classService';
 import { useLanguage } from '../language/Language';
 import { itemVariants, pageVariants } from '../utils/motionConfig';
+
+const RECENT_CLASSES_KEY = 'fiicoder_recent_classes';
+const MAX_RECENT_CLASSES = 12;
+
+type RecentClassItem = {
+    id: string;
+    name: string;
+    description: string | null;
+    creatorUsername: string;
+    createdAt: string;
+};
+
+function loadRecentClasses(): RecentClassItem[] {
+    try {
+        const raw = localStorage.getItem(RECENT_CLASSES_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw) as RecentClassItem[];
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter((item) => item?.id && item?.name);
+    } catch {
+        return [];
+    }
+}
+
+function saveRecentClasses(items: RecentClassItem[]) {
+    localStorage.setItem(RECENT_CLASSES_KEY, JSON.stringify(items));
+}
+
 export default function ClassesHub() {
     const { lang } = useLanguage();
-    const { userId, isAuthenticated } = useAuth();
+    const { userId, username, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
     const [className, setClassName] = useState('');
@@ -22,6 +50,18 @@ export default function ClassesHub() {
     const [loadingInvitations, setLoadingInvitations] = useState(false);
     const [feedback, setFeedback] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [recentClasses, setRecentClasses] = useState<RecentClassItem[]>(() =>
+        loadRecentClasses(),
+    );
+
+    const storeRecentClass = (newItem: RecentClassItem) => {
+        setRecentClasses((previousItems) => {
+            const deduped = previousItems.filter((item) => item.id !== newItem.id);
+            const nextItems = [newItem, ...deduped].slice(0, MAX_RECENT_CLASSES);
+            saveRecentClasses(nextItems);
+            return nextItems;
+        });
+    };
 
     useEffect(() => {
         if (!isAuthenticated) return;
@@ -67,6 +107,15 @@ export default function ClassesHub() {
                 description: classDescription,
                 creatorId: userId,
             });
+
+            storeRecentClass({
+                id: response.id,
+                name: className,
+                description: classDescription || null,
+                creatorUsername: username || 'unknown',
+                createdAt: new Date().toISOString(),
+            });
+
             setFeedback(
                 lang === 'RO'
                     ? `Clasa a fost creată: ${response.id}`
@@ -92,6 +141,13 @@ export default function ClassesHub() {
         try {
             const response = await classService.getById(lookupId.trim());
             setFoundClass(response);
+            storeRecentClass({
+                id: response.id,
+                name: response.name,
+                description: response.description,
+                creatorUsername: response.creatorUsername,
+                createdAt: response.createdAt,
+            });
         } catch (err: any) {
             setFoundClass(null);
             setError(
@@ -235,6 +291,70 @@ export default function ClassesHub() {
                 >
                     <div className="flex items-center justify-between gap-4">
                         <h2 className="text-xl font-bold text-(--text-h)">
+                            {lang === 'RO' ? 'Clase recente' : 'Recent classes'}
+                        </h2>
+                        {recentClasses.length > 0 && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setRecentClasses([]);
+                                    saveRecentClasses([]);
+                                }}
+                                className="rounded-lg border border-(--accent)/35 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
+                            >
+                                {lang === 'RO' ? 'Curăță' : 'Clear'}
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="mt-4 grid gap-3">
+                        {recentClasses.length === 0 && (
+                            <div className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)">
+                                {lang === 'RO'
+                                    ? 'Nu ai clase salvate recent. Creează sau caută o clasă și va apărea aici.'
+                                    : 'No recent classes yet. Create or search a class and it will appear here.'}
+                            </div>
+                        )}
+
+                        {recentClasses.map((savedClass) => (
+                            <div
+                                key={savedClass.id}
+                                className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-3"
+                            >
+                                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                                    <div>
+                                        <p className="text-base font-semibold text-(--text-h)">
+                                            {savedClass.name}
+                                        </p>
+                                        <p className="text-xs text-(--text-muted) mt-0.5">
+                                            {savedClass.description ||
+                                                (lang === 'RO'
+                                                    ? 'Fără descriere.'
+                                                    : 'No description.')}
+                                        </p>
+                                        <p className="text-[10px] text-(--text-muted) mt-1">
+                                            {lang === 'RO' ? 'Creator' : 'Creator'}:{' '}
+                                            {savedClass.creatorUsername}
+                                        </p>
+                                    </div>
+                                    <Link
+                                        to={`/classes/${savedClass.id}`}
+                                        className="inline-flex self-start rounded-xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
+                                    >
+                                        {lang === 'RO' ? 'Deschide clasa' : 'Open class'}
+                                    </Link>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </motion.section>
+
+                <motion.section
+                    variants={itemVariants}
+                    className="mt-4 md:mt-6 rounded-xl border border-(--accent)/20 bg-(--surface-card) p-4 md:p-6"
+                >
+                    <div className="flex items-center justify-between gap-4">
+                        <h2 className="text-xl font-bold text-(--text-h)">
                             {lang === 'RO' ? 'Invitațiile mele' : 'My invitations'}
                         </h2>
                         {loadingInvitations && (
@@ -273,6 +393,22 @@ export default function ClassesHub() {
                                 {invitation.studyClass?.id && (
                                     <Link
                                         to={`/classes/${invitation.studyClass.id}`}
+                                        onClick={() => {
+                                            if (invitation.studyClass) {
+                                                storeRecentClass({
+                                                    id: invitation.studyClass.id,
+                                                    name: invitation.studyClass.name,
+                                                    description:
+                                                        invitation.studyClass.description || null,
+                                                    creatorUsername:
+                                                        invitation.studyClass.creator?.username ||
+                                                        'unknown',
+                                                    createdAt:
+                                                        invitation.studyClass.createdAt ||
+                                                        new Date().toISOString(),
+                                                });
+                                            }
+                                        }}
                                         className="inline-flex self-start rounded-xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
                                     >
                                         {lang === 'RO' ? 'Vezi clasa' : 'View class'}
