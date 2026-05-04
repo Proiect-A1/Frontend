@@ -41,6 +41,10 @@ export default function AdminPanel() {
     const [selectedProposal, setSelectedProposal] = useState<ProblemProposalDetail | null>(null);
     const [announcements, setAnnouncements] = useState<Announcement[]>([]);
     const [editingAnnouncementId, setEditingAnnouncementId] = useState<string | null>(null);
+    const [selectedAnnouncementId, setSelectedAnnouncementId] = useState<string | null>(null);
+    const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
+    const [announcementDetailLoading, setAnnouncementDetailLoading] = useState(false);
+    const [announcementDetailError, setAnnouncementDetailError] = useState<string | null>(null);
     const [announcementForm, setAnnouncementForm] = useState({ title: '', content: '' });
     const [isSavingAnnouncement, setIsSavingAnnouncement] = useState(false);
     const [auditLog, setAuditLog] = useState<AuditLogEntry[]>([]);
@@ -268,6 +272,33 @@ export default function AdminPanel() {
         setAnnouncementForm({ title: announcement.title, content: announcement.content });
     };
 
+    const handleViewAnnouncement = async (announcementId: string) => {
+        if (selectedAnnouncementId === announcementId) {
+            setSelectedAnnouncementId(null);
+            setSelectedAnnouncement(null);
+            setAnnouncementDetailError(null);
+            return;
+        }
+
+        setAnnouncementDetailLoading(true);
+        setAnnouncementDetailError(null);
+        setSelectedAnnouncementId(announcementId);
+
+        try {
+            const data = await adminService.getAnnouncement(announcementId);
+            setSelectedAnnouncement(data);
+        } catch {
+            setSelectedAnnouncement(null);
+            setAnnouncementDetailError(
+                lang === 'RO'
+                    ? 'Nu am putut încărca detaliile anunțului.'
+                    : 'Could not load announcement details.',
+            );
+        } finally {
+            setAnnouncementDetailLoading(false);
+        }
+    };
+
     const handleDeleteAnnouncement = async (announcementId: string) => {
         await adminService.deleteAnnouncement(announcementId);
         setAnnouncements((previousAnnouncements) =>
@@ -277,6 +308,12 @@ export default function AdminPanel() {
         if (editingAnnouncementId === announcementId) {
             setEditingAnnouncementId(null);
             setAnnouncementForm({ title: '', content: '' });
+        }
+
+        if (selectedAnnouncementId === announcementId) {
+            setSelectedAnnouncementId(null);
+            setSelectedAnnouncement(null);
+            setAnnouncementDetailError(null);
         }
     };
 
@@ -808,6 +845,23 @@ export default function AdminPanel() {
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={() =>
+                                                            handleViewAnnouncement(
+                                                                announcement.id,
+                                                            )
+                                                        }
+                                                        className="rounded-full border border-(--accent)/40 bg-(--accent)/10 px-3 py-1 text-xs font-bold text-(--text-h) hover:bg-(--accent)/20"
+                                                    >
+                                                        {selectedAnnouncementId ===
+                                                        announcement.id
+                                                            ? lang === 'RO'
+                                                                ? 'Ascunde'
+                                                                : 'Hide'
+                                                            : lang === 'RO'
+                                                              ? 'Detalii'
+                                                              : 'Details'}
+                                                    </button>
+                                                    <button
+                                                        onClick={() =>
                                                             handleEditAnnouncement(announcement)
                                                         }
                                                         className="rounded-full border border-(--accent)/40 bg-(--accent)/10 px-3 py-1 text-xs font-bold text-(--text-h) hover:bg-(--accent)/20"
@@ -832,6 +886,52 @@ export default function AdminPanel() {
                                             </p>
                                         </motion.div>
                                     ))}
+
+                                    {(announcementDetailLoading ||
+                                        announcementDetailError ||
+                                        selectedAnnouncement) && (
+                                        <motion.div
+                                            variants={itemVariants}
+                                            className="p-4 rounded-xl border border-(--accent)/20 bg-black/15"
+                                        >
+                                            <h3 className="text-sm font-bold uppercase tracking-widest text-(--text-muted) mb-3">
+                                                {lang === 'RO'
+                                                    ? 'Detalii anunț selectat'
+                                                    : 'Selected announcement details'}
+                                            </h3>
+
+                                            {announcementDetailLoading && (
+                                                <p className="text-sm text-(--text-muted)">
+                                                    {lang === 'RO'
+                                                        ? 'Se încarcă...'
+                                                        : 'Loading...'}
+                                                </p>
+                                            )}
+
+                                            {!announcementDetailLoading &&
+                                                announcementDetailError && (
+                                                    <p className="text-sm text-red-300">
+                                                        {announcementDetailError}
+                                                    </p>
+                                                )}
+
+                                            {!announcementDetailLoading &&
+                                                !announcementDetailError &&
+                                                selectedAnnouncement && (
+                                                    <div className="space-y-3">
+                                                        <h4 className="text-lg font-bold text-(--text-h)">
+                                                            {selectedAnnouncement.title}
+                                                        </h4>
+                                                        <p className="text-xs uppercase tracking-widest text-(--text-muted) font-bold">
+                                                            {selectedAnnouncement.createdAt}
+                                                        </p>
+                                                        <p className="text-sm leading-relaxed text-(--text)">
+                                                            {selectedAnnouncement.content}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                        </motion.div>
+                                    )}
                                 </motion.div>
                             </motion.div>
                         )}

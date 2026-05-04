@@ -3,7 +3,13 @@ import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../services/AuthContext';
 import { classService, type GroupFindResponseDTO } from '../services/classService';
-import { homeworkService, type HomeworkResponseDTO } from '../services/homeworkService';
+import {
+    homeworkService,
+    type HomeworkDetailDTO,
+    type HomeworkResponseDTO,
+    type HomeworkUpdateDeleteRequestDTO,
+    type HomeworkUpdateRequestDTO,
+} from '../services/homeworkService';
 import { useLanguage } from '../language/Language';
 import { itemVariants, pageVariants } from '../utils/motionConfig';
 
@@ -16,6 +22,13 @@ function getHomeworkBadge(status: HomeworkResponseDTO['status']) {
         default:
             return 'border-(--accent)/20 bg-(--accent)/5 text-(--text-muted)';
     }
+}
+
+function parseCsvValues(rawInput: string): string[] {
+    return rawInput
+        .split(',')
+        .map((value) => value.trim())
+        .filter((value) => value.length > 0);
 }
 
 export default function ClassDetails() {
@@ -32,6 +45,16 @@ export default function ClassDetails() {
     const [feedback, setFeedback] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [selectedHomeworkId, setSelectedHomeworkId] = useState<string | null>(null);
+    const [selectedHomeworkDetail, setSelectedHomeworkDetail] = useState<HomeworkDetailDTO | null>(
+        null,
+    );
+    const [loadingHomeworkId, setLoadingHomeworkId] = useState<string | null>(null);
+    const [addUsernamesInput, setAddUsernamesInput] = useState('');
+    const [addProblemTitlesInput, setAddProblemTitlesInput] = useState('');
+    const [addDeadline, setAddDeadline] = useState('');
+    const [removeUsernamesInput, setRemoveUsernamesInput] = useState('');
+    const [removeProblemTitlesInput, setRemoveProblemTitlesInput] = useState('');
 
     useEffect(() => {
         if (!groupId) return;
@@ -76,6 +99,48 @@ export default function ClassDetails() {
         const data = await homeworkService.getAll(groupId);
         setHomeworks(data);
     };
+
+    useEffect(() => {
+        if (!groupId || !selectedHomeworkId) {
+            setSelectedHomeworkDetail(null);
+            return;
+        }
+
+        const currentGroupId = groupId;
+        const currentHomeworkId = selectedHomeworkId;
+
+        let cancelled = false;
+
+        async function loadHomeworkDetails() {
+            try {
+                setLoadingHomeworkId(currentHomeworkId);
+                const details = await homeworkService.getById(currentGroupId, currentHomeworkId);
+                if (!cancelled) {
+                    setSelectedHomeworkDetail(details);
+                }
+            } catch (err: any) {
+                if (!cancelled) {
+                    setError(
+                        err?.body?.message ||
+                            err?.body?.error ||
+                            (lang === 'RO'
+                                ? 'Nu am putut încărca detaliile temei.'
+                                : 'Could not load homework details.'),
+                    );
+                }
+            } finally {
+                if (!cancelled) {
+                    setLoadingHomeworkId(null);
+                }
+            }
+        }
+
+        void loadHomeworkDetails();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [groupId, selectedHomeworkId, lang]);
 
     const handleInvite = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -135,6 +200,136 @@ export default function ClassDetails() {
                 err?.body?.message ||
                     err?.body?.error ||
                     (lang === 'RO' ? 'Nu am putut șterge tema.' : 'Could not delete homework.'),
+            );
+        }
+    };
+
+    const handleShowHomeworkDetails = async (homeworkId: string) => {
+        if (selectedHomeworkId === homeworkId) {
+            setSelectedHomeworkId(null);
+            setSelectedHomeworkDetail(null);
+            return;
+        }
+
+        setError(null);
+        setSelectedHomeworkId(homeworkId);
+    };
+
+    const handlePublishHomework = async (homeworkId: string) => {
+        if (!groupId) return;
+        try {
+            setError(null);
+            setFeedback(null);
+            await homeworkService.publish(groupId, homeworkId);
+            setFeedback(lang === 'RO' ? 'Tema a fost publicată.' : 'Homework published.');
+            await reloadHomeworks();
+            if (selectedHomeworkId === homeworkId) {
+                const details = await homeworkService.getById(groupId, homeworkId);
+                setSelectedHomeworkDetail(details);
+            }
+        } catch (err: any) {
+            setError(
+                err?.body?.message ||
+                    err?.body?.error ||
+                    (lang === 'RO'
+                        ? 'Nu am putut publica tema.'
+                        : 'Could not publish homework.'),
+            );
+        }
+    };
+
+    const handleAddToDraft = async (homeworkId: string) => {
+        if (!groupId) return;
+
+        const request: HomeworkUpdateRequestDTO = {};
+        const usernames = parseCsvValues(addUsernamesInput);
+        const problemTitles = parseCsvValues(addProblemTitlesInput);
+
+        if (usernames.length > 0) request.usernames = usernames;
+        if (problemTitles.length > 0) request.problemTitles = problemTitles;
+        if (addDeadline.trim().length > 0) request.deadline = addDeadline;
+
+        if (!request.usernames && !request.problemTitles && !request.deadline) {
+            setError(
+                lang === 'RO'
+                    ? 'Completează cel puțin un câmp pentru actualizare.'
+                    : 'Fill at least one field for update.',
+            );
+            return;
+        }
+
+        try {
+            setError(null);
+            setFeedback(null);
+            await homeworkService.addToDraft(groupId, homeworkId, request);
+            setFeedback(
+                lang === 'RO'
+                    ? 'Tema draft a fost actualizată (add).'
+                    : 'Draft homework updated (add).',
+            );
+            setAddUsernamesInput('');
+            setAddProblemTitlesInput('');
+            setAddDeadline('');
+            await reloadHomeworks();
+
+            if (selectedHomeworkId === homeworkId) {
+                const details = await homeworkService.getById(groupId, homeworkId);
+                setSelectedHomeworkDetail(details);
+            }
+        } catch (err: any) {
+            setError(
+                err?.body?.message ||
+                    err?.body?.error ||
+                    (lang === 'RO'
+                        ? 'Nu am putut adăuga date în temă.'
+                        : 'Could not add data to homework.'),
+            );
+        }
+    };
+
+    const handleRemoveFromDraft = async (homeworkId: string) => {
+        if (!groupId) return;
+
+        const request: HomeworkUpdateDeleteRequestDTO = {};
+        const usernames = parseCsvValues(removeUsernamesInput);
+        const problemTitles = parseCsvValues(removeProblemTitlesInput);
+
+        if (usernames.length > 0) request.usernames = usernames;
+        if (problemTitles.length > 0) request.problemTitles = problemTitles;
+
+        if (!request.usernames && !request.problemTitles) {
+            setError(
+                lang === 'RO'
+                    ? 'Completează cel puțin username-uri sau probleme pentru ștergere.'
+                    : 'Provide usernames or problems to remove.',
+            );
+            return;
+        }
+
+        try {
+            setError(null);
+            setFeedback(null);
+            await homeworkService.removeFromDraft(groupId, homeworkId, request);
+            setFeedback(
+                lang === 'RO'
+                    ? 'Tema draft a fost actualizată (delete).'
+                    : 'Draft homework updated (delete).',
+            );
+            setRemoveUsernamesInput('');
+            setRemoveProblemTitlesInput('');
+            await reloadHomeworks();
+
+            if (selectedHomeworkId === homeworkId) {
+                const details = await homeworkService.getById(groupId, homeworkId);
+                setSelectedHomeworkDetail(details);
+            }
+        } catch (err: any) {
+            setError(
+                err?.body?.message ||
+                    err?.body?.error ||
+                    (lang === 'RO'
+                        ? 'Nu am putut șterge date din temă.'
+                        : 'Could not remove data from homework.'),
             );
         }
     };
@@ -332,14 +527,159 @@ export default function ClassDetails() {
                                     </div>
 
                                     {userId === group?.creatorId && (
-                                        <button
-                                            onClick={() => handleDeleteHomework(homework.id)}
-                                            className="rounded-lg border border-red-400/50 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/10"
-                                        >
-                                            {lang === 'RO' ? 'Șterge' : 'Delete'}
-                                        </button>
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <button
+                                                onClick={() => handleShowHomeworkDetails(homework.id)}
+                                                className="rounded-lg border border-(--accent)/40 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
+                                            >
+                                                {selectedHomeworkId === homework.id
+                                                    ? lang === 'RO'
+                                                        ? 'Ascunde detalii'
+                                                        : 'Hide details'
+                                                    : lang === 'RO'
+                                                      ? 'Detalii'
+                                                      : 'Details'}
+                                            </button>
+                                            {homework.status === 'DRAFT' && (
+                                                <button
+                                                    onClick={() => handlePublishHomework(homework.id)}
+                                                    className="rounded-lg border border-emerald-400/50 px-3 py-1.5 text-xs font-semibold text-emerald-200 hover:bg-emerald-500/10"
+                                                >
+                                                    {lang === 'RO' ? 'Publică' : 'Publish'}
+                                                </button>
+                                            )}
+                                            <button
+                                                onClick={() => handleDeleteHomework(homework.id)}
+                                                className="rounded-lg border border-red-400/50 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/10"
+                                            >
+                                                {lang === 'RO' ? 'Șterge' : 'Delete'}
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
+
+                                {selectedHomeworkId === homework.id && (
+                                    <div className="mt-4 rounded-xl border border-(--accent)/20 bg-black/15 p-4 space-y-4">
+                                        {loadingHomeworkId === homework.id && (
+                                            <p className="text-sm text-(--text-muted)">
+                                                {lang === 'RO'
+                                                    ? 'Se încarcă detaliile temei...'
+                                                    : 'Loading homework details...'}
+                                            </p>
+                                        )}
+
+                                        {selectedHomeworkDetail && loadingHomeworkId !== homework.id && (
+                                            <>
+                                                <div className="grid gap-2 text-xs text-(--text-muted) sm:grid-cols-3">
+                                                    <div>
+                                                        {lang === 'RO' ? 'Probleme:' : 'Problems:'}{' '}
+                                                        {selectedHomeworkDetail.problems.length}
+                                                    </div>
+                                                    <div>
+                                                        {lang === 'RO' ? 'Elevi asignați:' : 'Assigned users:'}{' '}
+                                                        {selectedHomeworkDetail.assignedUsers.length}
+                                                    </div>
+                                                    <div>
+                                                        {lang === 'RO' ? 'Submisii:' : 'Submissions:'}{' '}
+                                                        {selectedHomeworkDetail.submissions.length}
+                                                    </div>
+                                                </div>
+
+                                                {homework.status === 'DRAFT' && userId === group?.creatorId && (
+                                                    <div className="grid gap-4 xl:grid-cols-2">
+                                                        <div className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-3 space-y-2">
+                                                            <h4 className="text-sm font-bold text-(--text-h)">
+                                                                {lang === 'RO'
+                                                                    ? 'Adaugă în draft'
+                                                                    : 'Add to draft'}
+                                                            </h4>
+                                                            <input
+                                                                value={addUsernamesInput}
+                                                                onChange={(event) =>
+                                                                    setAddUsernamesInput(event.target.value)
+                                                                }
+                                                                placeholder={
+                                                                    lang === 'RO'
+                                                                        ? 'user1, user2'
+                                                                        : 'user1, user2'
+                                                                }
+                                                                className="w-full rounded-lg border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs text-(--text-h)"
+                                                            />
+                                                            <input
+                                                                value={addProblemTitlesInput}
+                                                                onChange={(event) =>
+                                                                    setAddProblemTitlesInput(event.target.value)
+                                                                }
+                                                                placeholder={
+                                                                    lang === 'RO'
+                                                                        ? 'problemă 1, problemă 2'
+                                                                        : 'problem 1, problem 2'
+                                                                }
+                                                                className="w-full rounded-lg border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs text-(--text-h)"
+                                                            />
+                                                            <input
+                                                                type="date"
+                                                                value={addDeadline}
+                                                                onChange={(event) =>
+                                                                    setAddDeadline(event.target.value)
+                                                                }
+                                                                className="w-full rounded-lg border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs text-(--text-h)"
+                                                            />
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleAddToDraft(homework.id)
+                                                                }
+                                                                className="rounded-lg border border-emerald-400/50 px-3 py-1.5 text-xs font-semibold text-emerald-200 hover:bg-emerald-500/10"
+                                                            >
+                                                                {lang === 'RO' ? 'Adaugă' : 'Add'}
+                                                            </button>
+                                                        </div>
+
+                                                        <div className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-3 space-y-2">
+                                                            <h4 className="text-sm font-bold text-(--text-h)">
+                                                                {lang === 'RO'
+                                                                    ? 'Șterge din draft'
+                                                                    : 'Remove from draft'}
+                                                            </h4>
+                                                            <input
+                                                                value={removeUsernamesInput}
+                                                                onChange={(event) =>
+                                                                    setRemoveUsernamesInput(event.target.value)
+                                                                }
+                                                                placeholder={
+                                                                    lang === 'RO'
+                                                                        ? 'user1, user2'
+                                                                        : 'user1, user2'
+                                                                }
+                                                                className="w-full rounded-lg border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs text-(--text-h)"
+                                                            />
+                                                            <input
+                                                                value={removeProblemTitlesInput}
+                                                                onChange={(event) =>
+                                                                    setRemoveProblemTitlesInput(event.target.value)
+                                                                }
+                                                                placeholder={
+                                                                    lang === 'RO'
+                                                                        ? 'problemă 1, problemă 2'
+                                                                        : 'problem 1, problem 2'
+                                                                }
+                                                                className="w-full rounded-lg border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs text-(--text-h)"
+                                                            />
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleRemoveFromDraft(homework.id)
+                                                                }
+                                                                className="rounded-lg border border-red-400/50 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/10"
+                                                            >
+                                                                {lang === 'RO' ? 'Șterge' : 'Remove'}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

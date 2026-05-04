@@ -396,6 +396,18 @@ export const adminService = {
         }
     },
 
+    async getAnnouncement(id: string): Promise<Announcement> {
+        try {
+            return await apiClient.get(`/api/announcements/${id}`);
+        } catch {
+            const found = mockAnnouncements.find((announcement) => announcement.id === id);
+            if (!found) {
+                throw new Error('Announcement not found');
+            }
+            return { ...found };
+        }
+    },
+
     async createAnnouncement(input: AnnouncementInput): Promise<Announcement> {
         try {
             return await apiClient.post('/announcements', input);
