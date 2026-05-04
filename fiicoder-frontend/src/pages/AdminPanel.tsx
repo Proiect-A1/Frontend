@@ -42,9 +42,6 @@ export default function AdminPanel() {
     const [announcements, setAnnouncements] = useState<Announcement[]>([]);
     const [editingAnnouncementId, setEditingAnnouncementId] = useState<string | null>(null);
     const [selectedAnnouncementId, setSelectedAnnouncementId] = useState<string | null>(null);
-    const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
-    const [announcementDetailLoading, setAnnouncementDetailLoading] = useState(false);
-    const [announcementDetailError, setAnnouncementDetailError] = useState<string | null>(null);
     const [announcementForm, setAnnouncementForm] = useState({ title: '', content: '' });
     const [isSavingAnnouncement, setIsSavingAnnouncement] = useState(false);
     const [auditLog, setAuditLog] = useState<AuditLogEntry[]>([]);
