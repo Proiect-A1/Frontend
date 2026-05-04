@@ -6,8 +6,9 @@ import type { OnMount } from '@monaco-editor/react';
 import type { ProposeProblemForm, GeneratorValidationError } from '../../types/proposeProblem';
 import { itemVariants, staggerConfig } from '../../utils/motionConfig';
 import { useTheme } from '../../services/ThemeContext';
+import { registerGeneratorLanguage, LANGUAGE_ID } from '../../utils/generatorLanguage';
 
-// Monaco theme palettes (reused from StatementTab)
+// Monaco theme palettes
 const monacoThemes: Record<string, {
     accent: string; text: string; textMuted: string; textSubtle: string;
     editorBg: string; codeBg: string; accentSecondary: string;
@@ -20,16 +21,17 @@ const monacoThemes: Record<string, {
 
 function applyMonacoTheme(monaco: any, themeName: string) {
     const palette = monacoThemes[themeName] || monacoThemes.rose;
-    monaco.editor.defineTheme('fiicoder-dark', {
+    monaco.editor.defineTheme('fiicoder-gen-theme', {
         base: 'vs-dark', inherit: true,
         rules: [
             { token: 'comment', foreground: palette.textMuted.replace('#', ''), fontStyle: 'italic' },
-            { token: 'keyword', foreground: palette.accent.replace('#', '') },
-            { token: 'string', foreground: palette.accentSecondary.replace('#', '') },
-            { token: 'number', foreground: palette.accent.replace('#', '') },
-            { token: 'type', foreground: palette.accentSecondary.replace('#', '') },
-            { token: 'function', foreground: palette.accent.replace('#', '') },
-            { token: 'variable', foreground: palette.text.replace('#', '') },
+            { token: 'keyword.directive', foreground: palette.accent.replace('#', ''), fontStyle: 'bold' },
+            { token: 'number', foreground: palette.accentSecondary.replace('#', '') },
+            { token: 'string.filename', foreground: 'e0c97b', fontStyle: 'underline' },
+            { token: 'operator.copy', foreground: '66bb6a', fontStyle: 'bold' },
+            { token: 'operator.generator', foreground: '42a5f5', fontStyle: 'bold' },
+            { token: 'identifier', foreground: palette.text.replace('#', '') },
+            { token: 'invalid', foreground: 'ff5252', fontStyle: 'bold' },
         ],
         colors: {
             'editor.background': palette.editorBg,
@@ -47,8 +49,27 @@ function applyMonacoTheme(monaco: any, themeName: string) {
             'scrollbarSlider.activeBackground': `${palette.accent}80`,
         },
     });
-    monaco.editor.setTheme('fiicoder-dark');
+    monaco.editor.setTheme('fiicoder-gen-theme');
 }
+
+const EXAMPLE_SCRIPT = `#MAIN main
+#DEFGRP 10 exemple
+#DEFGRP 90 full
+
+#VAL val 100 100 // maxt, maxn
+#CHECK check 100 100 10000 // maxt, maxn, max operatii
+
+#IN exemple full
+= exemplu.in
+
+#NOTIN exemple
+#GEN gen 100 100 // t, n
+< gen 34 56
+2
+3
+4
+5
+`;
 
 type ValidationStatus = 'idle' | 'validating' | 'success' | 'error';
 
@@ -64,16 +85,14 @@ export default function GeneratorTab() {
     const [errors, setErrors] = useState<GeneratorValidationError[]>([]);
     const [showDocsTooltip, setShowDocsTooltip] = useState(false);
 
-    // Handle Ctrl+S
     const handleSave = useCallback(async () => {
         setStatus('validating');
         setErrors([]);
 
         try {
-            // Mock API call — will be replaced with real endpoint
+            // Mock API call
             await new Promise((resolve) => setTimeout(resolve, 1200));
 
-            // Mock validation result
             const script = watch('generatorScript') || '';
             if (script.trim().length === 0) {
                 setStatus('error');
@@ -81,7 +100,6 @@ export default function GeneratorTab() {
                 return;
             }
 
-            // Simulate success or random error for demo
             const mockSuccess = script.length > 10;
             if (mockSuccess) {
                 setStatus('success');
@@ -98,7 +116,6 @@ export default function GeneratorTab() {
         }
     }, [watch]);
 
-    // Global Ctrl+S listener
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 's') {
@@ -112,20 +129,30 @@ export default function GeneratorTab() {
 
     const handleEditorMount: OnMount = (_editor, monaco) => {
         monacoRef.current = monaco;
+        registerGeneratorLanguage(monaco);
         applyMonacoTheme(monaco, theme);
     };
+
+    // Reactively update Monaco theme when app theme changes
+    useEffect(() => {
+        if (monacoRef.current) {
+            applyMonacoTheme(monacoRef.current, theme);
+        }
+    }, [theme]);
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
         const reader = new FileReader();
         reader.onload = (ev) => {
-            const content = ev.target?.result as string;
-            setValue('generatorScript', content);
+            setValue('generatorScript', ev.target?.result as string);
         };
         reader.readAsText(file);
-        // Reset input so the same file can be re-selected
         e.target.value = '';
+    };
+
+    const insertExample = () => {
+        setValue('generatorScript', EXAMPLE_SCRIPT);
     };
 
     const statusConfig = {
@@ -150,7 +177,7 @@ export default function GeneratorTab() {
                 <div className="flex items-center gap-3">
                     <h2 className="text-lg font-bold text-(--text-h)">Script Generator</h2>
 
-                    {/* Info icon with tooltip */}
+                    {/* Info icon */}
                     <div className="relative">
                         <button
                             type="button"
@@ -161,26 +188,42 @@ export default function GeneratorTab() {
                             ℹ
                         </button>
                         {showDocsTooltip && (
-                            <div className="absolute left-8 top-0 z-50 w-64 p-3 bg-(--surface-dropdown) border border-(--accent)/30 rounded-xl shadow-2xl text-xs text-(--text)">
-                                <p className="font-semibold text-(--accent) mb-1">Documentație Generator</p>
-                                <p className="text-(--text-muted)">
-                                    Sintaxa completă a limbajului de generare va fi disponibilă în curând. 
-                                    Scriptul definește testele, subtask-urile și punctajele problemei.
-                                </p>
+                            <div className="absolute left-8 top-0 z-50 w-72 p-3 bg-(--surface-dropdown) border border-(--accent)/30 rounded-xl shadow-2xl text-xs text-(--text)">
+                                <p className="font-semibold text-(--accent) mb-1">Sintaxă Generator</p>
+                                <pre className="text-(--text-muted) whitespace-pre-wrap font-mono text-[10px] leading-relaxed">
+{`#MAIN <sursă>
+#DEFGRP <puncte> <nume_grup>
+#GEN <generator> <args...>
+#VAL <validator> <args...>
+#CHECK <checker> <args...>
+#IN <grupuri...>
+#NOTIN <grupuri...>
+#TEST <puncte> <args...>
+= <fișier>    // copiază test
+< <gen> <args> // generator specific`}
+                                </pre>
                             </div>
                         )}
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap">
-                    {/* Status indicator */}
                     {status !== 'idle' && (
                         <span className={`text-sm font-semibold ${statusConfig[status].className}`}>
                             {statusConfig[status].icon} {statusConfig[status].text}
                         </span>
                     )}
 
-                    {/* Upload button */}
+                    {/* Template button */}
+                    <button
+                        type="button"
+                        onClick={insertExample}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-xl font-semibold border border-(--accent)/40 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors text-(--text-h)"
+                    >
+                        📋 Exemplu
+                    </button>
+
+                    {/* Upload */}
                     <input
                         ref={fileInputRef}
                         type="file"
@@ -196,7 +239,7 @@ export default function GeneratorTab() {
                         📂 Încarcă
                     </button>
 
-                    {/* Save button */}
+                    {/* Save */}
                     <button
                         type="button"
                         onClick={handleSave}
@@ -209,13 +252,16 @@ export default function GeneratorTab() {
                 </div>
             </motion.div>
 
-            {/* Monaco Editor */}
+            {/* Monaco Editor with custom language */}
             <motion.div variants={itemVariants}>
-                <div className="bg-(--surface-card) rounded-xl border border-(--accent)/25 overflow-hidden" style={{ height: errors.length > 0 ? '50vh' : '65vh' }}>
+                <div
+                    className="bg-(--surface-card) rounded-xl border border-(--accent)/25 overflow-hidden"
+                    style={{ height: errors.length > 0 ? '50vh' : '65vh' }}
+                >
                     <Editor
                         height="100%"
-                        defaultLanguage="plaintext"
-                        theme="fiicoder-dark"
+                        language={LANGUAGE_ID}
+                        theme="fiicoder-gen-theme"
                         value={generatorScript}
                         onChange={(val) => setValue('generatorScript', val || '')}
                         onMount={handleEditorMount}
@@ -238,7 +284,7 @@ export default function GeneratorTab() {
                     variants={itemVariants}
                     className="rounded-xl border border-red-500/30 bg-red-950/20 overflow-hidden"
                 >
-                    <div className="px-4 py-2 bg-red-950/40 border-b border-red-500/20 flex items-center gap-2">
+                    <div className="px-4 py-2 bg-red-950/40 border-b border-red-500/20">
                         <span className="text-red-400 font-semibold text-sm">
                             ✗ {errors.length} {errors.length === 1 ? 'eroare' : 'erori'}
                         </span>
@@ -269,7 +315,7 @@ export default function GeneratorTab() {
                     className="p-4 rounded-xl border border-green-500/30 bg-green-950/20"
                 >
                     <p className="text-sm text-green-400 font-semibold">
-                        ✓ Scriptul a fost validat cu succes! Mergi la tab-ul „Rulează" pentru a genera teste și a verifica punctajele.
+                        ✓ Scriptul a fost validat cu succes! Mergi la „Fișiere → Surse" pentru a rula o sursă oficială.
                     </p>
                 </motion.div>
             )}

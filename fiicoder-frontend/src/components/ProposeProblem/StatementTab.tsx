@@ -1,5 +1,5 @@
 import { Controller, useFormContext } from 'react-hook-form';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import type { OnMount } from '@monaco-editor/react';
 import Editor from '@monaco-editor/react';
@@ -139,6 +139,13 @@ export default function StatementTab() {
         monacoRef.current = monaco;
         applyMonacoTheme(monaco, theme);
     };
+
+    // Reactively update Monaco theme when app theme changes
+    useEffect(() => {
+        if (monacoRef.current) {
+            applyMonacoTheme(monacoRef.current, theme);
+        }
+    }, [theme]);
 
     return (
         <motion.div

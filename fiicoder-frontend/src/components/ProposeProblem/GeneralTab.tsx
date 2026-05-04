@@ -13,6 +13,7 @@ export default function GeneralTab() {
 
     // Difficulty dropdown state
     const [isDifficultyOpen, setIsDifficultyOpen] = useState(false);
+    const [isVisibilityOpen, setIsVisibilityOpen] = useState(false);
 
     // Tag autocomplete state
     const [availableTags, setAvailableTags] = useState<TagResponseDTO[]>([]);
@@ -315,6 +316,101 @@ export default function GeneralTab() {
                 </p>
             </motion.div>
 
+            {/* ── Access / Vizibilitate ── */}
+            <motion.div variants={itemVariants} className="space-y-4 pt-2">
+                <div className="page-line-horizontal" />
+                <h3 className="text-base font-bold text-(--text-h)">Vizibilitate & Acces</h3>
+
+                {/* Visibility Dropdown */}
+                <div className="space-y-2">
+                    <label className="text-(--text) font-semibold text-sm">Vizibilitate</label>
+                    <div className="relative">
+                        <button
+                            type="button"
+                            onClick={() => setIsVisibilityOpen(!isVisibilityOpen)}
+                            className="w-full flex items-center justify-between rounded-xl border border-(--accent)/30 bg-(--surface-input) px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
+                        >
+                            <span>
+                                {formData.visibility === 'private' && '🔒 Privată — Doar tu și moderatorii'}
+                                {formData.visibility === 'unlisted' && '🔗 Ascunsă — Link pentru oameni selectați'}
+                                {formData.visibility === 'public' && '🌍 Publică — Vizibilă pentru toți'}
+                            </span>
+                            <motion.span animate={{ rotate: isVisibilityOpen ? 180 : 0 }}>▼</motion.span>
+                        </button>
+
+                        <AnimatePresence>
+                            {isVisibilityOpen && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -6 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -6 }}
+                                    transition={{ duration: 0.12 }}
+                                    className="absolute z-50 mt-1 w-full bg-(--surface-dropdown) border border-(--accent)/25 rounded-xl shadow-2xl overflow-hidden"
+                                >
+                                    {[
+                                        { value: 'private' as const, label: '🔒 Privată — Doar tu și moderatorii' },
+                                        { value: 'unlisted' as const, label: '🔗 Ascunsă — Link pentru oameni selectați' },
+                                        { value: 'public' as const, label: '🌍 Publică — Vizibilă pentru toți' },
+                                    ].map((opt) => (
+                                        <button
+                                            key={opt.value}
+                                            type="button"
+                                            onClick={() => {
+                                                setValue('visibility', opt.value);
+                                                setIsVisibilityOpen(false);
+                                            }}
+                                            className="w-full text-left px-4 py-2 text-sm text-(--text) hover:bg-(--accent)/20 transition-colors"
+                                        >
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                    <p className="text-xs text-(--text-muted)">
+                        {formData.visibility === 'private' && 'Salvare directă, fără review de la moderatori.'}
+                        {formData.visibility === 'unlisted' && 'Salvare directă. Partajează linkul cu persoanele dorite.'}
+                        {formData.visibility === 'public' && 'Va fi trimisă la review. Moderatorii vor aproba sau respinge propunerea.'}
+                    </p>
+                </div>
+
+                {/* Allowed Users (unlisted only) */}
+                {formData.visibility === 'unlisted' && (
+                    <div className="space-y-2">
+                        <label className="text-(--text) font-semibold text-sm">Utilizatori Permisi (opțional)</label>
+                        <input
+                            type="text"
+                            placeholder="Introdu usernames separate prin virgulă"
+                            className="w-full px-3 py-2 bg-(--surface-input) border border-(--accent)/25 rounded-xl text-sm text-(--text) placeholder:text-(--text-muted) focus:outline-none transition hover:border-(--accent)"
+                            onChange={(e) => {
+                                const usernames = e.target.value.split(',').map((u) => u.trim()).filter(Boolean);
+                                setValue('allowedUsers', usernames);
+                            }}
+                            value={formData.allowedUsers?.join(', ') || ''}
+                        />
+                        <p className="text-xs text-(--text-muted)">Lasă gol = oricine cu linkul.</p>
+                    </div>
+                )}
+
+                {/* Allowed Groups (unlisted only) */}
+                {formData.visibility === 'unlisted' && (
+                    <div className="space-y-2">
+                        <label className="text-(--text) font-semibold text-sm">Clase/Grupuri Permise (opțional)</label>
+                        <input
+                            type="text"
+                            placeholder="Introdu ID-uri de clase separate prin virgulă"
+                            className="w-full px-3 py-2 bg-(--surface-input) border border-(--accent)/25 rounded-xl text-sm text-(--text) placeholder:text-(--text-muted) focus:outline-none transition hover:border-(--accent)"
+                            onChange={(e) => {
+                                const groupIds = e.target.value.split(',').map((g) => g.trim()).filter(Boolean);
+                                setValue('allowedGroups', groupIds);
+                            }}
+                            value={formData.allowedGroups?.join(', ') || ''}
+                        />
+                    </div>
+                )}
+            </motion.div>
+
             {/* Preview */}
             <motion.div
                 variants={itemVariants}
@@ -335,6 +431,10 @@ export default function GeneralTab() {
                     <p>
                         <strong>Etichete:</strong>{' '}
                         {formData.tags.length > 0 ? formData.tags.join(', ') : '—'}
+                    </p>
+                    <p>
+                        <strong>Vizibilitate:</strong>{' '}
+                        {formData.visibility === 'private' ? '🔒 Privată' : formData.visibility === 'unlisted' ? '🔗 Ascunsă' : '🌍 Publică'}
                     </p>
                 </div>
             </motion.div>

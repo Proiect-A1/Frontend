@@ -1,13 +1,13 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import Editor from '@monaco-editor/react';
 import type { OnMount } from '@monaco-editor/react';
-import type { ProposeProblemForm, ProblemFile, FileCategory } from '../../types/proposeProblem';
+import type { ProposeProblemForm, ProblemFile, FileCategory, SubtaskRunResult } from '../../types/proposeProblem';
 import { itemVariants, staggerConfig } from '../../utils/motionConfig';
 import { useTheme } from '../../services/ThemeContext';
 
-// Monaco theme palettes (shared)
+// Monaco theme palettes
 const monacoThemes: Record<string, {
     accent: string; text: string; textMuted: string; textSubtle: string;
     editorBg: string; codeBg: string; accentSecondary: string;
@@ -42,11 +42,13 @@ function applyMonacoTheme(monaco: any, themeName: string) {
     monaco.editor.setTheme('fiicoder-dark');
 }
 
+// Reordered per team request: Generatoare, Validatoare, Interactoare, Checkere, Surse
 const categories: { id: FileCategory; label: string; icon: string; description: string }[] = [
-    { id: 'sources', label: 'Surse Oficiale', icon: '📄', description: 'Soluțiile corecte ale autorului (main.cpp, brute.cpp etc.)' },
-    { id: 'checkers', label: 'Checkere', icon: '✅', description: 'Verifică dacă output-ul concurentului este corect' },
-    { id: 'validators', label: 'Validatoare', icon: '🔍', description: 'Verifică dacă input-ul generat este valid' },
     { id: 'generators', label: 'Generatoare', icon: '⚙️', description: 'Programe C++ folosite de scriptul de generare' },
+    { id: 'validators', label: 'Validatoare', icon: '🔍', description: 'Verifică dacă input-ul generat este valid' },
+    { id: 'interactors', label: 'Interactoare', icon: '🔄', description: 'Programe de interacțiune pentru probleme interactive' },
+    { id: 'checkers', label: 'Checkere', icon: '✅', description: 'Verifică dacă output-ul concurentului este corect' },
+    { id: 'sources', label: 'Surse', icon: '📄', description: 'Soluțiile oficiale — rulează-le pentru a vedea punctajul' },
 ];
 
 function detectLanguage(filename: string): string {
@@ -67,21 +69,82 @@ function formatFileSize(bytes: number): string {
     return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
 }
 
+// ── Mock run results ──
+interface SourceRunHistory {
+    score: number;
+    maxScore: number;
+    timestamp: string;
+    subtasks: SubtaskRunResult[];
+}
+
+function generateMockRunResult(fileName: string): SourceRunHistory {
+    const isMain = fileName.toLowerCase().includes('main');
+    const subtasks: SubtaskRunResult[] = [
+        {
+            subtaskId: 'st_1', name: 'Subtask 1 — Brute Force', scored: 30, maxPoints: 30,
+            tests: [
+                { testId: '000', verdict: 'AC', time: 0.02, memory: 4.2, points: 10, maxPoints: 10 },
+                { testId: '001', verdict: 'AC', time: 0.05, memory: 4.5, points: 10, maxPoints: 10 },
+                { testId: '002', verdict: 'AC', time: 0.01, memory: 3.8, points: 10, maxPoints: 10 },
+            ],
+        },
+        {
+            subtaskId: 'st_2', name: 'Subtask 2 — Optimizat', scored: isMain ? 70 : 14, maxPoints: 70,
+            tests: [
+                { testId: '003', verdict: isMain ? 'AC' : 'WA', time: 0.03, memory: 5.1, points: isMain ? 14 : 0, maxPoints: 14 },
+                { testId: '004', verdict: 'AC', time: 0.12, memory: 6.2, points: 14, maxPoints: 14 },
+                { testId: '005', verdict: isMain ? 'AC' : 'TLE', time: isMain ? 0.45 : 2.1, memory: 12.3, points: isMain ? 14 : 0, maxPoints: 14 },
+                { testId: '006', verdict: isMain ? 'AC' : 'WA', time: 0.22, memory: 8.0, points: isMain ? 14 : 0, maxPoints: 14 },
+                { testId: '007', verdict: isMain ? 'AC' : 'MLE', time: 0.33, memory: isMain ? 15 : 280, points: isMain ? 14 : 0, maxPoints: 14 },
+            ],
+        },
+    ];
+    return {
+        score: subtasks.reduce((s, st) => s + st.scored, 0),
+        maxScore: subtasks.reduce((s, st) => s + st.maxPoints, 0),
+        timestamp: new Date().toISOString(),
+        subtasks,
+    };
+}
+
+const verdictColors: Record<string, string> = {
+    AC: 'text-green-400', WA: 'text-red-400', TLE: 'text-yellow-400',
+    MLE: 'text-orange-400', RE: 'text-purple-400', CE: 'text-gray-400',
+};
+
+// ════════════════════════════════════════════
+// Component
+// ════════════════════════════════════════════
 export default function FilesTab() {
     const { watch, setValue } = useFormContext<ProposeProblemForm>();
     const { theme } = useTheme();
     const files = watch('files') || [];
 
-    const [activeCategory, setActiveCategory] = useState<FileCategory>('sources');
+    const [activeCategory, setActiveCategory] = useState<FileCategory>('generators');
     const [editingFileId, setEditingFileId] = useState<string | null>(null);
     const [dragActive, setDragActive] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const monacoRef = useRef<any>(null);
+
+    // ── Run state (Sources only) ──
+    const [runningFileId, setRunningFileId] = useState<string | null>(null);
+    const [runHistory, setRunHistory] = useState<Record<string, SourceRunHistory>>({});
+    const [expandedResults, setExpandedResults] = useState<Set<string>>(new Set());
+    const [expandedSubtasks, setExpandedSubtasks] = useState<Set<string>>(new Set());
 
     const categoryFiles = files.filter((f) => f.category === activeCategory);
 
     const handleEditorMount: OnMount = (_editor, monaco) => {
+        monacoRef.current = monaco;
         applyMonacoTheme(monaco, theme);
     };
+
+    // Reactively update Monaco theme when app theme changes
+    useEffect(() => {
+        if (monacoRef.current) {
+            applyMonacoTheme(monacoRef.current, theme);
+        }
+    }, [theme]);
 
     const addFile = (file: File) => {
         const reader = new FileReader();
@@ -103,13 +166,16 @@ export default function FilesTab() {
     const removeFile = (fileId: string) => {
         if (editingFileId === fileId) setEditingFileId(null);
         setValue('files', files.filter((f) => f.id !== fileId));
+        // Clean run history
+        setRunHistory((prev) => {
+            const next = { ...prev };
+            delete next[fileId];
+            return next;
+        });
     };
 
     const updateFileContent = (fileId: string, content: string) => {
-        setValue(
-            'files',
-            files.map((f) => (f.id === fileId ? { ...f, content } : f)),
-        );
+        setValue('files', files.map((f) => (f.id === fileId ? { ...f, content } : f)));
     };
 
     const handleDrag = (e: React.DragEvent) => {
@@ -123,17 +189,48 @@ export default function FilesTab() {
         e.preventDefault();
         e.stopPropagation();
         setDragActive(false);
-        const droppedFiles = e.dataTransfer.files;
-        if (droppedFiles) Array.from(droppedFiles).forEach(addFile);
+        if (e.dataTransfer.files) Array.from(e.dataTransfer.files).forEach(addFile);
     };
 
     const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedFiles = e.currentTarget.files;
-        if (selectedFiles) Array.from(selectedFiles).forEach(addFile);
+        if (e.currentTarget.files) Array.from(e.currentTarget.files).forEach(addFile);
         e.target.value = '';
     };
 
+    // ── Run source ──
+    const handleRunSource = async (fileId: string, fileName: string) => {
+        setRunningFileId(fileId);
+        try {
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+            const result = generateMockRunResult(fileName);
+            setRunHistory((prev) => ({ ...prev, [fileId]: result }));
+            setExpandedResults((prev) => new Set(prev).add(fileId));
+            setExpandedSubtasks(new Set(result.subtasks.map((s) => `${fileId}_${s.subtaskId}`)));
+        } finally {
+            setRunningFileId(null);
+        }
+    };
+
+    const toggleResults = (fileId: string) => {
+        setExpandedResults((prev) => {
+            const next = new Set(prev);
+            if (next.has(fileId)) next.delete(fileId);
+            else next.add(fileId);
+            return next;
+        });
+    };
+
+    const toggleSubtask = (key: string) => {
+        setExpandedSubtasks((prev) => {
+            const next = new Set(prev);
+            if (next.has(key)) next.delete(key);
+            else next.add(key);
+            return next;
+        });
+    };
+
     const activeCat = categories.find((c) => c.id === activeCategory)!;
+    const isSources = activeCategory === 'sources';
 
     return (
         <motion.div
@@ -151,10 +248,7 @@ export default function FilesTab() {
                         <button
                             key={cat.id}
                             type="button"
-                            onClick={() => {
-                                setActiveCategory(cat.id);
-                                setEditingFileId(null);
-                            }}
+                            onClick={() => { setActiveCategory(cat.id); setEditingFileId(null); }}
                             className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center gap-1.5 cursor-pointer outline-none ${
                                 isActive
                                     ? 'bg-(--accent)/25 border-(--accent) text-(--text-h)'
@@ -164,9 +258,7 @@ export default function FilesTab() {
                             <span>{cat.icon}</span>
                             {cat.label}
                             {count > 0 && (
-                                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-(--accent)/20 text-xs">
-                                    {count}
-                                </span>
+                                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-(--accent)/20 text-xs">{count}</span>
                             )}
                         </button>
                     );
@@ -174,10 +266,7 @@ export default function FilesTab() {
             </motion.div>
 
             {/* Category Description */}
-            <motion.div
-                variants={itemVariants}
-                className="p-3 bg-(--surface-muted) rounded-xl border border-(--accent)/20"
-            >
+            <motion.div variants={itemVariants} className="p-3 bg-(--surface-muted) rounded-xl border border-(--accent)/20">
                 <p className="text-sm text-(--text-muted)">
                     <strong>{activeCat.icon} {activeCat.label}:</strong> {activeCat.description}
                 </p>
@@ -191,153 +280,234 @@ export default function FilesTab() {
                     onDragOver={handleDrag}
                     onDrop={handleDrop}
                     className={`relative p-6 border-2 border-dashed rounded-xl transition-colors cursor-pointer ${
-                        dragActive
-                            ? 'border-(--accent) bg-(--accent)/15'
-                            : 'border-(--accent)/40 hover:border-(--accent)/70'
+                        dragActive ? 'border-(--accent) bg-(--accent)/15' : 'border-(--accent)/40 hover:border-(--accent)/70'
                     }`}
                     onClick={() => fileInputRef.current?.click()}
                 >
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        multiple
-                        onChange={handleFileInput}
-                        className="hidden"
-                    />
+                    <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" />
                     <div className="flex flex-col items-center justify-center text-center">
                         <span className="text-3xl mb-1">📤</span>
-                        <p className="text-sm text-(--text) font-semibold">
-                            Trage fișierele aici sau fă clic
-                        </p>
-                        <p className="text-xs text-(--text-muted) mt-0.5">
-                            .cpp, .c, .h, .py, .java, .txt
-                        </p>
+                        <p className="text-sm text-(--text) font-semibold">Trage fișierele aici sau fă clic</p>
+                        <p className="text-xs text-(--text-muted) mt-0.5">.cpp, .c, .h, .py, .java, .txt</p>
                     </div>
                 </div>
             </motion.div>
 
             {/* Files List */}
-            {categoryFiles.length > 0 && (
-                <motion.div variants={itemVariants} className="space-y-1.5">
+            {categoryFiles.length > 0 ? (
+                <motion.div variants={itemVariants} className="space-y-2">
                     <h3 className="text-sm font-semibold text-(--text)">
                         {activeCat.label} ({categoryFiles.length})
                     </h3>
-                    {categoryFiles.map((file) => (
-                        <div key={file.id}>
-                            <div
-                                className={`flex items-center justify-between p-3 rounded-xl border transition-colors cursor-pointer ${
-                                    editingFileId === file.id
-                                        ? 'bg-(--accent)/10 border-(--accent)/40'
-                                        : 'bg-(--surface-muted) border-(--accent)/20 hover:bg-(--surface-muted)/70'
-                                }`}
-                                onDoubleClick={() =>
-                                    setEditingFileId(editingFileId === file.id ? null : file.id)
-                                }
-                            >
-                                <div className="flex items-center gap-3 min-w-0">
-                                    <span className="text-lg shrink-0">📄</span>
-                                    <div className="min-w-0">
-                                        <p className="text-sm text-(--text) truncate font-mono">
-                                            {file.name}
-                                        </p>
-                                        <p className="text-xs text-(--text-muted)">
-                                            {formatFileSize(file.size)} · {file.language}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-1 shrink-0">
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setEditingFileId(
-                                                editingFileId === file.id ? null : file.id,
-                                            );
-                                        }}
-                                        className="p-1.5 text-(--text-muted) hover:text-(--text-h) hover:bg-(--accent)/15 rounded transition-colors text-xs"
-                                        title="Editează"
-                                    >
-                                        ✏️
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            removeFile(file.id);
-                                        }}
-                                        className="p-1.5 text-red-400 hover:bg-red-500/20 rounded transition-colors text-xs"
-                                        title="Șterge"
-                                    >
-                                        🗑️
-                                    </button>
-                                </div>
-                            </div>
+                    {categoryFiles.map((file) => {
+                        const history = runHistory[file.id];
+                        const isRunning = runningFileId === file.id;
+                        const isResultsExpanded = expandedResults.has(file.id);
 
-                            {/* Inline Editor */}
-                            <AnimatePresence>
-                                {editingFileId === file.id && (
-                                    <motion.div
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: 'auto', opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="overflow-hidden"
+                        return (
+                            <div key={file.id} className="space-y-1">
+                                {/* File Card */}
+                                <div
+                                    className={`flex items-center justify-between p-3 rounded-xl border transition-colors ${
+                                        editingFileId === file.id
+                                            ? 'bg-(--accent)/10 border-(--accent)/40'
+                                            : 'bg-(--surface-muted) border-(--accent)/20 hover:bg-(--surface-muted)/70'
+                                    }`}
+                                >
+                                    <div
+                                        className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
+                                        onDoubleClick={() => setEditingFileId(editingFileId === file.id ? null : file.id)}
                                     >
-                                        <div className="mt-1 rounded-xl border border-(--accent)/25 overflow-hidden">
-                                            <div className="flex items-center justify-between px-3 py-1.5 bg-(--surface-muted) border-b border-(--accent)/15">
-                                                <span className="text-xs text-(--text-muted) font-mono">
-                                                    {file.name}
-                                                </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setEditingFileId(null)}
-                                                    className="text-xs text-(--text-muted) hover:text-(--text-h) transition-colors"
-                                                >
-                                                    ✕ Închide
-                                                </button>
-                                            </div>
-                                            <div style={{ height: '300px' }}>
-                                                <Editor
-                                                    height="100%"
-                                                    language={file.language || 'plaintext'}
-                                                    theme="fiicoder-dark"
-                                                    value={file.content}
-                                                    onChange={(val) =>
-                                                        updateFileContent(file.id, val || '')
-                                                    }
-                                                    onMount={handleEditorMount}
-                                                    options={{
-                                                        minimap: { enabled: false },
-                                                        wordWrap: 'on',
-                                                        lineNumbers: 'on',
-                                                        scrollBeyondLastLine: false,
-                                                        fontSize: 13,
-                                                    }}
-                                                />
+                                        <span className="text-lg shrink-0">📄</span>
+                                        <div className="min-w-0">
+                                            <p className="text-sm text-(--text) truncate font-mono">{file.name}</p>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xs text-(--text-muted)">{formatFileSize(file.size)} · {file.language}</span>
+                                                {/* Last run indicator (sources only) */}
+                                                {isSources && history && (
+                                                    <span
+                                                        className={`text-xs font-semibold cursor-pointer hover:underline ${
+                                                            history.score === history.maxScore ? 'text-green-400' : 'text-yellow-400'
+                                                        }`}
+                                                        onClick={(e) => { e.stopPropagation(); toggleResults(file.id); }}
+                                                    >
+                                                        {history.score}/{history.maxScore}p · {new Date(history.timestamp).toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' })}
+                                                    </span>
+                                                )}
+                                                {isSources && !history && !isRunning && (
+                                                    <span className="text-xs text-(--text-muted) italic">Nicio rulare</span>
+                                                )}
                                             </div>
                                         </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
-                    ))}
-                </motion.div>
-            )}
+                                    </div>
 
-            {categoryFiles.length === 0 && (
-                <motion.div
-                    variants={itemVariants}
-                    className="text-center py-8 text-(--text-muted) text-sm"
-                >
+                                    <div className="flex items-center gap-1 shrink-0">
+                                        {/* Run button (sources only) */}
+                                        {isSources && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRunSource(file.id, file.name)}
+                                                disabled={isRunning}
+                                                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg font-bold border border-(--accent)/40 bg-(--accent)/15 hover:bg-(--accent)/25 transition-colors text-(--text-h) disabled:opacity-40"
+                                            >
+                                                {isRunning ? <><span className="animate-spin">⏳</span> Rulare...</> : <>▶ Rulează</>}
+                                            </button>
+                                        )}
+                                        <button
+                                            type="button"
+                                            onClick={() => setEditingFileId(editingFileId === file.id ? null : file.id)}
+                                            className="p-1.5 text-(--text-muted) hover:text-(--text-h) hover:bg-(--accent)/15 rounded transition-colors text-xs"
+                                            title="Editează"
+                                        >
+                                            ✏️
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeFile(file.id)}
+                                            className="p-1.5 text-red-400 hover:bg-red-500/20 rounded transition-colors text-xs"
+                                            title="Șterge"
+                                        >
+                                            🗑️
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Run Results (sources only, expandable) */}
+                                <AnimatePresence>
+                                    {isSources && history && isResultsExpanded && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="overflow-hidden"
+                                        >
+                                            <div className="ml-4 rounded-xl border border-(--accent)/15 overflow-hidden">
+                                                {/* Score bar */}
+                                                <div className="px-4 py-2 bg-(--surface-muted) flex items-center justify-between">
+                                                    <span className="text-xs text-(--text-muted)">Rezultate</span>
+                                                    <span className={`text-sm font-bold ${
+                                                        history.score === history.maxScore ? 'text-green-400' :
+                                                        history.score >= history.maxScore * 0.5 ? 'text-yellow-400' : 'text-red-400'
+                                                    }`}>
+                                                        {history.score}/{history.maxScore}p
+                                                    </span>
+                                                </div>
+                                                {/* Progress bar */}
+                                                <div className="h-1.5 bg-(--surface-card)">
+                                                    <motion.div
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${(history.score / history.maxScore) * 100}%` }}
+                                                        transition={{ duration: 0.6, ease: 'easeOut' }}
+                                                        className={`h-full ${
+                                                            history.score === history.maxScore ? 'bg-green-500' :
+                                                            history.score >= history.maxScore * 0.5 ? 'bg-yellow-500' : 'bg-red-500'
+                                                        }`}
+                                                    />
+                                                </div>
+                                                {/* Subtask dropdowns */}
+                                                {history.subtasks.map((st) => {
+                                                    const stKey = `${file.id}_${st.subtaskId}`;
+                                                    const isStExpanded = expandedSubtasks.has(stKey);
+                                                    const isPerfect = st.scored === st.maxPoints;
+                                                    return (
+                                                        <div key={st.subtaskId}>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => toggleSubtask(stKey)}
+                                                                className="w-full flex items-center justify-between px-4 py-2 hover:bg-(--accent)/8 transition-colors border-t border-(--accent)/10"
+                                                            >
+                                                                <div className="flex items-center gap-2">
+                                                                    <motion.span
+                                                                        animate={{ rotate: isStExpanded ? 90 : 0 }}
+                                                                        transition={{ duration: 0.15 }}
+                                                                        className="text-(--text-muted) text-[10px]"
+                                                                    >▶</motion.span>
+                                                                    <span className="text-xs font-semibold text-(--text-h)">{st.name}</span>
+                                                                </div>
+                                                                <span className={`text-xs font-bold ${isPerfect ? 'text-green-400' : 'text-red-400'}`}>
+                                                                    {st.scored}/{st.maxPoints}p
+                                                                </span>
+                                                            </button>
+                                                            <AnimatePresence>
+                                                                {isStExpanded && (
+                                                                    <motion.div
+                                                                        initial={{ height: 0, opacity: 0 }}
+                                                                        animate={{ height: 'auto', opacity: 1 }}
+                                                                        exit={{ height: 0, opacity: 0 }}
+                                                                        transition={{ duration: 0.15 }}
+                                                                        className="overflow-hidden"
+                                                                    >
+                                                                        <table className="w-full text-xs">
+                                                                            <tbody>
+                                                                                {st.tests.map((t) => (
+                                                                                    <tr key={t.testId} className="border-t border-(--accent)/5 hover:bg-(--surface-muted)/40 transition-colors">
+                                                                                        <td className="py-1 px-4 font-mono text-(--text-muted)">#{t.testId}</td>
+                                                                                        <td className="py-1 px-2"><span className={`font-bold ${verdictColors[t.verdict] || 'text-(--text)'}`}>{t.verdict}</span></td>
+                                                                                        <td className="py-1 px-2 font-mono text-(--text-muted)">{t.time?.toFixed(2)}s</td>
+                                                                                        <td className="py-1 px-2 font-mono text-(--text-muted)">{t.memory?.toFixed(1)}MB</td>
+                                                                                        <td className="py-1 px-2 text-right"><span className={`font-bold ${t.points === t.maxPoints ? 'text-green-400' : 'text-red-400'}`}>{t.points}/{t.maxPoints}</span></td>
+                                                                                    </tr>
+                                                                                ))}
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </motion.div>
+                                                                )}
+                                                            </AnimatePresence>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
+                                {/* Inline Editor */}
+                                <AnimatePresence>
+                                    {editingFileId === file.id && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="overflow-hidden"
+                                        >
+                                            <div className="rounded-xl border border-(--accent)/25 overflow-hidden">
+                                                <div className="flex items-center justify-between px-3 py-1.5 bg-(--surface-muted) border-b border-(--accent)/15">
+                                                    <span className="text-xs text-(--text-muted) font-mono">{file.name}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setEditingFileId(null)}
+                                                        className="text-xs text-(--text-muted) hover:text-(--text-h) transition-colors"
+                                                    >✕ Închide</button>
+                                                </div>
+                                                <div style={{ height: '300px' }}>
+                                                    <Editor
+                                                        height="100%"
+                                                        language={file.language || 'plaintext'}
+                                                        theme="fiicoder-dark"
+                                                        value={file.content}
+                                                        onChange={(val) => updateFileContent(file.id, val || '')}
+                                                        onMount={handleEditorMount}
+                                                        options={{ minimap: { enabled: false }, wordWrap: 'on', lineNumbers: 'on', scrollBeyondLastLine: false, fontSize: 13 }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        );
+                    })}
+                </motion.div>
+            ) : (
+                <motion.div variants={itemVariants} className="text-center py-8 text-(--text-muted) text-sm">
                     Niciun fișier în categoria „{activeCat.label}". Uploadează fișiere mai sus.
                 </motion.div>
             )}
 
             {/* Stats */}
-            <motion.div
-                variants={itemVariants}
-                className="p-4 bg-(--surface-muted) rounded-xl border border-(--accent)/25"
-            >
+            <motion.div variants={itemVariants} className="p-4 bg-(--surface-muted) rounded-xl border border-(--accent)/25">
                 <div className="flex flex-wrap gap-4 text-sm">
                     {categories.map((cat) => {
                         const count = files.filter((f) => f.category === cat.id).length;
@@ -349,8 +519,7 @@ export default function FilesTab() {
                     })}
                 </div>
                 <p className="text-xs text-(--text-muted) mt-2">
-                    <strong>Total:</strong> {files.length} fișiere ·{' '}
-                    {formatFileSize(files.reduce((s, f) => s + f.size, 0))}
+                    <strong>Total:</strong> {files.length} fișiere · {formatFileSize(files.reduce((s, f) => s + f.size, 0))}
                 </p>
             </motion.div>
         </motion.div>

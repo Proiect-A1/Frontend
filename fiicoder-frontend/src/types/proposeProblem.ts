@@ -17,7 +17,7 @@ export interface Subtask {
 }
 
 // ── File categories matching archive structure ──
-export type FileCategory = 'sources' | 'checkers' | 'validators' | 'generators';
+export type FileCategory = 'sources' | 'checkers' | 'validators' | 'generators' | 'interactors';
 
 export interface ProblemFile {
   id: string;
