@@ -170,8 +170,30 @@ export default function ClassDetails() {
         try {
             setError(null);
             setFeedback(null);
+
+            const trimmedTitle = homeworkTitle.trim();
+
+            // Validate title is not empty
+            if (!trimmedTitle) {
+                setError(lang === 'RO' ? 'Titlul temei este obligatoriu.' : 'Homework title is required.');
+                return;
+            }
+
+            // Validate title uniqueness within group
+            const duplicateExists = homeworks.some(
+                (hw) => hw.title.toLowerCase() === trimmedTitle.toLowerCase(),
+            );
+            if (duplicateExists) {
+                setError(
+                    lang === 'RO'
+                        ? 'O temă cu acest titlu există deja în grup.'
+                        : 'A homework with this title already exists in this group.',
+                );
+                return;
+            }
+
             const response = await homeworkService.create(groupId, {
-                title: homeworkTitle,
+                title: trimmedTitle,
                 description: homeworkDescription,
                 deadline: homeworkDeadline,
             });

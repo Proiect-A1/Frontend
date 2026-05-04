@@ -238,7 +238,7 @@ function addAuditEntry(action: string, targetType: string, targetName: string, d
 export const adminService = {
     async getOverview(): Promise<AdminOverview> {
         try {
-            return await apiClient.get('/api/admin/overview');
+            return await apiClient.get('/admin/overview');
         } catch {
             return getMockOverview();
         }
@@ -246,7 +246,7 @@ export const adminService = {
 
     async getUsers(page: number = 1, pageSize: number = 20): Promise<AdminUser[]> {
         try {
-            return await apiClient.get(`/api/admin/users?page=${page}&limit=${pageSize}`);
+            return await apiClient.get(`/admin/users?page=${page}&limit=${pageSize}`);
         } catch {
             const startIndex = Math.max(page - 1, 0) * pageSize;
             return mockUsers.slice(startIndex, startIndex + pageSize).map((user) => ({ ...user }));
@@ -255,7 +255,7 @@ export const adminService = {
 
     async toggleBan(userId: string, isBanned: boolean): Promise<void> {
         try {
-            await apiClient.patch(`/api/admin/users/${userId}/${isBanned ? 'unban' : 'ban'}`);
+            await apiClient.patch(`/admin/users/${userId}/${isBanned ? 'unban' : 'ban'}`);
         } catch {
             const user = mockUsers.find((entry) => entry.id === userId);
             if (user) {
@@ -272,7 +272,7 @@ export const adminService = {
 
     async deleteUser(userId: string): Promise<void> {
         try {
-            await apiClient.delete(`/api/admin/users/${userId}`);
+            await apiClient.delete(`/admin/users/${userId}`);
         } catch {
             const index = mockUsers.findIndex((entry) => entry.id === userId);
             if (index !== -1) {
@@ -289,7 +289,7 @@ export const adminService = {
 
     async changeRole(userId: string, role: 'USER' | 'ADMIN'): Promise<void> {
         try {
-            await apiClient.patch(`/api/admin/users/${userId}/role`, { role });
+            await apiClient.patch(`/admin/users/${userId}/role`, { role });
         } catch {
             const user = mockUsers.find((entry) => entry.id === userId);
             if (user) {
@@ -306,7 +306,7 @@ export const adminService = {
 
     async getProposals(): Promise<ProblemProposal[]> {
         try {
-            return await apiClient.get('/api/admin/problem-proposals');
+            return await apiClient.get('/admin/problem-proposals');
         } catch {
             return cloneProposals()
                 .filter((proposal) => proposal.status === 'PENDING')
@@ -329,7 +329,7 @@ export const adminService = {
 
     async getProblemProposal(id: string): Promise<ProblemProposalDetail> {
         try {
-            return await apiClient.get(`/api/admin/problem-proposals/${id}`);
+            return await apiClient.get(`/admin/problem-proposals/${id}`);
         } catch {
             const proposal = mockProposalDetails.find((entry) => entry.id === id);
             if (!proposal) {
@@ -346,7 +346,7 @@ export const adminService = {
 
     async approveProposal(id: string): Promise<void> {
         try {
-            await apiClient.post(`/api/admin/problem-proposals/${id}/approve`);
+            await apiClient.post(`/admin/problem-proposals/${id}/approve`);
         } catch {
             const proposal = mockProposalDetails.find((entry) => entry.id === id);
             if (proposal && proposal.status === 'PENDING') {
@@ -364,7 +364,7 @@ export const adminService = {
 
     async rejectProposal(id: string): Promise<void> {
         try {
-            await apiClient.post(`/api/admin/problem-proposals/${id}/reject`);
+            await apiClient.post(`/admin/problem-proposals/${id}/reject`);
         } catch {
             const proposal = mockProposalDetails.find((entry) => entry.id === id);
             if (proposal && proposal.status === 'PENDING') {
@@ -398,7 +398,7 @@ export const adminService = {
 
     async getAnnouncement(id: string): Promise<Announcement> {
         try {
-            return await apiClient.get(`/api/announcements/${id}`);
+            return await apiClient.get(`/announcements/${id}`);
         } catch {
             const found = mockAnnouncements.find((announcement) => announcement.id === id);
             if (!found) {
@@ -472,7 +472,7 @@ export const adminService = {
 
     async getAuditLog(): Promise<AuditLogEntry[]> {
         try {
-            return await apiClient.get('/api/admin/audit-log');
+            return await apiClient.get('/admin/audit-log');
         } catch {
             return cloneAuditLog();
         }
