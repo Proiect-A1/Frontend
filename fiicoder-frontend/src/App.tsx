@@ -62,6 +62,14 @@ function AnimatedRoutes() {
               }
             />
             <Route
+              path="/propose/:proposalId"
+              element={
+                <ProtectedRoute>
+                  <ProposeProblem />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/classes"
               element={
                 <ProtectedRoute>
