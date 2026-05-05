@@ -18,6 +18,7 @@ const defaultValues: ProposeProblemForm = {
     difficulty: 'medium',
     timeLimit: 1,
     memoryLimit: 256,
+    isInteractive: false,
     tags: [],
     statement: '',
     sourceUrl: '',
@@ -56,6 +57,7 @@ export default function ProposeProblem() {
     const [myProposals, setMyProposals] = useState<ProblemProposalResponse[]>([]);
     const [showMyProposals, setShowMyProposals] = useState(false);
     const [loadingProposals, setLoadingProposals] = useState(false);
+    const [currentProposalMeta, setCurrentProposalMeta] = useState<ProblemProposalResponse | null>(null);
 
     const methods = useForm<ProposeProblemForm>({
         defaultValues,
@@ -69,10 +71,14 @@ export default function ProposeProblem() {
         let cancelled = false;
         setIsLoading(true);
 
-        proposeProblemService.getProposalForm(proposalId)
-            .then((data) => {
+        Promise.all([
+            proposeProblemService.getProposalForm(proposalId),
+            proposeProblemService.getProposal(proposalId)
+        ])
+            .then(([data, meta]) => {
                 if (!cancelled) {
                     methods.reset(data);
+                    setCurrentProposalMeta(meta);
                 }
             })
             .catch((err) => {
@@ -193,25 +199,49 @@ export default function ProposeProblem() {
                 animate="visible"
             >
                 {/* Edit Mode Banner */}
-                {isEditMode && (
+                {isEditMode && currentProposalMeta && (
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mb-4 p-3 rounded-xl border border-blue-500/30 bg-blue-950/20 flex items-center justify-between flex-wrap gap-2"
+                        className={`mb-4 p-3 rounded-xl border flex items-center justify-between flex-wrap gap-2 ${
+                            currentProposalMeta.status === 'approved' && currentProposalMeta.visibility === 'public'
+                                ? 'border-purple-500/30 bg-purple-950/20'
+                                : 'border-blue-500/30 bg-blue-950/20'
+                        }`}
                     >
                         <div className="flex items-center gap-2">
-                            <span className="text-blue-400 text-lg">✏️</span>
+                            <span className="text-lg">
+                                {currentProposalMeta.status === 'approved' && currentProposalMeta.visibility === 'public' ? '🔄' : '✏️'}
+                            </span>
                             <div>
-                                <p className="text-sm text-blue-300 font-semibold">Mod editare</p>
-                                <p className="text-xs text-blue-400/70">
-                                    Editezi propunerea <span className="font-mono">{proposalId}</span>. Modificările vor crea o versiune nouă.
+                                <p className={`text-sm font-semibold ${
+                                    currentProposalMeta.status === 'approved' && currentProposalMeta.visibility === 'public'
+                                        ? 'text-purple-300'
+                                        : 'text-blue-300'
+                                }`}>
+                                    {currentProposalMeta.status === 'approved' && currentProposalMeta.visibility === 'public'
+                                        ? 'Actualizare problemă publică'
+                                        : 'Mod editare'}
+                                </p>
+                                <p className={`text-xs ${
+                                    currentProposalMeta.status === 'approved' && currentProposalMeta.visibility === 'public'
+                                        ? 'text-purple-400/70'
+                                        : 'text-blue-400/70'
+                                }`}>
+                                    {currentProposalMeta.status === 'approved' && currentProposalMeta.visibility === 'public'
+                                        ? 'Editezi o problemă aprobată. Modificările vor crea o versiune nouă care necesită review.'
+                                        : `Editezi propunerea ${proposalId}. Salvările se aplică direct.`}
                                 </p>
                             </div>
                         </div>
                         <button
                             type="button"
                             onClick={() => navigate('/propose')}
-                            className="text-xs px-3 py-1 rounded-lg border border-blue-500/30 text-blue-300 hover:bg-blue-500/15 transition-colors"
+                            className={`text-xs px-3 py-1 rounded-lg border transition-colors ${
+                                currentProposalMeta.status === 'approved' && currentProposalMeta.visibility === 'public'
+                                    ? 'border-purple-500/30 text-purple-300 hover:bg-purple-500/15'
+                                    : 'border-blue-500/30 text-blue-300 hover:bg-blue-500/15'
+                            }`}
                         >
                             ← Propunere Nouă
                         </button>
@@ -345,6 +375,7 @@ export default function ProposeProblem() {
                                                         <p className="text-xs text-(--text-muted)">
                                                             {p.status === 'approved' ? '✓ Aprobată' :
                                                              p.status === 'rejected' ? '✗ Respinsă' : '⏳ În așteptare'}
+                                                            {p.hasPendingUpdate && ' · ⏳ Update în așteptare'}
                                                             {' · '}
                                                             {new Date(p.submittedAt).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' })}
                                                         </p>
@@ -375,7 +406,9 @@ export default function ProposeProblem() {
                     >
                         <p className="text-sm text-green-400 font-semibold">
                             ✓ {isEditMode
-                                ? 'Propunerea a fost actualizată cu succes!'
+                                ? (methods.getValues('visibility') === 'public' && currentProposalMeta?.status === 'approved'
+                                    ? 'Actualizarea a fost trimisă pentru review!'
+                                    : 'Propunerea a fost actualizată cu succes!')
                                 : 'Propunerea ta a fost trimisă cu succes! Vei fi notificat când va fi revizuită.'}
                         </p>
                     </motion.div>

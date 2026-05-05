@@ -50,6 +50,7 @@ function buildPayload(formData: ProposeProblemForm) {
     difficulty: formData.difficulty,
     timeLimit: formData.timeLimit,
     memoryLimit: formData.memoryLimit,
+    isInteractive: formData.isInteractive,
     tags: formData.tags,
     statement: formData.statement,
     sourceUrl: formData.sourceUrl,

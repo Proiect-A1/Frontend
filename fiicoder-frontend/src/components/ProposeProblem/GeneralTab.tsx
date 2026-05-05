@@ -237,6 +237,43 @@ export default function GeneralTab() {
                 </motion.div>
             </div>
 
+            {/* Interactive Problem Toggle */}
+            <motion.div variants={itemVariants}>
+                <label className="flex items-center gap-3 cursor-pointer group">
+                    <Controller
+                        name="isInteractive"
+                        control={control}
+                        render={({ field }) => (
+                            <button
+                                type="button"
+                                onClick={() => field.onChange(!field.value)}
+                                className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${
+                                    field.value
+                                        ? 'bg-(--accent)'
+                                        : 'bg-(--surface-input) border border-(--accent)/30'
+                                }`}
+                            >
+                                <motion.span
+                                    animate={{ x: field.value ? 20 : 2 }}
+                                    transition={{ duration: 0.15 }}
+                                    className={`absolute top-1 w-4 h-4 rounded-full transition-colors ${
+                                        field.value ? 'bg-white' : 'bg-(--text-muted)'
+                                    }`}
+                                />
+                            </button>
+                        )}
+                    />
+                    <div>
+                        <span className="text-sm font-semibold text-(--text) group-hover:text-(--text-h) transition-colors">
+                            🔄 Problemă Interactivă
+                        </span>
+                        <p className="text-xs text-(--text-muted)">
+                            Activează dacă problema necesită un interactor (comunicare bidirecțională cu soluția).
+                        </p>
+                    </div>
+                </label>
+            </motion.div>
+
             {/* Tags with Autocomplete */}
             <motion.div variants={itemVariants} className="space-y-2">
                 <label className="text-(--text) font-semibold text-sm">Etichete</label>

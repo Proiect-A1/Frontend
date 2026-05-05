@@ -43,7 +43,7 @@ function applyMonacoTheme(monaco: any, themeName: string) {
 }
 
 // Reordered per team request: Generatoare, Validatoare, Interactoare, Checkere, Surse
-const categories: { id: FileCategory; label: string; icon: string; description: string }[] = [
+const allCategories: { id: FileCategory; label: string; icon: string; description: string }[] = [
     { id: 'generators', label: 'Generatoare', icon: '⚙️', description: 'Programe C++ folosite de scriptul de generare' },
     { id: 'validators', label: 'Validatoare', icon: '🔍', description: 'Verifică dacă input-ul generat este valid' },
     { id: 'interactors', label: 'Interactoare', icon: '🔄', description: 'Programe de interacțiune pentru probleme interactive' },
@@ -119,6 +119,12 @@ export default function FilesTab() {
     const { watch, setValue } = useFormContext<ProposeProblemForm>();
     const { theme } = useTheme();
     const files = watch('files') || [];
+    const isInteractive = watch('isInteractive');
+
+    // Filter categories based on isInteractive toggle
+    const categories = isInteractive
+        ? allCategories
+        : allCategories.filter((c) => c.id !== 'interactors');
 
     const [activeCategory, setActiveCategory] = useState<FileCategory>('generators');
     const [editingFileId, setEditingFileId] = useState<string | null>(null);

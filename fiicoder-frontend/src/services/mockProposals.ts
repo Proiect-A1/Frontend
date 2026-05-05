@@ -10,6 +10,7 @@ export const mockProposals: ProposeProblemForm[] = [
     difficulty: "easy",
     timeLimit: 1,
     memoryLimit: 256,
+    isInteractive: false,
     tags: ["Array", "Hash Table"],
     statement: `# Two Sum
 
@@ -107,6 +108,7 @@ nums = [3,2,4], target = 6
     difficulty: "easy",
     timeLimit: 0.5,
     memoryLimit: 128,
+    isInteractive: false,
     tags: ["Recursion", "Dynamic Programming"],
     statement: `# Fibonacci Sequence
 
@@ -195,6 +197,7 @@ $F(10) = 55$`,
     difficulty: "medium",
     timeLimit: 1.5,
     memoryLimit: 512,
+    isInteractive: false,
     tags: ["String", "Dynamic Programming"],
     statement: `# Longest Palindromic Substring
 

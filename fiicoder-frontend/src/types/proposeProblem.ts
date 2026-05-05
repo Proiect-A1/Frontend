@@ -73,6 +73,7 @@ export interface ProposeProblemForm {
   difficulty: 'easy' | 'medium' | 'hard';
   timeLimit: number;
   memoryLimit: number;
+  isInteractive: boolean;
   tags: string[];
 
   // Statement Tab
@@ -104,6 +105,9 @@ export interface ProblemProposalResponse {
   id: string;
   title: string;
   status: 'pending' | 'approved' | 'rejected';
+  visibility: 'private' | 'public' | 'unlisted';
+  hasPendingUpdate: boolean;
   submittedAt: string;
+  updatedAt?: string;
   feedback?: string;
 }
