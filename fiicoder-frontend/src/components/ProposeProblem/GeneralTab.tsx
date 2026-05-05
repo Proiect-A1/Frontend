@@ -239,29 +239,44 @@ export default function GeneralTab() {
 
             {/* Interactive Problem Toggle */}
             <motion.div variants={itemVariants}>
-                <label className="flex items-center gap-3 cursor-pointer group">
+                <label className="flex items-center gap-2 cursor-pointer group">
                     <Controller
                         name="isInteractive"
                         control={control}
-                        render={({ field }) => (
-                            <button
-                                type="button"
-                                onClick={() => field.onChange(!field.value)}
-                                className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${
-                                    field.value
-                                        ? 'bg-(--accent)'
-                                        : 'bg-(--surface-input) border border-(--accent)/30'
-                                }`}
-                            >
-                                <motion.span
-                                    animate={{ x: field.value ? 20 : 2 }}
-                                    transition={{ duration: 0.15 }}
-                                    className={`absolute top-1 w-4 h-4 rounded-full transition-colors ${
-                                        field.value ? 'bg-white' : 'bg-(--text-muted)'
+                        render={({ field }) => {
+                            const value = !!field.value;
+                            const onChange = field.onChange;
+                            return (
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked={value}
+                                    aria-label="Toggle problem interactor"
+                                    tabIndex={0}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onChange(!value);
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            onChange(!value);
+                                        }
+                                    }}
+                                    className={`relative inline-flex items-center w-12 h-7 rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent) focus-visible:ring-offset-2 ${
+                                        value ? 'bg-(--accent)' : 'bg-(--surface-input)'
                                     }`}
-                                />
-                            </button>
-                        )}
+                                >
+                                    <motion.span
+                                        animate={{ x: value ? 26 : 2 }}
+                                        transition={{ type: 'spring', stiffness: 700, damping: 30 }}
+                                        className={`inline-block w-5 h-5 rounded-full bg-white shadow-md transform ${
+                                            value ? '' : ''
+                                        }`}
+                                    />
+                                </button>
+                            );
+                        }}
                     />
                     <div>
                         <span className="text-sm font-semibold text-(--text) group-hover:text-(--text-h) transition-colors">
