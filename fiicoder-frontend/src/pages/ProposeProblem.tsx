@@ -261,11 +261,14 @@ export default function ProposeProblem() {
                                                 >
                                                     <div className="font-bold text-sm text-(--text-h) truncate">{p.title}</div>
                                                     <div className="flex items-center justify-between mt-1">
-                                                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full border uppercase tracking-wider font-bold ${
-                                                            p.status === 'approved' ? 'border-green-500/40 text-green-400 bg-green-500/5' :
-                                                            p.status === 'rejected' ? 'border-red-500/40 text-red-400 bg-red-500/5' :
-                                                            'border-amber-500/40 text-amber-400 bg-amber-500/5'
-                                                        }`}>
+                                                        <span 
+                                                            style={{ 
+                                                                borderColor: `color-mix(in srgb, var(--status-${p.status === 'approved' ? 'success' : p.status === 'rejected' ? 'error' : 'warning'}) 40%, transparent)`,
+                                                                color: `var(--status-${p.status === 'approved' ? 'success' : p.status === 'rejected' ? 'error' : 'warning'})`,
+                                                                backgroundColor: `color-mix(in srgb, var(--status-${p.status === 'approved' ? 'success' : p.status === 'rejected' ? 'error' : 'warning'}) 5%, transparent)`
+                                                            }}
+                                                            className="text-[10px] px-1.5 py-0.5 rounded-full border uppercase tracking-wider font-bold"
+                                                        >
                                                             {p.status}
                                                         </span>
                                                         <span className="text-[10px] text-(--text-muted)">
@@ -281,201 +284,232 @@ export default function ProposeProblem() {
                         )}
                     </AnimatePresence>
 
-                    <div className="flex-1 h-full overflow-y-auto custom-scrollbar p-5 md:p-8">
-                        <div className="w-full">
-                            {/* Edit Mode Banner */}
-                            {isEditMode && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="mb-4 p-3 rounded-xl border border-blue-500/30 bg-blue-950/20 flex items-center justify-between flex-wrap gap-2"
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-500/20 text-blue-300">
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-semibold text-blue-300">Mod editare</p>
-                                            <p className="text-xs text-blue-400/70">Editezi problema {proposalId}. Salvările vor trimite un nou pachet.</p>
-                                        </div>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => navigate('/propose')}
-                                        className="text-xs px-3 py-1 rounded-lg border border-blue-500/30 text-blue-300 hover:bg-blue-500/15 transition-colors"
-                                    >
-                                        ← Propunere Nouă
-                                    </button>
-                                </motion.div>
-                            )}
-
-                            {/* Draft Banner */}
-                            <AnimatePresence>
-                                {!isEditMode && showDraftBanner && hasDraft && (
+                    <form 
+                        onSubmit={methods.handleSubmit(onSubmit)} 
+                        className="flex-1 h-full flex flex-col overflow-hidden relative"
+                    >
+                        {/* Scrollable Content Area */}
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-5 md:p-8">
+                            <div className="w-full">
+                                {/* Edit Mode Banner */}
+                                {isEditMode && (
                                     <motion.div
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: 'auto' }}
-                                        exit={{ opacity: 0, height: 0 }}
-                                        className="mb-4 overflow-hidden"
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        style={{ 
+                                            borderColor: 'var(--status-info)', 
+                                            backgroundColor: 'var(--status-info-bg)' 
+                                        }}
+                                        className="mb-4 p-3 rounded-xl border flex items-center justify-between flex-wrap gap-2"
                                     >
-                                        <div className="p-3 rounded-xl border border-yellow-500/30 bg-yellow-950/15 flex items-center justify-between flex-wrap gap-2">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-yellow-500/20 text-yellow-400">
-                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                                </div>
-                                                <p className="text-sm text-yellow-300">
-                                                    Ai o ciornă salvată. Vrei să o restaurezi?
-                                                </p>
+                                        <div className="flex items-center gap-2">
+                                            <div 
+                                                style={{ backgroundColor: 'color-mix(in srgb, var(--status-info) 20%, transparent)', color: 'var(--status-info)' }}
+                                                className="w-8 h-8 flex items-center justify-center rounded-lg"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                             </div>
-                                            <div className="flex gap-2">
-                                                <button
-                                                    type="button"
-                                                    onClick={handleRestoreDraft}
-                                                    className="text-xs px-3 py-1 rounded-lg border border-yellow-500/30 text-yellow-300 hover:bg-yellow-500/15 transition-colors font-semibold"
-                                                >
-                                                    ✓ Restaurează
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={handleDiscardDraft}
-                                                    className="text-xs px-3 py-1 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/15 transition-colors"
-                                                >
-                                                    ✗ Renunță
-                                                </button>
+                                            <div>
+                                                <p className="text-sm font-semibold" style={{ color: 'var(--status-info)' }}>Mod editare</p>
+                                                <p className="text-xs" style={{ color: 'var(--status-info)', opacity: 0.8 }}>Editezi problema {proposalId}. Salvările vor trimite un nou pachet.</p>
                                             </div>
                                         </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => navigate('/propose')}
+                                            style={{ borderColor: 'var(--status-info)', color: 'var(--status-info)' }}
+                                            className="text-xs px-3 py-1 rounded-lg border hover:bg-black/5 transition-colors"
+                                        >
+                                            ← Propunere Nouă
+                                        </button>
                                     </motion.div>
                                 )}
-                            </AnimatePresence>
 
-                            {/* Header */}
-                            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-                                <div className="flex items-center gap-4">
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowSidebar(!showSidebar)}
-                                        className={`p-2.5 rounded-xl border-2 transition-all ${
-                                            showSidebar 
-                                            ? 'bg-(--accent) text-white border-(--accent)' 
-                                            : 'bg-(--accent)/10 border-(--accent)/20 text-(--accent) hover:bg-(--accent)/20'
-                                        }`}
-                                        title={showSidebar ? "Ascunde propunerile" : "Vezi propunerile mele"}
-                                    >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                                    </button>
-                                    <h1 className="text-3xl font-bold text-(--text-h)">
-                                        {isEditMode ? 'Editează Propunerea' : 'Propune o Problemă'}
-                                    </h1>
-                                </div>
-
-                                {/* Tabs Navigation */}
-                                <div className="flex flex-wrap gap-2 lg:justify-end">
-                                    {tabs.map((tab) => {
-                                        const isActive = activeTab === tab.id;
-                                    const baseClasses =
-                                        'px-4 py-2 rounded-full text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center cursor-pointer outline-none';
-
-                                        return (
-                                            <button
-                                                key={tab.id}
-                                                type="button"
-                                                onClick={() => setActiveTab(tab.id)}
-                                                className={`${baseClasses} ${
-                                                    isActive
-                                                        ? 'bg-(--accent)/25 border-(--accent) text-(--text-h)'
-                                                        : 'bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5'
-                                                }`}
+                                {/* Draft Banner */}
+                                <AnimatePresence>
+                                    {!isEditMode && showDraftBanner && hasDraft && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="mb-4 overflow-hidden"
+                                        >
+                                            <div 
+                                                style={{ 
+                                                    borderColor: 'var(--status-warning)', 
+                                                    backgroundColor: 'var(--status-warning-bg)' 
+                                                }}
+                                                className="p-3 rounded-xl border flex items-center justify-between flex-wrap gap-2"
                                             >
-                                                {lang === 'RO' ? tab.labelRO : tab.labelEN}
-                                            </button>
-                                        );
-                                    })}
+                                                <div className="flex items-center gap-2">
+                                                    <div 
+                                                        style={{ backgroundColor: 'color-mix(in srgb, var(--status-warning) 20%, transparent)', color: 'var(--status-warning)' }}
+                                                        className="w-8 h-8 flex items-center justify-center rounded-lg"
+                                                    >
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                                    </div>
+                                                    <p className="text-sm" style={{ color: 'var(--status-warning)' }}>
+                                                        Ai o ciornă salvată. Vrei să o restaurezi?
+                                                    </p>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleRestoreDraft}
+                                                        style={{ borderColor: 'var(--status-warning)', color: 'var(--status-warning)' }}
+                                                        className="text-xs px-3 py-1 rounded-lg border hover:bg-black/5 transition-colors font-semibold"
+                                                    >
+                                                        ✓ Restaurează
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleDiscardDraft}
+                                                        style={{ borderColor: 'var(--status-error)', color: 'var(--status-error)' }}
+                                                        className="text-xs px-3 py-1 rounded-lg border hover:bg-black/5 transition-colors"
+                                                    >
+                                                        ✗ Renunță
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
+                                {/* Header */}
+                                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+                                    <div className="flex items-center gap-4">
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowSidebar(!showSidebar)}
+                                            className={`p-2.5 rounded-xl border-2 transition-all ${
+                                                showSidebar 
+                                                ? 'bg-(--accent) text-white border-(--accent)' 
+                                                : 'bg-(--accent)/10 border-(--accent)/20 text-(--accent) hover:bg-(--accent)/20'
+                                            }`}
+                                            title={showSidebar ? "Ascunde propunerile" : "Vezi propunerile mele"}
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                                        </button>
+                                        <h1 className="text-3xl font-bold text-(--text-h)">
+                                            {isEditMode ? 'Editează Propunerea' : 'Propune o Problemă'}
+                                        </h1>
+                                    </div>
+
+                                    {/* Tabs Navigation */}
+                                    <div className="flex flex-wrap gap-2 lg:justify-end">
+                                        {tabs.map((tab) => {
+                                            const isActive = activeTab === tab.id;
+                                        const baseClasses =
+                                            'px-4 py-2 rounded-full text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center cursor-pointer outline-none';
+
+                                            return (
+                                                <button
+                                                    key={tab.id}
+                                                    type="button"
+                                                    onClick={() => setActiveTab(tab.id)}
+                                                    className={`${baseClasses} ${
+                                                        isActive
+                                                            ? 'bg-(--accent)/25 border-(--accent) text-(--text-h)'
+                                                            : 'bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5'
+                                                    }`}
+                                                >
+                                                    {lang === 'RO' ? tab.labelRO : tab.labelEN}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="page-line-horizontal mb-6" />
+                                <div className="page-line-horizontal mb-6" />
 
-                            {/* Status Messages */}
-                            {submitStatus === 'success' && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="mb-6 p-4 rounded-xl border-2 border-green-500/30 bg-green-950/20"
-                                >
-                                    <p className="text-sm text-green-400 font-semibold">
-                                        ✓ {isEditMode
-                                            ? 'Propunerea a fost actualizată cu succes!'
-                                            : 'Propunerea ta a fost trimisă cu succes! Vei fi notificat când va fi revizuită.'}
-                                    </p>
-                                </motion.div>
-                            )}
-                            {submitStatus === 'error' && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="mb-6 p-4 rounded-xl border-2 border-red-500/30 bg-red-950/20"
-                                >
-                                    <p className="text-sm text-red-400 flex items-center gap-2">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                        {errorMessage}
-                                    </p>
-                                </motion.div>
-                            )}
+                                {/* Status Messages */}
+                                 {submitStatus === 'success' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        style={{ 
+                                            borderColor: 'var(--status-success)', 
+                                            backgroundColor: 'var(--status-success-bg)' 
+                                        }}
+                                        className="mb-6 p-4 rounded-xl border-2"
+                                    >
+                                        <p className="text-sm font-semibold" style={{ color: 'var(--status-success)' }}>
+                                            ✓ {isEditMode
+                                                ? 'Propunerea a fost actualizată cu succes!'
+                                                : 'Propunerea ta a fost trimisă cu succes! Vei fi notificat când va fi revizuită.'}
+                                        </p>
+                                    </motion.div>
+                                )}
+                                 {submitStatus === 'error' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        style={{ 
+                                            borderColor: 'var(--status-error)', 
+                                            backgroundColor: 'var(--status-error-bg)' 
+                                        }}
+                                        className="mb-6 p-4 rounded-xl border-2"
+                                    >
+                                        <p className="text-sm font-semibold flex items-center gap-2" style={{ color: 'var(--status-error)' }}>
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                            {errorMessage}
+                                        </p>
+                                    </motion.div>
+                                )}
 
-                            <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6">
                                 {/* Tabs Content */}
-                                <div className="w-full">
+                                <div className="w-full space-y-6 pb-12">
                                     {activeTab === 'general' && <GeneralTab />}
                                     {activeTab === 'statement' && <StatementTab />}
                                     {activeTab === 'files' && <FilesTab />}
                                     {activeTab === 'tests' && <TestsTab />}
                                     {activeTab === 'generator' && <GeneratorTab />}
                                 </div>
-
-                                {/* Action Buttons */}
-                                <div className="flex gap-3 justify-end pt-3 flex-wrap">
-                                    {!isEditMode && (
-                                        <button
-                                            type="button"
-                                            onClick={handleSaveDraftManual}
-                                            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/30 text-(--text-muted) hover:bg-(--accent)/10 transition-colors"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
-                                            Salvează Ciornă
-                                        </button>
-                                    )}
-
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            methods.reset(isEditMode ? undefined : defaultValues);
-                                            if (!isEditMode) clearDraft();
-                                        }}
-                                        className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
-                                    >
-                                        Resetează
-                                    </button>
-
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors disabled:opacity-50"
-                                    >
-                                        {isSubmitting ? (
-                                            <div className="w-4 h-4 border-2 border-(--text) border-t-transparent rounded-full animate-spin" />
-                                        ) : (
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                                        )}
-                                        {isSubmitting
-                                            ? 'Se trimite...'
-                                            : isEditMode
-                                              ? 'Actualizează Propunerea'
-                                              : 'Trimite Propunere'}
-                                    </button>
-                                </div>
-                            </form>
+                            </div>
                         </div>
-                    </div>
+
+                        {/* Fixed Action Footer - Integrated Style */}
+                        <div className="px-6 py-4 md:px-8 bg-(--surface-input) border-t-2 border-(--accent)/5 rounded-b-2xl flex gap-3 justify-end flex-wrap z-10">
+                            {!isEditMode && (
+                                <button
+                                    type="button"
+                                    onClick={handleSaveDraftManual}
+                                    className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 text-sm rounded-xl font-bold border-2 border-(--accent)/30 text-(--text-muted) hover:bg-(--accent)/10 hover:border-(--accent)/50 transition-all"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
+                                    Salvează Ciornă
+                                </button>
+                            )}
+
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    methods.reset(isEditMode ? undefined : defaultValues);
+                                    if (!isEditMode) clearDraft();
+                                }}
+                                className="inline-flex items-center justify-center px-5 py-2.5 text-sm rounded-xl font-bold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-all hover:-translate-y-0.5"
+                            >
+                                Resetează
+                            </button>
+
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm rounded-xl font-bold border-2 border-(--accent) bg-(--accent)/20 text-(--text-h) hover:bg-(--accent)/30 transition-all hover:-translate-y-0.5 shadow-lg shadow-(--accent)/20 disabled:opacity-50 disabled:translate-y-0"
+                            >
+                                {isSubmitting ? (
+                                    <div className="w-4 h-4 border-2 border-(--text-h) border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                                )}
+                                {isSubmitting
+                                    ? 'Se trimite...'
+                                    : isEditMode
+                                      ? 'Actualizează Propunerea'
+                                      : 'Trimite Propunere'}
+                            </button>
+                        </div>
+                    </form>
                 </motion.div>
             </div>
         </FormProvider>

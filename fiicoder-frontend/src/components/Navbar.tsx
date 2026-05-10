@@ -122,7 +122,7 @@ export default function Navbar() {
                         {isAuthenticated ? (
                             <>
                                 <Link to="/profile" className={getNavLinkClass('/profile')}>
-                                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-sm font-bold text-white uppercase outline-2 outline-offset-1 outline-(--accent)">
+                                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white uppercase bg-(--accent) shadow-sm shadow-(--accent)/20">
                                         {username?.charAt(0) || '?'}
                                     </div>
                                     <span className="text-sm font-bold text-(--text) max-w-25 truncate">
@@ -131,7 +131,12 @@ export default function Navbar() {
                                 </Link>
                                 <button
                                     onClick={handleLogout}
-                                    className="px-4 py-1.5 rounded-full text-sm font-bold border-2 border-red-400/50 text-red-300 bg-red-500/10 transition-all duration-200 hover:bg-red-500/20 hover:border-red-400 hover:-translate-y-0.5"
+                                    style={{ 
+                                        borderColor: 'color-mix(in srgb, var(--status-error) 50%, transparent)', 
+                                        color: 'var(--status-error)',
+                                        backgroundColor: 'color-mix(in srgb, var(--status-error) 10%, transparent)'
+                                    }}
+                                    className="px-4 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-200 hover:bg-black/5 hover:-translate-y-0.5"
                                 >
                                     {t.disconnectBtn}
                                 </button>
@@ -298,7 +303,7 @@ export default function Navbar() {
                                         onClick={closeMenu}
                                         className="flex items-center justify-center gap-3 px-3 py-2.5 rounded-2xl border-2 border-(--accent)/30 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors cursor-pointer"
                                     >
-                                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white uppercase outline-2 outline-offset-1 outline-(--accent)">
+                                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-black text-white uppercase bg-(--accent) shadow-md shadow-(--accent)/20">
                                             {username?.charAt(0) || '?'}
                                         </div>
                                         <span className="text-base font-medium text-(--text) truncate">
@@ -307,7 +312,12 @@ export default function Navbar() {
                                     </Link>
                                     <button
                                         onClick={handleLogout}
-                                        className="px-4 py-2.5 rounded-2xl text-sm font-bold border-2 border-red-400/50 text-red-300 bg-red-500/10 hover:bg-red-500/20"
+                                        style={{ 
+                                            borderColor: 'color-mix(in srgb, var(--status-error) 50%, transparent)', 
+                                            color: 'var(--status-error)',
+                                            backgroundColor: 'color-mix(in srgb, var(--status-error) 10%, transparent)'
+                                        }}
+                                        className="px-4 py-2.5 rounded-2xl text-sm font-bold border-2 transition-all duration-200 hover:bg-black/5"
                                     >
                                         {t.disconnectBtn}
                                     </button>

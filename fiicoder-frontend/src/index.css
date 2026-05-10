@@ -32,6 +32,16 @@
     --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
     --mono: ui-monospace, Consolas, monospace;
 
+    /* Status Colors - Dark Default */
+    --status-success: #4ade80;
+    --status-success-bg: rgba(74, 222, 128, 0.15);
+    --status-error: #f87171;
+    --status-error-bg: rgba(248, 113, 113, 0.15);
+    --status-info: #60a5fa;
+    --status-info-bg: rgba(96, 165, 250, 0.15);
+    --status-warning: #fbbf24;
+    --status-warning-bg: rgba(251, 191, 36, 0.15);
+
     color-scheme: dark;
     color: var(--text);
 }
@@ -97,6 +107,16 @@
     --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%23c58a6a' stroke='%235f4c42' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
     --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%23c58a6a' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%233f322b'/%3E%3C/svg%3E");
 
+    /* Status Colors - Light Override (Cream) */
+    --status-success: #15803d;
+    --status-success-bg: #f0fdf4;
+    --status-error: #b91c1c;
+    --status-error-bg: #fef2f2;
+    --status-info: #1d4ed8;
+    --status-info-bg: #eff6ff;
+    --status-warning: #b45309;
+    --status-warning-bg: #fffbeb;
+
     color-scheme: light;
 }
 
@@ -128,6 +148,16 @@
     --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%231f352a' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%236ea68a'/%3E%3C/svg%3E");
     --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%236ea68a' stroke='%232f4a3b' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
     --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%236ea68a' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%231f352a'/%3E%3C/svg%3E");
+
+    /* Status Colors - Light Override (Sage) */
+    --status-success: #166534;
+    --status-success-bg: #f0fdf4;
+    --status-error: #991b1b;
+    --status-error-bg: #fef2f2;
+    --status-info: #1e40af;
+    --status-info-bg: #eff6ff;
+    --status-warning: #92400e;
+    --status-warning-bg: #fffbeb;
 
     color-scheme: light;
 }
@@ -563,4 +593,145 @@ a:focus-visible {
         scrollbar-width: none;
         -ms-overflow-style: none;
     }
+}
+/* ── FLEXLAYOUT NEO-BRUTALIST WORKSPACE ────────────────────────────── */
+
+.flexlayout__layout {
+    background-color: transparent !important;
+    --color-tabset-header: transparent;
+    --color-tabset-header-selected: transparent;
+    --color-tabset-divider: transparent;
+    --color-tab-background: transparent;
+    --color-tab-selected-background: transparent;
+}
+
+/* 1. Caseta principala (Panel Container) */
+.flexlayout__tabset {
+    background-color: var(--surface-card) !important;
+    border: 2px solid var(--accent) !important;
+    border-radius: 1.5rem !important;
+    margin: 4px !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    isolation: isolate !important;
+    box-shadow: none !important;
+}
+
+/* 2. Elemente Header (Transparenta si Inaltime) */
+.flexlayout__tabset_header,
+.flexlayout__tabset_header_inner,
+.flexlayout__tabset_header_outer,
+.flexlayout__tabset_tabbar_outer,
+.flexlayout__tabset_tabbar_outer_top,
+.flexlayout__tabset_tabbar_outer_bottom,
+.flexlayout__tabset-selected,
+.flexlayout__tabset-maximized {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    height: 52px !important; /* Inaltime generoasa pentru a evita cutoff */
+}
+
+.flexlayout__tabset_header {
+    margin-top: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding-top: 10px !important; /* Coboram textul in interiorul cutiei mari */
+}
+
+/* 3. Butoanele de Tab si Toolbar (Handles) */
+.flexlayout__tab_button,
+.flexlayout__tab_toolbar {
+    display: flex !important;
+    align-items: center !important;
+    transform: none !important; /* Resetam orice transform ca sa nu iasa din box */
+}
+
+.flexlayout__tab_toolbar {
+    padding-right: 24px !important;
+    gap: 8px !important;
+}
+
+/* 3. Butoanele de Tab (Titles/Handles) */
+.flexlayout__tab_button,
+.flexlayout__tab_button_top,
+.flexlayout__tab_button_bottom,
+.flexlayout__tab_button_trailing {
+    background: transparent !important;
+    color: var(--text-muted) !important;
+    font-family: var(--sans) !important;
+    font-size: 12px !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    padding: 0 16px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    opacity: 0.4;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.flexlayout__tab_button::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: transparent;
+    transition: all 0.2s ease;
+}
+
+.flexlayout__tab_button:hover {
+    color: var(--text-h) !important;
+    opacity: 1;
+}
+
+.flexlayout__tab_button--selected {
+    color: var(--accent) !important;
+    opacity: 1;
+}
+
+.flexlayout__tab_button--selected::before {
+    background-color: var(--accent);
+}
+
+.flexlayout__tab_button_trailing {
+    display: none !important;
+}
+
+/* 4. Splitters (Barele de redimensionare) */
+.flexlayout__splitter {
+    background-color: transparent !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.flexlayout__splitter:hover {
+    background-color: color-mix(in srgb, var(--accent) 15%, transparent) !important;
+}
+
+.flexlayout__splitter_drag {
+    background-color: var(--accent) !important;
+}
+
+/* 5. Zona de Continut */
+.flexlayout__tab {
+    background-color: transparent !important;
+    color: var(--text) !important;
+    border-radius: 1.5rem !important;
+    overflow: hidden !important;
+}
+
+/* 6. Drag & Drop Feedback */
+.flexlayout__outline_rect {
+    border: 2px dashed var(--accent) !important;
+    background-color: color-mix(in srgb, var(--accent) 15%, transparent) !important;
+    border-radius: 1.5rem !important;
 }

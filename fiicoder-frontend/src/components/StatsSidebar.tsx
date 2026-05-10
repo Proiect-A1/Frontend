@@ -38,11 +38,11 @@ export default function StatsSidebar() {
                     {MOCK_TOP_SOLVERS.map((user, idx) => (
                         <div key={user.username} className="flex items-center justify-between group p-3 rounded-xl border-2 border-(--accent)/30 bg-(--accent)/5 hover:border-(--accent)/60 transition-all">
                             <div className="flex items-center gap-3">
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 ${
-                                    idx === 0 ? 'bg-amber-500/20 border-amber-500 text-amber-200' :
-                                    idx === 1 ? 'bg-slate-400/20 border-slate-400 text-slate-200' :
-                                    idx === 2 ? 'bg-orange-700/20 border-orange-700 text-orange-200' :
-                                    'bg-(--accent)/10 border-(--accent) text-(--text-muted)'
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black border-2 ${
+                                    idx === 0 ? 'bg-amber-500/20 border-amber-500 text-amber-500' :
+                                    idx === 1 ? 'bg-slate-400/20 border-slate-400 text-slate-400' :
+                                    idx === 2 ? 'bg-orange-700/20 border-orange-700 text-orange-700' :
+                                    'bg-(--accent)/10 border-(--accent) text-(--accent)'
                                 }`}>
                                     {user.avatar}
                                 </div>

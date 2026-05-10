@@ -13,7 +13,18 @@ import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
+import * as FlexLayout from "flexlayout-react";
+import "flexlayout-react/style/dark.css";
 import { profileService, type RecentSubmissionDTO } from "../services/profileService";
+
+// mapare limbaj UI -> identificator Monaco
+const monacoLanguageMap: Record<string, string> = {
+  "C++": "cpp",
+  Python: "python",
+  Java: "java",
+  JavaScript: "javascript",
+  Rust: "rust",
+};
 
 // Utility to fix database indentation issues for Markdown
 function unindent(str: string): string {
@@ -41,15 +52,6 @@ function unindent(str: string): string {
     })
     .join("\n");
 }
-
-// mapare limbaj UI -> identificator Monaco
-const monacoLanguageMap: Record<string, string> = {
-  "C++": "cpp",
-  Python: "python",
-  Java: "java",
-  JavaScript: "javascript",
-  Rust: "rust",
-};
 
 // Palete de culori hardcodate per temă pentru Monaco Editor.
 const monacoThemes: Record<
@@ -170,40 +172,56 @@ export default function ProblemDetails() {
   const [recentSubmissions, setRecentSubmissions] = useState<RecentSubmissionDTO[]>([]);
   const [activeTab, setActiveTab] = useState<'testcase' | 'testresult' | 'submissions'>('testcase');
   
-  // Resizable logic
-  const [leftWidth, setLeftWidth] = useState(40); // Percentage
-  const [consoleHeight, setConsoleHeight] = useState(300); // Pixels
-  
-  const isResizingHorizontal = useRef(false);
-  const isResizingVertical = useRef(false);
-
-  const startResizingHorizontal = () => { isResizingHorizontal.current = true; document.body.style.cursor = 'col-resize'; };
-  const startResizingVertical = () => { isResizingVertical.current = true; document.body.style.cursor = 'row-resize'; };
-  
-  const stopResizing = () => { 
-    isResizingHorizontal.current = false; 
-    isResizingVertical.current = false; 
-    document.body.style.cursor = 'default'; 
-  };
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-        if (isResizingHorizontal.current) {
-            const newLeftWidth = (e.clientX / window.innerWidth) * 100;
-            if (newLeftWidth > 20 && newLeftWidth < 70) setLeftWidth(newLeftWidth);
-        }
-        if (isResizingVertical.current) {
-            const newHeight = window.innerHeight - e.clientY - 100; // Account for footer/padding
-            if (newHeight > 100 && newHeight < window.innerHeight * 0.7) setConsoleHeight(newHeight);
+  // FlexLayout Model
+  const [model] = useState(() => {
+    const json = {
+        global: {
+            tabSetTabStripHeight: 36,
+            tabEnableClose: false,
+            splitterSize: 8,
+            tabSetHeaderHeight: 36,
+            tabSetEnableTabStrip: true,
+            tabSetEnableMaximize: true,
+        },
+        borders: [],
+        layout: {
+            type: "row",
+            weight: 100,
+            children: [
+                {
+                    type: "tabset",
+                    weight: 40,
+                    children: [
+                        { type: "tab", name: lang === "RO" ? "Descriere" : "Description", component: "description" }
+                    ]
+                },
+                {
+                    type: "row",
+                    weight: 60,
+                    children: [
+                        {
+                            type: "tabset",
+                            weight: 65,
+                            children: [
+                                { type: "tab", name: lang === "RO" ? "Cod" : "Code", component: "editor" }
+                            ]
+                        },
+                        {
+                            type: "tabset",
+                            weight: 35,
+                            children: [
+                                { type: "tab", name: lang === "RO" ? "Date Test" : "Testcase", component: "testcase" },
+                                { type: "tab", name: lang === "RO" ? "Rezultat" : "Result", component: "testresult" },
+                                { type: "tab", name: lang === "RO" ? "Submisii" : "Submissions", component: "submissions" }
+                            ]
+                        }
+                    ]
+                }
+            ]
         }
     };
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', stopResizing);
-    return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', stopResizing);
-    };
-  }, []);
+    return FlexLayout.Model.fromJson(json);
+  });
 
   const handleEditorMount: OnMount = (_editor, monaco) => {
     monacoRef.current = monaco;
@@ -297,7 +315,7 @@ export default function ProblemDetails() {
     };
   }, [problemTitle]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (!problem || !code.trim() || !selectedLanguageId) return;
     setStatus("pending");
@@ -505,53 +523,39 @@ export default function ProblemDetails() {
     </div>
   );
 
-  const infoPanelContent = (
-    <div className="h-full flex flex-col">
-      <div className="flex items-center gap-6 mb-4 shrink-0 px-2">
-        <button
-          onClick={() => setActiveTab('testcase')}
-          className={`flex items-center gap-2 text-xs font-black transition-all ${activeTab === 'testcase' ? 'text-(--accent)' : 'text-(--text-muted) hover:text-(--text)'}`}
-        >
-          <span className={`w-1.5 h-1.5 rounded-full ${activeTab === 'testcase' ? 'bg-(--accent)' : 'bg-transparent'}`} />
-          {lang === 'RO' ? 'Date de Test' : 'Testcase'}
-        </button>
-        <button
-          onClick={() => setActiveTab('testresult')}
-          className={`flex items-center gap-2 text-xs font-black transition-all ${activeTab === 'testresult' ? 'text-(--accent)' : 'text-(--text-muted) hover:text-(--text)'}`}
-        >
-          <span className={`w-1.5 h-1.5 rounded-full ${activeTab === 'testresult' ? 'bg-(--accent)' : 'bg-transparent'}`} />
-          {lang === 'RO' ? 'Rezultat' : 'Test Result'}
-        </button>
-        <button
-          onClick={() => setActiveTab('submissions')}
-          className={`flex items-center gap-2 text-xs font-black transition-all ${activeTab === 'submissions' ? 'text-(--accent)' : 'text-(--text-muted) hover:text-(--text)'}`}
-        >
-          <span className={`w-1.5 h-1.5 rounded-full ${activeTab === 'submissions' ? 'bg-(--accent)' : 'bg-transparent'}`} />
-          {lang === 'RO' ? 'Submisii' : 'Submissions'}
-        </button>
-      </div>
+  const factory = (node: FlexLayout.TabNode) => {
+    const component = node.getComponent();
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar bg-black/10 rounded-xl p-4 border-2 border-(--accent)/10">
-        {activeTab === 'testcase' ? (
-          <div className="space-y-4">
-            <div className="flex gap-2">
-              {['Case 1', 'Case 2', 'Case 3'].map((c, i) => (
-                <button key={i} className="px-3 py-1 rounded-lg bg-(--accent)/10 border border-(--accent)/20 text-[10px] font-bold text-(--text-muted) hover:text-(--accent)">
-                  {c}
-                </button>
-              ))}
-            </div>
-            <div className="space-y-2">
-              <p className="text-[10px] font-black uppercase text-(--accent) tracking-tighter">Input =</p>
-              <textarea 
-                className="w-full bg-(--surface-input) border-2 border-(--accent)/20 rounded-xl p-3 outline-none text-xs font-mono text-(--text) focus:border-(--accent)/50 transition-all" 
-                placeholder="Ex: 2 3"
-                rows={3} 
-              />
+    switch (component) {
+      case "description":
+        return <div className="h-full p-6 overflow-y-auto custom-scrollbar bg-(--surface-card) text-(--text)">{problemContent}</div>;
+      case "editor":
+        return <div className="h-full p-6 flex flex-col bg-(--surface-card) overflow-hidden">{editorContent}</div>;
+      case "testcase":
+        return (
+          <div className="h-full p-6 bg-(--surface-card) overflow-y-auto custom-scrollbar">
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                {['Case 1', 'Case 2', 'Case 3'].map((c, i) => (
+                  <button key={i} className="px-3 py-1 rounded-lg bg-(--accent)/10 border border-(--accent)/20 text-[10px] font-bold text-(--text-muted) hover:text-(--accent)">
+                    {c}
+                  </button>
+                ))}
+              </div>
+              <div className="space-y-2">
+                <p className="text-[10px] font-black uppercase text-(--accent) tracking-tighter">Input =</p>
+                <textarea 
+                  className="w-full bg-(--surface-input) border-2 border-(--accent)/20 rounded-xl p-3 outline-none text-xs font-mono text-(--text) focus:border-(--accent)/50 transition-all" 
+                  placeholder="Ex: 2 3"
+                  rows={3} 
+                />
+              </div>
             </div>
           </div>
-        ) : activeTab === 'testresult' ? (
-          <div className="flex flex-col items-center justify-center h-full text-center p-4">
+        );
+      case "testresult":
+        return (
+          <div className="h-full p-6 bg-(--surface-card) flex flex-col items-center justify-center text-center">
             <div className="w-12 h-12 rounded-full bg-(--accent)/5 border-2 border-dashed border-(--accent)/20 flex items-center justify-center mb-3">
                <span className="text-xl opacity-30">▶</span>
             </div>
@@ -559,125 +563,88 @@ export default function ProblemDetails() {
                 {lang === 'RO' ? 'Rulează codul pentru a vedea rezultatele testelor.' : 'Run your code to see test results.'}
             </p>
           </div>
-        ) : (
-          <div className="space-y-3">
-            {!isAuthenticated ? (
-              <p className="text-sm text-(--text-muted) italic">{lang === 'RO' ? 'Autentifică-te pentru istoricul tău.' : 'Log in to see history.'}</p>
-            ) : recentSubmissions.length > 0 ? (
-              recentSubmissions.map((sub, idx) => (
-                <div key={idx} className="p-3 rounded-xl border-2 border-(--accent)/20 bg-(--accent)/5 flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-(--text-h)">{new Date(sub.submissionDate).toLocaleDateString()}</p>
-                    <p className="text-[10px] text-(--text-muted) font-mono">Score: {sub.score}</p>
+        );
+      case "submissions":
+        return (
+          <div className="h-full p-6 bg-(--surface-card) overflow-y-auto custom-scrollbar">
+             <div className="space-y-3">
+              {!isAuthenticated ? (
+                <p className="text-sm text-(--text-muted) italic">{lang === 'RO' ? 'Autentifică-te pentru istoricul tău.' : 'Log in to see history.'}</p>
+              ) : recentSubmissions.length > 0 ? (
+                recentSubmissions.map((sub, idx) => (
+                  <div key={idx} className="p-3 rounded-xl border-2 border-(--accent)/20 bg-(--accent)/5 flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-(--text-h)">{new Date(sub.submissionDate).toLocaleDateString()}</p>
+                      <p className="text-[10px] text-(--text-muted) font-mono">Score: {sub.score}</p>
+                    </div>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border-2 ${sub.status === 'OK' ? 'border-green-500/40 bg-green-500/10 text-green-300' : 'border-red-500/40 bg-red-500/10 text-red-300'}`}>
+                      {sub.status}
+                    </span>
                   </div>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border-2 ${sub.status === 'OK' ? 'border-green-500/40 bg-green-500/10 text-green-300' : 'border-red-500/40 bg-red-500/10 text-red-300'}`}>
-                    {sub.status}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-(--text-muted) italic">{lang === 'RO' ? 'Nu ai încă submisii.' : 'No submissions yet.'}</p>
-            )}
+                ))
+              ) : (
+                <p className="text-sm text-(--text-muted) italic">{lang === 'RO' ? 'Nu ai încă submisii.' : 'No submissions yet.'}</p>
+              )}
+            </div>
           </div>
-        )}
-      </div>
-    </div>
-  );
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="w-full flex flex-col gap-6">
-      {/* Desktop Workspace: 2-Column Main Split */}
-      <div className="hidden xl:flex gap-0 w-full h-[calc(100svh-11rem)]">
-        {/* Left Area: Problem Description */}
-        <div 
-            style={{ width: `${leftWidth}%` }}
-            className="h-full overflow-y-auto p-8 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl custom-scrollbar shrink-0"
-        >
-          {problemContent}
-        </div>
+    <div className="w-full flex flex-col gap-6 h-[calc(100svh-6rem)] pb-4">
+      {/* Desktop Workspace: FlexLayout */}
+      <div className="hidden xl:block relative flex-1 min-h-0 overflow-hidden">
+        <FlexLayout.Layout model={model} factory={factory} />
+      </div>
 
-        {/* Horizontal Resizer (Left-Right) */}
-        <div 
-            onMouseDown={startResizingHorizontal}
-            className="w-4 group cursor-col-resize flex items-center justify-center transition-all hover:w-6 shrink-0"
-        >
-            <div className="w-1 h-12 rounded-full bg-(--accent)/20 group-hover:bg-(--accent) transition-colors" />
-        </div>
+      {/* Workspace Toolbar (Status Bar) - Only on Desktop for now */}
+      <div className="hidden xl:flex h-12 shrink-0 bg-(--surface-card) border-2 border-(--accent) rounded-xl items-center justify-between px-4">
+          <div className="flex items-center gap-4">
+              <button 
+                  className="text-[10px] font-black text-(--text-muted) hover:text-(--accent) flex items-center gap-2 uppercase tracking-tighter transition-colors group"
+              >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  {lang === 'RO' ? 'Consolă' : 'Console'}
+              </button>
+              <div className="w-px h-4 bg-(--accent)/20" />
+              <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${status === 'pending' ? 'bg-amber-500 animate-pulse' : 'bg-green-500'}`} />
+                  <span className="text-[10px] font-bold text-(--text-subtle) uppercase tracking-widest">
+                      {status === 'pending' ? (lang === 'RO' ? 'Evaluare...' : 'Evaluating...') : (lang === 'RO' ? 'Sistem Activ' : 'System Ready')}
+                  </span>
+              </div>
+          </div>
 
-        {/* Right Area: Vertical Split (Editor on top, Console on bottom) */}
-        <div 
-            style={{ width: `${100 - leftWidth}%` }}
-            className="h-full flex flex-col min-w-0"
-        >
-            {/* Top: Editor */}
-            <div className="flex-1 min-h-0 p-8 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl flex flex-col">
-                {editorContent}
-            </div>
-
-            {/* Vertical Resizer (Top-Bottom) */}
-            <div 
-                onMouseDown={startResizingVertical}
-                className="h-4 group cursor-row-resize flex items-center justify-center transition-all hover:h-6 shrink-0"
-            >
-                <div className="h-1 w-12 rounded-full bg-(--accent)/20 group-hover:bg-(--accent) transition-colors" />
-            </div>
-
-            {/* Bottom: Console */}
-            <div 
-                style={{ height: `${consoleHeight}px` }}
-                className="shrink-0 p-6 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl overflow-hidden"
-            >
-                {infoPanelContent}
-            </div>
-
-            {/* Workspace Toolbar (Status Bar) */}
-            <div className="mt-4 h-12 shrink-0 bg-(--surface-card) border-2 border-(--accent) rounded-xl flex items-center justify-between px-4">
-                <div className="flex items-center gap-4">
-                    <button 
-                        onClick={() => setConsoleHeight(consoleHeight > 100 ? 60 : 300)}
-                        className="text-[10px] font-black text-(--text-muted) hover:text-(--accent) flex items-center gap-2 uppercase tracking-tighter transition-colors group"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        {lang === 'RO' ? 'Consolă' : 'Console'}
-                    </button>
-                    <div className="w-px h-4 bg-(--accent)/20" />
-                    <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${status === 'pending' ? 'bg-amber-500 animate-pulse' : 'bg-green-500'}`} />
-                        <span className="text-[10px] font-bold text-(--text-subtle) uppercase tracking-widest">
-                            {status === 'pending' ? (lang === 'RO' ? 'Evaluare...' : 'Evaluating...') : (lang === 'RO' ? 'Sistem Activ' : 'System Ready')}
-                        </span>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                    <button 
-                        onClick={handleSubmit}
-                        className="px-4 py-1.5 rounded-lg bg-(--surface-input) border-2 border-(--accent)/30 text-[10px] font-black text-(--text-h) hover:border-(--accent) hover:bg-(--accent)/10 transition-all flex items-center gap-2 group"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-(--accent) group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z" />
-                        </svg>
-                        {lang === 'RO' ? 'Rulează' : 'Run'}
-                    </button>
-                    <button 
-                        onClick={handleSubmit}
-                        disabled={status === "pending"}
-                        className="px-6 py-1.5 rounded-lg bg-(--accent) border-2 border-(--accent) text-[10px] font-black text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                        {status === "pending" ? (lang === 'RO' ? 'Trimitere...' : 'Submitting...') : (lang === 'RO' ? 'Trimite' : 'Submit')}
-                    </button>
-                </div>
-            </div>
-        </div>
+          <div className="flex items-center gap-3">
+              <button 
+                  onClick={handleSubmit}
+                  className="px-4 py-1.5 rounded-lg bg-(--surface-input) border-2 border-(--accent)/30 text-[10px] font-black text-(--text-h) hover:border-(--accent) hover:bg-(--accent)/10 transition-all flex items-center gap-2 group"
+              >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-(--accent) group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                  </svg>
+                  {lang === 'RO' ? 'Rulează' : 'Run'}
+              </button>
+              <button 
+                  onClick={handleSubmit}
+                  disabled={status === "pending"}
+                  className="px-6 py-1.5 rounded-lg bg-(--accent) border-2 border-(--accent) text-[10px] font-black text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group"
+              >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  {status === "pending" ? (lang === 'RO' ? 'Trimitere...' : 'Submitting...') : (lang === 'RO' ? 'Trimite' : 'Submit')}
+              </button>
+          </div>
       </div>
 
       {/* Mobile View: Standard Stacked Grid */}
-      <div className="xl:hidden flex flex-col gap-6">
+      <div className="xl:hidden flex flex-col gap-6 p-4">
         <div className="p-6 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl">
           {problemContent}
         </div>
@@ -685,17 +652,23 @@ export default function ProblemDetails() {
           {editorContent}
         </div>
         <div className="p-6 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl">
-          {infoPanelContent}
-        </div>
-      </div>
-
-      <div className="flex justify-start shrink-0">
-        <Link to="/problems" className="relative inline-block group">
-          <div className="flex items-center gap-2 text-(--text-muted) font-semibold text-sm hover:text-(--text-h) transition-colors cursor-pointer">
-            <span>←</span>
-            <span>{t.backToList}</span>
+          <div className="flex items-center gap-4 mb-4 overflow-x-auto">
+             <button onClick={() => setActiveTab('testcase')} className={`text-xs font-bold pb-1 border-b-2 ${activeTab === 'testcase' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}>Testcase</button>
+             <button onClick={() => setActiveTab('testresult')} className={`text-xs font-bold pb-1 border-b-2 ${activeTab === 'testresult' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}>Result</button>
+             <button onClick={() => setActiveTab('submissions')} className={`text-xs font-bold pb-1 border-b-2 ${activeTab === 'submissions' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}>Submissions</button>
           </div>
-        </Link>
+          {activeTab === 'testcase' && (
+             <textarea className="w-full bg-(--surface-input) border border-(--accent)/20 rounded-xl p-3 text-xs" rows={4} placeholder="Input..." />
+          )}
+          {activeTab === 'testresult' && (
+             <div className="py-8 text-center text-xs opacity-50 italic">No results yet.</div>
+          )}
+          {activeTab === 'submissions' && (
+             <div className="space-y-2">
+                {recentSubmissions.map((s, i) => <div key={i} className="text-xs p-2 bg-(--accent)/5 rounded-lg border border-(--accent)/10 flex justify-between"><span>{s.status}</span><span>{s.score}</span></div>)}
+             </div>
+          )}
+        </div>
       </div>
     </div>
   );

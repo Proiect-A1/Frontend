@@ -197,18 +197,18 @@ export default function Landing() {
             >
                 <div className="w-full rounded-2xl px-5 py-6 md:px-8 md:py-8 flex-1 overflow-y-auto custom-scrollbar">
                     {/* Hero Section */}
-                    <div className="text-center mt-6 mb-8 md:mb-12 relative">
-                        <motion.div variants={itemVariants} className="mb-4">
+                    <div className="text-center mt-4 mb-8 md:mb-10 relative">
+                        <motion.div variants={itemVariants} className="mb-3">
                             <img
                                 src={logoSrc}
                                 alt="FiiCoder"
-                                className="theme-logo h-20 w-20 md:h-24 md:w-24 mx-auto theme-logo-glow"
+                                className="theme-logo h-16 w-16 md:h-20 md:w-20 mx-auto theme-logo-glow"
                             />
                         </motion.div>
 
                         <motion.h1
                             variants={itemVariants}
-                            className="text-4xl md:text-6xl font-black text-(--text-h) mb-3 tracking-tighter"
+                            className="text-4xl md:text-5xl font-black text-(--text-h) mb-3 tracking-tighter"
                         >
                             {t.welcomeTitle}{' '}
                             <span className="text-(--accent)">{`<_FiiCoder>`}</span>
@@ -216,15 +216,15 @@ export default function Landing() {
 
                         <motion.p
                             variants={itemVariants}
-                            className="text-base md:text-xl text-(--text-muted) max-w-2xl mx-auto mb-8"
+                            className="text-sm md:text-base text-(--text-muted) max-w-xl mx-auto mb-6"
                         >
                             {t.welcomeDesc}
                         </motion.p>
 
-                        {/* Stats Section - Moved up */}
+                        {/* Stats Section - Compact */}
                         <motion.div
                             variants={itemVariants}
-                            className="flex flex-wrap justify-center gap-4 md:gap-8 mb-10"
+                            className="flex flex-wrap justify-center gap-6 md:gap-12 mb-6 bg-(--accent)/5 py-3 rounded-2xl border border-(--accent)/10 max-w-3xl mx-auto"
                         >
                             {[
                                 { num: '5k+', label: t.activeStudents },
@@ -233,21 +233,21 @@ export default function Landing() {
                                 { num: '98%', label: t.satisfactionRate },
                             ].map((stat, idx) => (
                                 <div key={idx} className="flex flex-col items-center">
-                                    <div className="text-xl md:text-2xl font-black text-(--accent)">
+                                    <div className="text-lg md:text-xl font-black text-(--accent)">
                                         {stat.num}
                                     </div>
-                                    <div className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold">{stat.label}</div>
+                                    <div className="text-[9px] uppercase tracking-widest text-(--text-muted) font-bold">{stat.label}</div>
                                 </div>
                             ))}
                         </motion.div>
 
                         <motion.div
                             variants={itemVariants}
-                            className="flex flex-col sm:flex-row gap-4 justify-center"
+                            className="flex flex-col sm:flex-row gap-3 justify-center"
                         >
                             <Link
                                 to="/problems"
-                                className="px-8 py-3 rounded-xl bg-(--accent) border-2 border-(--accent) text-(--surface-card) font-black text-sm transition-all duration-200 hover:bg-transparent hover:text-(--accent) hover:-translate-y-1 active:translate-y-0"
+                                className="px-6 py-2.5 rounded-xl bg-(--accent) border-2 border-(--accent) text-(--surface-card) font-black text-xs transition-all duration-200 hover:bg-transparent hover:text-(--accent) hover:-translate-y-1 active:translate-y-0"
                             >
                                 {t.viewProblems}
                             </Link>
@@ -255,7 +255,7 @@ export default function Landing() {
                             {!isAuthenticated && (
                                 <Link
                                     to="/login"
-                                    className="px-8 py-3 rounded-xl bg-transparent border-2 border-(--accent) text-(--accent) font-black text-sm transition-all duration-200 hover:bg-(--accent) hover:text-(--surface-card) hover:-translate-y-1 active:translate-y-0"
+                                    className="px-6 py-2.5 rounded-xl bg-transparent border-2 border-(--accent) text-(--accent) font-black text-xs transition-all duration-200 hover:bg-(--accent) hover:text-(--surface-card) hover:-translate-y-1 active:translate-y-0"
                                 >
                                     {t.authenticateBtn}
                                 </Link>
@@ -264,8 +264,8 @@ export default function Landing() {
                     </div>
 
                     {/* Announcements Section */}
-                    <motion.div variants={itemVariants} className="mt-4 mb-12">
-                        <div className="flex items-center justify-between mb-6 px-2">
+                    <motion.div variants={itemVariants} className="mt-2 mb-8">
+                        <div className="flex items-center justify-between mb-4 px-2">
                             <h2 className="text-2xl font-black text-(--text-h) tracking-tight">
                                 {t.announcementsTitle}
                             </h2>
@@ -303,9 +303,9 @@ export default function Landing() {
                                                 {ann.icon}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <div className="flex items-start justify-between gap-2 mb-1">
+                                                <div className="flex items-start justify-between gap-2 mb-0.5">
                                                     <h3
-                                                        className={`font-bold text-sm line-clamp-1 ${
+                                                        className={`font-bold text-xs line-clamp-1 ${
                                                             ann.priority === 'high'
                                                                 ? 'text-(--accent)'
                                                                 : 'text-(--text-h)'
@@ -314,15 +314,15 @@ export default function Landing() {
                                                         {ann.title}
                                                     </h3>
                                                     {ann.priority === 'high' && (
-                                                        <span className="shrink-0 px-1.5 py-0.5 rounded-md bg-(--accent) text-(--surface-card) text-[8px] font-black uppercase">
+                                                        <span className="shrink-0 px-1 py-0 rounded-md bg-(--accent) text-(--surface-card) text-[7px] font-black uppercase">
                                                             !
                                                         </span>
                                                     )}
                                                 </div>
-                                                <p className="text-xs text-(--text-muted) mb-2 line-clamp-2">
+                                                <p className="text-[11px] text-(--text-muted) mb-1.5 line-clamp-2 leading-tight">
                                                     {ann.content}
                                                 </p>
-                                                <div className="text-[10px] text-(--text-subtle) font-bold uppercase tracking-wider">
+                                                <div className="text-[9px] text-(--text-subtle) font-bold uppercase tracking-wider">
                                                     {ann.createdAt}
                                                 </div>
                                             </div>
@@ -347,8 +347,8 @@ export default function Landing() {
                         />
                     </motion.div>
 
-                    {/* Features Grid */}
-                    <div className="grid md:grid-cols-3 gap-6 mt-8 mb-12">
+                    {/* Features Grid - Compact */}
+                    <div className="grid md:grid-cols-3 gap-4 mt-6 mb-10">
                         {[
                             {
                                 icon: '📚',
@@ -372,15 +372,15 @@ export default function Landing() {
                             <motion.div
                                 key={index}
                                 variants={itemVariants}
-                                className={`p-6 rounded-2xl border-2 border-(--accent)/30 bg-(--surface-card) transition-all duration-300 group hover:border-(--accent)`}
+                                className={`p-4 rounded-2xl border-2 border-(--accent)/20 bg-(--surface-card) transition-all duration-300 group hover:border-(--accent)`}
                             >
-                                <div className={`w-12 h-12 rounded-xl ${feature.color} flex items-center justify-center text-3xl mb-4 group-hover:scale-105 transition-transform duration-300`}>
+                                <div className={`w-10 h-10 rounded-xl ${feature.color} flex items-center justify-center text-2xl mb-3 group-hover:scale-105 transition-transform duration-300`}>
                                     {feature.icon}
                                 </div>
-                                <h3 className="text-lg font-black text-(--text-h) mb-2 tracking-tight">
+                                <h3 className="text-base font-black text-(--text-h) mb-1 tracking-tight">
                                     {feature.title}
                                 </h3>
-                                <p className="text-sm text-(--text-muted) leading-relaxed">{feature.desc}</p>
+                                <p className="text-xs text-(--text-muted) leading-snug">{feature.desc}</p>
                             </motion.div>
                         ))}
                     </div>
