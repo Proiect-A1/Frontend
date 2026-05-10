@@ -96,7 +96,8 @@ export default function ClassesHub() {
                 setLoadingInvitations(true);
                 const data = await classService.getMyInvitations();
                 if (isMounted) setInvitations(data);
-            } catch {
+            } catch (err) {
+                console.error("Eroare la încărcarea invitațiilor (probabil recursivitate JSON în BE):", err);
                 if (isMounted) setInvitations([]);
             } finally {
                 if (isMounted) setLoadingInvitations(false);
@@ -310,7 +311,7 @@ export default function ClassesHub() {
 
                 <motion.section
                     variants={itemVariants}
-                    className="mt-4 md:mt-6 rounded-xl border border-(--accent)/20 bg-(--surface-card) p-4 md:p-6"
+                    className="mt-4 md:mt-6 rounded-xl border-2 border-(--accent)/20 bg-(--surface-card) p-4 md:p-6"
                 >
                     <div className="flex items-center justify-between gap-4">
                         <h2 className="text-xl font-bold text-(--text-h)">
@@ -334,7 +335,7 @@ export default function ClassesHub() {
 
                     <div className="mt-4 grid gap-3">
                         {recentClasses.length === 0 && (
-                            <div className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)">
+                            <div className="rounded-xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)">
                                 {lang === 'RO'
                                     ? 'Nu ai clase salvate recent. Creează sau caută o clasă și va apărea aici.'
                                     : 'No recent classes yet. Create or search a class and it will appear here.'}
@@ -344,7 +345,7 @@ export default function ClassesHub() {
                         {recentClasses.map((savedClass) => (
                             <div
                                 key={savedClass.id}
-                                className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-3"
+                                className="rounded-xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3"
                             >
                                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                                     <div>
@@ -391,10 +392,10 @@ export default function ClassesHub() {
 
                     <div className="mt-4 grid gap-3">
                         {invitations.length === 0 && !loadingInvitations && (
-                            <div className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)">
-                                {lang === 'RO'
-                                    ? 'Nu ai invitații active.'
-                                    : 'You have no active invitations.'}
+                            <div className="rounded-xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)">
+                                {error?.includes('invita') || error?.includes('fetch') 
+                                    ? (lang === 'RO' ? 'Eroare la comunicarea cu serverul pentru invitații.' : 'Server error while fetching invitations.')
+                                    : (lang === 'RO' ? 'Nu ai invitații active.' : 'You have no active invitations.')}
                             </div>
                         )}
 

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage, translations } from '../language/Language';
 import { useAuth } from '../services/AuthContext';
 import { adminService, type Announcement } from '../services/adminService';
-import { hoverTransition, itemVariants, staggerConfig } from '../utils/motionConfig';
+import { itemVariants, staggerConfig } from '../utils/motionConfig';
 import { useTheme } from '../services/ThemeContext';
 import { createPortal } from 'react-dom';
 
@@ -162,6 +162,7 @@ export default function Landing() {
     const [selectedAnnouncement, setSelectedAnnouncement] =
         useState<AnnouncementWithPriority | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [showAllAnnouncements, setShowAllAnnouncements] = useState(false);
 
     useEffect(() => {
         async function loadAnnouncements() {
@@ -196,18 +197,18 @@ export default function Landing() {
             >
                 <div className="w-full rounded-2xl px-5 py-6 md:px-8 md:py-8 flex-1 overflow-y-auto custom-scrollbar">
                     {/* Hero Section */}
-                    <div className="text-center mb-8 md:mb-10">
+                    <div className="text-center mt-6 mb-8 md:mb-12 relative">
                         <motion.div variants={itemVariants} className="mb-4">
                             <img
                                 src={logoSrc}
                                 alt="FiiCoder"
-                                className="theme-logo h-20 w-20 md:h-28 md:w-28 mx-auto theme-logo-glow"
+                                className="theme-logo h-20 w-20 md:h-24 md:w-24 mx-auto theme-logo-glow"
                             />
                         </motion.div>
 
                         <motion.h1
                             variants={itemVariants}
-                            className="text-4xl md:text-5xl font-black text-(--text-h) mb-3 tracking-tight"
+                            className="text-4xl md:text-6xl font-black text-(--text-h) mb-3 tracking-tighter"
                         >
                             {t.welcomeTitle}{' '}
                             <span className="text-(--accent)">{`<_FiiCoder>`}</span>
@@ -215,10 +216,30 @@ export default function Landing() {
 
                         <motion.p
                             variants={itemVariants}
-                            className="text-base md:text-lg text-(--text-muted) max-w-2xl mx-auto mb-6"
+                            className="text-base md:text-xl text-(--text-muted) max-w-2xl mx-auto mb-8"
                         >
                             {t.welcomeDesc}
                         </motion.p>
+
+                        {/* Stats Section - Moved up */}
+                        <motion.div
+                            variants={itemVariants}
+                            className="flex flex-wrap justify-center gap-4 md:gap-8 mb-10"
+                        >
+                            {[
+                                { num: '5k+', label: t.activeStudents },
+                                { num: '500+', label: t.problemsCount },
+                                { num: '150+', label: t.contestsCount },
+                                { num: '98%', label: t.satisfactionRate },
+                            ].map((stat, idx) => (
+                                <div key={idx} className="flex flex-col items-center">
+                                    <div className="text-xl md:text-2xl font-black text-(--accent)">
+                                        {stat.num}
+                                    </div>
+                                    <div className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold">{stat.label}</div>
+                                </div>
+                            ))}
+                        </motion.div>
 
                         <motion.div
                             variants={itemVariants}
@@ -226,7 +247,7 @@ export default function Landing() {
                         >
                             <Link
                                 to="/problems"
-                                className="px-6 py-2.5 rounded-full bg-(--accent)/20 border-2 border-(--accent)/60 text-(--text-h) font-bold text-sm transition-all duration-200 hover:bg-(--accent)/35 hover:border-(--accent) hover:-translate-y-1"
+                                className="px-8 py-3 rounded-xl bg-(--accent) border-2 border-(--accent) text-(--surface-card) font-black text-sm transition-all duration-200 hover:bg-transparent hover:text-(--accent) hover:-translate-y-1 active:translate-y-0"
                             >
                                 {t.viewProblems}
                             </Link>
@@ -234,7 +255,7 @@ export default function Landing() {
                             {!isAuthenticated && (
                                 <Link
                                     to="/login"
-                                    className="px-6 py-2.5 rounded-full bg-(--accent)/20 border-2 border-(--accent)/60 text-(--text-h) font-bold text-sm transition-all duration-200 hover:bg-(--accent)/35 hover:border-(--accent) hover:-translate-y-1"
+                                    className="px-8 py-3 rounded-xl bg-transparent border-2 border-(--accent) text-(--accent) font-black text-sm transition-all duration-200 hover:bg-(--accent) hover:text-(--surface-card) hover:-translate-y-1 active:translate-y-0"
                                 >
                                     {t.authenticateBtn}
                                 </Link>
@@ -243,34 +264,48 @@ export default function Landing() {
                     </div>
 
                     {/* Announcements Section */}
-                    <motion.div variants={itemVariants} className="mt-8 mb-8">
-                        <h2 className="text-2xl md:text-3xl font-bold text-(--text-h) mb-6 text-center">
-                            {t.announcementsTitle}
-                        </h2>
+                    <motion.div variants={itemVariants} className="mt-4 mb-12">
+                        <div className="flex items-center justify-between mb-6 px-2">
+                            <h2 className="text-2xl font-black text-(--text-h) tracking-tight">
+                                {t.announcementsTitle}
+                            </h2>
+                            {announcements.length > 3 && (
+                                <button 
+                                    onClick={() => setShowAllAnnouncements(!showAllAnnouncements)}
+                                    className="text-xs font-bold text-(--accent) hover:underline"
+                                >
+                                    {showAllAnnouncements 
+                                        ? (lang === 'RO' ? 'Vezi mai puțin' : 'Show less') 
+                                        : (lang === 'RO' ? 'Vezi toate' : 'View all')}
+                                </button>
+                            )}
+                        </div>
+                        
                         <div className="grid gap-4 lg:grid-cols-3">
                             {announcements.length > 0 ? (
-                                announcements.map((ann) => (
+                                announcements
+                                    .slice(0, showAllAnnouncements ? undefined : 3)
+                                    .map((ann) => (
                                     <motion.div
                                         key={ann.id}
                                         variants={itemVariants}
-                                        whileHover={{ y: -4, transition: hoverTransition }}
                                         onClick={() => handleOpenAnnouncement(ann)}
-                                        className={`p-4 rounded-2xl border backdrop-blur-sm cursor-pointer transition-colors duration-300 group ${
+                                        className={`p-4 rounded-2xl border-2 backdrop-blur-sm cursor-pointer transition-all duration-200 group relative ${
                                             ann.priority === 'high'
-                                                ? 'border-(--accent) bg-(--accent)/12 hover:border-(--accent) hover:bg-(--accent)/18 shadow-lg shadow-(--accent)/35'
+                                                ? 'border-(--accent) bg-(--accent)/10 hover:bg-(--accent)/15'
                                                 : ann.priority === 'medium'
-                                                  ? 'border-(--accent)/50 bg-(--accent)/8 hover:border-(--accent)/70 hover:bg-(--accent)/12 shadow-md shadow-(--accent)/20'
-                                                  : 'border-(--accent)/20 bg-(--surface-muted) hover:border-(--accent)/40 hover:bg-(--surface-hover)'
+                                                  ? 'border-(--accent)/50 bg-(--surface-muted) hover:border-(--accent)'
+                                                  : 'border-(--accent)/20 bg-(--surface-muted) hover:border-(--accent)/40'
                                         }`}
                                     >
-                                        <div className="flex items-start gap-3 mb-3">
-                                            <div className="text-2xl shrink-0 group-hover:scale-110 transition-all duration-300">
+                                        <div className="flex items-start gap-3">
+                                            <div className="text-2xl shrink-0 group-hover:rotate-12 transition-transform duration-300">
                                                 {ann.icon}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-start justify-between gap-2 mb-1">
                                                     <h3
-                                                        className={`font-semibold text-sm line-clamp-2 ${
+                                                        className={`font-bold text-sm line-clamp-1 ${
                                                             ann.priority === 'high'
                                                                 ? 'text-(--accent)'
                                                                 : 'text-(--text-h)'
@@ -279,20 +314,15 @@ export default function Landing() {
                                                         {ann.title}
                                                     </h3>
                                                     {ann.priority === 'high' && (
-                                                        <span className="shrink-0 px-2 py-0.5 rounded-full bg-(--accent) text-white text-[10px] font-bold border border-(--accent)/60">
-                                                            URGENT
-                                                        </span>
-                                                    )}
-                                                    {ann.priority === 'medium' && (
-                                                        <span className="shrink-0 px-2 py-0.5 rounded-full bg-(--accent)/25 text-(--accent) text-[10px] font-bold border border-(--accent)/40">
-                                                            ★
+                                                        <span className="shrink-0 px-1.5 py-0.5 rounded-md bg-(--accent) text-(--surface-card) text-[8px] font-black uppercase">
+                                                            !
                                                         </span>
                                                     )}
                                                 </div>
-                                                <p className="text-xs text-(--text-muted) mb-2 line-clamp-3 [overflow-wrap:anywhere] whitespace-pre-wrap">
+                                                <p className="text-xs text-(--text-muted) mb-2 line-clamp-2">
                                                     {ann.content}
                                                 </p>
-                                                <div className="text-[10px] text-(--text-subtle)">
+                                                <div className="text-[10px] text-(--text-subtle) font-bold uppercase tracking-wider">
                                                     {ann.createdAt}
                                                 </div>
                                             </div>
@@ -301,7 +331,7 @@ export default function Landing() {
                                 ))
                             ) : (
                                 <div className="col-span-full text-center py-8">
-                                    <p className="text-(--text-muted) text-sm">
+                                    <p className="text-(--text-muted) text-sm italic">
                                         {lang === 'RO'
                                             ? 'Nu sunt anunțuri disponibile.'
                                             : 'No announcements available.'}
@@ -318,61 +348,42 @@ export default function Landing() {
                     </motion.div>
 
                     {/* Features Grid */}
-                    <motion.div variants={itemVariants} className="grid md:grid-cols-3 gap-4 mt-6">
+                    <div className="grid md:grid-cols-3 gap-6 mt-8 mb-12">
                         {[
                             {
                                 icon: '📚',
                                 title: t.newProblems,
                                 desc: t.newProblemsDesc,
+                                color: 'bg-emerald-500/10'
                             },
                             {
                                 icon: '🏆',
                                 title: t.dailyContests,
                                 desc: t.dailyContestsDesc,
+                                color: 'bg-amber-500/10'
                             },
                             {
                                 icon: '💻',
                                 title: t.advancedEditor,
                                 desc: t.advancedEditorDesc,
+                                color: 'bg-blue-500/10'
                             },
                         ].map((feature, index) => (
                             <motion.div
                                 key={index}
                                 variants={itemVariants}
-                                className="p-5 rounded-xl border border-(--accent)/30 bg-(--surface-card) backdrop-blur-sm hover:border-(--accent)/60 hover:bg-(--surface-hover) transition-colors duration-300 group"
+                                className={`p-6 rounded-2xl border-2 border-(--accent)/30 bg-(--surface-card) transition-all duration-300 group hover:border-(--accent)`}
                             >
-                                <div className="text-3xl mb-2 group-hover:scale-110 transition-all duration-300">
+                                <div className={`w-12 h-12 rounded-xl ${feature.color} flex items-center justify-center text-3xl mb-4 group-hover:scale-105 transition-transform duration-300`}>
                                     {feature.icon}
                                 </div>
-                                <h3 className="text-base font-bold text-(--text-h) mb-1">
+                                <h3 className="text-lg font-black text-(--text-h) mb-2 tracking-tight">
                                     {feature.title}
                                 </h3>
-                                <p className="text-xs text-(--text-muted)">{feature.desc}</p>
+                                <p className="text-sm text-(--text-muted) leading-relaxed">{feature.desc}</p>
                             </motion.div>
                         ))}
-                    </motion.div>
-
-                    {/* Stats Section */}
-                    <motion.div
-                        variants={itemVariants}
-                        className="mt-8 p-6 rounded-xl border border-(--accent)/25 bg-(--surface-muted) backdrop-blur-sm"
-                    >
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                            {[
-                                { num: '5000+', label: t.activeStudents },
-                                { num: '500+', label: t.problemsCount },
-                                { num: '150+', label: t.contestsCount },
-                                { num: '98%', label: t.satisfactionRate },
-                            ].map((stat, idx) => (
-                                <motion.div key={idx} variants={itemVariants}>
-                                    <div className="text-2xl md:text-3xl font-black text-(--accent) mb-1">
-                                        {stat.num}
-                                    </div>
-                                    <div className="text-xs text-(--text-muted)">{stat.label}</div>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </motion.div>
+                    </div>
                 </div>
             </motion.div>
         </div>

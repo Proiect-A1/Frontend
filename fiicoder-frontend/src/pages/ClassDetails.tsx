@@ -39,6 +39,8 @@ export default function ClassDetails() {
     const [group, setGroup] = useState<GroupFindResponseDTO | null>(null);
     const [homeworks, setHomeworks] = useState<HomeworkResponseDTO[]>([]);
     const [inviteEmail, setInviteEmail] = useState('');
+    const [inviteFeedback, setInviteFeedback] = useState<{msg: string, isError: boolean} | null>(null);
+    const [loadingInvite, setLoadingInvite] = useState(false);
     const [homeworkTitle, setHomeworkTitle] = useState('');
     const [homeworkDescription, setHomeworkDescription] = useState('');
     const [homeworkDeadline, setHomeworkDeadline] = useState('');
@@ -144,23 +146,26 @@ export default function ClassDetails() {
         };
     }, [groupId, selectedHomeworkId, lang]);
 
-    const handleInvite = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        if (!groupId) return;
+    const handleInviteStudent = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!inviteEmail.trim()) return;
+        setLoadingInvite(true);
+        setInviteFeedback(null);
         try {
-            setError(null);
-            setFeedback(null);
-            await classService.inviteUser(groupId, { email: inviteEmail });
+            await classService.inviteUser(groupId!, { email: inviteEmail.trim() });
+            setInviteFeedback({
+                msg: lang === 'RO' ? 'Invitație trimisă cu succes!' : 'Invitation sent successfully!',
+                isError: false
+            });
             setInviteEmail('');
-            setFeedback(lang === 'RO' ? 'Invitația a fost trimisă.' : 'Invitation sent.');
         } catch (err: any) {
-            setError(
-                err?.body?.message ||
-                    err?.body?.error ||
-                    (lang === 'RO'
-                        ? 'Nu am putut trimite invitația.'
-                        : 'Could not send invitation.'),
-            );
+            setInviteFeedback({
+                msg: err?.body?.message || (lang === 'RO' ? 'Eroare la trimitere.' : 'Error sending invitation.'),
+                isError: true
+            });
+        } finally {
+            setLoadingInvite(false);
+            setTimeout(() => setInviteFeedback(null), 5000);
         }
     };
 
@@ -441,32 +446,32 @@ export default function ClassDetails() {
                                 <div>{group.createdAt}</div>
                             </div>
 
-                            <form
-                                onSubmit={handleInvite}
-                                className="mt-5 rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-4"
-                            >
-                                <h3 className="text-lg font-semibold text-(--text-h)">
-                                    {lang === 'RO' ? 'Invită un elev' : 'Invite a student'}
-                                </h3>
-                                <div className="mt-3 flex flex-col gap-3 sm:flex-row">
-                                    <input
-                                        value={inviteEmail}
-                                        onChange={(event) => setInviteEmail(event.target.value)}
-                                        placeholder={
-                                            lang === 'RO'
-                                                ? 'email@exemplu.com'
-                                                : 'email@example.com'
-                                        }
-                                        className="flex-1 rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition focus:border-(--accent)"
-                                    />
-                                    <button
-                                        type="submit"
-                                        className="rounded-xl border border-(--accent)/60 bg-(--accent)/20 px-4 py-2 text-sm font-semibold text-(--text-h) transition hover:bg-(--accent)/35"
-                                    >
-                                        {lang === 'RO' ? 'Trimite' : 'Send'}
-                                    </button>
-                                </div>
+                            <section className="mt-6 p-6 rounded-2xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm">
+                            <h2 className="text-xl font-bold text-(--text-h) mb-4">
+                                {lang === 'RO' ? 'Invită Elev' : 'Invite Student'}
+                            </h2>
+                            <form onSubmit={handleInviteStudent} className="flex gap-2">
+                                <input
+                                    type="email"
+                                    value={inviteEmail}
+                                    onChange={(e) => setInviteEmail(e.target.value)}
+                                    placeholder={lang === 'RO' ? 'Email student' : 'Student email'}
+                                    className="flex-1 rounded-xl border-2 border-(--accent)/20 bg-black/20 px-3 py-2 text-sm text-(--text-h) outline-none focus:border-(--accent)/50 transition-all"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={loadingInvite}
+                                    className="px-4 py-2 rounded-xl bg-(--accent)/10 border-2 border-(--accent)/40 text-(--text-h) font-bold text-xs hover:bg-(--accent)/20 disabled:opacity-50 transition-all"
+                                >
+                                    {loadingInvite ? '...' : (lang === 'RO' ? 'Invită' : 'Invite')}
+                                </button>
                             </form>
+                            {inviteFeedback && (
+                                <p className={`mt-3 text-xs font-bold ${inviteFeedback.isError ? 'text-red-400' : 'text-emerald-400'}`}>
+                                    {inviteFeedback.msg}
+                                </p>
+                            )}
+                        </section>
                         </motion.section>
 
                         <motion.section
