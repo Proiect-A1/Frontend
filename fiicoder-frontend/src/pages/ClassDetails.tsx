@@ -593,36 +593,38 @@ export default function ClassDetails() {
                                         </div>
                                     </div>
 
-                                    {userId === group?.creatorId && (
-                                        <div className="flex flex-wrap items-center gap-2">
-                                            <button
-                                                onClick={() => handleShowHomeworkDetails(homework.id)}
-                                                className="rounded-lg border border-(--accent)/40 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
-                                            >
-                                                {selectedHomeworkId === homework.id
-                                                    ? lang === 'RO'
-                                                        ? 'Ascunde detalii'
-                                                        : 'Hide details'
-                                                    : lang === 'RO'
-                                                      ? 'Detalii'
-                                                      : 'Details'}
-                                            </button>
-                                            {homework.status === 'DRAFT' && (
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <button
+                                            onClick={() => handleShowHomeworkDetails(homework.id)}
+                                            className="rounded-lg border border-(--accent)/40 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
+                                        >
+                                            {selectedHomeworkId === homework.id
+                                                ? lang === 'RO'
+                                                    ? 'Ascunde detalii'
+                                                    : 'Hide details'
+                                                : lang === 'RO'
+                                                  ? 'Detalii'
+                                                  : 'Details'}
+                                        </button>
+                                        {userId === group?.creatorId && (
+                                            <>
+                                                {homework.status === 'DRAFT' && (
+                                                    <button
+                                                        onClick={() => handlePublishHomework(homework.id)}
+                                                        className="rounded-lg border border-emerald-400/50 px-3 py-1.5 text-xs font-semibold text-emerald-200 hover:bg-emerald-500/10"
+                                                    >
+                                                        {lang === 'RO' ? 'Publică' : 'Publish'}
+                                                    </button>
+                                                )}
                                                 <button
-                                                    onClick={() => handlePublishHomework(homework.id)}
-                                                    className="rounded-lg border border-emerald-400/50 px-3 py-1.5 text-xs font-semibold text-emerald-200 hover:bg-emerald-500/10"
+                                                    onClick={() => handleDeleteHomework(homework.id)}
+                                                    className="rounded-lg border border-red-400/50 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/10"
                                                 >
-                                                    {lang === 'RO' ? 'Publică' : 'Publish'}
+                                                    {lang === 'RO' ? 'Șterge' : 'Delete'}
                                                 </button>
-                                            )}
-                                            <button
-                                                onClick={() => handleDeleteHomework(homework.id)}
-                                                className="rounded-lg border border-red-400/50 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/10"
-                                            >
-                                                {lang === 'RO' ? 'Șterge' : 'Delete'}
-                                            </button>
-                                        </div>
-                                    )}
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {selectedHomeworkId === homework.id && (
@@ -637,18 +639,36 @@ export default function ClassDetails() {
 
                                         {selectedHomeworkDetail && loadingHomeworkId !== homework.id && (
                                             <>
-                                                <div className="grid gap-2 text-xs text-(--text-muted) sm:grid-cols-3">
-                                                    <div>
-                                                        {lang === 'RO' ? 'Probleme:' : 'Problems:'}{' '}
-                                                        {selectedHomeworkDetail.problems.length}
+                                                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                                    <div className="space-y-2">
+                                                        <h4 className="text-xs uppercase tracking-widest text-(--text-muted) font-bold">
+                                                            {lang === 'RO' ? 'Probleme' : 'Problems'}
+                                                        </h4>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {selectedHomeworkDetail.problems.length > 0 ? (
+                                                                selectedHomeworkDetail.problems.map((prob) => (
+                                                                    <Link
+                                                                        key={prob.title}
+                                                                        to={`/problems/${prob.title}`}
+                                                                        className="px-2 py-1 rounded-md border border-(--accent)/30 bg-(--accent)/10 text-[11px] text-(--text-h) hover:bg-(--accent)/25 transition-colors"
+                                                                    >
+                                                                        {prob.title}
+                                                                    </Link>
+                                                                ))
+                                                            ) : (
+                                                                <span className="text-[11px] text-(--text-muted)">-</span>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        {lang === 'RO' ? 'Elevi asignați:' : 'Assigned users:'}{' '}
-                                                        {selectedHomeworkDetail.assignedUsers.length}
-                                                    </div>
-                                                    <div>
-                                                        {lang === 'RO' ? 'Submisii:' : 'Submissions:'}{' '}
-                                                        {selectedHomeworkDetail.submissions.length}
+                                                    <div className="space-y-1">
+                                                        <p className="text-[11px] text-(--text-muted)">
+                                                            {lang === 'RO' ? 'Elevi asignați:' : 'Assigned users:'}{' '}
+                                                            <span className="text-(--text-h) font-semibold">{selectedHomeworkDetail.assignedUsers.length}</span>
+                                                        </p>
+                                                        <p className="text-[11px] text-(--text-muted)">
+                                                            {lang === 'RO' ? 'Submisii:' : 'Submissions:'}{' '}
+                                                            <span className="text-(--text-h) font-semibold">{selectedHomeworkDetail.submissions.length}</span>
+                                                        </p>
                                                     </div>
                                                 </div>
 

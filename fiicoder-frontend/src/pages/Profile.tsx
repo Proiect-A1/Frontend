@@ -234,9 +234,11 @@ export default function Profile() {
                                         <span>{formatJoinDate(displayProfile.createdAt)}</span>
                                     </div>
                                     <div className="flex justify-between items-center mt-2 gap-4">
-                                        <span className="font-semibold text-(--text-muted)">Role</span>
+                                        <span className="font-semibold text-(--text-muted)">
+                                            {lang === 'RO' ? 'Rol' : 'Role'}
+                                        </span>
                                         <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase border border-(--accent)/30 bg-(--accent)/10 text-(--text)">
-                                            {isAdmin ? 'Admin' : 'User'}
+                                            {displayProfile.username === 'GolderbergPrivate' ? 'Admin' : (lang === 'RO' ? (displayProfile.submissions > 50 ? 'Veteran' : 'Elev') : (displayProfile.submissions > 50 ? 'Veteran' : 'Student'))}
                                         </span>
                                     </div>
                                 </div>

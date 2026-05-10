@@ -67,6 +67,19 @@ export default function ClassesHub() {
         });
     };
 
+    const handleAcceptInvitation = async (invitationId: string) => {
+        // Deoarece backend-ul are doar TODO, simulăm acceptarea în UI
+        setFeedback(lang === 'RO' ? 'Invitație acceptată! (Simulare)' : 'Invitation accepted! (Simulation)');
+        setInvitations(prev => prev.filter(inv => inv.id !== invitationId));
+        setTimeout(() => setFeedback(null), 3000);
+    };
+
+    const handleDeclineInvitation = async (invitationId: string) => {
+        setInvitations(prev => prev.filter(inv => inv.id !== invitationId));
+        setFeedback(lang === 'RO' ? 'Invitație refuzată.' : 'Invitation declined.');
+        setTimeout(() => setFeedback(null), 3000);
+    };
+
     useEffect(() => {
         if (!isAuthenticated || !userId) return;
         const loaded = loadRecentClasses(userId);
@@ -402,30 +415,44 @@ export default function ClassesHub() {
                                         {invitation.sentAt}
                                     </p>
                                 </div>
-                                {invitation.studyClass?.id && (
-                                    <Link
-                                        to={`/classes/${invitation.studyClass.id}`}
-                                        onClick={() => {
-                                            if (invitation.studyClass) {
-                                                storeRecentClass({
-                                                    id: invitation.studyClass.id,
-                                                    name: invitation.studyClass.name,
-                                                    description:
-                                                        invitation.studyClass.description || null,
-                                                    creatorUsername:
-                                                        invitation.studyClass.creator?.username ||
-                                                        'unknown',
-                                                    createdAt:
-                                                        invitation.studyClass.createdAt ||
-                                                        new Date().toISOString(),
-                                                });
-                                            }
-                                        }}
-                                        className="inline-flex self-start rounded-xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <button
+                                        onClick={() => handleAcceptInvitation(invitation.id)}
+                                        className="rounded-lg bg-emerald-500/20 border border-emerald-500/50 px-3 py-1.5 text-xs font-bold text-emerald-200 hover:bg-emerald-500/30 transition-colors"
                                     >
-                                        {lang === 'RO' ? 'Vezi clasa' : 'View class'}
-                                    </Link>
-                                )}
+                                        {lang === 'RO' ? 'Acceptă' : 'Accept'}
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeclineInvitation(invitation.id)}
+                                        className="rounded-lg bg-red-500/20 border border-red-500/50 px-3 py-1.5 text-xs font-bold text-red-200 hover:bg-red-500/30 transition-colors"
+                                    >
+                                        {lang === 'RO' ? 'Refuză' : 'Decline'}
+                                    </button>
+                                    {invitation.studyClass?.id && (
+                                        <Link
+                                            to={`/classes/${invitation.studyClass.id}`}
+                                            onClick={() => {
+                                                if (invitation.studyClass) {
+                                                    storeRecentClass({
+                                                        id: invitation.studyClass.id,
+                                                        name: invitation.studyClass.name,
+                                                        description:
+                                                            invitation.studyClass.description || null,
+                                                        creatorUsername:
+                                                            invitation.studyClass.creator?.username ||
+                                                            'unknown',
+                                                        createdAt:
+                                                            invitation.studyClass.createdAt ||
+                                                            new Date().toISOString(),
+                                                    });
+                                                }
+                                            }}
+                                            className="rounded-lg border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
+                                        >
+                                            {lang === 'RO' ? 'Vezi' : 'View'}
+                                        </Link>
+                                    )}
+                                </div>
                             </div>
                         ))}
                     </div>

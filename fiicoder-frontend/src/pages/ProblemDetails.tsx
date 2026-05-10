@@ -13,6 +13,7 @@ import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
+import { profileService, type RecentSubmissionDTO } from "../services/profileService";
 
 // Utility to fix database indentation issues for Markdown
 function unindent(str: string): string {
@@ -166,6 +167,7 @@ export default function ProblemDetails() {
     [],
   );
   const [selectedLanguageId, setSelectedLanguageId] = useState<string>("");
+  const [recentSubmissions, setRecentSubmissions] = useState<RecentSubmissionDTO[]>([]);
 
   const handleEditorMount: OnMount = (_editor, monaco) => {
     monacoRef.current = monaco;
@@ -195,11 +197,27 @@ export default function ProblemDetails() {
         console.error("Eroare la încărcarea limbajelor:", err);
       }
     }
+
+    async function fetchRecentSubmissions() {
+      try {
+        const data = await profileService.getMyProfile(1, 50);
+        if (!isMounted) return;
+        // Filtrăm doar submisiile pentru problema curentă
+        const filtered = data.recentSubmissions.content.filter(
+          (s) => s.problemTitle === problemTitle
+        );
+        setRecentSubmissions(filtered);
+      } catch (err) {
+        console.error("Eroare la încărcarea submisiilor recente:", err);
+      }
+    }
+
     fetchLanguages();
+    fetchRecentSubmissions();
     return () => {
       isMounted = false;
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, problemTitle]);
 
   useEffect(() => {
     let isMounted = true;
@@ -537,11 +555,45 @@ export default function ProblemDetails() {
         </div>
 
         <div className="h-auto overflow-visible xl:h-[calc(100svh-11rem)] xl:overflow-y-auto p-8 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl custom-scrollbar">
-          <h2 className="text-xl font-bold text-(--text) mb-2">Test Panel</h2>
+          <h2 className="text-xl font-bold text-(--text) mb-2">
+            {lang === 'RO' ? 'Submisii Recente' : 'My Submissions'}
+          </h2>
           <div className="page-line-horizontal" />
-          <p className="text-(--text)">
-            This is an empty panel placeholder.
-          </p>
+          
+          {!isAuthenticated ? (
+            <p className="text-sm text-(--text-muted) italic">
+              {lang === 'RO' ? 'Autentifică-te pentru a vedea istoricul.' : 'Log in to see your history.'}
+            </p>
+          ) : recentSubmissions.length > 0 ? (
+            <div className="space-y-3">
+              {recentSubmissions.map((sub, idx) => (
+                <div 
+                  key={idx}
+                  className="p-3 rounded-xl border border-(--accent)/20 bg-(--accent)/5 flex items-center justify-between gap-3"
+                >
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-(--text-h)">
+                      {new Date(sub.submissionDate).toLocaleDateString(lang === 'RO' ? 'ro-RO' : 'en-US')}
+                    </p>
+                    <p className="text-[10px] text-(--text-muted) font-mono">
+                      Score: {sub.score}
+                    </p>
+                  </div>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                    sub.status === 'OK' 
+                      ? 'border-green-500/40 bg-green-500/10 text-green-300' 
+                      : 'border-red-500/40 bg-red-500/10 text-red-300'
+                  }`}>
+                    {sub.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-(--text-muted) italic">
+              {lang === 'RO' ? 'Nu ai încă submisii pentru această problemă.' : 'No submissions yet for this problem.'}
+            </p>
+          )}
         </div>
 
         <div className="flex justify-start shrink-0">
