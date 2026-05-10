@@ -200,18 +200,18 @@ export default function AdminPanel() {
         );
     };
 
-    const handleBanToggle = async (userId: string, isBanned: boolean) => {
-        await adminService.toggleBan(userId, isBanned);
+    const handleBanToggle = async (username: string, isBanned: boolean) => {
+        await adminService.toggleBan(username, isBanned);
         setUsers((previousUsers) =>
             previousUsers.map((user) =>
-                user.id === userId ? { ...user, isBanned: !isBanned } : user,
+                user.username === username ? { ...user, isBanned: !isBanned } : user,
             ),
         );
     };
 
-    const handleDeleteUser = async (userId: string) => {
-        await adminService.deleteUser(userId);
-        setUsers((previousUsers) => previousUsers.filter((user) => user.id !== userId));
+    const handleDeleteUser = async (username: string) => {
+        await adminService.deleteUser(username);
+        setUsers((previousUsers) => previousUsers.filter((user) => user.username !== username));
         setOverview((previousOverview) =>
             previousOverview
                 ? { ...previousOverview, users: Math.max(previousOverview.users - 1, 0) }
@@ -219,11 +219,10 @@ export default function AdminPanel() {
         );
     };
 
-    const handleRoleChange = async (userId: string, currentRole: string) => {
-        const newRole = currentRole === 'ADMIN' ? 'USER' : 'ADMIN';
-        await adminService.changeRole(userId, newRole);
+    const handleRoleChange = async (username: string, newRole: 'USER' | 'ADMIN' | 'PROFESSOR') => {
+        await adminService.changeRole(username, newRole);
         setUsers((previousUsers) =>
-            previousUsers.map((user) => (user.id === userId ? { ...user, role: newRole } : user)),
+            previousUsers.map((user) => (user.username === username ? { ...user, role: newRole } : user)),
         );
     };
 
@@ -402,7 +401,7 @@ export default function AdminPanel() {
                                     {users.map((user) => (
                                         <motion.div
                                             variants={itemVariants}
-                                            key={user.id}
+                                            key={user.username}
                                             className="p-4 rounded-xl border border-(--accent)/20 bg-(--surface-muted) flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
                                         >
                                             <div className="min-w-0">
@@ -415,6 +414,11 @@ export default function AdminPanel() {
                                                             Admin
                                                         </span>
                                                     )}
+                                                    {user.role === 'PROFESSOR' && (
+                                                        <span className="bg-blue-500/20 text-blue-300 border border-blue-500/40 text-xs px-2.5 py-1 rounded-full uppercase">
+                                                            Professor
+                                                        </span>
+                                                    )}
                                                     {user.isBanned && (
                                                         <span className="bg-red-500/20 text-red-300 border border-red-500/40 text-xs px-2.5 py-1 rounded-full uppercase">
                                                             Banned
@@ -422,24 +426,28 @@ export default function AdminPanel() {
                                                     )}
                                                 </h3>
                                                 <p className="text-(--text-muted) text-sm truncate">
-                                                    {user.email}
+                                                    {user.firstName} {user.lastName} • {user.email}
                                                 </p>
                                             </div>
 
                                             <div className="flex flex-wrap gap-2">
+                                                <div className="relative group">
+                                                    <select
+                                                        value={user.role}
+                                                        onChange={(e) => handleRoleChange(user.username, e.target.value as any)}
+                                                        className="appearance-none bg-(--accent)/10 border border-(--accent)/40 rounded-full px-4 py-1 text-xs font-semibold text-(--text-h) pr-8 cursor-pointer hover:bg-(--accent)/20 transition-all outline-none"
+                                                    >
+                                                        <option value="USER" className="bg-(--surface-card) text-(--text-h)">STUDENT</option>
+                                                        <option value="PROFESSOR" className="bg-(--surface-card) text-(--text-h)">PROFESOR</option>
+                                                        <option value="ADMIN" className="bg-(--surface-card) text-(--text-h)">ADMIN</option>
+                                                    </select>
+                                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-(--accent) text-[8px]">
+                                                        ▼
+                                                    </div>
+                                                </div>
                                                 <button
                                                     onClick={() =>
-                                                        handleRoleChange(user.id, user.role)
-                                                    }
-                                                    className="rounded-full border border-(--accent)/40 bg-(--accent)/10 hover:bg-(--accent)/20 px-3 py-1 text-xs font-semibold text-(--text-h)"
-                                                >
-                                                    {user.role === 'ADMIN'
-                                                        ? 'Make User'
-                                                        : 'Make Admin'}
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        handleBanToggle(user.id, user.isBanned)
+                                                        handleBanToggle(user.username, user.isBanned || false)
                                                     }
                                                     className={`rounded-full border px-3 py-1 text-xs font-semibold text-(--text-h)] ${
                                                         user.isBanned
@@ -450,7 +458,7 @@ export default function AdminPanel() {
                                                     {user.isBanned ? 'Unban' : 'Ban'}
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDeleteUser(user.id)}
+                                                    onClick={() => handleDeleteUser(user.username)}
                                                     className="rounded-full border border-(--accent)/30 bg-black/20 hover:bg-red-500/15 px-3 py-1 text-xs font-semibold text-(--text-h)]"
                                                 >
                                                     Delete

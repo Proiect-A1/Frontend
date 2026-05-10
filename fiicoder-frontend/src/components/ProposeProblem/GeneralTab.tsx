@@ -5,7 +5,14 @@ import type { ProposeProblemForm } from '../../types/proposeProblem';
 import { tagService, type TagResponseDTO } from '../../services/tagService';
 import { hoverTransition, itemVariants, staggerConfig } from '../../utils/motionConfig';
 
-const difficulties = ['easy', 'medium', 'hard'] as const;
+const difficulties = ['easy', 'medium', 'hard', 'contest'] as const;
+
+const difficultyLabels: Record<string, string> = {
+    easy: 'Ușoară',
+    medium: 'Medie',
+    hard: 'Grea',
+    contest: 'Concurs',
+};
 
 export default function GeneralTab() {
     const { control, watch, setValue } = useFormContext<ProposeProblemForm>();
@@ -155,8 +162,7 @@ export default function GeneralTab() {
                         >
                             <span>
                                 {formData.difficulty
-                                    ? formData.difficulty.charAt(0).toUpperCase() +
-                                      formData.difficulty.slice(1)
+                                    ? difficultyLabels[formData.difficulty]
                                     : 'Alege dificultate'}
                             </span>
                             <motion.span animate={{ rotate: isDifficultyOpen ? 180 : 0 }}>
@@ -183,7 +189,7 @@ export default function GeneralTab() {
                                             }}
                                             className="w-full text-left px-4 py-2 text-sm text-(--text) hover:bg-(--accent)/20 transition-colors"
                                         >
-                                            {diff.charAt(0).toUpperCase() + diff.slice(1)}
+                                            {difficultyLabels[diff]}
                                         </button>
                                     ))}
                                 </motion.div>
@@ -279,8 +285,9 @@ export default function GeneralTab() {
                         }}
                     />
                     <div>
-                        <span className="text-sm font-semibold text-(--text) group-hover:text-(--text-h) transition-colors">
-                            🔄 Problemă Interactivă
+                        <span className="text-sm font-semibold text-(--text) group-hover:text-(--text-h) transition-colors flex items-center gap-2">
+                            <svg className="w-4 h-4 text-(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                            Problemă Interactivă
                         </span>
                         <p className="text-xs text-(--text-muted)">
                             Activează dacă problema necesită un interactor (comunicare bidirecțională cu soluția).
@@ -305,7 +312,7 @@ export default function GeneralTab() {
                                     type="button"
                                     onClick={() => removeTag(tag)}
                                     className="hover:text-red-400 transition-colors"
-                                ></button>
+                                >✕</button>
                             </span>
                         ))}
                         <input
@@ -382,10 +389,19 @@ export default function GeneralTab() {
                             onClick={() => setIsVisibilityOpen(!isVisibilityOpen)}
                             className="w-full flex items-center justify-between rounded-xl border border-(--accent)/30 bg-(--surface-input) px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
                         >
-                            <span>
-                                {formData.visibility === 'private' && '🔒 Privată — Doar tu și moderatorii'}
-                                {formData.visibility === 'unlisted' && '🔗 Ascunsă — Link pentru oameni selectați'}
-                                {formData.visibility === 'public' && '🌍 Publică — Vizibilă pentru toți'}
+                            <span className="flex items-center gap-2">
+                                {formData.visibility === 'private' && (
+                                    <>
+                                        <svg className="w-4 h-4 text-(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                                        Privată — Doar tu și moderatorii
+                                    </>
+                                )}
+                                {formData.visibility === 'public' && (
+                                    <>
+                                        <svg className="w-4 h-4 text-(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.6 9h16.8M3.6 15h16.8" /></svg>
+                                        Publică — Vizibilă pentru toți
+                                    </>
+                                )}
                             </span>
                             <motion.span animate={{ rotate: isVisibilityOpen ? 180 : 0 }}>▼</motion.span>
                         </button>
@@ -400,9 +416,8 @@ export default function GeneralTab() {
                                     className="absolute z-50 mt-1 w-full bg-(--surface-dropdown) border border-(--accent)/25 rounded-xl shadow-2xl overflow-hidden"
                                 >
                                     {[
-                                        { value: 'private' as const, label: '🔒 Privată — Doar tu și moderatorii' },
-                                        { value: 'unlisted' as const, label: '🔗 Ascunsă — Link pentru oameni selectați' },
-                                        { value: 'public' as const, label: '🌍 Publică — Vizibilă pentru toți' },
+                                        { value: 'private' as const, label: 'Privată — Doar tu și moderatorii', icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' },
+                                        { value: 'public' as const, label: 'Publică — Vizibilă pentru toți', icon: 'M21 12a9 9 0 11-18 0 9 9 0 0118 0z M3.6 9h16.8 M3.6 15h16.8' },
                                     ].map((opt) => (
                                         <button
                                             key={opt.value}
@@ -411,8 +426,11 @@ export default function GeneralTab() {
                                                 setValue('visibility', opt.value);
                                                 setIsVisibilityOpen(false);
                                             }}
-                                            className="w-full text-left px-4 py-2 text-sm text-(--text) hover:bg-(--accent)/20 transition-colors"
+                                            className="w-full text-left px-4 py-2 text-sm text-(--text) hover:bg-(--accent)/20 transition-colors flex items-center gap-2"
                                         >
+                                            <svg className="w-4 h-4 text-(--accent)/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={opt.icon} />
+                                            </svg>
                                             {opt.label}
                                         </button>
                                     ))}
@@ -422,45 +440,12 @@ export default function GeneralTab() {
                     </div>
                     <p className="text-xs text-(--text-muted)">
                         {formData.visibility === 'private' && 'Salvare directă, fără review de la moderatori.'}
-                        {formData.visibility === 'unlisted' && 'Salvare directă. Partajează linkul cu persoanele dorite.'}
                         {formData.visibility === 'public' && 'Va fi trimisă la review. Moderatorii vor aproba sau respinge propunerea.'}
                     </p>
                 </div>
 
                 {/* Allowed Users (unlisted only) */}
-                {formData.visibility === 'unlisted' && (
-                    <div className="space-y-2">
-                        <label className="text-(--text) font-semibold text-sm">Utilizatori Permisi (opțional)</label>
-                        <input
-                            type="text"
-                            placeholder="Introdu usernames separate prin virgulă"
-                            className="w-full px-3 py-2 bg-(--surface-input) border border-(--accent)/25 rounded-xl text-sm text-(--text) placeholder:text-(--text-muted) focus:outline-none transition hover:border-(--accent)"
-                            onChange={(e) => {
-                                const usernames = e.target.value.split(',').map((u) => u.trim()).filter(Boolean);
-                                setValue('allowedUsers', usernames);
-                            }}
-                            value={formData.allowedUsers?.join(', ') || ''}
-                        />
-                        <p className="text-xs text-(--text-muted)">Lasă gol = oricine cu linkul.</p>
-                    </div>
-                )}
-
-                {/* Allowed Groups (unlisted only) */}
-                {formData.visibility === 'unlisted' && (
-                    <div className="space-y-2">
-                        <label className="text-(--text) font-semibold text-sm">Clase/Grupuri Permise (opțional)</label>
-                        <input
-                            type="text"
-                            placeholder="Introdu ID-uri de clase separate prin virgulă"
-                            className="w-full px-3 py-2 bg-(--surface-input) border border-(--accent)/25 rounded-xl text-sm text-(--text) placeholder:text-(--text-muted) focus:outline-none transition hover:border-(--accent)"
-                            onChange={(e) => {
-                                const groupIds = e.target.value.split(',').map((g) => g.trim()).filter(Boolean);
-                                setValue('allowedGroups', groupIds);
-                            }}
-                            value={formData.allowedGroups?.join(', ') || ''}
-                        />
-                    </div>
-                )}
+                {/* Allowed Users/Groups removed as unlisted is no longer supported */}
             </motion.div>
 
             {/* Preview */}
@@ -474,7 +459,7 @@ export default function GeneralTab() {
                         <strong>Titlu:</strong> {formData.title || '—'}
                     </p>
                     <p>
-                        <strong>Dificultate:</strong> {formData.difficulty}
+                        <strong>Dificultate:</strong> {difficultyLabels[formData.difficulty]}
                     </p>
                     <p>
                         <strong>Timp/Memorie:</strong> {formData.timeLimit}s /{' '}
@@ -486,7 +471,19 @@ export default function GeneralTab() {
                     </p>
                     <p>
                         <strong>Vizibilitate:</strong>{' '}
-                        {formData.visibility === 'private' ? '🔒 Privată' : formData.visibility === 'unlisted' ? '🔗 Ascunsă' : '🌍 Publică'}
+                        <span className="flex items-center gap-1.5">
+                            {formData.visibility === 'private' ? (
+                                <>
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                                    Privată
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.6 9h16.8M3.6 15h16.8" /></svg>
+                                    Publică
+                                </>
+                            )}
+                        </span>
                     </p>
                 </div>
             </motion.div>

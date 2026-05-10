@@ -43,12 +43,12 @@ function applyMonacoTheme(monaco: any, themeName: string) {
 }
 
 // Reordered per team request: Generatoare, Validatoare, Interactoare, Checkere, Surse
-const allCategories: { id: FileCategory; label: string; icon: string; description: string }[] = [
-    { id: 'generators', label: 'Generatoare', icon: '⚙️', description: 'Programe C++ folosite de scriptul de generare' },
-    { id: 'validators', label: 'Validatoare', icon: '🔍', description: 'Verifică dacă input-ul generat este valid' },
-    { id: 'interactors', label: 'Interactoare', icon: '🔄', description: 'Programe de interacțiune pentru probleme interactive' },
-    { id: 'checkers', label: 'Checkere', icon: '✅', description: 'Verifică dacă output-ul concurentului este corect' },
-    { id: 'sources', label: 'Surse', icon: '📄', description: 'Soluțiile oficiale — rulează-le pentru a vedea punctajul' },
+const allCategories: { id: FileCategory; label: string; icon: React.ReactNode; description: string }[] = [
+    { id: 'generators', label: 'Generatoare', icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>, description: 'Programe C++ folosite de scriptul de generare' },
+    { id: 'validators', label: 'Validatoare', icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>, description: 'Verifică dacă input-ul generat este valid' },
+    { id: 'interactors', label: 'Interactoare', icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>, description: 'Programe de interacțiune pentru probleme interactive' },
+    { id: 'checkers', label: 'Checkere', icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, description: 'Verifică dacă output-ul concurentului este corect' },
+    { id: 'sources', label: 'Surse', icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>, description: 'Soluțiile oficiale — rulează-le pentru a vedea punctajul' },
 ];
 
 function detectLanguage(filename: string): string {
@@ -292,7 +292,7 @@ export default function FilesTab() {
                 >
                     <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" />
                     <div className="flex flex-col items-center justify-center text-center">
-                        <span className="text-3xl mb-1">📤</span>
+                        <svg className="w-10 h-10 mb-2 text-(--accent)/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                         <p className="text-sm text-(--text) font-semibold">Trage fișierele aici sau fă clic</p>
                         <p className="text-xs text-(--text-muted) mt-0.5">.cpp, .c, .h, .py, .java, .txt</p>
                     </div>
@@ -324,7 +324,7 @@ export default function FilesTab() {
                                         className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
                                         onDoubleClick={() => setEditingFileId(editingFileId === file.id ? null : file.id)}
                                     >
-                                        <span className="text-lg shrink-0">📄</span>
+                                        <svg className="w-5 h-5 text-(--text-muted) shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                         <div className="min-w-0">
                                             <p className="text-sm text-(--text) truncate font-mono">{file.name}</p>
                                             <div className="flex items-center gap-2">
@@ -354,27 +354,27 @@ export default function FilesTab() {
                                                 type="button"
                                                 onClick={() => handleRunSource(file.id, file.name)}
                                                 disabled={isRunning}
-                                                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg font-bold border border-(--accent)/40 bg-(--accent)/15 hover:bg-(--accent)/25 transition-colors text-(--text-h) disabled:opacity-40"
+                                                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-lg font-bold border border-(--accent)/40 bg-(--accent)/15 hover:bg-(--accent)/25 transition-colors text-(--text-h) disabled:opacity-40"
                                             >
-                                                {isRunning ? <><span className="animate-spin">⏳</span> Rulare...</> : <>▶ Rulează</>}
+                                                {isRunning ? <><div className="w-3 h-3 border-2 border-(--text) border-t-transparent rounded-full animate-spin" /> Rulare...</> : <><svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" /></svg> Rulează</>}
                                             </button>
                                         )}
-                                        <button
-                                            type="button"
-                                            onClick={() => setEditingFileId(editingFileId === file.id ? null : file.id)}
-                                            className="p-1.5 text-(--text-muted) hover:text-(--text-h) hover:bg-(--accent)/15 rounded transition-colors text-xs"
-                                            title="Editează"
-                                        >
-                                            ✏️
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => removeFile(file.id)}
-                                            className="p-1.5 text-red-400 hover:bg-red-500/20 rounded transition-colors text-xs"
-                                            title="Șterge"
-                                        >
-                                            🗑️
-                                        </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setEditingFileId(editingFileId === file.id ? null : file.id)}
+                                                className="p-1.5 text-(--text-muted) hover:text-(--text-h) hover:bg-(--accent)/15 rounded transition-colors text-xs"
+                                                title="Editează"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeFile(file.id)}
+                                                className="p-1.5 text-red-400 hover:bg-red-500/20 rounded transition-colors text-xs"
+                                                title="Șterge"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                            </button>
                                     </div>
                                 </div>
 

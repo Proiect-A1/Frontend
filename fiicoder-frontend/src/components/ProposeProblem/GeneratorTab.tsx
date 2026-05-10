@@ -157,9 +157,9 @@ export default function GeneratorTab() {
 
     const statusConfig = {
         idle: { icon: '', text: '', className: '' },
-        validating: { icon: '⏳', text: 'Se validează...', className: 'text-yellow-400' },
-        success: { icon: '✓', text: 'Script valid!', className: 'text-green-400' },
-        error: { icon: '✗', text: 'Erori găsite', className: 'text-red-400' },
+        validating: { icon: <div className="w-3.5 h-3.5 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />, text: 'Se validează...', className: 'text-yellow-400' },
+        success: { icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>, text: 'Script valid!', className: 'text-green-400' },
+        error: { icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>, text: 'Erori găsite', className: 'text-red-400' },
     };
 
     return (
@@ -183,25 +183,32 @@ export default function GeneratorTab() {
                             type="button"
                             onMouseEnter={() => setShowDocsTooltip(true)}
                             onMouseLeave={() => setShowDocsTooltip(false)}
-                            className="w-6 h-6 flex items-center justify-center rounded-full border border-(--accent)/40 text-(--accent) text-xs hover:bg-(--accent)/20 transition-colors"
+                            className="w-7 h-7 flex items-center justify-center rounded-full border-2 border-(--accent)/40 text-(--accent) hover:bg-(--accent)/20 transition-all hover:scale-110"
                         >
-                            ℹ
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </button>
                         {showDocsTooltip && (
-                            <div className="absolute left-8 top-0 z-50 w-72 p-3 bg-(--surface-dropdown) border border-(--accent)/30 rounded-xl shadow-2xl text-xs text-(--text)">
-                                <p className="font-semibold text-(--accent) mb-1">Sintaxă Generator</p>
-                                <pre className="text-(--text-muted) whitespace-pre-wrap font-mono text-[10px] leading-relaxed">
-{`#MAIN <sursă>
-#DEFGRP <puncte> <nume_grup>
-#GEN <generator> <args...>
-#VAL <validator> <args...>
-#CHECK <checker> <args...>
-#IN <grupuri...>
-#NOTIN <grupuri...>
-#TEST <puncte> <args...>
-= <fișier>    // copiază test
-< <gen> <args> // generator specific`}
-                                </pre>
+                            <div className="absolute left-10 top-0 z-50 w-80 p-4 bg-(--surface-dropdown) border-2 border-(--accent)/30 rounded-2xl shadow-2xl text-xs text-(--text) backdrop-blur-md">
+                                <p className="font-bold text-lg text-(--accent) mb-2">Sintaxă Generator</p>
+                                <div className="space-y-2">
+                                    <p className="text-(--text-muted) leading-relaxed">
+                                        Folosește directivele de mai jos pentru a configura procesul de generare a testelor.
+                                    </p>
+                                    <pre className="p-3 bg-black/30 rounded-xl text-(--text-muted) whitespace-pre-wrap font-mono text-[11px] leading-relaxed border border-(--accent)/10">
+{`#MAIN <sursă>      // Soluția principală
+#DEFGRP <puncte> <nume> // Definește subtask
+#GEN <gen> <args...> // Rulează generator
+#VAL <val> <args...> // Rulează validator
+#CHECK <chk> <args...> // Rulează checker
+
+#IN <grupuri...>    // Include în grupuri
+#NOTIN <grupuri...> // Exclude din grupuri
+#TEST <pct> <args...> // Test individual
+
+= <fișier>    // Copiază test existent
+< <gen> <args> // Generator specific test`}
+                                    </pre>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -209,7 +216,7 @@ export default function GeneratorTab() {
 
                 <div className="flex items-center gap-2 flex-wrap">
                     {status !== 'idle' && (
-                        <span className={`text-sm font-semibold ${statusConfig[status].className}`}>
+                        <span className={`flex items-center gap-1.5 text-sm font-semibold ${statusConfig[status].className}`}>
                             {statusConfig[status].icon} {statusConfig[status].text}
                         </span>
                     )}
@@ -220,7 +227,7 @@ export default function GeneratorTab() {
                         onClick={insertExample}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-xl font-semibold border border-(--accent)/40 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors text-(--text-h)"
                     >
-                        📋 Exemplu
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg> Exemplu
                     </button>
 
                     {/* Upload */}
@@ -236,7 +243,7 @@ export default function GeneratorTab() {
                         onClick={() => fileInputRef.current?.click()}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-xl font-semibold border border-(--accent)/40 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors text-(--text-h)"
                     >
-                        📂 Încarcă
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg> Încarcă
                     </button>
 
                     {/* Save */}
@@ -246,7 +253,7 @@ export default function GeneratorTab() {
                         disabled={status === 'validating'}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-xl font-semibold border border-(--accent)/40 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors text-(--text-h) disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        💾 Salvează
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg> Salvează
                         <span className="text-xs text-(--text-muted) ml-1">(Ctrl+S)</span>
                     </button>
                 </div>

@@ -219,11 +219,18 @@ export default function ProblemDetails() {
         if (!isMounted) return;
 
         setProblem(dto);
-      } catch (err) {
-        if (isMounted)
-          setError(
-            "Problema nu a putut fi găsită sau a apărut o eroare de server.",
-          );
+      } catch (err: any) {
+        if (isMounted) {
+          if (err?.status === 403) {
+            setError(lang === 'RO' ? "Nu aveți permisiunea de a vizualiza această problemă (probabil este privată)." : "You do not have permission to view this problem (it might be private).");
+          } else if (err?.status === 404) {
+            setError(lang === 'RO' ? "Problema nu a fost găsită." : "Problem not found.");
+          } else {
+            setError(
+              lang === 'RO' ? "Problema nu a putut fi găsită sau a apărut o eroare de server." : "The problem could not be found or a server error occurred."
+            );
+          }
+        }
       } finally {
         if (isMounted) setLoading(false);
       }

@@ -154,21 +154,7 @@ export default function StatementTab() {
             variants={{ visible: { transition: staggerConfig } }}
             className="space-y-6"
         >
-            {/* Source URL */}
-            <motion.div variants={itemVariants} className="space-y-2">
-                <label className="text-(--text) font-semibold text-sm">URL Sursă (opțional)</label>
-                <Controller
-                    name="sourceUrl"
-                    control={control}
-                    render={({ field }) => (
-                        <input
-                            {...field}
-                            placeholder="ex: https://codeforces.com/problemset/problem/1/A"
-                            className="w-full px-4 py-2 bg-(--surface-muted) border border-(--accent)/25 rounded-xl text-(--text) placeholder:text-(--text-muted) focus:outline-none transition-all"
-                        />
-                    )}
-                />
-            </motion.div>
+
 
             {/* Preview Toggle */}
             <motion.div variants={itemVariants} className="flex gap-2">

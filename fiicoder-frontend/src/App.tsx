@@ -56,7 +56,7 @@ function AnimatedRoutes() {
             <Route
               path="/propose"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requireStaff>
                   <ProposeProblem />
                 </ProtectedRoute>
               }
@@ -64,7 +64,7 @@ function AnimatedRoutes() {
             <Route
               path="/propose/:proposalId"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requireStaff>
                   <ProposeProblem />
                 </ProtectedRoute>
               }

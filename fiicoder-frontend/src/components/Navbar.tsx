@@ -11,7 +11,7 @@ export default function Navbar() {
 
     const { lang, setLang } = useLanguage();
     const t = translations[lang];
-    const { isAuthenticated, username, logout } = useAuth();
+    const { isAuthenticated, username, isAdmin, isProfessor, logout } = useAuth();
 
     // Am extras și setTheme din context
     const { theme, themes, setTheme } = useTheme();
@@ -111,9 +111,11 @@ export default function Navbar() {
                                 <Link to="/classes" className={getNavLinkClass('/classes')}>
                                     {lang === 'RO' ? 'Clase' : 'Classes'}
                                 </Link>
-                                <Link to="/propose" className={getNavLinkClass('/propose')}>
-                                    {lang === 'RO' ? 'Propune' : 'Propose'}
-                                </Link>
+                                {(isAdmin || isProfessor) && (
+                                    <Link to="/propose" className={getNavLinkClass('/propose')}>
+                                        {lang === 'RO' ? 'Propune' : 'Propose'}
+                                    </Link>
+                                )}
                             </>
                         )}
 
@@ -277,7 +279,7 @@ export default function Navbar() {
                                 </Link>
                             )}
 
-                            {isAuthenticated && (
+                            {isAuthenticated && (isAdmin || isProfessor) && (
                                 <Link
                                     to="/propose"
                                     onClick={closeMenu}

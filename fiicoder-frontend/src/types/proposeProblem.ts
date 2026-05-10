@@ -70,7 +70,7 @@ export interface RunResult {
 export interface ProposeProblemForm {
   // General Tab
   title: string;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty: 'easy' | 'medium' | 'hard' | 'contest';
   timeLimit: number;
   memoryLimit: number;
   isInteractive: boolean;
@@ -78,7 +78,6 @@ export interface ProposeProblemForm {
 
   // Statement Tab
   statement: string;
-  sourceUrl?: string;
 
   // Generator Tab
   generatorScript: string;
@@ -96,7 +95,7 @@ export interface ProposeProblemForm {
   attachments: File[];
 
   // Access
-  visibility: 'private' | 'public' | 'unlisted';
+  visibility: 'private' | 'public';
   allowedUsers?: string[];
   allowedGroups?: string[];
 }
@@ -105,7 +104,7 @@ export interface ProblemProposalResponse {
   id: string;
   title: string;
   status: 'pending' | 'approved' | 'rejected';
-  visibility: 'private' | 'public' | 'unlisted';
+  visibility: 'private' | 'public';
   hasPendingUpdate: boolean;
   submittedAt: string;
   updatedAt?: string;

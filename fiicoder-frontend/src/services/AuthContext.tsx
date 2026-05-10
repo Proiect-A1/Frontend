@@ -33,6 +33,7 @@ interface AuthContextType {
   username: string | null;
   userId: string | null;
   isAdmin: boolean;
+  isProfessor: boolean;
   isAuthenticated: boolean;
   login: (token: string, username?: string) => void;
   logout: () => void;
@@ -43,6 +44,7 @@ const AuthContext = createContext<AuthContextType>({
   username: null,
   userId: null,
   isAdmin: false,
+  isProfessor: false,
   isAuthenticated: false,
   login: () => { },
   logout: () => { },
@@ -69,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const userId = payload?.sub ?? null;
   const username = storedUsername;
   const isAdmin = payload?.role === 'ADMIN'; 
+  const isProfessor = payload?.role === 'PROFESSOR';
   const isAuthenticated = token !== null && !isTokenExpired(token);
 
   const login = useCallback((newToken: string, username?: string) => {
@@ -98,7 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [token, logout]);
 
   return (
-    <AuthContext.Provider value={{ token, username, userId, isAdmin, isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ token, username, userId, isAdmin, isProfessor, isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

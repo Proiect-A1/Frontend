@@ -48,7 +48,7 @@ nums = [3,2,4], target = 6
 \`\`\`
 [1,2]
 \`\`\``,
-    sourceUrl: "https://leetcode.com/problems/two-sum/",
+
     tests: [
       {
         id: "test_1",

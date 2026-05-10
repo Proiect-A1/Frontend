@@ -10,11 +10,13 @@ export interface AdminOverview {
 }
 
 export interface AdminUser {
-    id: string;
     username: string;
+    firstName: string;
+    lastName: string;
     email: string;
-    role: 'USER' | 'ADMIN';
-    isBanned: boolean;
+    role: 'USER' | 'ADMIN' | 'PROFESSOR';
+    creationDate: string;
+    isBanned?: boolean; // Mocked or backend provided later
 }
 
 export interface ProblemProposal {
@@ -60,17 +62,18 @@ export interface AuditLogEntry {
 }
 
 const mockUsers: AdminUser[] = [
-    { id: '1', username: 'student1', email: 'student1@fii.ro', role: 'USER', isBanned: false },
-    { id: '2', username: 'hacker_boi', email: 'hacker@test.ro', role: 'USER', isBanned: true },
-    { id: '3', username: 'profesor_info', email: 'prof@fii.ro', role: 'ADMIN', isBanned: false },
+    { username: 'student1', firstName: 'Student', lastName: 'One', email: 'student1@fii.ro', role: 'USER', creationDate: '2026-04-20', isBanned: false },
+    { username: 'hacker_boi', firstName: 'Hacker', lastName: 'Boi', email: 'hacker@test.ro', role: 'USER', creationDate: '2026-04-21', isBanned: true },
+    { username: 'profesor_info', firstName: 'Prof', lastName: 'Info', email: 'prof@fii.ro', role: 'ADMIN', creationDate: '2026-04-22', isBanned: false },
     ...Array.from({ length: 37 }, (_, index) => {
         const userNumber = index + 4;
-
         return {
-            id: String(userNumber),
             username: `student_${userNumber}`,
+            firstName: `Student`,
+            lastName: `${userNumber}`,
             email: `student_${userNumber}@fii.ro`,
-            role: userNumber % 11 === 0 ? 'ADMIN' : 'USER',
+            role: userNumber % 11 === 0 ? 'ADMIN' : (userNumber % 5 === 0 ? 'PROFESSOR' : 'USER'),
+            creationDate: '2026-04-23',
             isBanned: userNumber % 7 === 0,
         } satisfies AdminUser;
     }),
@@ -246,18 +249,18 @@ export const adminService = {
 
     async getUsers(page: number = 1, pageSize: number = 20): Promise<AdminUser[]> {
         try {
-            return await apiClient.get(`/admin/users?page=${page}&limit=${pageSize}`);
+            return await apiClient.get(`/users/all?page=${page}&size=${pageSize}`);
         } catch {
             const startIndex = Math.max(page - 1, 0) * pageSize;
             return mockUsers.slice(startIndex, startIndex + pageSize).map((user) => ({ ...user }));
         }
     },
 
-    async toggleBan(userId: string, isBanned: boolean): Promise<void> {
+    async toggleBan(username: string, isBanned: boolean): Promise<void> {
         try {
-            await apiClient.patch(`/admin/users/${userId}/${isBanned ? 'unban' : 'ban'}`);
+            await apiClient.patch(`/admin/users/${username}/${isBanned ? 'unban' : 'ban'}`);
         } catch {
-            const user = mockUsers.find((entry) => entry.id === userId);
+            const user = mockUsers.find((entry) => entry.username === username);
             if (user) {
                 user.isBanned = !isBanned;
                 addAuditEntry(
@@ -270,11 +273,11 @@ export const adminService = {
         }
     },
 
-    async deleteUser(userId: string): Promise<void> {
+    async deleteUser(username: string): Promise<void> {
         try {
-            await apiClient.delete(`/admin/users/${userId}`);
+            await apiClient.delete(`/admin/users/${username}`);
         } catch {
-            const index = mockUsers.findIndex((entry) => entry.id === userId);
+            const index = mockUsers.findIndex((entry) => entry.username === username);
             if (index !== -1) {
                 const [removedUser] = mockUsers.splice(index, 1);
                 addAuditEntry(
@@ -287,11 +290,11 @@ export const adminService = {
         }
     },
 
-    async changeRole(userId: string, role: 'USER' | 'ADMIN'): Promise<void> {
+    async changeRole(username: string, role: 'USER' | 'ADMIN' | 'PROFESSOR'): Promise<void> {
         try {
-            await apiClient.patch(`/admin/users/${userId}/role`, { role });
+            await apiClient.put(`/users/update-role`, { username, role });
         } catch {
-            const user = mockUsers.find((entry) => entry.id === userId);
+            const user = mockUsers.find((entry) => entry.username === username);
             if (user) {
                 user.role = role;
                 addAuditEntry(
