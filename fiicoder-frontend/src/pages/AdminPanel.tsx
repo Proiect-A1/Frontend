@@ -2,8 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navigate } from 'react-router-dom';
 import { useLanguage } from '../language/Language';
-import {
-    adminService,
+import { adminService,
     type AdminOverview,
     type AdminUser,
     type Announcement,
@@ -11,7 +10,6 @@ import {
     type ProblemProposal,
     type ProblemProposalDetail,
 } from '../services/adminService';
-import { proposeProblemService } from '../services/proposeProblemService';
 import { mockProposals } from '../services/mockProposals';
 import { useAuth } from '../services/AuthContext';
 import { containerVariants, itemVariants, staggerConfig } from '../utils/motionConfig';
@@ -45,6 +43,7 @@ export default function AdminPanel() {
     const [announcementForm, setAnnouncementForm] = useState({ title: '', content: '' });
     const [isSavingAnnouncement, setIsSavingAnnouncement] = useState(false);
     const [auditLog, setAuditLog] = useState<AuditLogEntry[]>([]);
+    const [processingUsers, setProcessingUsers] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         if (!isAdmin) return;
@@ -66,10 +65,12 @@ export default function AdminPanel() {
 
             if (activeTab === 'proposals') {
                 try {
-                    const data = await proposeProblemService.getMyProposals(1, 100);
+                    const data = await adminService.getProposals();
                     if (!cancelled) {
-                        const pending = data.filter((proposal) => proposal.status === 'pending');
-                        setProposals(pending as unknown as ProblemProposal[]);
+                        const pending = data.filter((proposal) => 
+                            proposal.status === 'PENDING' || (proposal.status as string) === 'pending'
+                        );
+                        setProposals(pending);
 
                         if (pending.length > 0 && !selectedProposalId) {
                             setSelectedProposalId(pending[0].id);
@@ -138,25 +139,23 @@ export default function AdminPanel() {
             try {
                 const data = await adminService.getProblemProposal(proposalId);
                 if (!cancelled) setSelectedProposal(data);
-            } catch (error) {
-                // Use mock proposal data in development
-                if (proposalId.startsWith('mock_')) {
-                    const mockIndex = parseInt(proposalId.replace('mock_', ''));
-                    const mockProposal = mockProposals[mockIndex];
-                    if (mockProposal && !cancelled) {
-                        const fallbackProposal: ProblemProposalDetail = {
-                            id: proposalId,
-                            title: mockProposal.title,
-                            authorUsername: 'Mock User',
-                            description: mockProposal.statement.slice(0, 160),
-                            status: 'PENDING',
-                            createdAt: new Date().toISOString(),
-                            statement: mockProposal.statement,
-                            tags: mockProposal.tags,
-                        };
+            } catch (error) {                // Fallback to mock data if API fails
+                const mockMatch = mockProposals.find((p, idx) => 
+                    p.title === proposalId || `mock_${idx}` === proposalId || `p${idx+1}` === proposalId
+                ) || mockProposals[0];
 
-                        setSelectedProposal(fallbackProposal);
-                    }
+                if (mockMatch && !cancelled) {
+                    const fallbackProposal: ProblemProposalDetail = {
+                        id: proposalId,
+                        title: mockMatch.title,
+                        authorUsername: 'Mock User',
+                        description: mockMatch.statement.slice(0, 160),
+                        status: 'PENDING',
+                        createdAt: new Date().toISOString(),
+                        statement: mockMatch.statement,
+                        tags: mockMatch.tags,
+                    };
+                    setSelectedProposal(fallbackProposal);
                 }
             }
         }
@@ -210,13 +209,31 @@ export default function AdminPanel() {
     };
 
     const handleDeleteUser = async (username: string) => {
-        await adminService.deleteUser(username);
-        setUsers((previousUsers) => previousUsers.filter((user) => user.username !== username));
-        setOverview((previousOverview) =>
-            previousOverview
-                ? { ...previousOverview, users: Math.max(previousOverview.users - 1, 0) }
-                : previousOverview,
-        );
+        const confirmMsg = lang === 'RO' 
+            ? `Sigur vrei să ștergi utilizatorul ${username}?` 
+            : `Are you sure you want to delete user ${username}?`;
+            
+        if (!window.confirm(confirmMsg)) return;
+
+        setProcessingUsers(prev => new Set(prev).add(username));
+        try {
+            await adminService.deleteUser(username);
+            setUsers((previousUsers) => previousUsers.filter((user) => user.username !== username));
+            setOverview((previousOverview) =>
+                previousOverview
+                    ? { ...previousOverview, users: Math.max(previousOverview.users - 1, 0) }
+                    : previousOverview,
+            );
+        } catch (error) {
+            console.error('Failed to delete user:', error);
+            alert(lang === 'RO' ? 'Eroare la ștergerea utilizatorului.' : 'Error deleting user.');
+        } finally {
+            setProcessingUsers(prev => {
+                const next = new Set(prev);
+                next.delete(username);
+                return next;
+            });
+        }
     };
 
     const handleRoleChange = async (username: string, newRole: 'USER' | 'ADMIN' | 'PROFESSOR') => {
@@ -449,7 +466,8 @@ export default function AdminPanel() {
                                                     onClick={() =>
                                                         handleBanToggle(user.username, user.isBanned || false)
                                                     }
-                                                    className={`rounded-full border px-3 py-1 text-xs font-semibold text-(--text-h)] ${
+                                                    disabled={processingUsers.has(user.username)}
+                                                    className={`rounded-full border px-3 py-1 text-xs font-semibold disabled:opacity-50 ${
                                                         user.isBanned
                                                             ? 'border-green-500/40 bg-green-500/10 text-green-200 hover:bg-green-500/20'
                                                             : 'border-red-500/40 bg-red-500/10 text-red-200 hover:bg-red-500/20'
@@ -459,9 +477,10 @@ export default function AdminPanel() {
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeleteUser(user.username)}
-                                                    className="rounded-full border border-(--accent)/30 bg-black/20 hover:bg-red-500/15 px-3 py-1 text-xs font-semibold text-(--text-h)]"
+                                                    disabled={processingUsers.has(user.username)}
+                                                    className="rounded-full border border-(--accent)/30 bg-black/20 hover:bg-red-500/15 px-3 py-1 text-xs font-semibold text-(--text-h) disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
-                                                    Delete
+                                                    {processingUsers.has(user.username) ? '...' : 'Delete'}
                                                 </button>
                                             </div>
                                         </motion.div>

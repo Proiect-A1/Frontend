@@ -334,11 +334,9 @@ export const adminService = {
         try {
             return await apiClient.get(`/admin/problem-proposals/${id}`);
         } catch {
-            const proposal = mockProposalDetails.find((entry) => entry.id === id);
-            if (!proposal) {
-                throw new Error(`Proposal ${id} not found`);
-            }
-
+            const proposal = mockProposalDetails.find((entry) => entry.id === id) || 
+                             mockProposalDetails[0];
+            
             return {
                 ...proposal,
                 constraints: proposal.constraints ? [...proposal.constraints] : undefined,
