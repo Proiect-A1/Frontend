@@ -471,10 +471,7 @@ export default function AdminPanel() {
                                     className="absolute z-50 left-0 top-0 w-80 h-full bg-(--surface-card) border-r-2 border-(--accent) flex flex-col shadow-[10px_0_30px_rgba(0,0,0,0.3)]"
                                 >
                                     <div className="h-full overflow-y-auto custom-scrollbar p-5 border-r-2 border-transparent">
-                                        <motion.div
-                                            variants={itemVariants}
-                                            className=""
-                                        >
+                                        <>
                                             <div className="flex items-start justify-between gap-3 mb-5">
                                                 <div>
                                                     <h2 className="text-xl font-bold text-(--text-h) flex items-center gap-2">
@@ -547,7 +544,7 @@ export default function AdminPanel() {
                                                     </div>
                                                 ))}
                                             </div>
-                                        </motion.div>
+                                        </>
                                     </div>
                                 </motion.aside>
                             </>
