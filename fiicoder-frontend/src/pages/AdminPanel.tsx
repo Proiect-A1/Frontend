@@ -67,7 +67,6 @@ export default function AdminPanel() {
         };
     }, [isAdmin]);
 
-
     useEffect(() => {
         if (!isAdmin) return;
 
@@ -624,7 +623,13 @@ export default function AdminPanel() {
                         <AnimatePresence mode="wait">
                             <motion.div
                                 variants={containerVariants}
-                                key={activeTab}
+                                key={
+                                    activeTab === 'users'
+                                        ? `users-${users.length > 0}`
+                                        : activeTab === 'audit'
+                                          ? `audit-${auditLog.length > 0}`
+                                          : activeTab
+                                }
                                 initial="hidden"
                                 animate="visible"
                                 exit="exit"
