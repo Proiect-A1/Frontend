@@ -1,186 +1,271 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../services/AuthContext';
-import {
-    classService,
-    type GroupFindResponseDTO,
-    type GroupInvitationResponseDTO,
-} from '../services/classService';
 import { useLanguage } from '../language/Language';
-import { itemVariants, pageVariants } from '../utils/motionConfig';
+import { classService, type GroupFindResponseDTO, type GroupInvitationResponseDTO } from '../services/classService';
+import { pageVariants, itemVariants } from '../utils/motionConfig';
 
-const MAX_RECENT_CLASSES = 12;
-
-function getRecentClassesKey(userId: string): string {
-    return `fiicoder_recent_classes_${userId}`;
-}
-
-type RecentClassItem = {
+interface RecentClass {
     id: string;
     name: string;
     description: string | null;
     creatorUsername: string;
     createdAt: string;
-};
-
-function loadRecentClasses(userId: string): RecentClassItem[] {
-    try {
-        const key = getRecentClassesKey(userId);
-        const raw = localStorage.getItem(key);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw) as RecentClassItem[];
-        if (!Array.isArray(parsed)) return [];
-        return parsed.filter((item) => item?.id && item?.name);
-    } catch {
-        return [];
-    }
 }
 
-function saveRecentClasses(userId: string, items: RecentClassItem[]) {
-    const key = getRecentClassesKey(userId);
-    localStorage.setItem(key, JSON.stringify(items));
-}
+const RECENT_CLASSES_KEY = 'fiicoder_recent_classes_';
 
 export default function ClassesHub() {
+    const { userId } = useAuth();
     const { lang } = useLanguage();
-    const { userId, username, isAuthenticated } = useAuth();
-    const navigate = useNavigate();
 
     const [className, setClassName] = useState('');
     const [classDescription, setClassDescription] = useState('');
     const [lookupId, setLookupId] = useState('');
     const [foundClass, setFoundClass] = useState<GroupFindResponseDTO | null>(null);
+    const [recentClasses, setRecentClasses] = useState<RecentClass[]>([]);
     const [invitations, setInvitations] = useState<GroupInvitationResponseDTO[]>([]);
     const [loadingInvitations, setLoadingInvitations] = useState(false);
-    const [feedback, setFeedback] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [recentClasses, setRecentClasses] = useState<RecentClassItem[]>([]);
+    const [feedback, setFeedback] = useState<string | null>(null);
 
-    const storeRecentClass = (newItem: RecentClassItem) => {
+    const getRecentClassesKey = (uid: string) => `${RECENT_CLASSES_KEY}${uid}`;
+
+    const loadRecentClasses = (uid: string): RecentClass[] => {
+        const stored = localStorage.getItem(getRecentClassesKey(uid));
+        if (!stored) return [];
+        try {
+            return JSON.parse(stored) as RecentClass[];
+        } catch {
+            return [];
+        }
+    };
+
+    const saveRecentClasses = (uid: string, classes: RecentClass[]) => {
+        localStorage.setItem(getRecentClassesKey(uid), JSON.stringify(classes.slice(0, 5)));
+    };
+
+    const storeRecentClass = (c: RecentClass) => {
         if (!userId) return;
-        setRecentClasses((previousItems) => {
-            const deduped = previousItems.filter((item) => item.id !== newItem.id);
-            const nextItems = [newItem, ...deduped].slice(0, MAX_RECENT_CLASSES);
-            saveRecentClasses(userId, nextItems);
-            return nextItems;
+        setRecentClasses((prev) => {
+            const filtered = prev.filter((item) => item.id !== c.id);
+            const updated = [c, ...filtered].slice(0, 5);
+            saveRecentClasses(userId, updated);
+            return updated;
         });
     };
 
-    const handleAcceptInvitation = async (invitationId: string) => {
-        // Deoarece backend-ul are doar TODO, simulăm acceptarea în UI
-        setFeedback(lang === 'RO' ? 'Invitație acceptată! (Simulare)' : 'Invitation accepted! (Simulation)');
-        setInvitations(prev => prev.filter(inv => inv.id !== invitationId));
-        setTimeout(() => setFeedback(null), 3000);
-    };
-
-    const handleDeclineInvitation = async (invitationId: string) => {
-        setInvitations(prev => prev.filter(inv => inv.id !== invitationId));
-        setFeedback(lang === 'RO' ? 'Invitație refuzată.' : 'Invitation declined.');
-        setTimeout(() => setFeedback(null), 3000);
-    };
-
     useEffect(() => {
-        if (!isAuthenticated || !userId) return;
-        const loaded = loadRecentClasses(userId);
-        setRecentClasses(loaded);
-    }, [isAuthenticated, userId]);
-
-    useEffect(() => {
-        if (!isAuthenticated) return;
-
-        let isMounted = true;
-
-        async function loadInvitations() {
-            try {
-                setLoadingInvitations(true);
-                const data = await classService.getMyInvitations();
-                if (isMounted) setInvitations(data);
-            } catch (err) {
-                console.error("Eroare la încărcarea invitațiilor (probabil recursivitate JSON în BE):", err);
-                if (isMounted) setInvitations([]);
-            } finally {
-                if (isMounted) setLoadingInvitations(false);
-            }
+        if (userId) {
+            setRecentClasses(loadRecentClasses(userId));
+            void fetchInvitations();
         }
+    }, [userId]);
 
-        loadInvitations();
+    const fetchInvitations = async () => {
+        if (!userId) return;
+        setLoadingInvitations(true);
+        try {
+            const data = await classService.getMyInvitations();
+            setInvitations(data.filter((inv: GroupInvitationResponseDTO) => inv.status === 'PENDING'));
+        } catch (err: any) {
+            console.error('Error fetching invitations:', err);
+            setError(lang === 'RO' ? 'Eroare la încărcarea invitațiilor.' : 'Error loading invitations.');
+        } finally {
+            setLoadingInvitations(false);
+        }
+    };
 
-        return () => {
-            isMounted = false;
-        };
-    }, [isAuthenticated]);
-
-    const handleCreateClass = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleCreateClass = async (e: React.FormEvent) => {
+        e.preventDefault();
         setError(null);
         setFeedback(null);
 
-        if (!userId) {
-            setError(
-                lang === 'RO'
-                    ? 'Nu am putut identifica userul curent.'
-                    : 'Could not identify the current user.',
-            );
+        if (!className.trim()) {
+            setError(lang === 'RO' ? 'Numele clasei este obligatoriu.' : 'Class name is required.');
             return;
         }
 
         try {
-            const response = await classService.create({
+            const newClass = await classService.create({
                 name: className,
                 description: classDescription,
-                creatorId: userId,
+                creatorId: userId!,
             });
-
-            storeRecentClass({
-                id: response.id,
-                name: className,
-                description: classDescription || null,
-                creatorUsername: username || 'unknown',
-                createdAt: new Date().toISOString(),
-            });
-
-            setFeedback(
-                lang === 'RO'
-                    ? `Clasa a fost creată: ${response.id}`
-                    : `Class created: ${response.id}`,
-            );
+            setFeedback(lang === 'RO' ? 'Clasa a fost creată cu succes!' : 'Class created successfully!');
             setClassName('');
             setClassDescription('');
-            navigate(`/classes/${response.id}`);
-        } catch (err: any) {
-            setError(
-                err?.body?.message ||
-                    err?.body?.error ||
-                    (lang === 'RO' ? 'Nu s-a putut crea clasa.' : 'Could not create the class.'),
-            );
-        }
-    };
-
-    const handleLookupClass = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setError(null);
-        setFeedback(null);
-
-        try {
-            const response = await classService.getById(lookupId.trim());
-            setFoundClass(response);
             storeRecentClass({
-                id: response.id,
-                name: response.name,
-                description: response.description,
-                creatorUsername: response.creatorUsername,
-                createdAt: response.createdAt,
+                id: newClass.id,
+                name: className,
+                description: classDescription || null,
+                creatorUsername: 'me',
+                createdAt: new Date().toISOString(),
             });
         } catch (err: any) {
-            setFoundClass(null);
-            setError(
-                err?.body?.message ||
-                    err?.body?.error ||
-                    (lang === 'RO' ? 'Clasa nu a fost găsită.' : 'Class not found.'),
-            );
+            setError(lang === 'RO' ? 'Eroare la crearea clasei.' : 'Error creating class.');
         }
     };
+
+    const handleLookupClass = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        setFeedback(null);
+        setFoundClass(null);
+
+        if (!lookupId.trim()) {
+            setError(lang === 'RO' ? 'Introdu un ID valid.' : 'Enter a valid ID.');
+            return;
+        }
+
+        try {
+            const data = await classService.getById(lookupId);
+            setFoundClass(data);
+            storeRecentClass({
+                id: data.id,
+                name: data.name,
+                description: data.description || null,
+                creatorUsername: data.creatorUsername,
+                createdAt: data.createdAt,
+            });
+        } catch (err: any) {
+            setError(lang === 'RO' ? 'Clasa nu a fost găsită.' : 'Class not found.');
+        }
+    };
+
+    const handleAcceptInvitation = async (id: string) => {
+        try {
+            await classService.acceptInvitation(id);
+            setInvitations((prev) => prev.filter((inv) => inv.id !== id));
+            setFeedback(lang === 'RO' ? 'Invitație acceptată!' : 'Invitation accepted!');
+        } catch (err: any) {
+            setError(lang === 'RO' ? 'Eroare la acceptare.' : 'Error accepting.');
+        }
+    };
+
+    const handleDeclineInvitation = async (id: string) => {
+        try {
+            await classService.declineInvitation(id);
+            setInvitations((prev) => prev.filter((inv) => inv.id !== id));
+            setFeedback(lang === 'RO' ? 'Invitație refuzată.' : 'Invitation declined.');
+        } catch (err: any) {
+            setError(lang === 'RO' ? 'Eroare la refuzare.' : 'Error declining.');
+        }
+    };
+
+    const memoizedRecentClasses = useMemo(() => (
+        <div className="mt-4 grid gap-3">
+            {recentClasses.length === 0 && (
+                <div className="rounded-xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)">
+                    {lang === 'RO'
+                        ? 'Nu ai clase salvate recent. Creează sau caută o clasă și va apărea aici.'
+                        : 'No recent classes yet. Create or search a class and it will appear here.'}
+                </div>
+            )}
+
+            {recentClasses.map((savedClass) => (
+                <div
+                    key={savedClass.id}
+                    className="rounded-xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3"
+                >
+                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <p className="text-base font-semibold text-(--text-h)">
+                                {savedClass.name}
+                            </p>
+                            <p className="text-xs text-(--text-muted) mt-0.5">
+                                {savedClass.description ||
+                                    (lang === 'RO'
+                                        ? 'Fără descriere.'
+                                        : 'No description.')}
+                            </p>
+                            <p className="text-[10px] text-(--text-muted) mt-1">
+                                {lang === 'RO' ? 'Creator' : 'Creator'}:{' '}
+                                {savedClass.creatorUsername}
+                            </p>
+                        </div>
+                        <Link
+                            to={`/classes/${savedClass.id}`}
+                            className="inline-flex self-start rounded-xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
+                        >
+                            {lang === 'RO' ? 'Deschide clasa' : 'Open class'}
+                        </Link>
+                    </div>
+                </div>
+            ))}
+        </div>
+    ), [recentClasses, lang]);
+
+    const memoizedInvitations = useMemo(() => (
+        <div className="mt-4 grid gap-3">
+            {invitations.length === 0 && !loadingInvitations && (
+                <div className="rounded-xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)">
+                    {error?.includes('invita') || error?.includes('fetch') 
+                        ? (lang === 'RO' ? 'Eroare la comunicarea cu serverul pentru invitații.' : 'Server error while fetching invitations.')
+                        : (lang === 'RO' ? 'Nu ai invitații active.' : 'You have no active invitations.')}
+                </div>
+            )}
+
+            {invitations.map((invitation) => (
+                <div
+                    key={invitation.id}
+                    className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+                >
+                    <div>
+                        <p className="text-base font-semibold text-(--text-h)">
+                            {invitation.studyClass?.name ||
+                                (lang === 'RO' ? 'Clasă invitată' : 'Invited class')}
+                        </p>
+                        <p className="text-xs text-(--text-muted) mt-0.5">
+                            {lang === 'RO' ? 'Status' : 'Status'}: {invitation.status}
+                        </p>
+                        <p className="text-[10px] text-(--text-muted) mt-0.5">
+                            {invitation.sentAt}
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                        <button
+                            onClick={() => handleAcceptInvitation(invitation.id)}
+                            className="rounded-lg bg-emerald-500/20 border border-emerald-500/50 px-3 py-1.5 text-xs font-bold text-emerald-200 hover:bg-emerald-500/30 transition-colors"
+                        >
+                            {lang === 'RO' ? 'Acceptă' : 'Accept'}
+                        </button>
+                        <button
+                            onClick={() => handleDeclineInvitation(invitation.id)}
+                            className="rounded-lg bg-red-500/20 border border-red-500/50 px-3 py-1.5 text-xs font-bold text-red-200 hover:bg-red-500/30 transition-colors"
+                        >
+                            {lang === 'RO' ? 'Refuză' : 'Decline'}
+                        </button>
+                        {invitation.studyClass?.id && (
+                            <Link
+                                to={`/classes/${invitation.studyClass.id}`}
+                                onClick={() => {
+                                    if (invitation.studyClass) {
+                                        storeRecentClass({
+                                            id: invitation.studyClass.id,
+                                            name: invitation.studyClass.name,
+                                            description:
+                                                invitation.studyClass.description || null,
+                                            creatorUsername:
+                                                invitation.studyClass.creator?.username ||
+                                                'unknown',
+                                            createdAt:
+                                                invitation.studyClass.createdAt ||
+                                                new Date().toISOString(),
+                                        });
+                                    }
+                                }}
+                                className="rounded-lg border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
+                            >
+                                {lang === 'RO' ? 'Vezi' : 'View'}
+                            </Link>
+                        )}
+                    </div>
+                </div>
+            ))}
+        </div>
+    ), [invitations, loadingInvitations, error, lang]);
 
     return (
         <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
@@ -333,46 +418,7 @@ export default function ClassesHub() {
                         )}
                     </div>
 
-                    <div className="mt-4 grid gap-3">
-                        {recentClasses.length === 0 && (
-                            <div className="rounded-xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)">
-                                {lang === 'RO'
-                                    ? 'Nu ai clase salvate recent. Creează sau caută o clasă și va apărea aici.'
-                                    : 'No recent classes yet. Create or search a class and it will appear here.'}
-                            </div>
-                        )}
-
-                        {recentClasses.map((savedClass) => (
-                            <div
-                                key={savedClass.id}
-                                className="rounded-xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3"
-                            >
-                                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                                    <div>
-                                        <p className="text-base font-semibold text-(--text-h)">
-                                            {savedClass.name}
-                                        </p>
-                                        <p className="text-xs text-(--text-muted) mt-0.5">
-                                            {savedClass.description ||
-                                                (lang === 'RO'
-                                                    ? 'Fără descriere.'
-                                                    : 'No description.')}
-                                        </p>
-                                        <p className="text-[10px] text-(--text-muted) mt-1">
-                                            {lang === 'RO' ? 'Creator' : 'Creator'}:{' '}
-                                            {savedClass.creatorUsername}
-                                        </p>
-                                    </div>
-                                    <Link
-                                        to={`/classes/${savedClass.id}`}
-                                        className="inline-flex self-start rounded-xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
-                                    >
-                                        {lang === 'RO' ? 'Deschide clasa' : 'Open class'}
-                                    </Link>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                    {memoizedRecentClasses}
                 </motion.section>
 
                 <motion.section
@@ -390,73 +436,7 @@ export default function ClassesHub() {
                         )}
                     </div>
 
-                    <div className="mt-4 grid gap-3">
-                        {invitations.length === 0 && !loadingInvitations && (
-                            <div className="rounded-xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)">
-                                {error?.includes('invita') || error?.includes('fetch') 
-                                    ? (lang === 'RO' ? 'Eroare la comunicarea cu serverul pentru invitații.' : 'Server error while fetching invitations.')
-                                    : (lang === 'RO' ? 'Nu ai invitații active.' : 'You have no active invitations.')}
-                            </div>
-                        )}
-
-                        {invitations.map((invitation) => (
-                            <div
-                                key={invitation.id}
-                                className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
-                            >
-                                <div>
-                                    <p className="text-base font-semibold text-(--text-h)">
-                                        {invitation.studyClass?.name ||
-                                            (lang === 'RO' ? 'Clasă invitată' : 'Invited class')}
-                                    </p>
-                                    <p className="text-xs text-(--text-muted) mt-0.5">
-                                        {lang === 'RO' ? 'Status' : 'Status'}: {invitation.status}
-                                    </p>
-                                    <p className="text-[10px] text-(--text-muted) mt-0.5">
-                                        {invitation.sentAt}
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-2 shrink-0">
-                                    <button
-                                        onClick={() => handleAcceptInvitation(invitation.id)}
-                                        className="rounded-lg bg-emerald-500/20 border border-emerald-500/50 px-3 py-1.5 text-xs font-bold text-emerald-200 hover:bg-emerald-500/30 transition-colors"
-                                    >
-                                        {lang === 'RO' ? 'Acceptă' : 'Accept'}
-                                    </button>
-                                    <button
-                                        onClick={() => handleDeclineInvitation(invitation.id)}
-                                        className="rounded-lg bg-red-500/20 border border-red-500/50 px-3 py-1.5 text-xs font-bold text-red-200 hover:bg-red-500/30 transition-colors"
-                                    >
-                                        {lang === 'RO' ? 'Refuză' : 'Decline'}
-                                    </button>
-                                    {invitation.studyClass?.id && (
-                                        <Link
-                                            to={`/classes/${invitation.studyClass.id}`}
-                                            onClick={() => {
-                                                if (invitation.studyClass) {
-                                                    storeRecentClass({
-                                                        id: invitation.studyClass.id,
-                                                        name: invitation.studyClass.name,
-                                                        description:
-                                                            invitation.studyClass.description || null,
-                                                        creatorUsername:
-                                                            invitation.studyClass.creator?.username ||
-                                                            'unknown',
-                                                        createdAt:
-                                                            invitation.studyClass.createdAt ||
-                                                            new Date().toISOString(),
-                                                    });
-                                                }
-                                            }}
-                                            className="rounded-lg border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
-                                        >
-                                            {lang === 'RO' ? 'Vezi' : 'View'}
-                                        </Link>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                    {memoizedInvitations}
                 </motion.section>
             </motion.div>
         </div>

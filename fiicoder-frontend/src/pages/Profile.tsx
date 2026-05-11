@@ -161,6 +161,71 @@ export default function Profile() {
         [displayProfile?.recentSubmissions?.content]
     );
 
+    const statsCards = useMemo(() => {
+        if (!displayProfile) return [];
+        return [
+            {
+                label: lang === 'RO' ? 'Rezolvate' : 'Solved',
+                value: String(displayProfile.problemsSolved),
+            },
+            {
+                label: lang === 'RO' ? 'Submisii' : 'Submissions',
+                value: String(displayProfile.submissions),
+            },
+            {
+                label: lang === 'RO' ? 'Acceptare' : 'Acceptance',
+                value: formatPercent(displayProfile.acceptanceRate),
+            },
+            {
+                label: lang === 'RO' ? 'Serie' : 'Streak',
+                value: `${displayProfile.streak}${displayProfile.streakCapped ? '+' : ''}`,
+            },
+        ];
+    }, [displayProfile, lang]);
+
+    const memoizedRecentSubmissions = useMemo(() => {
+        if (!displayProfile) return null;
+        return displayProfile.recentSubmissions.content.map((submission) => {
+            const isAccepted = submission.status === 'OK';
+            const badgeClasses = isAccepted
+                ? isLightTheme
+                    ? 'bg-emerald-500/20 text-emerald-700 border-emerald-500/40'
+                    : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                : isLightTheme
+                  ? 'bg-red-500/20 text-red-700 border-red-500/40'
+                  : 'bg-red-500/10 text-red-300 border-red-500/30';
+
+            return (
+                <div
+                    key={`${submission.problemTitle}-${submission.submissionDate}`}
+                    className="p-3 md:p-4 rounded-xl border border-(--accent)/20 bg-(--accent)/5 flex justify-between items-center gap-3 transition-colors hover:bg-(--accent)/10"
+                >
+                    <div className="min-w-0 pr-2">
+                        <Link
+                            to={`/problems/${submission.problemTitle}`}
+                            className="text-sm md:text-base font-bold text-(--text-h) hover:text-(--accent) hover:underline underline-offset-2 transition-colors line-clamp-1 truncate block"
+                        >
+                            {submission.problemTitle}
+                        </Link>
+                        <p className="mt-1 text-[11px] text-(--text-subtle)">
+                            {formatSubmissionDate(submission.submissionDate)}
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0 ml-2 flex-wrap justify-end">
+                        <span className="text-[11px] font-mono text-(--text-subtle) hidden sm:inline-block">
+                            Score: {submission.score}
+                        </span>
+                        <span
+                            className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap border ${badgeClasses}`}
+                        >
+                            {formatStatus(submission.status)}
+                        </span>
+                    </div>
+                </div>
+            );
+        });
+    }, [displayProfile, lang, isLightTheme]);
+
     if (!displayProfile) {
         return (
             <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
@@ -222,7 +287,7 @@ export default function Profile() {
 
                                 <div className="w-full border-t border-(--accent)/20 my-2"></div>
 
-                                <div className="w-full flex flex-col gap-2 mt-2 text-sm text-(--text)">
+                                <div className="w-full flex flex-col gap-2 mt-2 text-sm text-(--text">
                                     <div className="flex justify-between items-center gap-4">
                                         <span className="font-semibold text-(--text-muted)">Email</span>
                                         <span className="truncate text-right">{displayProfile.email}</span>
@@ -421,29 +486,12 @@ export default function Profile() {
                             </div>
 
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 min-w-0">
-                                {[
-                                    {
-                                        label: lang === 'RO' ? 'Rezolvate' : 'Solved',
-                                        value: String(displayProfile.problemsSolved),
-                                    },
-                                    {
-                                        label: lang === 'RO' ? 'Submisii' : 'Submissions',
-                                        value: String(displayProfile.submissions),
-                                    },
-                                    {
-                                        label: lang === 'RO' ? 'Acceptare' : 'Acceptance',
-                                        value: formatPercent(displayProfile.acceptanceRate),
-                                    },
-                                    {
-                                        label: lang === 'RO' ? 'Serie' : 'Streak',
-                                        value: `${displayProfile.streak}${displayProfile.streakCapped ? '+' : ''}`,
-                                    },
-                                ].map((item) => (
+                                {statsCards.map((item) => (
                                     <div
                                         key={item.label}
                                         className="p-3 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm hover:-translate-y-1 transition-transform cursor-pointer text-center"
                                     >
-                                        <div className="text-[10px] uppercase tracking-widest text-(--text-subtle) font-bold">
+                                        <div className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold">
                                             {item.label}
                                         </div>
                                         <div className="mt-1 text-sm font-bold text-(--text-h)">
@@ -512,46 +560,7 @@ export default function Profile() {
                                 </h2>
                                 {displayProfile.recentSubmissions.content.length > 0 ? (
                                     <div className="flex flex-col gap-2">
-                                        {displayProfile.recentSubmissions.content.map((submission) => {
-                                            const isAccepted = submission.status === 'OK';
-
-                                            const badgeClasses = isAccepted
-                                                ? isLightTheme
-                                                    ? 'bg-emerald-500/20 text-emerald-700 border-emerald-500/40'
-                                                    : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
-                                                : isLightTheme
-                                                  ? 'bg-red-500/20 text-red-700 border-red-500/40'
-                                                  : 'bg-red-500/10 text-red-300 border-red-500/30';
-
-                                            return (
-                                                <div
-                                                    key={`${submission.problemTitle}-${submission.submissionDate}`}
-                                                    className="p-3 md:p-4 rounded-xl border border-(--accent)/20 bg-(--accent)/5 flex justify-between items-center gap-3 transition-colors hover:bg-(--accent)/10"
-                                                >
-                                                    <div className="min-w-0 pr-2">
-                                                        <Link
-                                                            to={`/problems/${submission.problemTitle}`}
-                                                            className="text-sm md:text-base font-bold text-(--text-h) hover:text-(--accent) hover:underline underline-offset-2 transition-colors line-clamp-1 truncate block"
-                                                        >
-                                                            {submission.problemTitle}
-                                                        </Link>
-                                                        <p className="mt-1 text-[11px] text-(--text-subtle)">
-                                                            {formatSubmissionDate(submission.submissionDate)}
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex items-center gap-3 shrink-0 ml-2 flex-wrap justify-end">
-                                                        <span className="text-[11px] font-mono text-(--text-subtle) hidden sm:inline-block">
-                                                            Score: {submission.score}
-                                                        </span>
-                                                        <span
-                                                            className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap border ${badgeClasses}`}
-                                                        >
-                                                            {formatStatus(submission.status)}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
+                                        {memoizedRecentSubmissions}
                                     </div>
                                 ) : (
                                     <p className="text-sm text-(--text-subtle)">

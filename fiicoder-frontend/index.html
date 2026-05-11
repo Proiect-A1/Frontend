@@ -9,6 +9,16 @@
       (() => {
         const theme = localStorage.getItem("fiicoder_theme") || "rose";
         document.documentElement.setAttribute("data-theme", theme);
+        
+        // Prevent theme flashing by setting background color immediately
+        const bgColors = {
+          rose: "#090812",
+          nord: "#2e3440",
+          cream: "#f5efe3",
+          sage: "#e8f1e8"
+        };
+        document.documentElement.style.backgroundColor = bgColors[theme] || "#090812";
+
         const faviconByTheme = {
           rose: "/logo.svg",
           nord: "/logo_nord.svg",

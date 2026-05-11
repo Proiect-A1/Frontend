@@ -74,4 +74,12 @@ export const classService = {
   getMyInvitations() {
     return apiClient.get<GroupInvitationResponseDTO[]>("/group/invitations/me");
   },
+  
+  acceptInvitation(invitationId: string) {
+    return apiClient.post<void>(`/group/invitations/${invitationId}/accept`);
+  },
+
+  declineInvitation(invitationId: string) {
+    return apiClient.post<void>(`/group/invitations/${invitationId}/decline`);
+  },
 };

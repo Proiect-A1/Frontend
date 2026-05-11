@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navigate } from 'react-router-dom';
 import { useLanguage } from '../language/Language';
@@ -309,7 +309,7 @@ export default function AdminPanel() {
         }
     };
 
-    const overviewCards = [
+    const overviewCards = useMemo(() => [
         { label: lang === 'RO' ? 'Utilizatori' : 'Users', value: overview?.users ?? 0 },
         { label: lang === 'RO' ? 'Probleme' : 'Problems', value: overview?.problems ?? 0 },
         {
@@ -323,7 +323,78 @@ export default function AdminPanel() {
             value: overview?.pendingProposals ?? 0,
             highlight: true,
         },
-    ];  
+    ], [overview, lang]);
+
+    const memoizedUsers = useMemo(() => users.map((user) => (
+        <motion.div
+            variants={itemVariants}
+            key={user.username}
+            className="p-4 rounded-xl border border-(--accent)/20 bg-(--surface-muted) flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+        >
+            <div className="min-w-0">
+                <h3 className="text-(--text-h) font-bold text-lg flex flex-wrap items-center gap-2">
+                    <span className="truncate">
+                        {user.username}
+                    </span>
+                    {user.role === 'ADMIN' && (
+                        <span className="bg-purple-500/20 text-purple-300 border border-purple-500/40 text-xs px-2.5 py-1 rounded-full uppercase">
+                            Admin
+                        </span>
+                    )}
+                    {user.role === 'PROFESSOR' && (
+                        <span className="bg-blue-500/20 text-blue-300 border border-blue-500/40 text-xs px-2.5 py-1 rounded-full uppercase">
+                            Professor
+                        </span>
+                    )}
+                    {user.isBanned && (
+                        <span className="bg-red-500/20 text-red-300 border border-red-500/40 text-xs px-2.5 py-1 rounded-full uppercase">
+                            Banned
+                        </span>
+                    )}
+                </h3>
+                <p className="text-(--text-muted) text-sm truncate">
+                    {user.firstName} {user.lastName} • {user.email}
+                </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+                <div className="relative group">
+                    <select
+                        value={user.role}
+                        onChange={(e) => handleRoleChange(user.username, e.target.value as any)}
+                        className="appearance-none bg-(--accent)/10 border border-(--accent)/40 rounded-full px-4 py-1 text-xs font-semibold text-(--text-h) pr-8 cursor-pointer hover:bg-(--accent)/20 transition-all outline-none"
+                    >
+                        <option value="USER" className="bg-(--surface-card) text-(--text-h)">STUDENT</option>
+                        <option value="PROFESSOR" className="bg-(--surface-card) text-(--text-h)">PROFESOR</option>
+                        <option value="ADMIN" className="bg-(--surface-card) text-(--text-h)">ADMIN</option>
+                    </select>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-(--accent) text-[8px]">
+                        ▼
+                    </div>
+                </div>
+                <button
+                    onClick={() =>
+                        handleBanToggle(user.username, user.isBanned || false)
+                    }
+                    disabled={processingUsers.has(user.username)}
+                    className={`rounded-full border px-3 py-1 text-xs font-semibold disabled:opacity-50 ${
+                        user.isBanned
+                            ? 'border-green-500/40 bg-green-500/10 text-green-200 hover:bg-green-500/20'
+                            : 'border-red-500/40 bg-red-500/10 text-red-200 hover:bg-red-500/20'
+                    }`}
+                >
+                    {user.isBanned ? 'Unban' : 'Ban'}
+                </button>
+                <button
+                    onClick={() => handleDeleteUser(user.username)}
+                    disabled={processingUsers.has(user.username)}
+                    className="rounded-full border border-(--accent)/30 bg-black/20 hover:bg-red-500/15 px-3 py-1 text-xs font-semibold text-(--text-h) disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    {processingUsers.has(user.username) ? '...' : 'Delete'}
+                </button>
+            </div>
+        </motion.div>
+    )), [users, processingUsers, lang]);
 
     return (
         <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
@@ -411,80 +482,12 @@ export default function AdminPanel() {
                                     </span>
                                     <span>
                                         {users.length} {lang === 'RO' ? 'afișați' : 'shown'}
-                                    </span>
-                                </motion.div>   
+                                                                        </span>
+                                </motion.div>
+
 
                                 <motion.div variants={containerVariants} className="grid gap-3">
-                                    {users.map((user) => (
-                                        <motion.div
-                                            variants={itemVariants}
-                                            key={user.username}
-                                            className="p-4 rounded-xl border border-(--accent)/20 bg-(--surface-muted) flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
-                                        >
-                                            <div className="min-w-0">
-                                                <h3 className="text-(--text-h) font-bold text-lg flex flex-wrap items-center gap-2">
-                                                    <span className="truncate">
-                                                        {user.username}
-                                                    </span>
-                                                    {user.role === 'ADMIN' && (
-                                                        <span className="bg-purple-500/20 text-purple-300 border border-purple-500/40 text-xs px-2.5 py-1 rounded-full uppercase">
-                                                            Admin
-                                                        </span>
-                                                    )}
-                                                    {user.role === 'PROFESSOR' && (
-                                                        <span className="bg-blue-500/20 text-blue-300 border border-blue-500/40 text-xs px-2.5 py-1 rounded-full uppercase">
-                                                            Professor
-                                                        </span>
-                                                    )}
-                                                    {user.isBanned && (
-                                                        <span className="bg-red-500/20 text-red-300 border border-red-500/40 text-xs px-2.5 py-1 rounded-full uppercase">
-                                                            Banned
-                                                        </span>
-                                                    )}
-                                                </h3>
-                                                <p className="text-(--text-muted) text-sm truncate">
-                                                    {user.firstName} {user.lastName} • {user.email}
-                                                </p>
-                                            </div>
-
-                                            <div className="flex flex-wrap gap-2">
-                                                <div className="relative group">
-                                                    <select
-                                                        value={user.role}
-                                                        onChange={(e) => handleRoleChange(user.username, e.target.value as any)}
-                                                        className="appearance-none bg-(--accent)/10 border border-(--accent)/40 rounded-full px-4 py-1 text-xs font-semibold text-(--text-h) pr-8 cursor-pointer hover:bg-(--accent)/20 transition-all outline-none"
-                                                    >
-                                                        <option value="USER" className="bg-(--surface-card) text-(--text-h)">STUDENT</option>
-                                                        <option value="PROFESSOR" className="bg-(--surface-card) text-(--text-h)">PROFESOR</option>
-                                                        <option value="ADMIN" className="bg-(--surface-card) text-(--text-h)">ADMIN</option>
-                                                    </select>
-                                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-(--accent) text-[8px]">
-                                                        ▼
-                                                    </div>
-                                                </div>
-                                                <button
-                                                    onClick={() =>
-                                                        handleBanToggle(user.username, user.isBanned || false)
-                                                    }
-                                                    disabled={processingUsers.has(user.username)}
-                                                    className={`rounded-full border px-3 py-1 text-xs font-semibold disabled:opacity-50 ${
-                                                        user.isBanned
-                                                            ? 'border-green-500/40 bg-green-500/10 text-green-200 hover:bg-green-500/20'
-                                                            : 'border-red-500/40 bg-red-500/10 text-red-200 hover:bg-red-500/20'
-                                                    }`}
-                                                >
-                                                    {user.isBanned ? 'Unban' : 'Ban'}
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteUser(user.username)}
-                                                    disabled={processingUsers.has(user.username)}
-                                                    className="rounded-full border border-(--accent)/30 bg-black/20 hover:bg-red-500/15 px-3 py-1 text-xs font-semibold text-(--text-h) disabled:opacity-50 disabled:cursor-not-allowed"
-                                                >
-                                                    {processingUsers.has(user.username) ? '...' : 'Delete'}
-                                                </button>
-                                            </div>
-                                        </motion.div>
-                                    ))}
+                                    {memoizedUsers}
                                 </motion.div>
 
                                 <motion.div

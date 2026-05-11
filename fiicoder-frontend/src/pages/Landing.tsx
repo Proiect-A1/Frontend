@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage, translations } from '../language/Language';
@@ -150,19 +150,50 @@ export default function Landing() {
     const { isAuthenticated } = useAuth();
     const { theme } = useTheme();
 
-    const themeLogo: Record<string, string> = {
-        rose: '/logo.svg',
-        nord: '/logo_nord.svg',
-        cream: '/logo_cream.svg',
-        sage: '/logo_sage.svg',
-    };
-    const logoSrc = themeLogo[theme] || '/logo.svg';
+    const logoSrc = useMemo(() => {
+        const themeLogo: Record<string, string> = {
+            rose: '/logo.svg',
+            nord: '/logo_nord.svg',
+            cream: '/logo_cream.svg',
+            sage: '/logo_sage.svg',
+        };
+        return themeLogo[theme] || '/logo.svg';
+    }, [theme]);
 
     const [announcements, setAnnouncements] = useState<AnnouncementWithPriority[]>([]);
     const [selectedAnnouncement, setSelectedAnnouncement] =
         useState<AnnouncementWithPriority | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showAllAnnouncements, setShowAllAnnouncements] = useState(false);
+
+    // Memoize the features and stats list to avoid recreation on every render
+    const features = useMemo(() => [
+        {
+            icon: '📚',
+            title: t.newProblems,
+            desc: t.newProblemsDesc,
+            color: 'bg-emerald-500/10'
+        },
+        {
+            icon: '🏆',
+            title: t.dailyContests,
+            desc: t.dailyContestsDesc,
+            color: 'bg-amber-500/10'
+        },
+        {
+            icon: '💻',
+            title: t.advancedEditor,
+            desc: t.advancedEditorDesc,
+            color: 'bg-blue-500/10'
+        },
+    ], [t]);
+
+    const stats = useMemo(() => [
+        { num: '5k+', label: t.activeStudents },
+        { num: '500+', label: t.problemsCount },
+        { num: '150+', label: t.contestsCount },
+        { num: '98%', label: t.satisfactionRate },
+    ], [t]);
 
     useEffect(() => {
         async function loadAnnouncements() {
@@ -229,12 +260,7 @@ export default function Landing() {
                             variants={itemVariants}
                             className="flex flex-wrap justify-center gap-6 md:gap-12 mb-6 bg-(--accent)/5 py-3 rounded-2xl border border-(--accent)/10 max-w-3xl mx-auto"
                         >
-                            {[
-                                { num: '5k+', label: t.activeStudents },
-                                { num: '500+', label: t.problemsCount },
-                                { num: '150+', label: t.contestsCount },
-                                { num: '98%', label: t.satisfactionRate },
-                            ].map((stat, idx) => (
+                            {stats.map((stat, idx) => (
                                 <div key={idx} className="flex flex-col items-center">
                                     <div className="text-lg md:text-xl font-black text-(--accent)">
                                         {stat.num}
@@ -352,26 +378,7 @@ export default function Landing() {
 
                     {/* Features Grid - Compact */}
                     <div className="grid md:grid-cols-3 gap-4 mt-6 mb-10">
-                        {[
-                            {
-                                icon: '📚',
-                                title: t.newProblems,
-                                desc: t.newProblemsDesc,
-                                color: 'bg-emerald-500/10'
-                            },
-                            {
-                                icon: '🏆',
-                                title: t.dailyContests,
-                                desc: t.dailyContestsDesc,
-                                color: 'bg-amber-500/10'
-                            },
-                            {
-                                icon: '💻',
-                                title: t.advancedEditor,
-                                desc: t.advancedEditorDesc,
-                                color: 'bg-blue-500/10'
-                            },
-                        ].map((feature, index) => (
+                        {features.map((feature, index) => (
                             <motion.div
                                 key={index}
                                 variants={itemVariants}
