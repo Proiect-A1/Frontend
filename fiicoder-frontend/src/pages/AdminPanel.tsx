@@ -13,7 +13,7 @@ import {
 } from '../services/adminService';
 import { mockProposals } from '../services/mockProposals';
 import { useAuth } from '../services/AuthContext';
-import { containerVariants, itemVariants, staggerConfig } from '../utils/motionConfig';
+import { containerVariants, itemVariants } from '../utils/motionConfig';
 
 const tabs = [
     { id: 'users', labelRO: 'Utilizatori', labelEN: 'Users' },
@@ -66,6 +66,7 @@ export default function AdminPanel() {
             cancelled = true;
         };
     }, [isAdmin]);
+
 
     useEffect(() => {
         if (!isAdmin) return;
@@ -445,15 +446,10 @@ export default function AdminPanel() {
     return (
         <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
             <motion.div
-                className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
-                variants={{
-                    hidden: { opacity: 0 },
-                    visible: { opacity: 1, transition: staggerConfig },
-                }}
+                className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm h-auto xl:h-full relative overflow-hidden"
                 initial="hidden"
                 animate="visible"
             >
-                <div className="relative min-h-full">
                     <AnimatePresence>
                         {showOverviewSidebar && (
                             <>
@@ -550,7 +546,8 @@ export default function AdminPanel() {
                             </>
                         )}
                     </AnimatePresence>
-
+                <div className="h-auto xl:h-full xl:overflow-y-auto custom-scrollbar">
+                <div className="relative min-h-full">
                     <div className="min-w-0 space-y-6 px-5 py-6 md:px-8 md:py-8">
                         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                             <div className="flex items-center gap-3">
@@ -1135,6 +1132,7 @@ export default function AdminPanel() {
                             </motion.div>
                         </AnimatePresence>
                     </div>
+                </div>
                 </div>
             </motion.div>
         </div>
