@@ -171,7 +171,10 @@ export default function Landing() {
                 ...announcement,
                 priority: getPriorityFromTitle(announcement.title),
                 icon: getIconForAnnouncement(announcement.title),
-            }));
+            })).sort((a, b) => {
+                // Sortare descrescătoare după dată
+                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            });
             setAnnouncements(enrichedAnnouncements);
         }
         void loadAnnouncements();
