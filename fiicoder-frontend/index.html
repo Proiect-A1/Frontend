@@ -7,12 +7,15 @@
     <title><_fiicoder></title>
     <script>
       (() => {
-        const theme = localStorage.getItem("fiicoder_theme");
+        const theme = localStorage.getItem("fiicoder_theme") || "rose";
+        document.documentElement.setAttribute("data-theme", theme);
         const faviconByTheme = {
           rose: "/logo.svg",
           nord: "/logo_nord.svg",
+          cream: "/logo_cream.svg",
+          sage: "/logo_sage.svg",
         };
-        const href = faviconByTheme[theme] || faviconByTheme.rose;
+        const href = faviconByTheme[theme] || "/logo.svg";
         const link = document.querySelector('link[rel="icon"]') || document.createElement("link");
         link.rel = "icon";
         link.type = "image/svg+xml";
