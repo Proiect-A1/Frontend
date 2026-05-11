@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../services/AuthContext";
@@ -152,7 +152,6 @@ export default function ProblemDetails() {
   const t = translations[lang];
   const { isAuthenticated } = useAuth();
   const { theme } = useTheme();
-
   const [problem, setProblem] = useState<ProblemFindResponseDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -171,6 +170,12 @@ export default function ProblemDetails() {
   const [selectedLanguageId, setSelectedLanguageId] = useState<string>("");
   const [recentSubmissions, setRecentSubmissions] = useState<RecentSubmissionDTO[]>([]);
   const [activeTab, setActiveTab] = useState<'testcase' | 'testresult' | 'submissions'>('testcase');
+
+  // Memoize processed description to avoid heavy recalculations on every render
+  const processedDescription = useMemo(() => {
+    if (!problem?.description) return "";
+    return unindent(problem.description.replace(/\\\\/g, "\\"));
+  }, [problem?.description]);
   
   // FlexLayout Model
   const [model] = useState(() => {
@@ -182,6 +187,8 @@ export default function ProblemDetails() {
             tabSetHeaderHeight: 36,
             tabSetEnableTabStrip: true,
             tabSetEnableMaximize: true,
+            tabSetMinWidth: 100,
+            tabSetMinHeight: 100,
         },
         borders: [],
         layout: {
@@ -226,6 +233,8 @@ export default function ProblemDetails() {
   const handleEditorMount: OnMount = (_editor, monaco) => {
     monacoRef.current = monaco;
     applyMonacoTheme(monaco, theme);
+    // Trigger a layout refresh after a short delay to ensure correct sizing
+    setTimeout(() => _editor.layout(), 100);
   };
 
   useEffect(() => {
@@ -234,86 +243,65 @@ export default function ProblemDetails() {
     }
   }, [theme]);
 
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    let isMounted = true;
-    async function fetchLanguages() {
-      try {
-        const data = await languageService.getAll();
-        if (!isMounted) return;
-        setAvailableLanguages(data);
-        if (data.length > 0) {
-          setSelectedLanguageId(data[0].id);
-          setLanguage(data[0].name);
-        }
-      } catch (err) {
-        console.error("Eroare la încărcarea limbajelor:", err);
-      }
-    }
-
-    async function fetchRecentSubmissions() {
-      try {
-        const data = await profileService.getMyProfile(1, 50);
-        if (!isMounted) return;
-        // Filtrăm doar submisiile pentru problema curentă
-        const filtered = data.recentSubmissions.content.filter(
-          (s) => s.problemTitle === problemTitle
-        );
-        setRecentSubmissions(filtered);
-      } catch (err) {
-        console.error("Eroare la încărcarea submisiilor recente:", err);
-      }
-    }
-
-    fetchLanguages();
-    fetchRecentSubmissions();
-    return () => {
-      isMounted = false;
-    };
-  }, [isAuthenticated, problemTitle]);
-
+  // Unified effect for initial data fetching
   useEffect(() => {
     let isMounted = true;
 
-    async function fetchProblemDetails() {
-      if (!problemTitle || problemTitle === "undefined") {
-        if (isMounted) {
-          setError("Titlul problemei lipsește din URL.");
-          setLoading(false);
+    async function fetchData() {
+        if (!problemTitle || problemTitle === "undefined") {
+            if (isMounted) {
+                setError("Titlul problemei lipsește din URL.");
+                setLoading(false);
+            }
+            return;
         }
-        return;
-      }
 
-      try {
-        const dto = await problemService.getProblemByTitle(problemTitle);
+        try {
+            // Paralelizăm cererile care nu depind de problemTitle (limbi)
+            // și cele care depind de el (detalii, submisii)
+            const [problemDto, langs] = await Promise.all([
+                problemService.getProblemByTitle(problemTitle),
+                languageService.getAll().catch(() => []) // Fallback la array gol
+            ]);
 
-        if (!isMounted) return;
+            if (!isMounted) return;
 
-        setProblem(dto);
-      } catch (err: any) {
-        if (isMounted) {
-          if (err?.status === 403) {
-            setError(lang === 'RO' ? "Nu aveți permisiunea de a vizualiza această problemă (probabil este privată)." : "You do not have permission to view this problem (it might be private).");
-          } else if (err?.status === 404) {
-            setError(lang === 'RO' ? "Problema nu a fost găsită." : "Problem not found.");
-          } else {
-            setError(
-              lang === 'RO' ? "Problema nu a putut fi găsită sau a apărut o eroare de server." : "The problem could not be found or a server error occurred."
-            );
-          }
+            setProblem(problemDto);
+            setAvailableLanguages(langs);
+            if (langs.length > 0) {
+                setSelectedLanguageId(langs[0].id);
+                setLanguage(langs[0].name);
+            }
+
+            // Submisiile pot veni puțin mai târziu, nu sunt critice pentru randarea inițială
+            if (isAuthenticated) {
+                profileService.getMyProfile(1, 50).then(data => {
+                    if (isMounted) {
+                        const filtered = data.recentSubmissions.content.filter(
+                            (s) => s.problemTitle === problemTitle
+                        );
+                        setRecentSubmissions(filtered);
+                    }
+                }).catch(err => console.error("Error fetching submissions:", err));
+            }
+
+        } catch (err: any) {
+            if (isMounted) {
+                if (err?.status === 403) {
+                    setError(lang === 'RO' ? "Nu aveți permisiunea de a vizualiza această problemă." : "You do not have permission to view this problem.");
+                } else {
+                    setError(lang === 'RO' ? "Eroare la încărcarea problemei." : "Error loading problem.");
+                }
+            }
+        } finally {
+            if (isMounted) setLoading(false);
         }
-      } finally {
-        if (isMounted) setLoading(false);
-      }
     }
 
-    fetchProblemDetails();
+    fetchData();
 
-    return () => {
-      isMounted = false;
-    };
-  }, [problemTitle]);
+    return () => { isMounted = false; };
+  }, [problemTitle, isAuthenticated]);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -402,7 +390,7 @@ export default function ProblemDetails() {
         <ReactMarkdown
           remarkPlugins={[remarkMath]}
           rehypePlugins={[rehypeKatex]}
-          children={unindent(problem.description.replace(/\\\\/g, "\\"))}
+          children={processedDescription}
           components={{
             h1: ({ ...props }) => (
               <h1 className="text-2xl font-bold text-(--text) mt-6 mb-3 border-b border-(--accent)/20 pb-1" {...props} />
