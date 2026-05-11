@@ -36,7 +36,7 @@ export default function StatsSidebar() {
 
                 <div className="space-y-4">
                     {MOCK_TOP_SOLVERS.map((user, idx) => (
-                        <div key={user.username} className="flex items-center justify-between group p-3 rounded-xl border-2 border-(--accent)/30 bg-(--accent)/5 hover:border-(--accent)/60 transition-all">
+                        <div key={user.username} className="flex items-center justify-between group p-3 rounded-xl border border-(--accent)/30 bg-(--accent)/5 hover:border-(--accent)/60 transition-all">
                             <div className="flex items-center gap-3">
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black border-2 ${
                                     idx === 0 ? 'bg-amber-500/20 border-amber-500 text-amber-500' :
@@ -72,7 +72,7 @@ export default function StatsSidebar() {
                 </h2>
                 <div className="space-y-3">
                     {MOCK_POPULAR_PROBLEMS.map((prob) => (
-                        <div key={prob.title} className="p-3 rounded-xl border-2 border-(--accent)/30 bg-(--accent)/5 hover:bg-(--accent)/10 transition-all cursor-pointer">
+                        <div key={prob.title} className="p-3 rounded-xl border border-(--accent)/30 bg-(--accent)/5 hover:bg-(--accent)/10 transition-all cursor-pointer">
                             <h3 className="text-xs font-bold text-(--text-h) mb-1">{prob.title}</h3>
                             <div className="flex items-center justify-between">
                                 <span className="text-[9px] text-(--text-muted) font-semibold uppercase">

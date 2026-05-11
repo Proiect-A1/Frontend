@@ -113,7 +113,7 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                             >
                                 {announcement.title}
                             </h2>
-                            <div className="text-sm text-(--text) leading-relaxed mb-6 whitespace-pre-wrap max-h-96 overflow-y-auto [overflow-wrap:anywhere]">
+                            <div className="text-sm text-(--text) leading-relaxed mb-6 whitespace-pre-wrap max-h-96 overflow-y-auto wrap-anywhere">
                                 {announcement.content}
                             </div>
                             <div

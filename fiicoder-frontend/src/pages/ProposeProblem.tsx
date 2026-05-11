@@ -198,9 +198,9 @@ export default function ProposeProblem() {
 
     return (
         <FormProvider {...methods}>
-            <div className="w-full flex justify-center h-full xl:flex-1 xl:min-h-0 p-4 md:p-6">
+            <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
                 <motion.div
-                    className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm h-full flex overflow-hidden relative shadow-2xl"
+                    className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) bg-(--surface-card)  h-full flex overflow-hidden relative"
                     initial="hidden"
                     animate="visible"
                     variants={pageVariants}
@@ -222,14 +222,14 @@ export default function ProposeProblem() {
                                     exit={{ x: -340, opacity: 0 }}
                                     className="absolute z-50 left-0 top-0 w-80 h-full bg-(--surface-card) border-r-2 border-(--accent) flex flex-col shadow-[10px_0_30px_rgba(0,0,0,0.3)]"
                                 >
-                                    <div className="p-4 border-b-2 border-(--accent)/20 flex items-center justify-between">
-                                        <h3 className="font-bold text-(--text-h) flex items-center gap-2">
+                                    <div className="p-4 border-(--accent)/20 flex items-center justify-between">
+                                        <h2 className="text-xl font-bold text-(--text-h) flex items-center gap-2">
                                             <svg className="w-4 h-4 text-(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
                                             Propunerile mele
-                                        </h3>
+                                        </h2>
                                         <button 
                                             onClick={() => setShowSidebar(false)}
-                                            className="p-1.5 hover:bg-(--accent)/10 rounded-lg text-(--text-muted) transition-colors"
+                                            className="rounded-full border border-(--accent)/30 bg-(--accent)/10 p-2 text-(--text-h) hover:bg-(--accent)/20 transition-colors"
                                         >
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                                         </button>
@@ -469,7 +469,7 @@ export default function ProposeProblem() {
                         </div>
 
                         {/* Fixed Action Footer - Integrated Style */}
-                        <div className="px-6 py-4 md:px-8 bg-(--surface-input) border-t-2 border-(--accent)/5 rounded-b-2xl flex gap-3 justify-end flex-wrap z-10">
+                        <div className="px-6 py-4 md:px-8 rounded-b-2xl flex gap-3 justify-end flex-wrap z-10">
                             {!isEditMode && (
                                 <button
                                     type="button"

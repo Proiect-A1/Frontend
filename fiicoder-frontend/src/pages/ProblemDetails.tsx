@@ -636,7 +636,7 @@ export default function ProblemDetails() {
         <div className="p-6 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl">
           {problemContent}
         </div>
-        <div className="p-6 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl min-h-[400px] flex flex-col">
+        <div className="p-6 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl min-h-100 flex flex-col">
           {editorContent}
         </div>
         <div className="p-6 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl">
