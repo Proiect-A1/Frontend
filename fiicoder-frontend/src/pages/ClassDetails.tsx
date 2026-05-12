@@ -467,7 +467,7 @@ export default function ClassDetails() {
                         </div>
                         <Link
                             to="/classes"
-                            className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl border-2 border-(--accent)/50 text-(--text-h) bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
+                            className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                         >
                             {lang === 'RO' ? 'Înapoi' : 'Back'}
                         </Link>
@@ -485,10 +485,10 @@ export default function ClassDetails() {
                     {loading && <p>{lang === 'RO' ? 'Se încarcă...' : 'Loading...'}</p>}
 
                     {!loading && group && (
-                        <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+                        <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
                             <motion.section
                                 variants={itemVariants}
-                                className="rounded-2xl border border-(--accent)/20 bg-(--surface-card) p-5"
+                                className="p-5"
                             >
                                 <h2 className="text-xl font-bold text-(--text-h)">
                                     {lang === 'RO' ? 'Detalii' : 'Details'}
@@ -497,7 +497,7 @@ export default function ClassDetails() {
                                     <p>Creator: {group.creatorUsername}</p>
                                     <p>ID: {group.id}</p>
                                 </div>
-                                <div className="mt-6 p-4 rounded-xl border border-(--accent)/20 bg-black/10">
+                                <div className="mt-6 rounded-2xl border border-(--accent)/20 bg-(--surface-card)">
                                     <h3 className="text-sm font-bold mb-2">
                                         {lang === 'RO' ? 'Invită' : 'Invite'}
                                     </h3>
@@ -506,7 +506,7 @@ export default function ClassDetails() {
                                             value={inviteEmail}
                                             onChange={(e) => setInviteEmail(e.target.value)}
                                             placeholder="Email"
-                                            className="flex-1 rounded-xl bg-black/20 border border-(--accent)/20 px-3 py-1.5 text-sm"
+                                            className="flex-1 rounded-2xl bg-(--surface-muted) border border-(--accent)/20 px-3 py-1.5 text-sm"
                                         />
                                         <button
                                             type="submit"
@@ -524,7 +524,7 @@ export default function ClassDetails() {
 
                             <motion.section
                                 variants={itemVariants}
-                                className="rounded-2xl border border-(--accent)/20 bg-(--surface-card) p-5"
+                                className="p-5"
                             >
                                 <h2 className="text-xl font-bold text-(--text-h)">
                                     {lang === 'RO' ? 'Temă nouă' : 'New homework'}
@@ -535,20 +535,20 @@ export default function ClassDetails() {
                                         onChange={(e) => setHomeworkTitle(e.target.value)}
                                         placeholder="Title"
                                         required
-                                        className="w-full rounded-xl bg-black/10 border border-(--accent)/20 px-3 py-2 text-sm"
+                                        className="w-full rounded-2xl bg-(--surface-muted) border border-(--accent)/20 px-3 py-2 text-sm"
                                     />
                                     <textarea
                                         value={homeworkDescription}
                                         onChange={(e) => setHomeworkDescription(e.target.value)}
                                         placeholder="Desc"
-                                        className="w-full rounded-xl bg-black/10 border border-(--accent)/20 px-3 py-2 text-sm"
+                                        className="w-full rounded-22xl bg-(--surface-muted) border border-(--accent)/20 px-3 py-2 text-sm"
                                     />
                                     <input
                                         type="date"
                                         value={homeworkDeadline}
                                         onChange={(e) => setHomeworkDeadline(e.target.value)}
                                         required
-                                        className="w-full rounded-xl bg-black/10 border border-(--accent)/20 px-3 py-2 text-sm"
+                                        className="w-full rounded-2xl bg-(--surface-muted) border border-(--accent)/20 px-3 py-2 text-sm"
                                     />
                                     <div className="space-y-2 border-t border-(--accent)/10 pt-2">
                                         <input
@@ -557,7 +557,7 @@ export default function ClassDetails() {
                                                 setHomeworkCreationUsernames(e.target.value)
                                             }
                                             placeholder="Usernames (user1, user2)"
-                                            className="w-full rounded-xl bg-black/10 border border-(--accent)/20 px-3 py-2 text-xs"
+                                            className="w-full rounded-2xl bg-(--surface-muted) border border-(--accent)/20 px-3 py-2 text-xs"
                                         />
                                         <input
                                             value={homeworkCreationProblems}
@@ -565,25 +565,26 @@ export default function ClassDetails() {
                                                 setHomeworkCreationProblems(e.target.value)
                                             }
                                             placeholder="Problems (p1, p2)"
-                                            className="w-full rounded-xl bg-black/10 border border-(--accent)/20 px-3 py-2 text-xs"
+                                            className="w-full rounded-2xl bg-(--surface-muted) border border-(--accent)/20 px-3 py-2 text-xs"
                                         />
                                     </div>
                                     <button
                                         type="submit"
-                                        className="w-full bg-(--accent)/20 border border-(--accent)/50 py-2 rounded-xl text-sm"
+                                        className="w-full bg-(--accent)/20 border border-(--accent)/50 py-2 rounded-2xl text-sm"
                                     >
                                         Create
                                     </button>
                                 </form>
                             </motion.section>
 
+                            <h2 className="text-xl font-bold mb-4">
+                                {lang === 'RO' ? 'Teme' : 'Homework'}
+                            </h2>
+
                             <motion.section
                                 variants={itemVariants}
                                 className="xl:col-span-2 rounded-2xl border border-(--accent)/20 bg-(--surface-card) p-5"
                             >
-                                <h2 className="text-xl font-bold mb-4">
-                                    {lang === 'RO' ? 'Teme' : 'Homework'}
-                                </h2>
                                 <div className="grid gap-4">{memoizedHomeworkList}</div>
                             </motion.section>
                         </div>
