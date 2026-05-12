@@ -261,17 +261,23 @@ export default function Profile() {
                 initial="hidden"
                 animate="visible"
             >
-                <>
-                    {isAdmin && (
-                        <div className="mb-4 flex justify-end">
+                <div className="min-w-0 space-y-6">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <div className="flex items-center gap-3">
+                            <h1 className="text-3xl font-bold text-(--text-h) flex items-center gap-3">
+                                {lang === 'RO' ? 'Profil' : 'Profile'}
+                            </h1>
+                        </div>
+
+                        {isAdmin && (
                             <Link
                                 to="/admin"
-                                className="px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center cursor-pointer bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5"
+                                className="px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center cursor-pointer bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5 w-fit"
                             >
                                 {lang === 'RO' ? 'Panou Administrare' : 'Admin Dashboard'}
                             </Link>
-                        </div>
-                    )}
+                        )}
+                    </div>
 
                     <motion.div
                         className="w-full grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-6"
@@ -545,7 +551,7 @@ export default function Profile() {
                                     <motion.div
                                         key={item.label}
                                         variants={itemVariants}
-                                        className="p-3 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm hover:-translate-y-1 transition-transform cursor-pointer text-center"
+                                        className="p-3 rounded-2xl border border-(--accent)/50 bg-(--surface-card) transition-colors cursor-pointer text-center"
                                     >
                                         <div className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold">
                                             {item.label}
@@ -654,7 +660,7 @@ export default function Profile() {
                             </motion.div>
                         </div>
                     </motion.div>
-                </>
+                </div>
             </motion.div>
         </div>
     );
