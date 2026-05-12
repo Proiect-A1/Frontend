@@ -98,7 +98,7 @@ export default function ProblemList() {
                 totalCount={problems.length}
             />
 
-            <section className="h-auto xl:h-[calc(100svh-8.5rem)] overflow-visible xl:overflow-y-auto p-5 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl xl:col-start-2 custom-scrollbar">
+            <section className="h-auto xl:h-[calc(100svh-8.5rem)] overflow-visible xl:overflow-y-auto p-5 bg-(--surface-card) border-2 border-(--accent) rounded-3xl xl:col-start-2 custom-scrollbar">
                 <h1 className="text-3xl font-bold text-(--text) mb-2">{t.problemsTitle}</h1>
                 <div className="page-line-horizontal" />
 

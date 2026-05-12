@@ -102,7 +102,7 @@ export default function FilterSidebar({
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="h-auto overflow-visible xl:h-fit xl:max-h-[calc(100svh-8.5rem)] xl:overflow-y-auto p-5 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl xl:sticky xl:top-0 xl:col-start-1 custom-scrollbar"
+            className="h-auto overflow-visible xl:h-fit xl:max-h-[calc(100svh-8.5rem)] xl:overflow-y-auto p-5 bg-(--surface-card) border-2 border-(--accent) rounded-3xl xl:sticky xl:top-0 xl:col-start-1 custom-scrollbar"
         >
             <motion.div
                 initial="hidden"

@@ -33,7 +33,7 @@ export default function TestsTab() {
             {/* Info */}
             <motion.div
                 variants={itemVariants}
-                className="p-4 bg-(--surface-muted) rounded-xl border border-(--accent)/20"
+                className="p-4 bg-(--surface-muted) rounded-2xl border border-(--accent)/20"
             >
                 <p className="text-sm text-(--text)">
                     <strong>Teste Manuale:</strong> Adaugă teste individuale cu input/output.
@@ -153,7 +153,7 @@ export default function TestsTab() {
                 variants={itemVariants}
                 type="button"
                 onClick={addTest}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-(--accent)/50 rounded-xl text-(--text-h) hover:border-(--accent) hover:bg-(--accent)/10 transition-colors font-semibold"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-(--accent)/50 rounded-2xl text-(--text-h) hover:border-(--accent) hover:bg-(--accent)/10 transition-colors font-semibold"
             >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg> Adaugă Test
             </motion.button>
@@ -161,7 +161,7 @@ export default function TestsTab() {
             {/* Stats */}
             <motion.div
                 variants={itemVariants}
-                className="p-4 bg-(--surface-muted) rounded-xl border border-(--accent)/25"
+                className="px-4 py-3 bg-(--surface-muted) rounded-2xl border border-(--accent)/25"
             >
                 <p className="text-sm text-(--text)">
                     <strong>Total teste:</strong> {fields.length}

@@ -258,7 +258,7 @@ export default function FilesTab() {
                             className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center gap-1.5 cursor-pointer outline-none ${
                                 isActive
                                     ? 'bg-(--accent)/25 border-(--accent) text-(--text-h)'
-                                    : 'bg-transparent border-(--accent)/40 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h)'
+                                    : 'bg-(--accent)/10 border-(--accent)/40 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h)'
                             }`}
                         >
                             <span>{cat.icon}</span>
@@ -272,7 +272,7 @@ export default function FilesTab() {
             </motion.div>
 
             {/* Category Description */}
-            <motion.div variants={itemVariants} className="p-3 bg-(--surface-muted) rounded-xl border border-(--accent)/20">
+            <motion.div variants={itemVariants} className="p-3 bg-(--surface-muted) rounded-2xl border border-(--accent)/20">
                 <p className="text-sm text-(--text-muted)">
                     <strong>{activeCat.icon} {activeCat.label}:</strong> {activeCat.description}
                 </p>
@@ -285,7 +285,7 @@ export default function FilesTab() {
                     onDragLeave={handleDrag}
                     onDragOver={handleDrag}
                     onDrop={handleDrop}
-                    className={`relative p-6 border-2 border-dashed rounded-xl transition-colors cursor-pointer ${
+                    className={`relative p-6 border-2 border-dashed rounded-2xl transition-colors cursor-pointer ${
                         dragActive ? 'border-(--accent) bg-(--accent)/15' : 'border-(--accent)/40 hover:border-(--accent)/70'
                     }`}
                     onClick={() => fileInputRef.current?.click()}
@@ -314,7 +314,7 @@ export default function FilesTab() {
                             <div key={file.id} className="space-y-1">
                                 {/* File Card */}
                                 <div
-                                    className={`flex items-center justify-between p-3 rounded-xl border transition-colors ${
+                                    className={`flex items-center justify-between p-3 rounded-2xl border transition-colors ${
                                         editingFileId === file.id
                                             ? 'bg-(--accent)/10 border-(--accent)/40'
                                             : 'bg-(--surface-muted) border-(--accent)/20 hover:bg-(--surface-muted)/70'
@@ -362,7 +362,7 @@ export default function FilesTab() {
                                             <button
                                                 type="button"
                                                 onClick={() => setEditingFileId(editingFileId === file.id ? null : file.id)}
-                                                className="p-1.5 text-(--text-muted) hover:text-(--text-h) hover:bg-(--accent)/15 rounded transition-colors text-xs"
+                                                className="p-1.5 text-(--text-muted) hover:text-(--text-h) hover:bg-(--accent)/15 rounded-full transition-colors text-xs"
                                                 title="Editează"
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
@@ -388,7 +388,7 @@ export default function FilesTab() {
                                             transition={{ duration: 0.2 }}
                                             className="overflow-hidden"
                                         >
-                                            <div className="ml-4 rounded-xl border border-(--accent)/15 overflow-hidden">
+                                            <div className="ml-4 rounded-2xl border border-(--accent)/15 overflow-hidden">
                                                 {/* Score bar */}
                                                 <div className="px-4 py-2 bg-(--surface-muted) flex items-center justify-between">
                                                     <span className="text-xs text-(--text-muted)">Rezultate</span>
@@ -478,7 +478,7 @@ export default function FilesTab() {
                                             transition={{ duration: 0.2 }}
                                             className="overflow-hidden"
                                         >
-                                            <div className="rounded-xl border border-(--accent)/25 overflow-hidden">
+                                            <div className="rounded-2xl border border-(--accent)/25 overflow-hidden">
                                                 <div className="flex items-center justify-between px-3 py-1.5 bg-(--surface-muted) border-b border-(--accent)/15">
                                                     <span className="text-xs text-(--text-muted) font-mono">{file.name}</span>
                                                     <button
@@ -513,7 +513,7 @@ export default function FilesTab() {
             )}
 
             {/* Stats */}
-            <motion.div variants={itemVariants} className="p-4 bg-(--surface-muted) rounded-xl border border-(--accent)/25">
+            <motion.div variants={itemVariants} className="p-4 bg-(--surface-muted) rounded-2xl border border-(--accent)/25">
                 <div className="flex flex-wrap gap-4 text-sm">
                     {categories.map((cat) => {
                         const count = files.filter((f) => f.category === cat.id).length;

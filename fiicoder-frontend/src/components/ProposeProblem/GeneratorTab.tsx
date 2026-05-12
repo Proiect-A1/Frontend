@@ -225,7 +225,7 @@ export default function GeneratorTab() {
                     <button
                         type="button"
                         onClick={insertExample}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-xl font-semibold border border-(--accent)/40 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors text-(--text-h)"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full font-semibold border border-(--accent)/40 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors text-(--text-h)"
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg> Exemplu
                     </button>
@@ -241,7 +241,7 @@ export default function GeneratorTab() {
                     <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-xl font-semibold border border-(--accent)/40 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors text-(--text-h)"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full font-semibold border border-(--accent)/40 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors text-(--text-h)"
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg> Încarcă
                     </button>
@@ -251,7 +251,7 @@ export default function GeneratorTab() {
                         type="button"
                         onClick={handleSave}
                         disabled={status === 'validating'}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-xl font-semibold border border-(--accent)/40 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors text-(--text-h) disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full font-semibold border border-(--accent)/40 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors text-(--text-h) disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg> Salvează
                         <span className="text-xs text-(--text-muted) ml-1">(Ctrl+S)</span>
@@ -262,7 +262,7 @@ export default function GeneratorTab() {
             {/* Monaco Editor with custom language */}
             <motion.div variants={itemVariants}>
                 <div
-                    className="bg-(--surface-card) rounded-xl border border-(--accent)/25 overflow-hidden"
+                    className="bg-(--surface-card) rounded-2xl border border-(--accent)/25 overflow-hidden"
                     style={{ height: errors.length > 0 ? '50vh' : '65vh' }}
                 >
                     <Editor
@@ -289,7 +289,7 @@ export default function GeneratorTab() {
             {errors.length > 0 && (
                 <motion.div
                     variants={itemVariants}
-                    className="rounded-xl border border-red-500/30 bg-red-950/20 overflow-hidden"
+                    className="rounded-2xl border border-red-500/30 bg-red-950/20 overflow-hidden"
                 >
                     <div className="px-4 py-2 bg-red-950/40 border-b border-red-500/20">
                         <span className="text-red-400 font-semibold text-sm">
@@ -319,7 +319,7 @@ export default function GeneratorTab() {
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-4 rounded-xl border border-green-500/30 bg-green-950/20"
+                    className="p-4 rounded-2xl border border-green-500/30 bg-green-950/20"
                 >
                     <p className="text-sm text-green-400 font-semibold">
                         ✓ Scriptul a fost validat cu succes! Mergi la „Fișiere → Surse" pentru a rula o sursă oficială.

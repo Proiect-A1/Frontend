@@ -152,7 +152,7 @@ export default function StatementTab() {
             initial="hidden"
             animate="visible"
             variants={{ visible: { transition: staggerConfig } }}
-            className="space-y-6"
+            className="space-y-3"
         >
 
 
@@ -161,7 +161,7 @@ export default function StatementTab() {
                 <button
                     type="button"
                     onClick={() => setShowPreview(!showPreview)}
-                    className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
+                    className="inline-flex items-center justify-center px-3 py-1.5 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                 >
                     {showPreview ? 'Ascunde Preview' : 'Arăta Preview'}
                 </button>
@@ -174,13 +174,13 @@ export default function StatementTab() {
             >
                 {/* Monaco Editor */}
                 <div className="space-y-1">
-                    <label className="text-(--text) text-sm font-semibold">Markdown Enunț</label>
+                    <label className="text-(--text) text-sm font-semibold">Enunț</label>
                     <Controller
                         name="statement"
                         control={control}
                         rules={{ required: 'Enunțul este obligatoriu' }}
                         render={({ field }) => (
-                            <div className="bg-(--surface-card) rounded-xl border border-(--accent)/25 overflow-hidden h-96">
+                            <div className="bg-(--surface-card) rounded-2xl border border-(--accent)/25 overflow-hidden h-96">
                                 <Editor
                                     height="100%"
                                     defaultLanguage="markdown"
@@ -206,7 +206,7 @@ export default function StatementTab() {
 
                 {/* Live Preview */}
                 {showPreview && (
-                    <div className="space-y-1">
+                    <div className="">
                         <label className="text-(--text) text-sm font-semibold">
                             Previzualizare
                         </label>
@@ -214,7 +214,7 @@ export default function StatementTab() {
                             name="statement"
                             control={control}
                             render={({ field }) => (
-                                <div className="border border-(--accent)/25 rounded-xl p-4 h-96 overflow-y-auto bg-(--surface-muted) custom-scrollbar text-(--text) leading-relaxed">
+                                <div className="border border-(--accent)/25 rounded-2xl p-4 h-96 overflow-y-auto bg-(--surface-muted) custom-scrollbar text-(--text) leading-relaxed">
                                     <ReactMarkdown
                                         remarkPlugins={[remarkMath]}
                                         rehypePlugins={[rehypeKatex]}
@@ -311,7 +311,7 @@ export default function StatementTab() {
                                             pre: ({ children, ...props }: any) => (
                                                 <div className="relative group my-4">
                                                     <pre
-                                                        className="bg-(--surface-card) p-4 rounded-xl border border-(--accent)/30 overflow-x-auto text-sm text-(--text) shadow-inner [&>code]:text-(--text)"
+                                                        className="bg-(--surface-card) p-4 rounded-2xl border border-(--accent)/30 overflow-x-auto text-sm text-(--text) shadow-inner [&>code]:text-(--text)"
                                                         {...props}
                                                     >
                                                         {children}
@@ -350,7 +350,7 @@ export default function StatementTab() {
             {/* Template Helper */}
             <motion.div
                 variants={itemVariants}
-                className="p-4 bg-(--surface-muted) rounded-xl border border-(--accent)/25 space-y-2"
+                className="p-4 bg-(--surface-muted) rounded-2xl border border-(--accent)/25 space-y-2"
             >
                 <h4 className="font-semibold text-(--accent)">Template Rapid:</h4>
                 <pre className="text-xs text-(--text) overflow-x-auto bg-(--surface-muted) p-3 rounded">

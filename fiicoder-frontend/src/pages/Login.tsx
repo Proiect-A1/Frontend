@@ -128,7 +128,7 @@ export default function Login() {
 
     return (
         <motion.div
-            className="p-8 w-full max-w-150 mx-auto bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl"
+            className="p-8 w-full max-w-150 mx-auto bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-3xl"
             initial="hidden"
             animate="visible"
             exit="exit"
@@ -146,7 +146,7 @@ export default function Login() {
             {successMsg && (
                 <motion.div
                     variants={itemVariants}
-                    className="mt-4 px-4 py-2.5 rounded-xl border border-green-400/40 bg-green-500/10 text-sm text-green-300"
+                    className="mt-4 px-4 py-2.5 rounded-2xl border border-green-400/40 bg-green-500/10 text-sm text-green-300"
                 >
                     {successMsg}
                 </motion.div>
@@ -154,7 +154,7 @@ export default function Login() {
             {error && (
                 <motion.div
                     variants={itemVariants}
-                    className="mt-4 px-4 py-2.5 rounded-xl border border-red-400/40 bg-red-500/10 text-sm text-red-300"
+                    className="mt-4 px-4 py-2.5 rounded-2xl border border-red-400/40 bg-red-500/10 text-sm text-red-300"
                 >
                     {error}
                 </motion.div>
@@ -179,7 +179,7 @@ export default function Login() {
                                 value={usernameOrEmail}
                                 onChange={(e) => setUsernameOrEmail(e.target.value)}
                                 placeholder="ex: nume@email.com"
-                                className="w-full rounded-xl border border-(--accent)/30 bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent)"
+                                className="w-full rounded-2xl border border-(--accent)/30 bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent)"
                             />
                         </div>
                         <div>
@@ -192,7 +192,7 @@ export default function Login() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className="w-full rounded-xl border border-(--accent)/30 bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent)"
+                                className="w-full rounded-2xl border border-(--accent)/30 bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent)"
                             />
                         </div>
                     </>
@@ -211,7 +211,7 @@ export default function Login() {
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 placeholder="ex: fiicoder"
-                                className={`w-full rounded-xl border bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent) ${
+                                className={`w-full rounded-2xl border bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent) ${
                                     fieldErrors.username
                                         ? 'border-red-400/60'
                                         : 'border-(--accent)/30'
@@ -233,7 +233,7 @@ export default function Login() {
                                     value={firstName}
                                     onChange={(e) => setFirstName(e.target.value)}
                                     placeholder={t.namePlaceholder}
-                                    className={`w-full rounded-xl border bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent) ${
+                                    className={`w-full rounded-2xl border bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent) ${
                                         fieldErrors.firstName
                                             ? 'border-red-400/60'
                                             : 'border-(--accent)/30'
@@ -256,7 +256,7 @@ export default function Login() {
                                     value={lastName}
                                     onChange={(e) => setLastName(e.target.value)}
                                     placeholder={t.surnamePlaceholder}
-                                    className={`w-full rounded-xl border bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent) ${
+                                    className={`w-full rounded-2xl border bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent) ${
                                         fieldErrors.lastName
                                             ? 'border-red-400/60'
                                             : 'border-(--accent)/30'
@@ -279,7 +279,7 @@ export default function Login() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder={t.emailPlaceholder}
-                                className={`w-full rounded-xl border bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent) ${
+                                className={`w-full rounded-2xl border bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent) ${
                                     fieldErrors.email ? 'border-red-400/60' : 'border-(--accent)/30'
                                 }`}
                             />
@@ -298,7 +298,7 @@ export default function Login() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className={`w-full rounded-xl border bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent) ${
+                                className={`w-full rounded-2xl border bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent) ${
                                     fieldErrors.password
                                         ? 'border-red-400/60'
                                         : 'border-(--accent)/30'
@@ -314,7 +314,7 @@ export default function Login() {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="mt-4 w-full rounded-xl border border-(--accent)/50 bg-(--accent)/20 px-4 py-2.5 text-sm font-bold text-(--text-h) outline-none transition hover:border-(--accent) hover:bg-(--accent)/30 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="mt-4 w-full rounded-2xl border border-(--accent)/50 bg-(--accent)/20 px-4 py-2.5 text-sm font-bold text-(--text-h) outline-none transition hover:border-(--accent) hover:bg-(--accent)/30 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {loading
                         ? lang === 'RO'
@@ -362,7 +362,7 @@ export default function Login() {
                 whileHover={{ y: -3, transition: { hoverTransition } }}
                 type="button"
                 onClick={() => navigate('/problems')}
-                className="mt-5 w-full rounded-xl border border-(--accent)/25 bg-transparent px-4 py-2.5 text-sm font-medium text-(--text-muted) outline-none transition-colors hover:border-(--accent)/50 hover:bg-(--accent)/10 hover:text-(--text-h)"
+                className="mt-5 w-full rounded-2xl border border-(--accent)/25 bg-transparent px-4 py-2.5 text-sm font-medium text-(--text-muted) outline-none transition-colors hover:border-(--accent)/50 hover:bg-(--accent)/10 hover:text-(--text-h)"
             >
                 {t.continueAsGuest}
             </motion.button>

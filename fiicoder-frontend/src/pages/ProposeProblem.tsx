@@ -200,7 +200,7 @@ export default function ProposeProblem() {
         <FormProvider {...methods}>
             <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
                 <motion.div
-                    className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) bg-(--surface-card)  h-full flex overflow-hidden relative"
+                    className="w-full max-w-7xl rounded-3xl border-2 border-(--accent) bg-(--surface-card)  h-full flex overflow-hidden relative"
                     initial="hidden"
                     animate="visible"
                     variants={pageVariants}
@@ -253,10 +253,10 @@ export default function ProposeProblem() {
                                                         navigate(`/propose/${p.id}`);
                                                         setShowSidebar(false);
                                                     }}
-                                                    className={`w-full text-left p-3 rounded-xl border-2 transition-all ${
+                                                    className={`w-full text-left p-3 rounded-2xl border border-(--accent) transition-all ${
                                                         proposalId === p.id 
                                                         ? 'border-(--accent) bg-(--accent)/10' 
-                                                        : 'border-transparent bg-(--surface-muted)/50 hover:border-(--accent)/30 hover:bg-(--accent)/5'
+                                                        : 'bg-(--surface-muted)/50 hover:bg-(--accent)/20'
                                                     }`}
                                                 >
                                                     <div className="font-bold text-sm text-(--text-h) truncate">{p.title}</div>
@@ -300,7 +300,7 @@ export default function ProposeProblem() {
                                             borderColor: 'var(--status-info)', 
                                             backgroundColor: 'var(--status-info-bg)' 
                                         }}
-                                        className="mb-4 p-3 rounded-xl border flex items-center justify-between flex-wrap gap-2"
+                                        className="mb-4 p-3 rounded-2xl border flex items-center justify-between flex-wrap gap-2"
                                     >
                                         <div className="flex items-center gap-2">
                                             <div 
@@ -318,7 +318,7 @@ export default function ProposeProblem() {
                                             type="button"
                                             onClick={() => navigate('/propose')}
                                             style={{ borderColor: 'var(--status-info)', color: 'var(--status-info)' }}
-                                            className="text-xs px-3 py-1 rounded-lg border hover:bg-black/5 transition-colors"
+                                            className="text-xs px-3 py-1 rounded-2xl border hover:bg-black/5 transition-colors"
                                         >
                                             ← Propunere Nouă
                                         </button>
@@ -339,7 +339,7 @@ export default function ProposeProblem() {
                                                     borderColor: 'var(--status-warning)', 
                                                     backgroundColor: 'var(--status-warning-bg)' 
                                                 }}
-                                                className="p-3 rounded-xl border flex items-center justify-between flex-wrap gap-2"
+                                                className="p-3 rounded-2xl border flex items-center justify-between flex-wrap gap-2"
                                             >
                                                 <div className="flex items-center gap-2">
                                                     <div 
@@ -357,7 +357,7 @@ export default function ProposeProblem() {
                                                         type="button"
                                                         onClick={handleRestoreDraft}
                                                         style={{ borderColor: 'var(--status-warning)', color: 'var(--status-warning)' }}
-                                                        className="text-xs px-3 py-1 rounded-lg border hover:bg-black/5 transition-colors font-semibold"
+                                                        className="text-xs px-3 py-1 rounded-2xl border hover:bg-black/5 transition-colors font-semibold"
                                                     >
                                                         ✓ Restaurează
                                                     </button>
@@ -365,7 +365,7 @@ export default function ProposeProblem() {
                                                         type="button"
                                                         onClick={handleDiscardDraft}
                                                         style={{ borderColor: 'var(--status-error)', color: 'var(--status-error)' }}
-                                                        className="text-xs px-3 py-1 rounded-lg border hover:bg-black/5 transition-colors"
+                                                        className="text-xs px-3 py-1 rounded-2xl border hover:bg-black/5 transition-colors"
                                                     >
                                                         ✗ Renunță
                                                     </button>
@@ -399,8 +399,8 @@ export default function ProposeProblem() {
                                     <div className="flex flex-wrap gap-2 lg:justify-end">
                                         {tabs.map((tab) => {
                                             const isActive = activeTab === tab.id;
-                                        const baseClasses =
-                                            'px-4 py-2 rounded-full text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center cursor-pointer outline-none';
+                                            const baseClasses = 
+                                                'px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center cursor-pointer outline-none';
 
                                             return (
                                                 <button
@@ -431,7 +431,7 @@ export default function ProposeProblem() {
                                             borderColor: 'var(--status-success)', 
                                             backgroundColor: 'var(--status-success-bg)' 
                                         }}
-                                        className="mb-6 p-4 rounded-xl border-2"
+                                        className="mb-6 p-4 rounded-2xl border"
                                     >
                                         <p className="text-sm font-semibold" style={{ color: 'var(--status-success)' }}>
                                             ✓ {isEditMode
@@ -448,7 +448,7 @@ export default function ProposeProblem() {
                                             borderColor: 'var(--status-error)', 
                                             backgroundColor: 'var(--status-error-bg)' 
                                         }}
-                                        className="mb-6 p-4 rounded-xl border-2"
+                                        className="mb-6 p-4 rounded-2xl border-2"
                                     >
                                         <p className="text-sm font-semibold flex items-center gap-2" style={{ color: 'var(--status-error)' }}>
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -474,7 +474,7 @@ export default function ProposeProblem() {
                                 <button
                                     type="button"
                                     onClick={handleSaveDraftManual}
-                                    className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 text-sm rounded-xl font-bold border-2 border-(--accent)/30 text-(--text-muted) hover:bg-(--accent)/10 hover:border-(--accent)/50 transition-all"
+                                    className="inline-flex items-center justify-center px-3 py-1.5 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
                                     Salvează Ciornă
@@ -487,7 +487,7 @@ export default function ProposeProblem() {
                                     methods.reset(isEditMode ? undefined : defaultValues);
                                     if (!isEditMode) clearDraft();
                                 }}
-                                className="inline-flex items-center justify-center px-5 py-2.5 text-sm rounded-xl font-bold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-all hover:-translate-y-0.5"
+                                className="inline-flex items-center justify-center px-3 py-1.5 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                             >
                                 Resetează
                             </button>
@@ -495,7 +495,7 @@ export default function ProposeProblem() {
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm rounded-xl font-bold border-2 border-(--accent) bg-(--accent)/20 text-(--text-h) hover:bg-(--accent)/30 transition-all hover:-translate-y-0.5 shadow-lg shadow-(--accent)/20 disabled:opacity-50 disabled:translate-y-0"
+                                className="inline-flex items-center justify-center px-3 py-1.5 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                             >
                                 {isSubmitting ? (
                                     <div className="w-4 h-4 border-2 border-(--text-h) border-t-transparent rounded-full animate-spin" />

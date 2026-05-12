@@ -201,7 +201,7 @@ export default function Profile() {
                 <motion.div
                     key={`${submission.problemTitle}-${submission.submissionDate}`}
                     variants={itemVariants}
-                    className="p-3 md:p-4 rounded-xl border border-(--accent)/20 bg-(--accent)/5 flex justify-between items-center gap-3 transition-colors hover:bg-(--accent)/10"
+                    className="p-3 md:p-4 rounded-2xl border border-(--accent)/20 bg-(--accent)/5 flex justify-between items-center gap-3 transition-colors hover:bg-(--accent)/10"
                 >
                     <div className="min-w-0 pr-2">
                         <Link
@@ -256,7 +256,7 @@ export default function Profile() {
     return (
         <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
             <motion.div
-                className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
+                className="w-full max-w-7xl rounded-3xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
                 variants={pageVariants}
                 initial="hidden"
                 animate="visible"
@@ -327,7 +327,7 @@ export default function Profile() {
                                         <span className="font-semibold text-(--text-muted)">
                                             {lang === 'RO' ? 'Rol' : 'Role'}
                                         </span>
-                                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase border border-(--accent)/30 bg-(--accent)/10 text-(--text)">
+                                        <span className="px-2 py-0.5 rounded-2xl text-[10px] font-bold uppercase border border-(--accent)/30 bg-(--accent)/10 text-(--text)">
                                             {displayProfile.username === 'GolderbergPrivate'
                                                 ? 'Admin'
                                                 : lang === 'RO'

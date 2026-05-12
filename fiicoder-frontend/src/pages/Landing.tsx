@@ -224,7 +224,7 @@ export default function Landing() {
     return (
         <div className="w-full flex justify-center h-auto xl:h-full">
             <motion.div
-                className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) bg-(--surface-card) px-0 py-0 h-full overflow-hidden xl:h-full relative flex flex-col"
+                className="w-full max-w-7xl rounded-3xl border-2 border-(--accent) bg-(--surface-card) px-0 py-0 h-full overflow-hidden xl:h-full relative flex flex-col"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"

@@ -360,7 +360,7 @@ export default function AdminPanel() {
                 <motion.div
                     variants={itemVariants}
                     key={user.username}
-                    className="p-4 rounded-xl border border-(--accent)/20 bg-(--surface-muted) flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+                    className="p-4 rounded-2xl border border-(--accent)/20 bg-(--surface-muted) flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
                 >
                     <div className="min-w-0">
                         <h3 className="text-(--text-h) font-bold text-lg flex flex-wrap items-center gap-4">
@@ -445,7 +445,7 @@ export default function AdminPanel() {
     return (
         <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
             <motion.div
-                className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm h-auto xl:h-full relative overflow-hidden"
+                className="w-full max-w-7xl rounded-3xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm h-auto xl:h-full relative overflow-hidden"
                 initial="hidden"
                 animate="visible"
             >
@@ -463,7 +463,7 @@ export default function AdminPanel() {
                                 initial={{ x: -320, opacity: 0 }}
                                 animate={{ x: 0, opacity: 1 }}
                                 exit={{ x: -320, opacity: 0 }}
-                                className="absolute z-50 left-0 top-0 w-80 h-full bg-(--surface-card) border-r-2 border-(--accent) flex flex-col shadow-[10px_0_30px_rgba(0,0,0,0.3)]"
+                                className="absolute z-50 left-0 top-0 w-80 h-full bg-(--surface-card) border-r-2 border-(--accent) flex flex-col"
                             >
                                 <div className="h-full overflow-y-auto custom-scrollbar p-5 border-r-2 border-transparent">
                                     <>
@@ -526,7 +526,7 @@ export default function AdminPanel() {
                                             {overviewCards.map((stat) => (
                                                 <div
                                                     key={stat.label}
-                                                    className={`rounded-xl border p-4 text-center ${stat.highlight ? 'border-amber-400/50 bg-amber-500/10' : 'border-(--accent)/20 bg-black/15'}`}
+                                                    className={`rounded-2xl border p-4 text-center ${stat.highlight ? 'border-amber-400/50 bg-amber-500/10' : 'border-(--accent)/20 bg-black/15'}`}
                                                 >
                                                     <span
                                                         className={`block text-3xl font-black mb-1 ${stat.highlight ? 'text-amber-300' : 'text-(--accent)'}`}
@@ -555,7 +555,7 @@ export default function AdminPanel() {
                                         onClick={() =>
                                             setShowOverviewSidebar((current) => !current)
                                         }
-                                        className={`rounded-xl border-2 p-2.5 transition-all ${showOverviewSidebar ? 'bg-(--accent) text-white border-(--accent)' : 'bg-(--accent)/10 border-(--accent)/20 text-(--accent) hover:bg-(--accent)/20'}`}
+                                        className={`rounded-2xl border-2 p-2.5 transition-all ${showOverviewSidebar ? 'bg-(--accent) text-white border-(--accent)' : 'bg-(--accent)/10 border-(--accent)/20 text-(--accent) hover:bg-(--accent)/20'}`}
                                         aria-label={
                                             showOverviewSidebar
                                                 ? lang === 'RO'
@@ -744,7 +744,7 @@ export default function AdminPanel() {
                                                                         proposal.id,
                                                                     )
                                                                 }
-                                                                className={`text-left p-4 rounded-xl border transition-colors duration-200 ${
+                                                                className={`text-left p-4 rounded-2xl border transition-colors duration-200 ${
                                                                     isSelected
                                                                         ? 'border-(--accent) bg-(--accent)/15'
                                                                         : 'border-(--accent)/20 bg-(--surface-muted) hover:border-(--accent)/40 hover:bg-(--accent)/10'
@@ -785,7 +785,7 @@ export default function AdminPanel() {
 
                                             <motion.div
                                                 variants={itemVariants}
-                                                className="p-5 rounded-xl border border-(--accent)/20 bg-(--surface-muted)"
+                                                className="p-5 rounded-2xl border border-(--accent)/20 bg-(--surface-muted)"
                                             >
                                                 {!selectedProposal && selectedProposalId && (
                                                     <p className="text-(--text-muted) text-sm">
@@ -832,7 +832,7 @@ export default function AdminPanel() {
                                                         </p>
 
                                                         <div className="grid gap-3 sm:grid-cols-2">
-                                                            <div className="rounded-xl border border-(--accent)/20 bg-black/15 p-3">
+                                                            <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
                                                                 <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">
                                                                     {lang === 'RO'
                                                                         ? 'Input'
@@ -843,7 +843,7 @@ export default function AdminPanel() {
                                                                         '-'}
                                                                 </p>
                                                             </div>
-                                                            <div className="rounded-xl border border-(--accent)/20 bg-black/15 p-3">
+                                                            <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
                                                                 <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">
                                                                     {lang === 'RO'
                                                                         ? 'Output'
@@ -859,7 +859,7 @@ export default function AdminPanel() {
                                                         {selectedProposal.constraints &&
                                                             selectedProposal.constraints.length >
                                                                 0 && (
-                                                                <div className="rounded-xl border border-(--accent)/20 bg-black/15 p-3">
+                                                                <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
                                                                     <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">
                                                                         {lang === 'RO'
                                                                             ? 'Restricții'
@@ -880,7 +880,7 @@ export default function AdminPanel() {
                                                             )}
 
                                                         <div className="grid gap-3 sm:grid-cols-2">
-                                                            <div className="rounded-xl border border-(--accent)/20 bg-black/15 p-3">
+                                                            <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
                                                                 <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">
                                                                     Sample Input
                                                                 </p>
@@ -889,7 +889,7 @@ export default function AdminPanel() {
                                                                         '-'}
                                                                 </pre>
                                                             </div>
-                                                            <div className="rounded-xl border border-(--accent)/20 bg-black/15 p-3">
+                                                            <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
                                                                 <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">
                                                                     Sample Output
                                                                 </p>
@@ -958,7 +958,7 @@ export default function AdminPanel() {
                                             <motion.form
                                                 variants={itemVariants}
                                                 onSubmit={handleAnnouncementSubmit}
-                                                className="p-5 rounded-xl border border-(--accent)/20 bg-(--surface-muted) space-y-4"
+                                                className="p-5 rounded-2xl border border-(--accent)/20 bg-(--surface-muted) space-y-4"
                                             >
                                                 <div>
                                                     <h3 className="text-xl font-bold text-(--text-h)">
@@ -991,7 +991,7 @@ export default function AdminPanel() {
                                                                 ? 'Titlu anunț'
                                                                 : 'Announcement title'
                                                         }
-                                                        className="w-full rounded-xl border border-(--accent)/20 bg-black/20 px-3 py-2 text-sm text-(--text-h) outline-none placeholder:text-(--text-muted) focus:border-(--accent)/50"
+                                                        className="w-full rounded-2xl border border-(--accent)/20 bg-black/20 px-3 py-2 text-sm text-(--text-h) outline-none placeholder:text-(--text-muted) focus:border-(--accent)/50"
                                                     />
                                                     <textarea
                                                         value={announcementForm.content}
@@ -1007,7 +1007,7 @@ export default function AdminPanel() {
                                                                 : 'Announcement content'
                                                         }
                                                         rows={6}
-                                                        className="w-full rounded-xl border border-(--accent)/20 bg-black/20 px-3 py-2 text-sm text-(--text-h) outline-none placeholder:text-(--text-muted) focus:border-(--accent)/50 resize-none"
+                                                        className="w-full rounded-2xl border border-(--accent)/20 bg-black/20 px-3 py-2 text-sm text-(--text-h) outline-none placeholder:text-(--text-muted) focus:border-(--accent)/50 resize-none"
                                                     />
                                                 </div>
 
@@ -1054,7 +1054,7 @@ export default function AdminPanel() {
                                                     <motion.div
                                                         variants={itemVariants}
                                                         key={announcement.id}
-                                                        className="p-4 rounded-xl border border-(--accent)/20 bg-(--surface-muted)"
+                                                        className="p-4 rounded-2xl border border-(--accent)/20 bg-(--surface-muted)"
                                                     >
                                                         <div className="flex items-start justify-between gap-3 mb-2">
                                                             <div>
@@ -1131,7 +1131,7 @@ export default function AdminPanel() {
                                                 <motion.div
                                                     variants={itemVariants}
                                                     key={entry.id}
-                                                    className="p-4 rounded-xl border border-(--accent)/20 bg-(--surface-muted) flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+                                                    className="p-4 rounded-2xl border border-(--accent)/20 bg-(--surface-muted) flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
                                                 >
                                                     <div className="min-w-0">
                                                         <div className="flex flex-wrap items-center gap-2 mb-2">

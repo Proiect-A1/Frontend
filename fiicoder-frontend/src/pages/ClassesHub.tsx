@@ -218,7 +218,7 @@ export default function ClassesHub() {
                 {invitations.length === 0 && !loadingInvitations && (
                     <motion.div
                         variants={itemVariants}
-                        className="rounded-xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)"
+                        className="rounded-2xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)"
                     >
                         {error?.includes('invita') || error?.includes('fetch')
                             ? lang === 'RO'
@@ -234,7 +234,7 @@ export default function ClassesHub() {
                     <motion.div
                         variants={itemVariants}
                         key={invitation.id}
-                        className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+                        className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
                     >
                         <div>
                             <p className="text-base font-semibold text-(--text-h)">
@@ -280,7 +280,7 @@ export default function ClassesHub() {
                                             });
                                         }
                                     }}
-                                    className="rounded-lg border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
+                                    className="rounded-2xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
                                 >
                                     {lang === 'RO' ? 'Vezi' : 'View'}
                                 </Link>
@@ -296,7 +296,7 @@ export default function ClassesHub() {
     return (
         <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
             <motion.div
-                className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
+                className="w-full max-w-7xl rounded-3xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
                 variants={pageVariants}
                 initial="hidden"
                 animate="visible"
@@ -326,7 +326,7 @@ export default function ClassesHub() {
                     {(feedback || error) && (
                         <motion.div
                             variants={itemVariants}
-                            className={`mb-6 rounded-xl border-2 px-4 py-3 text-sm ${error ? 'border-red-500/40 bg-red-500/10 text-(--text-h)' : 'border-(--accent)/40 bg-(--accent)/10 text-(--text-h)'}`}
+                            className={`mb-6 rounded-2xl border-2 px-4 py-3 text-sm ${error ? 'border-red-500/40 bg-red-500/10 text-(--text-h)' : 'border-(--accent)/40 bg-(--accent)/10 text-(--text-h)'}`}
                         >
                             {error || feedback}
                         </motion.div>
@@ -335,7 +335,7 @@ export default function ClassesHub() {
                     <div className="grid gap-4 md:gap-6 xl:grid-cols-[1.1fr_0.9fr]">
                         <motion.section
                             variants={itemVariants}
-                            className="rounded-xl border border-(--accent)/25 bg-(--surface-card) p-4 md:p-6"
+                            className="rounded-2xl border border-(--accent)/25 bg-(--surface-card) p-4 md:p-6"
                         >
                             <h2 className="text-xl font-bold text-(--text-h)">
                                 {lang === 'RO' ? 'Creează o clasă' : 'Create a class'}
@@ -373,7 +373,7 @@ export default function ClassesHub() {
                         </motion.section>
                         <motion.section
                             variants={itemVariants}
-                            className="rounded-xl border border-(--accent)/25 bg-(--surface-card) p-4 md:p-6"
+                            className="rounded-2xl border border-(--accent)/25 bg-(--surface-card) p-4 md:p-6"
                         >
                             <h2 className="text-xl font-bold text-(--text-h)">
                                 {lang === 'RO' ? 'Găsește o clasă' : 'Find a class'}
@@ -399,7 +399,7 @@ export default function ClassesHub() {
                             {foundClass && (
                                 <motion.div
                                     variants={itemVariants}
-                                    className="mt-4 rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-4"
+                                    className="mt-4 rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4"
                                 >
                                     <h3 className="text-lg font-semibold text-(--text-h)">
                                         {foundClass.name}
@@ -429,7 +429,7 @@ export default function ClassesHub() {
 
                     <motion.section
                         variants={itemVariants}
-                        className="mt-4 md:mt-6 rounded-xl border-2 border-(--accent)/20 bg-(--surface-card) p-4 md:p-6"
+                        className="mt-4 md:mt-6 rounded-2xl border border-(--accent)/20 bg-(--surface-card) p-4 md:p-6"
                     >
                         <div className="flex items-center justify-between gap-4">
                             <h2 className="text-xl font-bold text-(--text-h)">
@@ -444,7 +444,7 @@ export default function ClassesHub() {
                                             saveRecentClasses(userId, []);
                                         }
                                     }}
-                                    className="rounded-lg border border-(--accent)/35 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
+                                    className="rounded-2xl border border-(--accent)/35 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
                                 >
                                     {lang === 'RO' ? 'Curăță' : 'Clear'}
                                 </button>
@@ -456,7 +456,7 @@ export default function ClassesHub() {
 
                     <motion.section
                         variants={itemVariants}
-                        className="mt-4 md:mt-6 rounded-xl border border-(--accent)/20 bg-(--surface-card) p-4 md:p-6"
+                        className="mt-4 md:mt-6 rounded-2xl border border-(--accent)/20 bg-(--surface-card) p-4 md:p-6"
                     >
                         <div className="flex items-center justify-between gap-4">
                             <h2 className="text-xl font-bold text-(--text-h)">

@@ -161,7 +161,7 @@ function HomeworkItem({
     return (
         <motion.div
             variants={itemVariants}
-            className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-4"
+            className="rounded-3xl border border-(--accent)/20 bg-(--surface-muted) p-4"
         >
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div>
@@ -186,7 +186,7 @@ function HomeworkItem({
                 <div className="flex flex-wrap items-center gap-2">
                     <button
                         onClick={() => onToggle(homework.id)}
-                        className="rounded-lg border border-(--accent)/40 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
+                        className="rounded-xl border border-(--accent)/40 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
                     >
                         {isSelected
                             ? lang === 'RO'
@@ -218,7 +218,7 @@ function HomeworkItem({
             </div>
 
             {isSelected && (
-                <div className="mt-4 rounded-xl border border-(--accent)/20 bg-black/15 p-4 space-y-4">
+                <div className="mt-4 rounded-2xl border border-(--accent)/20 bg-black/15 p-4 space-y-4">
                     {loadingDetails && (
                         <p className="text-sm text-(--text-muted)">
                             {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
@@ -260,7 +260,7 @@ function HomeworkItem({
 
                             {homework.status === 'DRAFT' && userId === creatorId && (
                                 <div className="grid gap-4 xl:grid-cols-2">
-                                    <div className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-3 space-y-2">
+                                    <div className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-3 space-y-2">
                                         <h4 className="text-sm font-bold text-(--text-h)">
                                             {lang === 'RO' ? 'Adaugă' : 'Add'}
                                         </h4>
@@ -268,7 +268,7 @@ function HomeworkItem({
                                             value={addUsernamesInput}
                                             onChange={(e) => setAddUsernamesInput(e.target.value)}
                                             placeholder="user1, user2"
-                                            className="w-full rounded-lg border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
+                                            className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
                                         />
                                         <input
                                             value={addProblemTitlesInput}
@@ -276,17 +276,17 @@ function HomeworkItem({
                                                 setAddProblemTitlesInput(e.target.value)
                                             }
                                             placeholder="p1, p2"
-                                            className="w-full rounded-lg border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
+                                            className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
                                         />
                                         <input
                                             type="date"
                                             value={addDeadline}
                                             onChange={(e) => setAddDeadline(e.target.value)}
-                                            className="w-full rounded-lg border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
+                                            className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
                                         />
                                         <button
                                             onClick={handleAddToDraft}
-                                            className="rounded-lg border border-emerald-400/50 px-3 py-1.5 text-xs font-semibold text-emerald-200"
+                                            className="rounded-xl border border-emerald-400/50 px-3 py-1.5 text-xs font-semibold text-emerald-200"
                                         >
                                             OK
                                         </button>
@@ -301,7 +301,7 @@ function HomeworkItem({
                                                 setRemoveUsernamesInput(e.target.value)
                                             }
                                             placeholder="user1, user2"
-                                            className="w-full rounded-lg border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
+                                            className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
                                         />
                                         <input
                                             value={removeProblemTitlesInput}
@@ -309,11 +309,11 @@ function HomeworkItem({
                                                 setRemoveProblemTitlesInput(e.target.value)
                                             }
                                             placeholder="p1, p2"
-                                            className="w-full rounded-lg border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
+                                            className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
                                         />
                                         <button
                                             onClick={handleRemoveFromDraft}
-                                            className="rounded-lg border border-red-400/50 px-3 py-1.5 text-xs font-semibold text-red-300"
+                                            className="rounded-xl border border-red-400/50 px-3 py-1.5 text-xs font-semibold text-red-300"
                                         >
                                             OK
                                         </button>
@@ -446,7 +446,7 @@ export default function ClassDetails() {
     return (
         <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
             <motion.div
-                className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
+                className="w-full max-w-7xl rounded-3xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar"
                 variants={pageVariants}
                 initial="hidden"
                 animate="visible"
@@ -476,7 +476,7 @@ export default function ClassDetails() {
                     {(feedback || error) && (
                         <motion.div
                             variants={itemVariants}
-                            className={`mb-6 rounded-xl border-2 px-4 py-3 text-sm ${error ? 'border-red-500/40 bg-red-500/10' : 'border-(--accent)/40 bg-(--accent)/10'}`}
+                            className={`mb-6 rounded-2xl border-2 px-4 py-3 text-sm ${error ? 'border-red-500/40 bg-red-500/10' : 'border-(--accent)/40 bg-(--accent)/10'}`}
                         >
                             {error || feedback}
                         </motion.div>
@@ -488,7 +488,7 @@ export default function ClassDetails() {
                         <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
                             <motion.section
                                 variants={itemVariants}
-                                className="rounded-xl border border-(--accent)/20 bg-(--surface-card) p-5"
+                                className="rounded-2xl border border-(--accent)/20 bg-(--surface-card) p-5"
                             >
                                 <h2 className="text-xl font-bold text-(--text-h)">
                                     {lang === 'RO' ? 'Detalii' : 'Details'}
@@ -506,12 +506,12 @@ export default function ClassDetails() {
                                             value={inviteEmail}
                                             onChange={(e) => setInviteEmail(e.target.value)}
                                             placeholder="Email"
-                                            className="flex-1 rounded-lg bg-black/20 border border-(--accent)/20 px-3 py-1.5 text-sm"
+                                            className="flex-1 rounded-xl bg-black/20 border border-(--accent)/20 px-3 py-1.5 text-sm"
                                         />
                                         <button
                                             type="submit"
                                             disabled={loadingInvite}
-                                            className="px-3 py-1.5 bg-(--accent)/10 border border-(--accent)/40 rounded-lg text-xs"
+                                            className="px-3 py-1.5 bg-(--accent)/10 border border-(--accent)/40 rounded-xl text-xs"
                                         >
                                             {loadingInvite ? '...' : 'OK'}
                                         </button>
@@ -524,7 +524,7 @@ export default function ClassDetails() {
 
                             <motion.section
                                 variants={itemVariants}
-                                className="rounded-xl border border-(--accent)/20 bg-(--surface-card) p-5"
+                                className="rounded-2xl border border-(--accent)/20 bg-(--surface-card) p-5"
                             >
                                 <h2 className="text-xl font-bold text-(--text-h)">
                                     {lang === 'RO' ? 'Temă nouă' : 'New homework'}
@@ -535,20 +535,20 @@ export default function ClassDetails() {
                                         onChange={(e) => setHomeworkTitle(e.target.value)}
                                         placeholder="Title"
                                         required
-                                        className="w-full rounded-lg bg-black/10 border border-(--accent)/20 px-3 py-2 text-sm"
+                                        className="w-full rounded-xl bg-black/10 border border-(--accent)/20 px-3 py-2 text-sm"
                                     />
                                     <textarea
                                         value={homeworkDescription}
                                         onChange={(e) => setHomeworkDescription(e.target.value)}
                                         placeholder="Desc"
-                                        className="w-full rounded-lg bg-black/10 border border-(--accent)/20 px-3 py-2 text-sm"
+                                        className="w-full rounded-xl bg-black/10 border border-(--accent)/20 px-3 py-2 text-sm"
                                     />
                                     <input
                                         type="date"
                                         value={homeworkDeadline}
                                         onChange={(e) => setHomeworkDeadline(e.target.value)}
                                         required
-                                        className="w-full rounded-lg bg-black/10 border border-(--accent)/20 px-3 py-2 text-sm"
+                                        className="w-full rounded-xl bg-black/10 border border-(--accent)/20 px-3 py-2 text-sm"
                                     />
                                     <div className="space-y-2 border-t border-(--accent)/10 pt-2">
                                         <input
@@ -557,7 +557,7 @@ export default function ClassDetails() {
                                                 setHomeworkCreationUsernames(e.target.value)
                                             }
                                             placeholder="Usernames (user1, user2)"
-                                            className="w-full rounded-lg bg-black/10 border border-(--accent)/20 px-3 py-2 text-xs"
+                                            className="w-full rounded-xl bg-black/10 border border-(--accent)/20 px-3 py-2 text-xs"
                                         />
                                         <input
                                             value={homeworkCreationProblems}
@@ -565,12 +565,12 @@ export default function ClassDetails() {
                                                 setHomeworkCreationProblems(e.target.value)
                                             }
                                             placeholder="Problems (p1, p2)"
-                                            className="w-full rounded-lg bg-black/10 border border-(--accent)/20 px-3 py-2 text-xs"
+                                            className="w-full rounded-xl bg-black/10 border border-(--accent)/20 px-3 py-2 text-xs"
                                         />
                                     </div>
                                     <button
                                         type="submit"
-                                        className="w-full bg-(--accent)/20 border border-(--accent)/50 py-2 rounded-lg text-sm"
+                                        className="w-full bg-(--accent)/20 border border-(--accent)/50 py-2 rounded-xl text-sm"
                                     >
                                         Create
                                     </button>
@@ -579,7 +579,7 @@ export default function ClassDetails() {
 
                             <motion.section
                                 variants={itemVariants}
-                                className="xl:col-span-2 rounded-xl border border-(--accent)/20 bg-(--surface-card) p-5"
+                                className="xl:col-span-2 rounded-2xl border border-(--accent)/20 bg-(--surface-card) p-5"
                             >
                                 <h2 className="text-xl font-bold mb-4">
                                     {lang === 'RO' ? 'Teme' : 'Homework'}
