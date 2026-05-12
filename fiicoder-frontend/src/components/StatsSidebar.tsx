@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useLanguage } from '../language/Language';
+import { itemVariants, staggerConfig } from '../utils/motionConfig';
 
 const MOCK_TOP_SOLVERS = [
     { username: 'GolderbergPrivate', solved: 142, rank: 1, avatar: 'GP' },
@@ -21,22 +22,24 @@ export default function StatsSidebar() {
     return (
         <aside className="hidden xl:flex flex-col gap-6">
             <motion.div
-                initial={{ opacity: 0, x: 20 }}
+                initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="p-6 rounded-2xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm"
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="p-5 rounded-2xl border-2 border-(--accent) bg-(--surface-card) overflow-y-auto custom-scrollbar max-h-[calc(100svh-8.5rem)]"
             >
-                <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-sm font-bold text-(--text-h) uppercase tracking-widest">
+                <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: staggerConfig } }}>
+                <motion.div variants={itemVariants} className="flex items-center justify-between">
+                    <h2 className="text-m font-bold text-(--text-h) uppercase tracking-widest">
                         {lang === 'RO' ? 'Top Rezolvatori' : 'Top Solvers'}
                     </h2>
-                    <span className="text-[10px] bg-(--accent)/10 text-(--accent) px-2 py-0.5 rounded-full font-bold">
+                    <span className="text-xs     bg-(--accent)/10 text-(--accent) px-2 py-0.5 rounded-full font-bold">
                         GLOBAL
                     </span>
-                </div>
-
-                <div className="space-y-4">
+                </motion.div>
+                <div className="page-line-horizontal" />
+                <motion.div variants={{ visible: { transition: staggerConfig } }} initial="hidden" animate="visible" className="space-y-4">
                     {MOCK_TOP_SOLVERS.map((user, idx) => (
-                        <div key={user.username} className="flex items-center justify-between group p-3 rounded-xl border border-(--accent)/30 bg-(--accent)/5 hover:border-(--accent)/60 transition-all">
+                        <motion.div variants={itemVariants} key={user.username} className="flex items-center justify-between group p-3 rounded-xl border border-(--accent)/30 bg-(--accent)/5 hover:border-(--accent)/60 transition-colors">
                             <div className="flex items-center gap-3">
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black border-2 ${
                                     idx === 0 ? 'bg-amber-500/20 border-amber-500 text-amber-500' :
@@ -56,23 +59,26 @@ export default function StatsSidebar() {
                                 </div>
                             </div>
                             <span className="text-xs font-black italic opacity-20">#{user.rank}</span>
-                        </div>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
+            </motion.div>
             </motion.div>
 
             <motion.div
-                initial={{ opacity: 0, x: 20 }}
+                initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-                className="p-6 rounded-2xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm"
+                transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
+                className="p-5 rounded-2xl border-2 border-(--accent) bg-(--surface-card)"
             >
-                <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-widest">
+                <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: staggerConfig } }}>
+                <motion.h2 variants={itemVariants} className="text-m font-bold text-(--text-h) uppercase tracking-widest">
                     {lang === 'RO' ? 'Probleme Populare' : 'Popular Problems'}
-                </h2>
-                <div className="space-y-3">
+                </motion.h2>
+                <div className="page-line-horizontal" />
+                <motion.div variants={{ visible: { transition: staggerConfig } }} initial="hidden" animate="visible" className="space-y-4">
                     {MOCK_POPULAR_PROBLEMS.map((prob) => (
-                        <div key={prob.title} className="p-3 rounded-xl border border-(--accent)/30 bg-(--accent)/5 hover:bg-(--accent)/10 transition-all cursor-pointer">
+                        <motion.div variants={itemVariants} key={prob.title} className="p-3 rounded-xl border border-(--accent)/30 bg-(--accent)/5 hover:bg-(--accent)/10 transition-colors cursor-pointer">
                             <h3 className="text-xs font-bold text-(--text-h) mb-1">{prob.title}</h3>
                             <div className="flex items-center justify-between">
                                 <span className="text-[9px] text-(--text-muted) font-semibold uppercase">
@@ -85,9 +91,10 @@ export default function StatsSidebar() {
                                     {prob.difficulty}
                                 </span>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
+                </motion.div>
             </motion.div>
         </aside>
     );
