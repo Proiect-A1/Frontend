@@ -70,6 +70,13 @@ export default function Login() {
                 } else {
                     login(token);
                 }
+                // clear any persisted non-sensitive info after successful login
+                setUsernameOrEmail('');
+                setUsername('');
+                setFirstName('');
+                setLastName('');
+                setEmail('');
+                setPassword('');
                 navigate('/problems');
             } else {
                 await authService.register({
@@ -87,7 +94,13 @@ export default function Login() {
                 );
                 // Switch to login mode after successful registration
                 setIsLogin(true);
-                setUsernameOrEmail(email);
+
+                // clear any persisted non-sensitive info after successful registration
+                setUsernameOrEmail('');
+                setUsername('');
+                setFirstName('');
+                setLastName('');
+                setEmail('');
                 setPassword('');
             }
         } catch (err) {
@@ -114,16 +127,10 @@ export default function Login() {
     // Toggle login/register
 
     const toggleMode = () => {
-        setIsLogin(!isLogin);
+        // Keep login and register fields separate. Only clear sensitive data.
         clearMessages();
-
-        // clear form fields when switching modes (foolproof :))
-        setUsernameOrEmail('');
         setPassword('');
-        setUsername('');
-        setFirstName('');
-        setLastName('');
-        setEmail('');
+        setIsLogin((prev) => !prev);
     };
 
     return (
