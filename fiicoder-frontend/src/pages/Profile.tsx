@@ -288,7 +288,7 @@ export default function Profile() {
                         <div className="flex flex-col gap-6 min-w-0">
                             <motion.div
                                 variants={itemVariants}
-                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm flex flex-col items-center lg:items-start text-center lg:text-left"
+                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm flex flex-col items-center lg:items-start text-center lg:text-left"
                             >
                                 <div className="w-24 h-24 mb-4 rounded-full bg-linear-to-br from-(--accent) to-purple-500 flex items-center justify-center text-4xl font-bold text-white uppercase shadow-lg outline-4 outline-offset-4 outline-(--accent) overflow-hidden shrink-0">
                                     {(
@@ -344,7 +344,7 @@ export default function Profile() {
 
                             <motion.div
                                 variants={itemVariants}
-                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow"
+                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow"
                             >
                                 <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
                                     {lang === 'RO' ? 'Statistici' : 'Community Stats'}
@@ -394,7 +394,7 @@ export default function Profile() {
 
                             <motion.div
                                 variants={itemVariants}
-                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow"
+                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow"
                             >
                                 <div className="mb-6">
                                     <h2 className="text-sm font-bold text-(--text-h) mb-3 uppercase tracking-wider">
@@ -433,7 +433,7 @@ export default function Profile() {
                         <div className="flex flex-col gap-6 min-w-0 w-full">
                             <motion.div
                                 variants={itemVariants}
-                                className="p-6 md:p-8 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-8 items-center min-w-0"
+                                className="p-6 md:p-8 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-8 items-center min-w-0"
                             >
                                 <div className="flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-(--accent)/20 pb-6 md:pb-0 md:pr-6">
                                     <span className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-2">
@@ -551,7 +551,7 @@ export default function Profile() {
                                     <motion.div
                                         key={item.label}
                                         variants={itemVariants}
-                                        className="p-3 rounded-2xl border border-(--accent)/50 bg-(--surface-card) transition-colors cursor-pointer text-center"
+                                        className="p-3 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) transition-colors cursor-pointer text-center"
                                     >
                                         <div className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold">
                                             {item.label}
@@ -565,7 +565,7 @@ export default function Profile() {
 
                             <motion.div
                                 variants={itemVariants}
-                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow min-w-0"
+                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow min-w-0"
                             >
                                 <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
                                     {lang === 'RO' ? 'Activitate pe zile' : 'Activity by Day'}
@@ -636,7 +636,7 @@ export default function Profile() {
 
                             <motion.div
                                 variants={itemVariants}
-                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow mb-8 min-w-0"
+                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow mb-8 min-w-0"
                             >
                                 <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
                                     {lang === 'RO' ? 'Submisii Recente' : 'Recent Submissions'}
