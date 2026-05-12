@@ -170,7 +170,7 @@ export default function ClassesHub() {
                 {recentClasses.length === 0 && (
                     <motion.div
                         variants={itemVariants}
-                        className="rounded-xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)"
+                        className="rounded-2xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)"
                     >
                         {lang === 'RO'
                             ? 'Nu ai clase salvate recent. Creează sau caută o clasă și va apărea aici.'
@@ -332,10 +332,10 @@ export default function ClassesHub() {
                         </motion.div>
                     )}
 
-                    <div className="grid gap-4 md:gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+                    <div className="grid gap-4 md:gap-6 xl:grid-cols-[1fr_1fr]">
                         <motion.section
                             variants={itemVariants}
-                            className="rounded-2xl border border-(--accent)/25 bg-(--surface-card) p-4 md:p-6"
+                            className=""
                         >
                             <h2 className="text-xl font-bold text-(--text-h)">
                                 {lang === 'RO' ? 'Creează o clasă' : 'Create a class'}
@@ -373,7 +373,7 @@ export default function ClassesHub() {
                         </motion.section>
                         <motion.section
                             variants={itemVariants}
-                            className="rounded-2xl border border-(--accent)/25 bg-(--surface-card) p-4 md:p-6"
+                            className=""
                         >
                             <h2 className="text-xl font-bold text-(--text-h)">
                                 {lang === 'RO' ? 'Găsește o clasă' : 'Find a class'}
@@ -418,7 +418,7 @@ export default function ClassesHub() {
                                     </div>
                                     <Link
                                         to={`/classes/${foundClass.id}`}
-                                        className="mt-3 inline-flex rounded-lg border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
+                                        className="mt-3 inline-flex rounded-2xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
                                     >
                                         {lang === 'RO' ? 'Deschide clasa' : 'Open class'}
                                     </Link>
@@ -429,7 +429,7 @@ export default function ClassesHub() {
 
                     <motion.section
                         variants={itemVariants}
-                        className="mt-4 md:mt-6 rounded-2xl border border-(--accent)/20 bg-(--surface-card) p-4 md:p-6"
+                        className="mt-4 md:mt-6"
                     >
                         <div className="flex items-center justify-between gap-4">
                             <h2 className="text-xl font-bold text-(--text-h)">
@@ -456,7 +456,7 @@ export default function ClassesHub() {
 
                     <motion.section
                         variants={itemVariants}
-                        className="mt-4 md:mt-6 rounded-2xl border border-(--accent)/20 bg-(--surface-card) p-4 md:p-6"
+                        className="mt-4 md:mt-6"
                     >
                         <div className="flex items-center justify-between gap-4">
                             <h2 className="text-xl font-bold text-(--text-h)">
