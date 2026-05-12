@@ -161,7 +161,7 @@ function HomeworkItem({
     return (
         <motion.div
             variants={itemVariants}
-            className="rounded-3xl border border-(--accent)/20 bg-(--surface-muted) p-4"
+            className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4"
         >
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div>
@@ -486,10 +486,7 @@ export default function ClassDetails() {
 
                     {!loading && group && (
                         <div className="grid gap-4 md:gap-6 xl:grid-cols-[1fr_1fr]">
-                            <motion.section
-                                variants={itemVariants}
-                                className=""
-                            >
+                            <motion.section variants={itemVariants} className="">
                                 <h2 className="text-xl font-bold text-(--text-h)">
                                     {lang === 'RO' ? 'Detalii' : 'Details'}
                                 </h2>
@@ -522,10 +519,7 @@ export default function ClassDetails() {
                                 </div>
                             </motion.section>
 
-                            <motion.section
-                                variants={itemVariants}
-                                className=""
-                            >
+                            <motion.section variants={itemVariants} className="">
                                 <h2 className="text-xl font-bold text-(--text-h)">
                                     {lang === 'RO' ? 'Temă nouă' : 'New homework'}
                                 </h2>
