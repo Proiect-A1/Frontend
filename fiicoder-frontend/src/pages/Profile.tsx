@@ -4,14 +4,16 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../services/AuthContext';
 import { useLanguage } from '../language/Language';
 import { useTheme } from '../services/ThemeContext';
-import { pageVariants } from '../utils/motionConfig';
+import { pageVariants, containerVariants, itemVariants } from '../utils/motionConfig';
 import {
     profileService,
     type ProfileResponseDTO,
     type RecentSubmissionDTO,
 } from '../services/profileService';
 
-const generateHeatmapFromSubmissions = (submissions: RecentSubmissionDTO[] | undefined): number[] => {
+const generateHeatmapFromSubmissions = (
+    submissions: RecentSubmissionDTO[] | undefined,
+): number[] => {
     if (!submissions || submissions.length === 0) {
         return Array(84).fill(0);
     }
@@ -158,7 +160,7 @@ export default function Profile() {
     const displayProfile = profile;
     const heatmap = useMemo(
         () => generateHeatmapFromSubmissions(displayProfile?.recentSubmissions?.content),
-        [displayProfile?.recentSubmissions?.content]
+        [displayProfile?.recentSubmissions?.content],
     );
 
     const statsCards = useMemo(() => {
@@ -196,8 +198,9 @@ export default function Profile() {
                   : 'bg-red-500/10 text-red-300 border-red-500/30';
 
             return (
-                <div
+                <motion.div
                     key={`${submission.problemTitle}-${submission.submissionDate}`}
+                    variants={itemVariants}
                     className="p-3 md:p-4 rounded-xl border border-(--accent)/20 bg-(--accent)/5 flex justify-between items-center gap-3 transition-colors hover:bg-(--accent)/10"
                 >
                     <div className="min-w-0 pr-2">
@@ -221,7 +224,7 @@ export default function Profile() {
                             {formatStatus(submission.status)}
                         </span>
                     </div>
-                </div>
+                </motion.div>
             );
         });
     }, [displayProfile, lang, isLightTheme]);
@@ -240,10 +243,10 @@ export default function Profile() {
                             ? lang === 'RO'
                                 ? 'Se încarcă profilul...'
                                 : 'Loading profile...'
-                            : error ??
+                            : (error ??
                               (lang === 'RO'
                                   ? 'Profil indisponibil momentan.'
-                                  : 'Profile is currently unavailable.')}
+                                  : 'Profile is currently unavailable.'))}
                     </div>
                 </motion.div>
             </div>
@@ -270,11 +273,23 @@ export default function Profile() {
                         </div>
                     )}
 
-                    <div className="w-full grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-6">
+                    <motion.div
+                        className="w-full grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-6"
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
                         <div className="flex flex-col gap-6 min-w-0">
-                            <div className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm flex flex-col items-center lg:items-start text-center lg:text-left">
+                            <motion.div
+                                variants={itemVariants}
+                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm flex flex-col items-center lg:items-start text-center lg:text-left"
+                            >
                                 <div className="w-24 h-24 mb-4 rounded-full bg-linear-to-br from-(--accent) to-purple-500 flex items-center justify-center text-4xl font-bold text-white uppercase shadow-lg outline-4 outline-offset-4 outline-(--accent) overflow-hidden shrink-0">
-                                    {(displayProfile.username || username || displayProfile.firstName)
+                                    {(
+                                        displayProfile.username ||
+                                        username ||
+                                        displayProfile.firstName
+                                    )
                                         .charAt(0)
                                         .toUpperCase()}
                                 </div>
@@ -289,8 +304,12 @@ export default function Profile() {
 
                                 <div className="w-full flex flex-col gap-2 mt-2 text-sm text-(--text">
                                     <div className="flex justify-between items-center gap-4">
-                                        <span className="font-semibold text-(--text-muted)">Email</span>
-                                        <span className="truncate text-right">{displayProfile.email}</span>
+                                        <span className="font-semibold text-(--text-muted)">
+                                            Email
+                                        </span>
+                                        <span className="truncate text-right">
+                                            {displayProfile.email}
+                                        </span>
                                     </div>
                                     <div className="flex justify-between items-center gap-4">
                                         <span className="font-semibold text-(--text-muted)">
@@ -303,19 +322,32 @@ export default function Profile() {
                                             {lang === 'RO' ? 'Rol' : 'Role'}
                                         </span>
                                         <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase border border-(--accent)/30 bg-(--accent)/10 text-(--text)">
-                                            {displayProfile.username === 'GolderbergPrivate' ? 'Admin' : (lang === 'RO' ? (displayProfile.submissions > 50 ? 'Veteran' : 'Elev') : (displayProfile.submissions > 50 ? 'Veteran' : 'Student'))}
+                                            {displayProfile.username === 'GolderbergPrivate'
+                                                ? 'Admin'
+                                                : lang === 'RO'
+                                                  ? displayProfile.submissions > 50
+                                                      ? 'Veteran'
+                                                      : 'Elev'
+                                                  : displayProfile.submissions > 50
+                                                    ? 'Veteran'
+                                                    : 'Student'}
                                         </span>
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
 
-                            <div className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow">
+                            <motion.div
+                                variants={itemVariants}
+                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow"
+                            >
                                 <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
                                     {lang === 'RO' ? 'Statistici' : 'Community Stats'}
                                 </h2>
                                 {loading && (
                                     <p className="mb-3 text-xs text-(--text-subtle)">
-                                        {lang === 'RO' ? 'Se încarcă profilul...' : 'Loading profile...'}
+                                        {lang === 'RO'
+                                            ? 'Se încarcă profilul...'
+                                            : 'Loading profile...'}
                                     </p>
                                 )}
                                 {error && <p className="mb-3 text-xs text-amber-300">{error}</p>}
@@ -330,7 +362,9 @@ export default function Profile() {
                                     </div>
                                     <div className="flex items-center justify-between gap-4">
                                         <span className="text-sm text-(--text-muted)">
-                                            {lang === 'RO' ? 'Rată de Acceptare' : 'Acceptance Rate'}
+                                            {lang === 'RO'
+                                                ? 'Rată de Acceptare'
+                                                : 'Acceptance Rate'}
                                         </span>
                                         <span className="font-bold text-(--text-h)">
                                             {formatPercent(displayProfile.acceptanceRate)}
@@ -350,9 +384,12 @@ export default function Profile() {
                                         </span>
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
 
-                            <div className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow">
+                            <motion.div
+                                variants={itemVariants}
+                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow"
+                            >
                                 <div className="mb-6">
                                     <h2 className="text-sm font-bold text-(--text-h) mb-3 uppercase tracking-wider">
                                         {lang === 'RO' ? 'Limbaje' : 'Languages'}
@@ -384,11 +421,14 @@ export default function Profile() {
                                         ))}
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
                         </div>
 
                         <div className="flex flex-col gap-6 min-w-0 w-full">
-                            <div className="p-6 md:p-8 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-8 items-center min-w-0">
+                            <motion.div
+                                variants={itemVariants}
+                                className="p-6 md:p-8 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-8 items-center min-w-0"
+                            >
                                 <div className="flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-(--accent)/20 pb-6 md:pb-0 md:pr-6">
                                     <span className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-2">
                                         {lang === 'RO' ? 'Probleme Rezolvate' : 'Problems Solved'}
@@ -415,7 +455,9 @@ export default function Profile() {
                                         <div className="w-full bg-emerald-500/10 rounded-full h-2">
                                             <div
                                                 className="bg-emerald-400 h-2 rounded-full"
-                                                style={{ width: formatPercent(displayProfile.rankEasy) }}
+                                                style={{
+                                                    width: formatPercent(displayProfile.rankEasy),
+                                                }}
                                             ></div>
                                         </div>
                                     </div>
@@ -436,7 +478,9 @@ export default function Profile() {
                                         <div className="w-full bg-amber-500/10 rounded-full h-2">
                                             <div
                                                 className="bg-amber-400 h-2 rounded-full"
-                                                style={{ width: formatPercent(displayProfile.rankMedium) }}
+                                                style={{
+                                                    width: formatPercent(displayProfile.rankMedium),
+                                                }}
                                             ></div>
                                         </div>
                                     </div>
@@ -457,7 +501,9 @@ export default function Profile() {
                                         <div className="w-full bg-red-500/10 rounded-full h-2">
                                             <div
                                                 className="bg-red-400 h-2 rounded-full"
-                                                style={{ width: formatPercent(displayProfile.rankHard) }}
+                                                style={{
+                                                    width: formatPercent(displayProfile.rankHard),
+                                                }}
                                             ></div>
                                         </div>
                                     </div>
@@ -478,17 +524,27 @@ export default function Profile() {
                                         <div className="w-full bg-purple-500/10 rounded-full h-2">
                                             <div
                                                 className="bg-purple-400 h-2 rounded-full"
-                                                style={{ width: formatPercent(displayProfile.rankContest) }}
+                                                style={{
+                                                    width: formatPercent(
+                                                        displayProfile.rankContest,
+                                                    ),
+                                                }}
                                             ></div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 min-w-0">
+                            <motion.div
+                                variants={containerVariants}
+                                initial="hidden"
+                                animate="visible"
+                                className="grid grid-cols-2 md:grid-cols-4 gap-3 min-w-0"
+                            >
                                 {statsCards.map((item) => (
-                                    <div
+                                    <motion.div
                                         key={item.label}
+                                        variants={itemVariants}
                                         className="p-3 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm hover:-translate-y-1 transition-transform cursor-pointer text-center"
                                     >
                                         <div className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold">
@@ -497,11 +553,14 @@ export default function Profile() {
                                         <div className="mt-1 text-sm font-bold text-(--text-h)">
                                             {item.value}
                                         </div>
-                                    </div>
+                                    </motion.div>
                                 ))}
-                            </div>
+                            </motion.div>
 
-                            <div className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow min-w-0">
+                            <motion.div
+                                variants={itemVariants}
+                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow min-w-0"
+                            >
                                 <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
                                     {lang === 'RO' ? 'Activitate pe zile' : 'Activity by Day'}
                                 </h2>
@@ -545,23 +604,46 @@ export default function Profile() {
 
                                 <div className="mt-2 flex items-center justify-end gap-2 text-xs text-(--text-subtle) font-semibold">
                                     <span>Less</span>
-                                    <div className="w-3 h-3 rounded-xs" style={getHeatmapStyle(0)} />
-                                    <div className="w-3 h-3 rounded-xs" style={getHeatmapStyle(1)} />
-                                    <div className="w-3 h-3 rounded-xs" style={getHeatmapStyle(2)} />
-                                    <div className="w-3 h-3 rounded-xs" style={getHeatmapStyle(3)} />
-                                    <div className="w-3 h-3 rounded-xs" style={getHeatmapStyle(4)} />
+                                    <div
+                                        className="w-3 h-3 rounded-xs"
+                                        style={getHeatmapStyle(0)}
+                                    />
+                                    <div
+                                        className="w-3 h-3 rounded-xs"
+                                        style={getHeatmapStyle(1)}
+                                    />
+                                    <div
+                                        className="w-3 h-3 rounded-xs"
+                                        style={getHeatmapStyle(2)}
+                                    />
+                                    <div
+                                        className="w-3 h-3 rounded-xs"
+                                        style={getHeatmapStyle(3)}
+                                    />
+                                    <div
+                                        className="w-3 h-3 rounded-xs"
+                                        style={getHeatmapStyle(4)}
+                                    />
                                     <span>More</span>
                                 </div>
-                            </div>
+                            </motion.div>
 
-                            <div className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow mb-8 min-w-0">
+                            <motion.div
+                                variants={itemVariants}
+                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-card) backdrop-blur-sm card-glow mb-8 min-w-0"
+                            >
                                 <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
                                     {lang === 'RO' ? 'Submisii Recente' : 'Recent Submissions'}
                                 </h2>
                                 {displayProfile.recentSubmissions.content.length > 0 ? (
-                                    <div className="flex flex-col gap-2">
+                                    <motion.div
+                                        variants={containerVariants}
+                                        initial="hidden"
+                                        animate="visible"
+                                        className="flex flex-col gap-2"
+                                    >
                                         {memoizedRecentSubmissions}
-                                    </div>
+                                    </motion.div>
                                 ) : (
                                     <p className="text-sm text-(--text-subtle)">
                                         {lang === 'RO'
@@ -569,9 +651,9 @@ export default function Profile() {
                                             : 'No recent submissions.'}
                                     </p>
                                 )}
-                            </div>
+                            </motion.div>
                         </div>
-                    </div>
+                    </motion.div>
                 </>
             </motion.div>
         </div>
