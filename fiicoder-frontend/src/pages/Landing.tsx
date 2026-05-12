@@ -319,7 +319,7 @@ export default function Landing() {
                                         key={ann.id}
                                         variants={itemVariants}
                                         onClick={() => handleOpenAnnouncement(ann)}
-                                        className={`p-4 rounded-2xl border-2 backdrop-blur-sm cursor-pointer transition-all duration-200 group relative ${
+                                        className={`p-4 rounded-2xl border-2 backdrop-blur-sm cursor-pointer transition-colors duration-200 group relative ${
                                             ann.priority === 'high'
                                                 ? 'border-(--accent) bg-(--accent)/10 hover:bg-(--accent)/15'
                                                 : ann.priority === 'medium'
@@ -382,7 +382,7 @@ export default function Landing() {
                             <motion.div
                                 key={index}
                                 variants={itemVariants}
-                                className={`p-4 rounded-2xl border-2 border-(--accent)/20 bg-(--surface-card) transition-all duration-300 group hover:border-(--accent)`}
+                                className={`p-4 rounded-2xl border-2 border-(--accent)/20 bg-(--surface-card) transition-colors duration-300 group hover:border-(--accent)`}
                             >
                                 <div className={`w-10 h-10 rounded-xl ${feature.color} flex items-center justify-center text-2xl mb-3 group-hover:scale-105 transition-transform duration-300`}>
                                     {feature.icon}
