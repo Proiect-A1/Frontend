@@ -485,10 +485,10 @@ export default function ClassDetails() {
                     {loading && <p>{lang === 'RO' ? 'Se încarcă...' : 'Loading...'}</p>}
 
                     {!loading && group && (
-                        <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
+                        <div className="grid gap-4 md:gap-6 xl:grid-cols-[1fr_1fr]">
                             <motion.section
                                 variants={itemVariants}
-                                className="p-5"
+                                className=""
                             >
                                 <h2 className="text-xl font-bold text-(--text-h)">
                                     {lang === 'RO' ? 'Detalii' : 'Details'}
@@ -497,7 +497,7 @@ export default function ClassDetails() {
                                     <p>Creator: {group.creatorUsername}</p>
                                     <p>ID: {group.id}</p>
                                 </div>
-                                <div className="mt-6 rounded-2xl border border-(--accent)/20 bg-(--surface-card)">
+                                <div className="p-4 rounded-2xl border border-(--accent)/20 bg-(--surface-card)">
                                     <h3 className="text-sm font-bold mb-2">
                                         {lang === 'RO' ? 'Invită' : 'Invite'}
                                     </h3>
@@ -524,7 +524,7 @@ export default function ClassDetails() {
 
                             <motion.section
                                 variants={itemVariants}
-                                className="p-5"
+                                className=""
                             >
                                 <h2 className="text-xl font-bold text-(--text-h)">
                                     {lang === 'RO' ? 'Temă nouă' : 'New homework'}
@@ -541,7 +541,7 @@ export default function ClassDetails() {
                                         value={homeworkDescription}
                                         onChange={(e) => setHomeworkDescription(e.target.value)}
                                         placeholder="Desc"
-                                        className="w-full rounded-22xl bg-(--surface-muted) border border-(--accent)/20 px-3 py-2 text-sm"
+                                        className="w-full rounded-2xl bg-(--surface-muted) border border-(--accent)/20 px-3 py-2 text-sm"
                                     />
                                     <input
                                         type="date"
@@ -577,7 +577,7 @@ export default function ClassDetails() {
                                 </form>
                             </motion.section>
 
-                            <h2 className="text-xl font-bold mb-4">
+                            <h2 className="text-xl font-bold">
                                 {lang === 'RO' ? 'Teme' : 'Homework'}
                             </h2>
 
