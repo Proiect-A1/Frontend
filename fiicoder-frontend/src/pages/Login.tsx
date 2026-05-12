@@ -20,6 +20,7 @@ export default function Login() {
     // Form state
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     // Register-only fields
     const [username, setUsername] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -77,8 +78,15 @@ export default function Login() {
                 setLastName('');
                 setEmail('');
                 setPassword('');
+                setConfirmPassword('');
                 navigate('/problems');
             } else {
+                if (password !== confirmPassword) {
+                    setFieldErrors({ confirmPassword: 'Parolele nu coincid.' });
+                    setError(lang === 'RO' ? 'Parolele nu coincid.' : 'Passwords do not match.');
+                    return;
+                }
+
                 await authService.register({
                     username,
                     firstName,
@@ -102,6 +110,7 @@ export default function Login() {
                 setLastName('');
                 setEmail('');
                 setPassword('');
+                setConfirmPassword('');
             }
         } catch (err) {
             if (err instanceof AuthError) {
@@ -130,6 +139,7 @@ export default function Login() {
         // Keep login and register fields separate. Only clear sensitive data.
         clearMessages();
         setPassword('');
+        setConfirmPassword('');
         setIsLogin((prev) => !prev);
     };
 
@@ -313,6 +323,28 @@ export default function Login() {
                             />
                             {fieldErrors.password && (
                                 <p className="mt-1 text-xs text-red-400">{fieldErrors.password}</p>
+                            )}
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-(--text) mb-1">
+                                {lang === 'RO' ? 'Confirmă parola' : 'Confirm password'}
+                            </label>
+                            <input
+                                type="password"
+                                required
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                placeholder="••••••••"
+                                className={`w-full rounded-2xl border bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent) ${
+                                    fieldErrors.confirmPassword
+                                        ? 'border-red-400/60'
+                                        : 'border-(--accent)/30'
+                                }`}
+                            />
+                            {fieldErrors.confirmPassword && (
+                                <p className="mt-1 text-xs text-red-400">
+                                    {fieldErrors.confirmPassword}
+                                </p>
                             )}
                         </div>
                     </>
