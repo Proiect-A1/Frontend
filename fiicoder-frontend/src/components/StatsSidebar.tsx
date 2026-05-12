@@ -39,7 +39,7 @@ export default function StatsSidebar() {
                 <div className="page-line-horizontal" />
                 <motion.div variants={{ visible: { transition: staggerConfig } }} initial="hidden" animate="visible" className="space-y-4">
                     {MOCK_TOP_SOLVERS.map((user, idx) => (
-                        <motion.div variants={itemVariants} key={user.username} className="flex items-center justify-between group p-3 rounded-xl border border-(--accent)/30 bg-(--accent)/5 hover:border-(--accent)/60 transition-colors">
+                        <motion.div variants={itemVariants} key={user.username} className="flex items-center justify-between group p-3 rounded-2xl border border-(--accent)/30 bg-(--accent)/5 hover:border-(--accent)/60 transition-colors">
                             <div className="flex items-center gap-3">
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black border-2 ${
                                     idx === 0 ? 'bg-amber-500/20 border-amber-500 text-amber-500' :
@@ -78,7 +78,7 @@ export default function StatsSidebar() {
                 <div className="page-line-horizontal" />
                 <motion.div variants={{ visible: { transition: staggerConfig } }} initial="hidden" animate="visible" className="space-y-4">
                     {MOCK_POPULAR_PROBLEMS.map((prob) => (
-                        <motion.div variants={itemVariants} key={prob.title} className="p-3 rounded-xl border border-(--accent)/30 bg-(--accent)/5 hover:bg-(--accent)/10 transition-colors cursor-pointer">
+                        <motion.div variants={itemVariants} key={prob.title} className="p-3 rounded-2xl border border-(--accent)/30 bg-(--accent)/5 hover:bg-(--accent)/10 transition-colors cursor-pointer">
                             <h3 className="text-xs font-bold text-(--text-h) mb-1">{prob.title}</h3>
                             <div className="flex items-center justify-between">
                                 <span className="text-[9px] text-(--text-muted) font-semibold uppercase">
