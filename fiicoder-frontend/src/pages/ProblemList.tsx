@@ -111,7 +111,7 @@ export default function ProblemList() {
                     {error && <p className="text-red-400">{error}</p>}
 
                     {!loading && !error && filteredProblems.length === 0 && (
-                        <p className="text-sm text-(--text-h) bg-(--surface-muted) p-4 rounded-xl border-2 border-(--accent)/25">
+                        <p className="text-sm text-(--text-h) bg-(--surface-muted) p-4 rounded-2xl border-2 border-(--accent)/25">
                             {t.noProblemsFound}
                         </p>
                     )}
@@ -130,7 +130,7 @@ export default function ProblemList() {
                                 >
                                     <Link
                                         to={`/problems/${problem.title}`}
-                                        className="block rounded-xl border border-(--accent)/25 bg-(--surface-muted) p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-(--accent) group cursor-pointer"
+                                        className="block rounded-2xl border border-(--accent)/25 bg-(--surface-muted) p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-(--accent) group cursor-pointer"
                                     >
                                         <div className="flex items-center justify-between gap-3">
                                             <h3 className="text-lg font-semibold text-(--text) underline decoration-2 decoration-(--accent)/60 underline-offset-4 transition group-hover:text-(--text-h) group-hover:decoration-(--accent) group-hover:decoration-3">
