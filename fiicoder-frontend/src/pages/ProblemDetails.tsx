@@ -752,7 +752,7 @@ export default function ProblemDetails() {
             </div>
 
             {/* Mobile View: Standard Stacked Grid */}
-            <div className="xl:hidden flex flex-col gap-4">
+            <div className="xl:hidden flex flex-col gap-4 mb-4">
                 <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-2xl">
                     {problemContent}
                 </div>
@@ -808,7 +808,7 @@ export default function ProblemDetails() {
                     <button
                         onClick={handleSubmit}
                         disabled={status === 'pending'}
-                        className="px-6 py-1.5 rounded-xl bg-(--accent) border-2 border-(--accent) text-xs text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group self-end mt-4"
+                        className="px-6 py-1.5 rounded-xl bg-(--accent) border-2 border-(--accent) text-xs text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group ml-auto mt-4"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
