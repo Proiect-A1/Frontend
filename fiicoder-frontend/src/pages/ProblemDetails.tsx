@@ -753,13 +753,13 @@ export default function ProblemDetails() {
 
             {/* Mobile View: Standard Stacked Grid */}
             <div className="xl:hidden flex flex-col gap-4">
-                <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-2xl">
+                <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-3xl">
                     {problemContent}
                 </div>
-                <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-2xl min-h-100 flex flex-col">
+                <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-3xl min-h-100 flex flex-col">
                     {editorContent}
                 </div>
-                <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-2xl mb-4">
+                <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-3xl mb-4">
                     <div className="flex items-center gap-4 mb-4 overflow-x-auto">
                         <button
                             onClick={() => setActiveTab('testcase')}
@@ -782,7 +782,7 @@ export default function ProblemDetails() {
                     </div>
                     {activeTab === 'testcase' && (
                         <textarea
-                            className="w-full bg-(--surface-input) border border-(--accent)/20 rounded-xl p-3 text-xs"
+                            className="w-full bg-(--surface-input) border border-(--accent)/20 rounded-2xl p-3 text-xs"
                             rows={4}
                             placeholder="Input..."
                         />
