@@ -805,30 +805,30 @@ export default function ProblemDetails() {
                             ))}
                         </div>
                     )}
-                </div>
-                <button
-                    onClick={handleSubmit}
-                    disabled={status === 'pending'}
-                    className="px-6 py-1.5 rounded-xl bg-(--accent) border-2 border-(--accent) text-xs text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group self-end"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={3}
+                    <button
+                        onClick={handleSubmit}
+                        disabled={status === 'pending'}
+                        className="px-6 py-1.5 rounded-xl bg-(--accent) border-2 border-(--accent) text-xs text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group self-end mt-4"
                     >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                    {status === 'pending'
-                        ? lang === 'RO'
-                            ? 'Trimitere...'
-                            : 'Submitting...'
-                        : lang === 'RO'
-                          ? 'Trimite'
-                          : 'Submit'}
-                </button>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={3}
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                        {status === 'pending'
+                            ? lang === 'RO'
+                                ? 'Trimitere...'
+                                : 'Submitting...'
+                            : lang === 'RO'
+                              ? 'Trimite'
+                              : 'Submit'}
+                    </button>
+                </div>
             </div>
         </div>
     );
