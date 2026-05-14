@@ -759,7 +759,7 @@ export default function ProblemDetails() {
                 <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-2xl min-h-100 flex flex-col">
                     {editorContent}
                 </div>
-                <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-2xl">
+                <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-2xl mb-4">
                     <div className="flex items-center gap-4 mb-4 overflow-x-auto">
                         <button
                             onClick={() => setActiveTab('testcase')}
@@ -797,7 +797,7 @@ export default function ProblemDetails() {
                             {recentSubmissions.map((s, i) => (
                                 <div
                                     key={i}
-                                    className="text-xs p-2 bg-(--accent)/5 rounded-lg border border-(--accent)/10 flex justify-between"
+                                    className="text-xs p-2 bg-(--accent)/5 rounded-2xl border border-(--accent)/10 flex justify-between"
                                 >
                                     <span>{s.status}</span>
                                     <span>{s.score}</span>
