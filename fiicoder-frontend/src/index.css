@@ -609,7 +609,7 @@ a:focus-visible {
 .flexlayout__tabset {
     background-color: var(--surface-card) !important;
     border: 2px solid var(--accent) !important;
-    border-radius: 1.5rem !important;
+    border-radius: 1.875rem !important;
     margin: 4px !important;
     overflow: hidden !important;
     display: flex !important;

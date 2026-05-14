@@ -352,7 +352,7 @@ export default function ProblemDetails() {
 
   if (error || !problem) {
     return (
-      <div className="w-full text-center p-8 text-red-400 bg-(--surface-card) backdrop-blur-sm border-2 border-red-500/30 rounded-2xl">
+      <div className="w-full text-center p-8 text-red-400 bg-(--surface-card) border-2 border-red-500/30 rounded-2xl">
         <h2 className="text-xl font-bold mb-2">Eroare</h2>
         <p>{error || "Problema nu a fost găsită."}</p>
         <Link
@@ -560,7 +560,7 @@ export default function ProblemDetails() {
                 <p className="text-sm text-(--text-muted) italic">{lang === 'RO' ? 'Autentifică-te pentru istoricul tău.' : 'Log in to see history.'}</p>
               ) : recentSubmissions.length > 0 ? (
                 recentSubmissions.map((sub, idx) => (
-                  <div key={idx} className="p-3 rounded-xl border-2 border-(--accent)/20 bg-(--accent)/5 flex items-center justify-between gap-3">
+                  <div key={idx} className="p-3 rounded-2xl border-2 border-(--accent)/20 bg-(--accent)/5 flex items-center justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-xs font-bold text-(--text-h)">{new Date(sub.submissionDate).toLocaleDateString()}</p>
                       <p className="text-[10px] text-(--text-muted) font-mono">Score: {sub.score}</p>
@@ -589,7 +589,7 @@ export default function ProblemDetails() {
       </div>
 
       {/* Workspace Toolbar (Status Bar) - Only on Desktop for now */}
-      <div className="hidden xl:flex h-12 shrink-0 bg-(--surface-card) border-2 border-(--accent) rounded-xl items-center justify-between px-4">
+      <div className="hidden xl:flex h-12 shrink-0 bg-(--surface-card) border-2 border-(--accent) rounded-2xl items-center justify-between px-4">
           <div className="flex items-center gap-4">
               <button 
                   className="text-[10px] font-black text-(--text-muted) hover:text-(--accent) flex items-center gap-2 uppercase tracking-tighter transition-colors group"
@@ -611,15 +611,6 @@ export default function ProblemDetails() {
           <div className="flex items-center gap-3">
               <button 
                   onClick={handleSubmit}
-                  className="px-4 py-1.5 rounded-lg bg-(--surface-input) border-2 border-(--accent)/30 text-[10px] font-black text-(--text-h) hover:border-(--accent) hover:bg-(--accent)/10 transition-all flex items-center gap-2 group"
-              >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-(--accent) group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                  </svg>
-                  {lang === 'RO' ? 'Rulează' : 'Run'}
-              </button>
-              <button 
-                  onClick={handleSubmit}
                   disabled={status === "pending"}
                   className="px-6 py-1.5 rounded-lg bg-(--accent) border-2 border-(--accent) text-[10px] font-black text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group"
               >
@@ -633,13 +624,13 @@ export default function ProblemDetails() {
 
       {/* Mobile View: Standard Stacked Grid */}
       <div className="xl:hidden flex flex-col gap-6 p-4">
-        <div className="p-6 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl">
+        <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-2xl">
           {problemContent}
         </div>
-        <div className="p-6 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl min-h-100 flex flex-col">
+        <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-2xl min-h-100 flex flex-col">
           {editorContent}
         </div>
-        <div className="p-6 bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-2xl">
+        <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-2xl">
           <div className="flex items-center gap-4 mb-4 overflow-x-auto">
              <button onClick={() => setActiveTab('testcase')} className={`text-xs font-bold pb-1 border-b-2 ${activeTab === 'testcase' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}>Testcase</button>
              <button onClick={() => setActiveTab('testresult')} className={`text-xs font-bold pb-1 border-b-2 ${activeTab === 'testresult' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}>Result</button>
@@ -657,6 +648,18 @@ export default function ProblemDetails() {
              </div>
           )}
         </div>
+          <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-2xl flex flex-col">
+            <button 
+                onClick={handleSubmit}
+                disabled={status === "pending"}
+                className="px-6 py-1.5 rounded-xl bg-(--accent) border-2 border-(--accent) text-[10px] font-black text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                {status === "pending" ? (lang === 'RO' ? 'Trimitere...' : 'Submitting...') : (lang === 'RO' ? 'Trimite' : 'Submit')}
+            </button>
+          </div>
       </div>
     </div>
   );
