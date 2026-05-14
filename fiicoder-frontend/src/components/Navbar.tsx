@@ -85,7 +85,7 @@ export default function Navbar() {
 
     // Simple collapse: switch to mobile layout when window width is below threshold
     useEffect(() => {
-        const COLLAPSE_AT = 1180; // px, adjust as needed
+        const COLLAPSE_AT = 1200;
         const onResize = () => setForceMobile(window.innerWidth < COLLAPSE_AT);
         onResize();
         window.addEventListener('resize', onResize);
@@ -283,7 +283,7 @@ export default function Navbar() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.12 }}
-                            className="absolute top-full left-0 right-0 mt-3 p-6 bg-(--surface-card) backdrop-blur-xl border-2 border-(--accent) rounded-xl flex flex-col gap-4 shadow-2xl z-10 lg:hidden"
+                            className={`${forceMobile ? '' : 'lg:hidden'} absolute top-full left-0 right-0 mt-6 p-6 bg-(--surface-card) backdrop-blur-xl border-2 border-(--accent) rounded-3xl flex flex-col gap-4 shadow-2xl z-10`}
                         >
                             <Link
                                 to="/problems"
