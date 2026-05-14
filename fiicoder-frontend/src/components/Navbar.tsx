@@ -37,11 +37,14 @@ export default function Navbar() {
     };
     const logoSrc = themeLogo[theme] || '/logo.svg';
 
+    // State to force mobile layout below a simple width threshold
+    const [forceMobile, setForceMobile] = useState(false);
+
     const getNavLinkClass = (path: string) => {
         const isActive = location.pathname.startsWith(path);
 
         const baseClasses =
-            'px-4 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center gap-2';
+            'px-4 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap flex-shrink-0';
 
         return isActive
             ? `${baseClasses} bg-(--accent)/25 border-(--accent) text-(--text-h)`
@@ -80,6 +83,15 @@ export default function Navbar() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // Simple collapse: switch to mobile layout when window width is below threshold
+    useEffect(() => {
+        const COLLAPSE_AT = 1180; // px, adjust as needed
+        const onResize = () => setForceMobile(window.innerWidth < COLLAPSE_AT);
+        onResize();
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
+
     return (
         <div className="sticky top-0 z-50 w-full px-4 md:px-6 pt-4">
             <nav className="w-full relative">
@@ -101,7 +113,9 @@ export default function Navbar() {
                     </Link>
 
                     {/* desktop navigation */}
-                    <div className="hidden lg:flex gap-3 items-center">
+                    <div
+                        className={`${forceMobile ? 'hidden' : 'hidden lg:flex'} gap-3 items-center flex-nowrap whitespace-nowrap`}
+                    >
                         <Link to="/problems" className={getNavLinkClass('/problems')}>
                             {t.archiveBtn}
                         </Link>
@@ -121,7 +135,10 @@ export default function Navbar() {
 
                         {isAuthenticated ? (
                             <>
-                                <Link to="/profile" className={getNavLinkClass('/profile')}>
+                                <Link
+                                    to="/profile"
+                                    className={`${getNavLinkClass('/profile')} min-w-0`}
+                                >
                                     <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white uppercase bg-(--accent) shadow-sm shadow-(--accent)/20">
                                         {username?.charAt(0) || '?'}
                                     </div>
@@ -131,12 +148,14 @@ export default function Navbar() {
                                 </Link>
                                 <button
                                     onClick={handleLogout}
-                                    style={{ 
-                                        borderColor: 'color-mix(in srgb, var(--status-error) 50%, transparent)', 
+                                    style={{
+                                        borderColor:
+                                            'color-mix(in srgb, var(--status-error) 50%, transparent)',
                                         color: 'var(--status-error)',
-                                        backgroundColor: 'color-mix(in srgb, var(--status-error) 10%, transparent)'
+                                        backgroundColor:
+                                            'color-mix(in srgb, var(--status-error) 10%, transparent)',
                                     }}
-                                    className="px-4 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-200 hover:bg-black/5 hover:-translate-y-0.5"
+                                    className="px-4 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-200 hover:bg-black/5 hover:-translate-y-0.5 whitespace-nowrap"
                                 >
                                     {t.disconnectBtn}
                                 </button>
@@ -148,7 +167,7 @@ export default function Navbar() {
                         )}
 
                         {/* lang toggle desktop */}
-                        <div className="relative flex items-center bg-(--surface-input) border-2 border-(--accent)/50 rounded-full p-1 h-9.5 w-24 overflow-hidden">
+                        <div className="relative flex items-center bg-(--surface-input) border-2 border-(--accent)/50 rounded-full p-1 h-9.5 w-24 overflow-hidden whitespace-nowrap">
                             <div
                                 className={`absolute top-1 bottom-1 w-10 bg-(--accent)/40 border border-(--accent)/60 rounded-full transition-all duration-300 ease-out ${
                                     lang === 'RO' ? 'left-1' : 'left-11.5'
@@ -178,7 +197,7 @@ export default function Navbar() {
                         <div className="relative" ref={themeDropdownRef}>
                             <button
                                 onClick={() => setIsThemeOpen(!isThemeOpen)}
-                                className="flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold border-2 border-(--accent)/40 text-(--text-h) bg-(--accent)/10 transition-all duration-200 hover:bg-(--accent)/20"
+                                className="flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold border-2 border-(--accent)/40 text-(--text-h) bg-(--accent)/10 transition-all duration-200 hover:bg-(--accent)/20 whitespace-nowrap"
                             >
                                 {lang === 'RO' ? 'Temă:' : 'Theme:'} {formatThemeLabel(theme)}
                                 <motion.span animate={{ rotate: isThemeOpen ? 180 : 0 }}>
@@ -219,7 +238,7 @@ export default function Navbar() {
 
                     {/* mobile hamburger menu button */}
                     <button
-                        className="lg:hidden p-2 text-(--text) hover:text-(--text-h) focus:outline-none"
+                        className={`${forceMobile ? '' : 'lg:hidden'} p-2 text-(--text) hover:text-(--text-h) focus:outline-none`}
                         onClick={() => setIsMobileOpen(!isMobileOpen)}
                     >
                         {isMobileOpen ? (
@@ -312,10 +331,12 @@ export default function Navbar() {
                                     </Link>
                                     <button
                                         onClick={handleLogout}
-                                        style={{ 
-                                            borderColor: 'color-mix(in srgb, var(--status-error) 50%, transparent)', 
+                                        style={{
+                                            borderColor:
+                                                'color-mix(in srgb, var(--status-error) 50%, transparent)',
                                             color: 'var(--status-error)',
-                                            backgroundColor: 'color-mix(in srgb, var(--status-error) 10%, transparent)'
+                                            backgroundColor:
+                                                'color-mix(in srgb, var(--status-error) 10%, transparent)',
                                         }}
                                         className="px-4 py-2.5 rounded-2xl text-sm font-bold border-2 transition-all duration-200 hover:bg-black/5"
                                     >
