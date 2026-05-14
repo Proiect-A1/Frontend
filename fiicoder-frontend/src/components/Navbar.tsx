@@ -13,20 +13,20 @@ export default function Navbar() {
     const t = translations[lang];
     const { isAuthenticated, username, isAdmin, isProfessor, logout } = useAuth();
 
-    // Am extras și setTheme din context
     const { theme, themes, setTheme } = useTheme();
 
     const formatThemeLabel = (themeName: string) =>
         themeName.charAt(0).toUpperCase() + themeName.slice(1);
 
-    // State pentru meniul de telefon
     const [isMobileOpen, setIsMobileOpen] = useState(false);
-    // State pentru dropdown-ul de teme pe desktop
     const [isThemeOpen, setIsThemeOpen] = useState(false);
-    // State pentru dropdown-ul de teme pe mobil
     const [isMobileThemeOpen, setIsMobileThemeOpen] = useState(false);
-    // Ref pentru a putea închide dropdown-ul de teme când dăm click în afara lui
-    const themeDropdownRef = useRef<HTMLDivElement>(null);
+
+    // Split into two refs: one for the trigger button, one for the panel.
+    // The panel lives outside the pill to avoid the overflow-hidden on the
+    // lang-toggle sibling clipping the absolutely-positioned dropdown.
+    const themeButtonRef = useRef<HTMLDivElement>(null);
+    const themePanelRef = useRef<HTMLDivElement>(null);
     const mobileThemeDropdownRef = useRef<HTMLDivElement>(null);
 
     const themeLogo: Record<string, string> = {
@@ -37,15 +37,10 @@ export default function Navbar() {
     };
     const logoSrc = themeLogo[theme] || '/logo.svg';
 
-    // State to force mobile layout below a simple width threshold
-    const [forceMobile, setForceMobile] = useState(false);
-
     const getNavLinkClass = (path: string) => {
         const isActive = location.pathname.startsWith(path);
-
         const baseClasses =
             'px-4 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap flex-shrink-0';
-
         return isActive
             ? `${baseClasses} bg-(--accent)/25 border-(--accent) text-(--text-h)`
             : `${baseClasses} bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5`;
@@ -63,18 +58,22 @@ export default function Navbar() {
         setIsMobileThemeOpen(false);
     };
 
-    // Efect pentru a închide dropdown-urile de teme la click pe afară
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
+            const target = event.target as Node;
+            // Close desktop theme dropdown when clicking outside both the
+            // trigger button and the panel (they are now separate DOM subtrees).
             if (
-                themeDropdownRef.current &&
-                !themeDropdownRef.current.contains(event.target as Node)
+                themeButtonRef.current &&
+                !themeButtonRef.current.contains(target) &&
+                themePanelRef.current &&
+                !themePanelRef.current.contains(target)
             ) {
                 setIsThemeOpen(false);
             }
             if (
                 mobileThemeDropdownRef.current &&
-                !mobileThemeDropdownRef.current.contains(event.target as Node)
+                !mobileThemeDropdownRef.current.contains(target)
             ) {
                 setIsMobileThemeOpen(false);
             }
@@ -83,19 +82,13 @@ export default function Navbar() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Simple collapse: switch to mobile layout when window width is below threshold
-    useEffect(() => {
-        const COLLAPSE_AT = 1200;
-        const onResize = () => setForceMobile(window.innerWidth < COLLAPSE_AT);
-        onResize();
-        window.addEventListener('resize', onResize);
-        return () => window.removeEventListener('resize', onResize);
-    }, []);
-
     return (
-        <div className="sticky top-0 z-50 w-full px-4 md:px-6 pt-4">
+        <div className="sticky top-0 z-50 w-full px-4 md:px-6 pt-4 backdrop-blur-sm">
             <nav className="w-full relative">
-                <div className="bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-full px-5 py-2.5 flex items-center justify-between">
+                {/* ── Pill ─────────────────────────────────────────────────────── */}
+                {/* backdrop-blur-sm moved up to the sticky wrapper so that the
+                    pill's stacking context never clips its absolute descendants. */}
+                <div className="bg-(--surface-card) border-2 border-(--accent) rounded-full px-5 py-2.5 flex items-center justify-between">
                     <Link
                         to="/"
                         onClick={closeMenu}
@@ -112,10 +105,8 @@ export default function Navbar() {
                         </h2>
                     </Link>
 
-                    {/* desktop navigation */}
-                    <div
-                        className={`${forceMobile ? 'hidden' : 'hidden lg:flex'} gap-3 items-center flex-nowrap whitespace-nowrap`}
-                    >
+                    {/* desktop navigation — collapses at 1200 px to avoid logo overlap */}
+                    <div className="hidden min-[1200px]:flex gap-3 items-center flex-nowrap whitespace-nowrap">
                         <Link to="/problems" className={getNavLinkClass('/problems')}>
                             {t.archiveBtn}
                         </Link>
@@ -193,10 +184,11 @@ export default function Navbar() {
 
                         <div className="page-line-vertical"></div>
 
-                        {/* theme toggle desktop */}
-                        <div className="relative" ref={themeDropdownRef}>
+                        {/* theme toggle — trigger only; the panel is rendered
+                            as a sibling of the pill below to avoid clipping */}
+                        <div ref={themeButtonRef}>
                             <button
-                                onClick={() => setIsThemeOpen(!isThemeOpen)}
+                                onClick={() => setIsThemeOpen((prev) => !prev)}
                                 className="flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold border-2 border-(--accent)/40 text-(--text-h) bg-(--accent)/10 transition-all duration-200 hover:bg-(--accent)/20 whitespace-nowrap"
                             >
                                 {lang === 'RO' ? 'Temă:' : 'Theme:'} {formatThemeLabel(theme)}
@@ -204,78 +196,61 @@ export default function Navbar() {
                                     ▼
                                 </motion.span>
                             </button>
-
-                            <AnimatePresence>
-                                {isThemeOpen && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: -10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        transition={{ duration: 0.15 }}
-                                        className="absolute right-0 top-full mt-3 w-32 bg-(--surface-dropdown) border border-(--accent)/40 rounded-2xl shadow-xl overflow-hidden z-50"
-                                    >
-                                        {themes.map((t) => (
-                                            <button
-                                                key={t}
-                                                onClick={() => {
-                                                    setTheme(t);
-                                                    setIsThemeOpen(false);
-                                                }}
-                                                className={`w-full text-left px-4 py-2 text-sm transition-colors ${
-                                                    theme === t
-                                                        ? 'text-(--text-h) bg-(--accent)/20 font-bold'
-                                                        : 'text-(--text-muted) hover:bg-(--accent)/10 hover:text-(--text-h)'
-                                                }`}
-                                            >
-                                                {formatThemeLabel(t)}
-                                            </button>
-                                        ))}
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
                         </div>
                     </div>
 
-                    {/* mobile hamburger menu button */}
+                    {/* mobile hamburger */}
                     <button
-                        className={`${forceMobile ? '' : 'lg:hidden'} p-2 text-(--text) hover:text-(--text-h) focus:outline-none`}
+                        className="min-[1200px]:hidden p-2 text-(--text) hover:text-(--text-h) focus:outline-none"
                         onClick={() => setIsMobileOpen(!isMobileOpen)}
                     >
                         {isMobileOpen ? (
-                            // X icon
-                            <svg
-                                className="w-6 h-6"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M6 18L18 6M6 6l12 12"
-                                />
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         ) : (
-                            // hamburger menu
-                            <svg
-                                className="w-6 h-6"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M4 6h16M4 12h16M4 18h16"
-                                />
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         )}
                     </button>
                 </div>
 
-                {/* dropdown menu for mobile */}
+                {/* ── Desktop theme dropdown panel ─────────────────────────────── */}
+                {/* Rendered outside the pill so the lang-toggle's overflow-hidden
+                    (and any backdrop-filter stacking context on the pill) cannot
+                    clip the panel. Positioned relative to <nav>. */}
+                <AnimatePresence>
+                    {isThemeOpen && (
+                        <motion.div
+                            ref={themePanelRef}
+                            initial={{ opacity: 0, y: -8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
+                            transition={{ duration: 0.15 }}
+                            className="hidden min-[1200px]:block absolute right-5 top-full mt-3 w-36 bg-(--surface-dropdown) border border-(--accent)/40 rounded-2xl shadow-xl overflow-hidden z-50"
+                        >
+                            {themes.map((themeName) => (
+                                <button
+                                    key={themeName}
+                                    onClick={() => {
+                                        setTheme(themeName);
+                                        setIsThemeOpen(false);
+                                    }}
+                                    className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                                        theme === themeName
+                                            ? 'text-(--text-h) bg-(--accent)/20 font-bold'
+                                            : 'text-(--text-muted) hover:bg-(--accent)/10 hover:text-(--text-h)'
+                                    }`}
+                                >
+                                    {formatThemeLabel(themeName)}
+                                </button>
+                            ))}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* ── Mobile dropdown ───────────────────────────────────────────── */}
                 <AnimatePresence>
                     {isMobileOpen && (
                         <motion.div
@@ -283,7 +258,7 @@ export default function Navbar() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.12 }}
-                            className={`${forceMobile ? '' : 'lg:hidden'} absolute top-full left-0 right-0 mt-6 p-6 bg-(--surface-card) backdrop-blur-xl border-2 border-(--accent) rounded-3xl flex flex-col gap-4 shadow-2xl z-10`}
+                            className="min-[1200px]:hidden absolute top-full left-0 right-0 mt-6 p-6 bg-(--surface-card) backdrop-blur-xl border-2 border-(--accent) rounded-3xl flex flex-col gap-4 shadow-2xl z-10"
                         >
                             <Link
                                 to="/problems"
@@ -362,19 +337,13 @@ export default function Navbar() {
                                 </span>
                                 <div className="flex justify-center gap-4">
                                     <button
-                                        onClick={() => {
-                                            setLang('RO');
-                                            closeMenu();
-                                        }}
+                                        onClick={() => { setLang('RO'); closeMenu(); }}
                                         className={`px-6 py-2 rounded-xl text-sm font-bold border-2 transition-colors ${lang === 'RO' ? 'border-(--accent) text-(--text-h) bg-(--accent)/20' : 'border-(--accent)/20 text-(--text-muted)'}`}
                                     >
                                         RO
                                     </button>
                                     <button
-                                        onClick={() => {
-                                            setLang('EN');
-                                            closeMenu();
-                                        }}
+                                        onClick={() => { setLang('EN'); closeMenu(); }}
                                         className={`px-6 py-2 rounded-xl text-sm font-bold border-2 transition-colors ${lang === 'EN' ? 'border-(--accent) text-(--text-h) bg-(--accent)/20' : 'border-(--accent)/20 text-(--text-muted)'}`}
                                     >
                                         EN
@@ -403,20 +372,20 @@ export default function Navbar() {
                                             transition={{ duration: 0.15 }}
                                             className="absolute left-0 right-0 top-full mt-2 bg-(--surface-dropdown) border border-(--accent)/40 rounded-2xl shadow-xl overflow-hidden z-50"
                                         >
-                                            {themes.map((t) => (
+                                            {themes.map((themeName) => (
                                                 <button
-                                                    key={t}
+                                                    key={themeName}
                                                     onClick={() => {
-                                                        setTheme(t);
+                                                        setTheme(themeName);
                                                         setIsMobileThemeOpen(false);
                                                     }}
                                                     className={`w-full text-left px-4 py-3 text-sm transition-colors ${
-                                                        theme === t
+                                                        theme === themeName
                                                             ? 'text-(--text-h) bg-(--accent)/20 font-bold'
                                                             : 'text-(--text-muted) hover:bg-(--accent)/10 hover:text-(--text-h)'
                                                     }`}
                                                 >
-                                                    {formatThemeLabel(t)}
+                                                    {formatThemeLabel(themeName)}
                                                 </button>
                                             ))}
                                         </motion.div>
