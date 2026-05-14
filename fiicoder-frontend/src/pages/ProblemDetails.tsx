@@ -681,7 +681,7 @@ export default function ProblemDetails() {
     };
 
     return (
-        <div className="w-full flex flex-col gap-6 h-[calc(100svh-6rem)] pb-4">
+        <div className="w-full flex flex-col gap-6 h-[calc(100svh-5rem)]">
             {/* Desktop Workspace: FlexLayout */}
             <div className="hidden xl:block relative flex-1 min-h-0 overflow-hidden">
                 <FlexLayout.Layout model={model} factory={factory} />
@@ -752,7 +752,7 @@ export default function ProblemDetails() {
             </div>
 
             {/* Mobile View: Standard Stacked Grid */}
-            <div className="xl:hidden flex flex-col gap-4 mb-4">
+            <div className="xl:hidden flex flex-col gap-4">
                 <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-2xl">
                     {problemContent}
                 </div>
