@@ -725,7 +725,7 @@ a:focus-visible {
 .flexlayout__tab {
     background-color: transparent !important;
     color: var(--text) !important;
-    border-radius: 1.5rem !important;
+    border-radius: 1.875rem !important;
     overflow: hidden !important;
 }
 
@@ -733,5 +733,5 @@ a:focus-visible {
 .flexlayout__outline_rect {
     border: 2px dashed var(--accent) !important;
     background-color: color-mix(in srgb, var(--accent) 15%, transparent) !important;
-    border-radius: 1.5rem !important;
+    border-radius: 1.875rem !important;
 }

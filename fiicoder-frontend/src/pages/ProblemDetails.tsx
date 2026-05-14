@@ -623,7 +623,7 @@ export default function ProblemDetails() {
       </div>
 
       {/* Mobile View: Standard Stacked Grid */}
-      <div className="xl:hidden flex flex-col gap-6 p-4">
+      <div className="xl:hidden flex flex-col gap-4">
         <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-2xl">
           {problemContent}
         </div>
@@ -652,7 +652,7 @@ export default function ProblemDetails() {
             <button 
                 onClick={handleSubmit}
                 disabled={status === "pending"}
-                className="px-6 py-1.5 rounded-xl bg-(--accent) border-2 border-(--accent) text-[10px] font-black text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group"
+                className="px-6 py-1.5 rounded-2xl bg-(--accent) border-2 border-(--accent) text-[10px] font-black text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
