@@ -127,21 +127,13 @@ export default function Profile() {
                 animate="visible"
             >
                 <div className="min-w-0 space-y-6">
+                    {/* Header curat, doar cu titlul paginii */}
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                         <div className="flex items-center gap-3">
                             <h1 className="text-3xl font-bold text-(--text-h) flex items-center gap-3">
                                 {lang === 'RO' ? 'Profil' : 'Profile'}
                             </h1>
                         </div>
-
-                        {isAdmin && (
-                            <Link
-                                to="/admin"
-                                className="px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center cursor-pointer bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5 w-fit"
-                            >
-                                {lang === 'RO' ? 'Panou Administrare' : 'Admin Dashboard'}
-                            </Link>
-                        )}
                     </div>
 
                     <motion.div
@@ -155,37 +147,43 @@ export default function Profile() {
                         </div>
 
                         <div className="flex flex-col gap-6 min-w-0 w-full">
-                            {canViewProposals ? (
-                                <>
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <button
-                                            type="button"
-                                            onClick={() => setActiveTab('overview')}
-                                            className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 ${activeTab === 'overview' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted)'}`}
-                                        >
-                                            {lang === 'RO' ? 'Prezentare' : 'Overview'}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setActiveTab('proposals')}
-                                            className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 ${activeTab === 'proposals' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted)'}`}
-                                        >
-                                            {lang === 'RO' ? 'Propunerile Mele' : 'My Proposals'}
-                                        </button>
-                                    </div>
+                            <div className="flex items-center gap-2 mb-4 flex-wrap">
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab('overview')}
+                                    className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'overview' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
+                                >
+                                    {lang === 'RO' ? 'Prezentare' : 'Overview'}
+                                </button>
+                                {canViewProposals && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveTab('proposals')}
+                                        className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'proposals' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
+                                    >
+                                        {lang === 'RO' ? 'Propunerile Mele' : 'My Proposals'}
+                                    </button>
+                                )}
 
-                                    {activeTab === 'overview' ? (
-                                        <ProfileOverviewContent profile={profile} lang={lang} theme={theme} />
-                                    ) : (
-                                        <ProfileProposalsPanel
-                                            proposals={proposals}
-                                            loading={loadingProposals}
-                                            lang={lang}
-                                        />
-                                    )}
-                                </>
-                            ) : (
+                                {/* Butonul de Admin integrat direct în bara de tab-uri, aliniat la dreapta */}
+                                {isAdmin && (
+                                    <Link
+                                        to="/admin"
+                                        className="px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 ml-auto bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5"
+                                    >
+                                        {lang === 'RO' ? 'Panou Administrare' : 'Admin Dashboard'}
+                                    </Link>
+                                )}
+                            </div>
+
+                            {activeTab === 'overview' ? (
                                 <ProfileOverviewContent profile={profile} lang={lang} theme={theme} />
+                            ) : (
+                                <ProfileProposalsPanel
+                                    proposals={proposals}
+                                    loading={loadingProposals}
+                                    lang={lang}
+                                />
                             )}
                         </div>
                     </motion.div>
