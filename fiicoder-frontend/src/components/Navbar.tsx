@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage, translations } from '../language/Language';
 import { useAuth } from '../services/AuthContext';
 import { useTheme } from '../services/ThemeContext';
+import SearchInput from './SearchInput';
+import { problemService } from '../services/problemService';
 
 export default function Navbar() {
     const location = useLocation();
@@ -21,6 +23,39 @@ export default function Navbar() {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [isThemeOpen, setIsThemeOpen] = useState(false);
     const [isMobileThemeOpen, setIsMobileThemeOpen] = useState(false);
+
+    const [navSearch, setNavSearch] = useState('');
+    const [navSuggestions, setNavSuggestions] = useState<string[]>([]);
+
+    useEffect(() => {
+        let mounted = true;
+        problemService.getAllProblems(1, 200).then(data => {
+            if (!mounted) return;
+            setNavSuggestions(data.map(d => d.title));
+        }).catch(() => {});
+        return () => { mounted = false; };
+    }, []);
+
+    const handleNavSearchEnter = async () => {
+        const trimmed = navSearch.trim();
+        if (!trimmed) return;
+
+        const matchedSuggestion = navSuggestions.find((title) =>
+            title.toLowerCase().includes(trimmed.toLowerCase()),
+        );
+
+        if (matchedSuggestion) {
+            navigate(`/problems/${matchedSuggestion}`);
+            return;
+        }
+
+        try {
+            const problem = await problemService.getProblemByTitle(trimmed);
+            if (problem?.title) navigate(`/problems/${problem.title}`);
+        } catch {
+            // ignore if not found
+        }
+    };
 
     // Split into two refs: one for the trigger button, one for the panel.
     // The panel lives outside the pill to avoid the overflow-hidden on the
@@ -86,24 +121,43 @@ export default function Navbar() {
         <div className="sticky top-0 z-50 w-full px-4 md:px-6 pt-4">
             <nav className="w-full relative">
                 <div className="bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-full px-5 py-2.5 flex items-center justify-between">
-                    <Link
-                        to="/"
-                        onClick={closeMenu}
-                        className="flex items-center gap-3 transition-transform duration-200 hover:scale-105"
-                    >
-                        <img
-                            src={logoSrc}
-                            alt="Logo"
-                            className="theme-logo h-10 w-10 md:h-12 md:w-12 object-contain theme-logo-glow"
-                        />
-                        <div className="page-line-vertical"></div>
-                        <h2 className="font-semibold text-(--accent) text-lg md:text-xl tracking-tight">
-                            {`<_fiicoder>`}
-                        </h2>
-                    </Link>
+                    <div className="flex items-center gap-6">
+                        <Link
+                            to="/"
+                            onClick={closeMenu}
+                            className="flex items-center gap-3 transition-transform duration-200 hover:scale-105"
+                        >
+                            <img
+                                src={logoSrc}
+                                alt="Logo"
+                                className="theme-logo h-10 w-10 md:h-12 md:w-12 object-contain theme-logo-glow"
+                            />
+                            <div className="page-line-vertical"></div>
+                            <h2 className="font-semibold text-(--accent) text-lg md:text-xl tracking-tight">
+                                {`<_fiicoder>`}
+                            </h2>
+                        </Link>
+
+                        {/* left area: search (desktop) */}
+                        <div className="hidden min-[1200px]:flex items-center">
+                            <div className="w-64">
+                                <SearchInput
+                                    value={navSearch}
+                                    onChange={setNavSearch}
+                                    placeholder={lang === 'RO' ? 'Caută problemă...' : 'Search problem...'}
+                                    suggestions={navSuggestions}
+                                    onEnter={handleNavSearchEnter}
+                                    onSelectSuggestion={(s) => navigate(`/problems/${s}`)}
+                                />
+                            </div>
+                        </div>
+
+                    </div>
 
                     {/* desktop navigation — collapses at 1200 px to avoid logo overlap */}
                     <div className="hidden min-[1200px]:flex gap-3 items-center flex-nowrap whitespace-nowrap">
+                        
+
                         <Link to="/problems" className={getNavLinkClass('/problems')}>
                             {t.archiveBtn}
                         </Link>

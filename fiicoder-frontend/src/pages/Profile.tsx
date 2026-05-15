@@ -713,22 +713,55 @@ export default function Profile() {
                                         {lang === 'RO' ? 'Propunerile Mele' : 'My Proposals'}
                                     </h2>
                                     {loadingProposals ? (
-                                        <p className="text-sm text-(--text-muted)">{lang === 'RO' ? 'Se încarcă...' : 'Loading...'}</p>
+                                        <div className="flex justify-center p-8">
+                                            <div className="w-8 h-8 border-4 border-(--accent) border-t-transparent rounded-full animate-spin" />
+                                        </div>
                                     ) : !proposals || proposals.length === 0 ? (
-                                        <p className="text-sm text-(--text-subtle)">{lang === 'RO' ? 'Nu ai propuneri.' : 'You have no proposals.'}</p>
+                                        <div className="text-center p-8 rounded-2xl border-2 border-dashed border-(--accent)/20">
+                                            <p className="text-sm text-(--text-subtle)">
+                                                {lang === 'RO' ? 'Nu ai trimis nicio propunere încă.' : 'You haven\'t submitted any proposals yet.'}
+                                            </p>
+                                        </div>
                                     ) : (
                                         <div className="flex flex-col gap-3">
                                             {proposals.map((p) => (
-                                                <div key={p.id} className="p-3 rounded-2xl border border-(--accent)/10 bg-(--surface-muted) flex items-center justify-between">
+                                                <Link 
+                                                    key={p.id} 
+                                                    to={`/propose/${p.id}`}
+                                                    className="p-4 rounded-2xl border border-(--accent)/15 bg-(--surface-muted) hover:border-(--accent)/40 transition-all flex items-center justify-between group"
+                                                >
                                                     <div className="min-w-0">
-                                                        <div className="font-bold text-(--text-h) truncate">{p.title}</div>
-                                                        <div className="text-[11px] text-(--text-muted)">{new Date(p.submittedAt).toLocaleDateString()}</div>
+                                                        <div className="font-bold text-(--text-h) truncate group-hover:text-(--accent) transition-colors">
+                                                            {p.title}
+                                                        </div>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            <span className="text-[10px] font-mono text-(--text-subtle)">
+                                                                {new Date(p.submittedAt).toLocaleDateString()}
+                                                            </span>
+                                                            <span className="w-1 h-1 rounded-full bg-(--accent)/20" />
+                                                            <span className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold">
+                                                                {p.visibility}
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                    <div className="text-right text-sm">
-                                                        <div className="font-mono text-[12px] text-(--text-muted)">{p.visibility}</div>
-                                                        <div className="mt-1 text-xs font-bold uppercase">{p.status.toUpperCase()}</div>
+                                                    <div className="flex items-center gap-3">
+                                                        <span 
+                                                            style={{ 
+                                                                borderColor: `color-mix(in srgb, var(--status-${p.status === 'approved' ? 'success' : p.status === 'rejected' ? 'error' : 'warning'}) 40%, transparent)`,
+                                                                color: `var(--status-${p.status === 'approved' ? 'success' : p.status === 'rejected' ? 'error' : 'warning'})`,
+                                                                backgroundColor: `color-mix(in srgb, var(--status-${p.status === 'approved' ? 'success' : p.status === 'rejected' ? 'error' : 'warning'}) 5%, transparent)`
+                                                            }}
+                                                            className="text-[10px] px-2 py-0.5 rounded-full border uppercase tracking-wider font-bold"
+                                                        >
+                                                            {p.status}
+                                                        </span>
+                                                        <div className="text-(--accent) opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                                            </svg>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                </Link>
                                             ))}
                                         </div>
                                     )}

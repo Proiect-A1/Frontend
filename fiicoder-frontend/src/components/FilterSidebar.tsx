@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import type { Difficulty } from '../types/difficulty';
 import { tagService, type TagResponseDTO } from '../services/tagService';
 import { hoverTransition, itemVariants, staggerConfig } from '../utils/motionConfig';
-import { useNavigate } from 'react-router-dom';
-import { problemService } from '../services/problemService';
 
 interface FilterSidebarProps {
     difficultyFilter: string;
@@ -29,17 +27,11 @@ export default function FilterSidebar({
     const { lang } = useLanguage();
     const t = translations[lang];
 
-    const navigate = useNavigate();
-
     const [isOpen, setIsOpen] = useState(false);
 
     // tag-uri din backend
     const [availableTags, setAvailableTags] = useState<TagResponseDTO[]>([]);
     const [tagsLoading, setTagsLoading] = useState(true);
-
-    // search
-    const [searchQuery, setSearchQuery] = useState('');
-    const [searchError, setSearchError] = useState<string | null>(null);
 
     useEffect(() => {
         let mounted = true;
@@ -77,25 +69,7 @@ export default function FilterSidebar({
         return getDifficultyLabel(lang, val as Difficulty);
     };
 
-    const handleSearchSubmit = async () => {
-        const trimmedQuery = searchQuery.trim();
-        if (!trimmedQuery) return;
-
-        setSearchError(null);
-
-        try {
-            const problem = await problemService.getProblemByTitle(trimmedQuery);
-            if (problem?.title) {
-                navigate(`/problems/${problem.title}`);
-            }
-        } catch {
-            setSearchError(
-                lang === 'RO'
-                    ? 'Nicio problemă găsită cu acest titlu.'
-                    : 'No problem found with this title.',
-            );
-        }
-    };
+    
 
     return (
         <motion.aside
@@ -117,35 +91,6 @@ export default function FilterSidebar({
                 </motion.h2>
                 <div className="page-line-horizontal" />
                 <div className="space-y-4">
-                    {/* input cautare */}
-                    <motion.div variants={itemVariants}>
-                        <label
-                            htmlFor="problem-search"
-                            className="mb-1 block text-sm font-semibold text-(--text-h)"
-                        >
-                            {t.searchLabel}
-                        </label>
-                        <input
-                            id="problem-search"
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => {
-                                setSearchQuery(e.target.value);
-                                setSearchError(null); // reseteza eroare la modificare input
-                            }}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleSearchSubmit();
-                            }}
-                            placeholder={lang === 'RO' ? 'ex: Problema 3' : 'ex: Problem 3'}
-                            className="w-full rounded-xl border border-(--accent)/30 bg-(--surface-input) px-3 py-2 text-sm text-(--text) placeholder:text-(--text-muted) outline-none transition hover:border-(--accent)"
-                        />
-
-                        {/* mesaj eroare inline */}
-                        {searchError && (
-                            <p className="mt-1 text-xs text-red-400/80">{searchError}</p>
-                        )}
-                    </motion.div>
-
                     {/* dropdown dificultate */}
                     <motion.div variants={itemVariants}>
                         <label className="mb-1 block text-sm font-semibold text-(--text-h)">
@@ -236,8 +181,6 @@ export default function FilterSidebar({
                         type="button"
                         onClick={() => {
                             clearFilters();
-                            setSearchQuery('');
-                            setSearchError(null);
                             setIsOpen(false);
                         }}
                         className="w-full rounded-xl border border-(--accent)/50 bg-(--accent)/10 px-3 py-2 text-sm font-semibold text-(--text-h) outline-none transition-colors hover:border-(--accent) hover:bg-(--accent)/30 hover:-translate-y-0.5"
