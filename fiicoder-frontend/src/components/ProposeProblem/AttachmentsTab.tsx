@@ -6,41 +6,7 @@ import type { OnMount } from '@monaco-editor/react';
 import type { ProposeProblemForm, ProblemFile, FileCategory, SubtaskRunResult } from '../../types/proposeProblem';
 import { itemVariants, staggerConfig } from '../../utils/motionConfig';
 import { useTheme } from '../../services/ThemeContext';
-
-// Monaco theme palettes
-const monacoThemes: Record<string, {
-    accent: string; text: string; textMuted: string; textSubtle: string;
-    editorBg: string; codeBg: string; accentSecondary: string;
-}> = {
-    rose: { accent: '#ff5eb6', accentSecondary: '#a78bfa', text: '#ffe8f6', textMuted: '#b39aad', textSubtle: '#8a7099', editorBg: '#0a0812', codeBg: '#120e1c' },
-    nord: { accent: '#88c0d0', accentSecondary: '#5e81ac', text: '#eceff4', textMuted: '#7b88a1', textSubtle: '#616e88', editorBg: '#242933', codeBg: '#2e3440' },
-    cream: { accent: '#d4a574', accentSecondary: '#b76857', text: '#f5f1e8', textMuted: '#a89080', textSubtle: '#8a7560', editorBg: '#1a1612', codeBg: '#2a2420' },
-    sage: { accent: '#7a9e7e', accentSecondary: '#5a7e78', text: '#e8ebe7', textMuted: '#7a8f7c', textSubtle: '#667069', editorBg: '#1a1e1a', codeBg: '#242823' },
-};
-
-function applyMonacoTheme(monaco: any, themeName: string) {
-    const palette = monacoThemes[themeName] || monacoThemes.rose;
-    monaco.editor.defineTheme('fiicoder-dark', {
-        base: 'vs-dark', inherit: true,
-        rules: [
-            { token: 'comment', foreground: palette.textMuted.replace('#', ''), fontStyle: 'italic' },
-            { token: 'keyword', foreground: palette.accent.replace('#', '') },
-            { token: 'string', foreground: palette.accentSecondary.replace('#', '') },
-            { token: 'number', foreground: palette.accent.replace('#', '') },
-        ],
-        colors: {
-            'editor.background': palette.editorBg,
-            'editor.foreground': palette.text,
-            'editor.lineHighlightBackground': palette.codeBg,
-            'editor.selectionBackground': `${palette.accent}4d`,
-            'editorLineNumber.foreground': palette.textSubtle,
-            'editorLineNumber.activeForeground': palette.accent,
-            'editorCursor.foreground': palette.accent,
-            'scrollbarSlider.background': `${palette.accent}26`,
-        },
-    });
-    monaco.editor.setTheme('fiicoder-dark');
-}
+import { applyMonacoTheme } from './monacoTheme';
 
 // Reordered per team request: Generatoare, Validatoare, Interactoare, Checkere, Surse
 const allCategories: { id: FileCategory; label: string; icon: React.ReactNode; description: string }[] = [

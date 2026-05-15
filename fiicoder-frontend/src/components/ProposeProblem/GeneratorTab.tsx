@@ -7,50 +7,7 @@ import type { ProposeProblemForm, GeneratorValidationError } from '../../types/p
 import { itemVariants, staggerConfig } from '../../utils/motionConfig';
 import { useTheme } from '../../services/ThemeContext';
 import { registerGeneratorLanguage, LANGUAGE_ID } from '../../utils/generatorLanguage';
-
-// Monaco theme palettes
-const monacoThemes: Record<string, {
-    accent: string; text: string; textMuted: string; textSubtle: string;
-    editorBg: string; codeBg: string; accentSecondary: string;
-}> = {
-    rose: { accent: '#ff5eb6', accentSecondary: '#a78bfa', text: '#ffe8f6', textMuted: '#b39aad', textSubtle: '#8a7099', editorBg: '#0a0812', codeBg: '#120e1c' },
-    nord: { accent: '#88c0d0', accentSecondary: '#5e81ac', text: '#eceff4', textMuted: '#7b88a1', textSubtle: '#616e88', editorBg: '#242933', codeBg: '#2e3440' },
-    cream: { accent: '#d4a574', accentSecondary: '#b76857', text: '#f5f1e8', textMuted: '#a89080', textSubtle: '#8a7560', editorBg: '#1a1612', codeBg: '#2a2420' },
-    sage: { accent: '#7a9e7e', accentSecondary: '#5a7e78', text: '#e8ebe7', textMuted: '#7a8f7c', textSubtle: '#667069', editorBg: '#1a1e1a', codeBg: '#242823' },
-};
-
-function applyMonacoTheme(monaco: any, themeName: string) {
-    const palette = monacoThemes[themeName] || monacoThemes.rose;
-    monaco.editor.defineTheme('fiicoder-gen-theme', {
-        base: 'vs-dark', inherit: true,
-        rules: [
-            { token: 'comment', foreground: palette.textMuted.replace('#', ''), fontStyle: 'italic' },
-            { token: 'keyword.directive', foreground: palette.accent.replace('#', ''), fontStyle: 'bold' },
-            { token: 'number', foreground: palette.accentSecondary.replace('#', '') },
-            { token: 'string.filename', foreground: 'e0c97b', fontStyle: 'underline' },
-            { token: 'operator.copy', foreground: '66bb6a', fontStyle: 'bold' },
-            { token: 'operator.generator', foreground: '42a5f5', fontStyle: 'bold' },
-            { token: 'identifier', foreground: palette.text.replace('#', '') },
-            { token: 'invalid', foreground: 'ff5252', fontStyle: 'bold' },
-        ],
-        colors: {
-            'editor.background': palette.editorBg,
-            'editor.foreground': palette.text,
-            'editor.lineHighlightBackground': palette.codeBg,
-            'editor.selectionBackground': `${palette.accent}4d`,
-            'editor.inactiveSelectionBackground': `${palette.accent}26`,
-            'editorLineNumber.foreground': palette.textSubtle,
-            'editorLineNumber.activeForeground': palette.accent,
-            'editorCursor.foreground': palette.accent,
-            'editorIndentGuide.background': `${palette.accent}1f`,
-            'editorIndentGuide.activeBackground': `${palette.accent}59`,
-            'scrollbarSlider.background': `${palette.accent}26`,
-            'scrollbarSlider.hoverBackground': `${palette.accent}4d`,
-            'scrollbarSlider.activeBackground': `${palette.accent}80`,
-        },
-    });
-    monaco.editor.setTheme('fiicoder-gen-theme');
-}
+import { applyMonacoTheme, getMonacoThemePalette } from './monacoTheme';
 
 const EXAMPLE_SCRIPT = `#MAIN main
 #DEFGRP 10 exemple
@@ -84,6 +41,18 @@ export default function GeneratorTab() {
     const [status, setStatus] = useState<ValidationStatus>('idle');
     const [errors, setErrors] = useState<GeneratorValidationError[]>([]);
     const [showDocsTooltip, setShowDocsTooltip] = useState(false);
+
+    const buildGeneratorRules = (themeName: string) => {
+        const palette = getMonacoThemePalette(themeName);
+        return [
+            { token: 'keyword.directive', foreground: palette.accent.replace('#', ''), fontStyle: 'bold' },
+            { token: 'string.filename', foreground: 'e0c97b', fontStyle: 'underline' },
+            { token: 'operator.copy', foreground: '66bb6a', fontStyle: 'bold' },
+            { token: 'operator.generator', foreground: '42a5f5', fontStyle: 'bold' },
+            { token: 'identifier', foreground: palette.text.replace('#', '') },
+            { token: 'invalid', foreground: 'ff5252', fontStyle: 'bold' },
+        ];
+    };
 
     const handleSave = useCallback(async () => {
         setStatus('validating');
@@ -130,13 +99,19 @@ export default function GeneratorTab() {
     const handleEditorMount: OnMount = (_editor, monaco) => {
         monacoRef.current = monaco;
         registerGeneratorLanguage(monaco);
-        applyMonacoTheme(monaco, theme);
+        applyMonacoTheme(monaco, theme, {
+            themeId: 'fiicoder-gen-theme',
+            extraRules: buildGeneratorRules(theme),
+        });
     };
 
     // Reactively update Monaco theme when app theme changes
     useEffect(() => {
         if (monacoRef.current) {
-            applyMonacoTheme(monacoRef.current, theme);
+            applyMonacoTheme(monacoRef.current, theme, {
+                themeId: 'fiicoder-gen-theme',
+                extraRules: buildGeneratorRules(theme),
+            });
         }
     }, [theme]);
 
