@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
+import { profileService } from './profileService';
 
-// forma unui JWT
 interface JwtPayload {
-  sub: string;       // userId-ul (UUID) venit de la backend în 'sub'
-  role: string;      
+  sub: string;
+  role: string;
   iat: number;
   exp: number;
 }
@@ -13,7 +13,6 @@ function decodeJwt(token: string): JwtPayload | null {
   try {
     const parts = token.split('.');
     if (parts.length !== 3) return null;
-    // Decodăm partea de payload a JWT-ului
     const payload = JSON.parse(atob(parts[1]));
     return payload as JwtPayload;
   } catch {
@@ -24,7 +23,6 @@ function decodeJwt(token: string): JwtPayload | null {
 function isTokenExpired(token: string): boolean {
   const payload = decodeJwt(token);
   if (!payload) return true;
-  // payload.exp este în secunde, Date.now() e în milisecunde
   return Date.now() >= payload.exp * 1000;
 }
 
@@ -46,8 +44,8 @@ const AuthContext = createContext<AuthContextType>({
   isAdmin: false,
   isProfessor: false,
   isAuthenticated: false,
-  login: () => { },
-  logout: () => { },
+  login: () => {},
+  logout: () => {},
 });
 
 const TOKEN_KEY = 'fiicoder_jwt';
@@ -57,25 +55,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() => {
     const stored = localStorage.getItem(TOKEN_KEY);
     if (stored && !isTokenExpired(stored)) return stored;
-    // curat token-ul expirat la init
     localStorage.removeItem(TOKEN_KEY);
     return null;
   });
+
   const [storedUsername, setStoredUsername] = useState<string | null>(() => {
     return localStorage.getItem(USERNAME_KEY);
   });
 
   const payload = token ? decodeJwt(token) : null;
-  
-  // scot valorile din payload
   const userId = payload?.sub ?? null;
-  const username = storedUsername;
-  const isAdmin = payload?.role === 'ADMIN'; 
+  const isAdmin = payload?.role === 'ADMIN';
   const isProfessor = payload?.role === 'PROFESSOR';
   const isAuthenticated = token !== null && !isTokenExpired(token);
 
+  useEffect(() => {
+    if (!token || isTokenExpired(token)) return;
+
+    profileService.getMyProfile()
+      .then((profile) => {
+        setStoredUsername(profile.username);
+        localStorage.setItem(USERNAME_KEY, profile.username);
+      })
+      .catch(() => {
+      });
+  }, [token]);
+
   const login = useCallback((newToken: string, username?: string) => {
     localStorage.setItem(TOKEN_KEY, newToken);
+    // store an optimistic username immediately if the caller provides one
+    // (e.g. from the login form response).
     if (username) {
       localStorage.setItem(USERNAME_KEY, username);
       setStoredUsername(username);
@@ -90,7 +99,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
   }, []);
 
-  // check if token is expired every 60s (might remove later)
   useEffect(() => {
     const id = setInterval(() => {
       if (token && isTokenExpired(token)) {
@@ -101,7 +109,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [token, logout]);
 
   return (
-    <AuthContext.Provider value={{ token, username, userId, isAdmin, isProfessor, isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        token,
+        username: storedUsername,
+        userId,
+        isAdmin,
+        isProfessor,
+        isAuthenticated,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
