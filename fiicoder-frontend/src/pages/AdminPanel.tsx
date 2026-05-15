@@ -35,6 +35,7 @@ export default function AdminPanel() {
     const [showOverviewSidebar, setShowOverviewSidebar] = useState(false);
 
     const [overview, setOverview] = useState<AdminOverview | null>(null);
+    const [overviewError, setOverviewError] = useState<string | null>(null);
     const [users, setUsers] = useState<AdminUser[]>([]);
     const [userPage, setUserPage] = useState(1);
     const [proposals, setProposals] = useState<ProblemProposal[]>([]);
@@ -62,9 +63,16 @@ export default function AdminPanel() {
         async function loadOverview() {
             try {
                 const data = await adminService.getOverview();
-                if (!cancelled) setOverview(data);
+                if (!cancelled) {
+                    setOverview(data);
+                    setOverviewError(null);
+                }
             } catch (error) {
                 console.error('Failed to load admin overview:', error);
+                if (!cancelled) {
+                    setOverview(null);
+                    setOverviewError(lang === 'RO' ? 'Nu am putut încărca statisticile live.' : 'Could not load live statistics.');
+                }
             }
         }
 
@@ -73,7 +81,7 @@ export default function AdminPanel() {
         return () => {
             cancelled = true;
         };
-    }, [isAdmin]);
+    }, [isAdmin, lang]);
 
     useEffect(() => {
         if (!isAdmin) return;
@@ -387,17 +395,17 @@ export default function AdminPanel() {
 
     const overviewCards = useMemo(
         () => [
-            { label: lang === 'RO' ? 'Utilizatori' : 'Users', value: overview?.users ?? 0 },
-            { label: lang === 'RO' ? 'Probleme' : 'Problems', value: overview?.problems ?? 0 },
+            { label: lang === 'RO' ? 'Utilizatori' : 'Users', value: overview?.users },
+            { label: lang === 'RO' ? 'Probleme' : 'Problems', value: overview?.problems },
             {
                 label: lang === 'RO' ? 'Submisii' : 'Submissions',
-                value: overview?.submissions ?? 0,
+                value: overview?.submissions,
             },
-            { label: lang === 'RO' ? 'Clase' : 'Classes', value: overview?.classes ?? 0 },
-            { label: lang === 'RO' ? 'Teme' : 'Homework', value: overview?.assignments ?? 0 },
+            { label: lang === 'RO' ? 'Clase' : 'Classes', value: overview?.classes },
+            { label: lang === 'RO' ? 'Teme' : 'Homework', value: overview?.assignments },
             {
                 label: lang === 'RO' ? 'Propuneri pending' : 'Pending proposals',
-                value: overview?.pendingProposals ?? 0,
+                value: overview?.pendingProposals,
                 highlight: true,
             },
         ],
@@ -581,7 +589,7 @@ export default function AdminPanel() {
                                                     <span
                                                         className={`block text-3xl font-black mb-1 ${stat.highlight ? 'text-amber-300' : 'text-(--accent)'}`}
                                                     >
-                                                        {stat.value}
+                                                        {stat.value ?? '—'}
                                                     </span>
                                                     <span className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold">
                                                         {stat.label}
@@ -589,6 +597,11 @@ export default function AdminPanel() {
                                                 </div>
                                             ))}
                                         </div>
+                                        {overviewError && (
+                                            <p className="mt-3 text-xs text-red-300">
+                                                {overviewError}
+                                            </p>
+                                        )}
                                     </>
                                 </div>
                             </motion.aside>

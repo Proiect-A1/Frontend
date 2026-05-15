@@ -9,6 +9,15 @@ export interface AdminOverview {
     pendingProposals: number;
 }
 
+type AdminOverviewResponse = {
+    users: number;
+    problems: number;
+    submissions: number;
+    classes: number;
+    assignments: number;
+    draftProposals: number;
+};
+
 export interface AdminUser {
     username: string;
     firstName: string;
@@ -138,9 +147,6 @@ const mockProposalDetails: ProblemProposalDetail[] = [
 ];
 
 let mockProblemsCount = 342;
-let mockSubmissionsCount = 15420;
-let mockClassesCount = 45;
-let mockHomeworksCount = 87;
 
 const mockAnnouncements: Announcement[] = [
     {
@@ -209,15 +215,14 @@ function cloneProposals(): ProblemProposalDetail[] {
     }));
 }
 
-function getMockOverview(): AdminOverview {
+function normalizeOverview(payload: AdminOverviewResponse): AdminOverview {
     return {
-        users: mockUsers.length,
-        problems: mockProblemsCount,
-        submissions: mockSubmissionsCount,
-        classes: mockClassesCount,
-        assignments: mockHomeworksCount,
-        pendingProposals: mockProposalDetails.filter((proposal) => proposal.status === 'PENDING')
-            .length,
+        users: payload.users,
+        problems: payload.problems,
+        submissions: payload.submissions,
+        classes: payload.classes,
+        assignments: payload.assignments,
+        pendingProposals: payload.draftProposals,
     };
 }
 
@@ -237,13 +242,13 @@ function addAuditEntry(action: string, targetType: string, targetName: string, d
     }
 }
 
-// api calls with mock fallback data cuz no api for the moment
 export const adminService = {
     async getOverview(): Promise<AdminOverview> {
         try {
-            return await apiClient.get('/admin/overview');
+            const data = await apiClient.get<AdminOverviewResponse>('/admin/overview');
+            return normalizeOverview(data);
         } catch {
-            return getMockOverview();
+            throw new Error('Failed to load admin overview');
         }
     },
 
