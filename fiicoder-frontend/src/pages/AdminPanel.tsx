@@ -11,6 +11,7 @@ import {
     type ProblemProposal,
     type ProblemProposalDetail,
 } from '../services/adminService';
+import { tagService, type TagResponseDTO } from '../services/tagService';
 import { mockProposals } from '../services/mockProposals';
 import { useAuth } from '../services/AuthContext';
 import { containerVariants, itemVariants } from '../utils/motionConfig';
@@ -18,6 +19,7 @@ import { containerVariants, itemVariants } from '../utils/motionConfig';
 const tabs = [
     { id: 'users', labelRO: 'Utilizatori', labelEN: 'Users' },
     { id: 'proposals', labelRO: 'Propuneri', labelEN: 'Proposals' },
+    { id: 'tags', labelRO: 'Tag-uri', labelEN: 'Tags' },
     { id: 'announcements', labelRO: 'Anunțuri', labelEN: 'Announcements' },
     { id: 'audit', labelRO: 'Audit', labelEN: 'Audit Log' },
 ];
@@ -43,6 +45,12 @@ export default function AdminPanel() {
     const [selectedAnnouncementId, setSelectedAnnouncementId] = useState<string | null>(null);
     const [announcementForm, setAnnouncementForm] = useState({ title: '', content: '' });
     const [isSavingAnnouncement, setIsSavingAnnouncement] = useState(false);
+    
+    const [tags, setTags] = useState<TagResponseDTO[]>([]);
+    const [tagForm, setTagForm] = useState({ title: '' });
+    const [editingTag, setEditingTag] = useState<TagResponseDTO | null>(null);
+    const [isSavingTag, setIsSavingTag] = useState(false);
+
     const [auditLog, setAuditLog] = useState<AuditLogEntry[]>([]);
     const [processingUsers, setProcessingUsers] = useState<Set<string>>(new Set());
 
@@ -126,6 +134,12 @@ export default function AdminPanel() {
                 return;
             }
 
+            if (activeTab === 'tags') {
+                const data = await tagService.getAllTags();
+                if (!cancelled) setTags(data);
+                return;
+            }
+
             if (activeTab === 'audit') {
                 const data = await adminService.getAuditLog();
                 if (!cancelled) setAuditLog(data);
@@ -155,7 +169,8 @@ export default function AdminPanel() {
 
         async function loadProposalDetail() {
             try {
-                const data = await adminService.getProblemProposal(proposalId);
+                const proposal = proposals.find(p => p.id === proposalId);
+                const data = await adminService.getProblemProposal(proposalId, proposal?.title);
                 if (!cancelled) setSelectedProposal(data);
             } catch (error) {
                 // Fallback to mock data if API fails
@@ -332,6 +347,41 @@ export default function AdminPanel() {
 
         if (selectedAnnouncementId === announcementId) {
             setSelectedAnnouncementId(null);
+        }
+    };
+
+    const handleTagSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        if (!tagForm.title.trim()) return;
+
+        setIsSavingTag(true);
+        try {
+            if (editingTag) {
+                const updated = await tagService.updateTag(editingTag.title, tagForm.title);
+                setTags(prev => prev.map(t => t.id === updated.id ? updated : t));
+                setEditingTag(null);
+            } else {
+                const created = await tagService.createTag(tagForm.title);
+                setTags(prev => [...prev, created]);
+            }
+            setTagForm({ title: '' });
+        } catch (err) {
+            console.error("Failed to save tag:", err);
+        } finally {
+            setIsSavingTag(false);
+        }
+    };
+
+    const handleDeleteTag = async (tag: TagResponseDTO) => {
+        const confirmMsg = lang === 'RO' ? `Sigur vrei să ștergi tag-ul "${tag.title}"?` : `Delete tag "${tag.title}"?`;
+        if (!window.confirm(confirmMsg)) return;
+
+        try {
+            await tagService.deleteTag(tag.title);
+            setTags(prev => prev.filter(t => t.id !== tag.id));
+        } catch (err) {
+            console.error("Failed to delete tag:", err);
+            alert(lang === 'RO' ? "Eroare la ștergere (posibil tag-ul e folosit deja)." : "Error deleting tag (it might be in use).");
         }
     };
 
@@ -1115,6 +1165,81 @@ export default function AdminPanel() {
                                                             className={`text-sm text-(--text) leading-relaxed wrap-anywhere whitespace-pre-wrap ${selectedAnnouncementId === announcement.id ? '' : 'line-clamp-3'}`}
                                                         >
                                                             {announcement.content}
+                                                        </div>
+                                                    </motion.div>
+                                                ))}
+                                            </motion.div>
+                                        </motion.div>
+                                    )}
+
+                                    {activeTab === 'tags' && (
+                                        <motion.div
+                                            variants={containerVariants}
+                                            className="space-y-6"
+                                        >
+                                            <motion.form
+                                                variants={itemVariants}
+                                                onSubmit={handleTagSubmit}
+                                                className="p-5 rounded-3xl border-2 border-(--accent)/30 bg-(--surface-muted) space-y-4"
+                                            >
+                                                <div className="flex flex-col gap-2">
+                                                    <label className="text-sm font-bold text-(--text-h) px-1 uppercase tracking-widest">
+                                                        {editingTag ? (lang === 'RO' ? 'Editează Tag' : 'Edit Tag') : (lang === 'RO' ? 'Adaugă Tag Nou' : 'Add New Tag')}
+                                                    </label>
+                                                    <div className="flex gap-2">
+                                                        <input
+                                                            type="text"
+                                                            value={tagForm.title}
+                                                            onChange={(e) => setTagForm({ title: e.target.value })}
+                                                            placeholder={lang === 'RO' ? "Nume tag (ex: Grafuri)" : "Tag name (ex: Graphs)"}
+                                                            className="flex-1 bg-(--surface-card) border border-(--accent)/40 rounded-2xl px-4 py-2 text-(--text-h) outline-none focus:border-(--accent) transition-all"
+                                                        />
+                                                        <button
+                                                            type="submit"
+                                                            disabled={isSavingTag}
+                                                            className="rounded-2xl bg-(--accent) px-6 py-2 text-white font-bold hover:opacity-90 disabled:opacity-50 transition-all"
+                                                        >
+                                                            {isSavingTag ? '...' : (editingTag ? (lang === 'RO' ? 'Salvează' : 'Save') : (lang === 'RO' ? 'Adaugă' : 'Add'))}
+                                                        </button>
+                                                        {editingTag && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => { setEditingTag(null); setTagForm({ title: '' }); }}
+                                                                className="rounded-2xl border border-(--accent)/40 px-4 py-2 text-(--text-h) font-bold hover:bg-(--accent)/10 transition-all"
+                                                            >
+                                                                {lang === 'RO' ? 'Anulează' : 'Cancel'}
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </motion.form>
+
+                                            <motion.div
+                                                variants={containerVariants}
+                                                className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+                                            >
+                                                {tags.map((tag) => (
+                                                    <motion.div
+                                                        variants={itemVariants}
+                                                        key={tag.id}
+                                                        className="p-4 rounded-2xl border border-(--accent)/20 bg-(--surface-muted) flex items-center justify-between group"
+                                                    >
+                                                        <span className="font-bold text-(--text-h) px-2">#{tag.title}</span>
+                                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <button
+                                                                onClick={() => { setEditingTag(tag); setTagForm({ title: tag.title }); }}
+                                                                className="p-2 rounded-full hover:bg-(--accent)/20 text-(--accent) transition-all"
+                                                                title="Edit"
+                                                            >
+                                                                ✎
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteTag(tag)}
+                                                                className="p-2 rounded-full hover:bg-red-500/20 text-red-500 transition-all"
+                                                                title="Delete"
+                                                            >
+                                                                ✕
+                                                            </button>
                                                         </div>
                                                     </motion.div>
                                                 ))}

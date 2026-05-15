@@ -10,6 +10,8 @@ import {
     type ProfileResponseDTO,
     type RecentSubmissionDTO,
 } from '../services/profileService';
+import { proposeProblemService } from '../services/proposeProblemService';
+import type { ProblemProposalResponse } from '../types/proposeProblem';
 
 const generateHeatmapFromSubmissions = (
     submissions: RecentSubmissionDTO[] | undefined,
@@ -184,6 +186,33 @@ export default function Profile() {
             },
         ];
     }, [displayProfile, lang]);
+
+    const [activeTab, setActiveTab] = useState<'overview' | 'proposals'>('overview');
+    const [proposals, setProposals] = useState<ProblemProposalResponse[] | null>(null);
+    const [loadingProposals, setLoadingProposals] = useState(false);
+
+    useEffect(() => {
+        let mounted = true;
+        async function loadProposals() {
+            setLoadingProposals(true);
+            try {
+                const data = await proposeProblemService.getMyProposals();
+                if (mounted) setProposals(data);
+            } catch (err) {
+                if (mounted) setProposals([]);
+            } finally {
+                if (mounted) setLoadingProposals(false);
+            }
+        }
+
+        if (activeTab === 'proposals') {
+            void loadProposals();
+        }
+
+        return () => {
+            mounted = false;
+        };
+    }, [activeTab]);
 
     const memoizedRecentSubmissions = useMemo(() => {
         if (!displayProfile) return null;
@@ -431,233 +460,280 @@ export default function Profile() {
                         </div>
 
                         <div className="flex flex-col gap-6 min-w-0 w-full">
-                            <motion.div
-                                variants={itemVariants}
-                                className="p-6 md:p-8 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-8 items-center min-w-0"
-                            >
-                                <div className="flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-(--accent)/20 pb-6 md:pb-0 md:pr-6">
-                                    <span className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-2">
-                                        {lang === 'RO' ? 'Probleme Rezolvate' : 'Problems Solved'}
-                                    </span>
-                                    <span className="text-6xl font-black text-(--accent) drop-shadow-md">
-                                        {displayProfile.problemsSolved}
-                                    </span>
-                                </div>
+                            <div className="flex items-center gap-2 mb-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab('overview')}
+                                    className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 ${activeTab === 'overview' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted)'}`}
+                                >
+                                    {lang === 'RO' ? 'Prezentare' : 'Overview'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab('proposals')}
+                                    className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 ${activeTab === 'proposals' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted)'}`}
+                                >
+                                    {lang === 'RO' ? 'Propunerile Mele' : 'My Proposals'}
+                                </button>
+                            </div>
 
-                                <div className="flex flex-col gap-4">
-                                    <div>
-                                        <div className="flex items-center justify-between text-xs mb-1 gap-4">
-                                            <span
-                                                className={`font-semibold ${isLightTheme ? 'text-emerald-700' : 'text-emerald-400'}`}
-                                            >
-                                                {lang === 'RO' ? 'Ușoare' : 'Easy'}
-                                            </span>
-                                            <span
-                                                className={`font-bold ${isLightTheme ? 'text-emerald-600' : 'text-emerald-300'}`}
-                                            >
-                                                {formatPercent(displayProfile.rankEasy)}
-                                            </span>
-                                        </div>
-                                        <div className="w-full bg-emerald-500/10 rounded-full h-2">
-                                            <div
-                                                className="bg-emerald-400 h-2 rounded-full"
-                                                style={{
-                                                    width: formatPercent(displayProfile.rankEasy),
-                                                }}
-                                            ></div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div className="flex items-center justify-between text-xs mb-1 gap-4">
-                                            <span
-                                                className={`font-semibold ${isLightTheme ? 'text-amber-700' : 'text-amber-400'}`}
-                                            >
-                                                {lang === 'RO' ? 'Mediu' : 'Medium'}
-                                            </span>
-                                            <span
-                                                className={`font-bold ${isLightTheme ? 'text-amber-600' : 'text-amber-300'}`}
-                                            >
-                                                {formatPercent(displayProfile.rankMedium)}
-                                            </span>
-                                        </div>
-                                        <div className="w-full bg-amber-500/10 rounded-full h-2">
-                                            <div
-                                                className="bg-amber-400 h-2 rounded-full"
-                                                style={{
-                                                    width: formatPercent(displayProfile.rankMedium),
-                                                }}
-                                            ></div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div className="flex items-center justify-between text-xs mb-1 gap-4">
-                                            <span
-                                                className={`font-semibold ${isLightTheme ? 'text-red-700' : 'text-red-400'}`}
-                                            >
-                                                {lang === 'RO' ? 'Grele' : 'Hard'}
-                                            </span>
-                                            <span
-                                                className={`font-bold ${isLightTheme ? 'text-red-600' : 'text-red-300'}`}
-                                            >
-                                                {formatPercent(displayProfile.rankHard)}
-                                            </span>
-                                        </div>
-                                        <div className="w-full bg-red-500/10 rounded-full h-2">
-                                            <div
-                                                className="bg-red-400 h-2 rounded-full"
-                                                style={{
-                                                    width: formatPercent(displayProfile.rankHard),
-                                                }}
-                                            ></div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div className="flex items-center justify-between text-xs mb-1 gap-4">
-                                            <span
-                                                className={`font-semibold ${isLightTheme ? 'text-purple-700' : 'text-purple-400'}`}
-                                            >
-                                                {lang === 'RO' ? 'Concurs' : 'Contest'}
-                                            </span>
-                                            <span
-                                                className={`font-bold ${isLightTheme ? 'text-purple-600' : 'text-purple-300'}`}
-                                            >
-                                                {formatPercent(displayProfile.rankContest)}
-                                            </span>
-                                        </div>
-                                        <div className="w-full bg-purple-500/10 rounded-full h-2">
-                                            <div
-                                                className="bg-purple-400 h-2 rounded-full"
-                                                style={{
-                                                    width: formatPercent(
-                                                        displayProfile.rankContest,
-                                                    ),
-                                                }}
-                                            ></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </motion.div>
-
-                            <motion.div
-                                variants={containerVariants}
-                                initial="hidden"
-                                animate="visible"
-                                className="grid grid-cols-2 md:grid-cols-4 gap-3 min-w-0"
-                            >
-                                {statsCards.map((item) => (
+                            {activeTab === 'overview' ? (
+                                <>
                                     <motion.div
-                                        key={item.label}
                                         variants={itemVariants}
-                                        className="p-3 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) transition-colors cursor-pointer text-center"
+                                        className="p-6 md:p-8 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-8 items-center min-w-0"
                                     >
-                                        <div className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold">
-                                            {item.label}
+                                        <div className="flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-(--accent)/20 pb-6 md:pb-0 md:pr-6">
+                                            <span className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-2">
+                                                {lang === 'RO' ? 'Probleme Rezolvate' : 'Problems Solved'}
+                                            </span>
+                                            <span className="text-6xl font-black text-(--accent) drop-shadow-md">
+                                                {displayProfile.problemsSolved}
+                                            </span>
                                         </div>
-                                        <div className="mt-1 text-sm font-bold text-(--text-h)">
-                                            {item.value}
+
+                                        <div className="flex flex-col gap-4">
+                                            <div>
+                                                <div className="flex items-center justify-between text-xs mb-1 gap-4">
+                                                    <span
+                                                        className={`font-semibold ${isLightTheme ? 'text-emerald-700' : 'text-emerald-400'}`}
+                                                    >
+                                                        {lang === 'RO' ? 'Ușoare' : 'Easy'}
+                                                    </span>
+                                                    <span
+                                                        className={`font-bold ${isLightTheme ? 'text-emerald-600' : 'text-emerald-300'}`}
+                                                    >
+                                                        {formatPercent(displayProfile.rankEasy)}
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-emerald-500/10 rounded-full h-2">
+                                                    <div
+                                                        className="bg-emerald-400 h-2 rounded-full"
+                                                        style={{
+                                                            width: formatPercent(displayProfile.rankEasy),
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <div className="flex items-center justify-between text-xs mb-1 gap-4">
+                                                    <span
+                                                        className={`font-semibold ${isLightTheme ? 'text-amber-700' : 'text-amber-400'}`}
+                                                    >
+                                                        {lang === 'RO' ? 'Mediu' : 'Medium'}
+                                                    </span>
+                                                    <span
+                                                        className={`font-bold ${isLightTheme ? 'text-amber-600' : 'text-amber-300'}`}
+                                                    >
+                                                        {formatPercent(displayProfile.rankMedium)}
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-amber-500/10 rounded-full h-2">
+                                                    <div
+                                                        className="bg-amber-400 h-2 rounded-full"
+                                                        style={{
+                                                            width: formatPercent(displayProfile.rankMedium),
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <div className="flex items-center justify-between text-xs mb-1 gap-4">
+                                                    <span
+                                                        className={`font-semibold ${isLightTheme ? 'text-red-700' : 'text-red-400'}`}
+                                                    >
+                                                        {lang === 'RO' ? 'Grele' : 'Hard'}
+                                                    </span>
+                                                    <span
+                                                        className={`font-bold ${isLightTheme ? 'text-red-600' : 'text-red-300'}`}
+                                                    >
+                                                        {formatPercent(displayProfile.rankHard)}
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-red-500/10 rounded-full h-2">
+                                                    <div
+                                                        className="bg-red-400 h-2 rounded-full"
+                                                        style={{
+                                                            width: formatPercent(displayProfile.rankHard),
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <div className="flex items-center justify-between text-xs mb-1 gap-4">
+                                                    <span
+                                                        className={`font-semibold ${isLightTheme ? 'text-purple-700' : 'text-purple-400'}`}
+                                                    >
+                                                        {lang === 'RO' ? 'Concurs' : 'Contest'}
+                                                    </span>
+                                                    <span
+                                                        className={`font-bold ${isLightTheme ? 'text-purple-600' : 'text-purple-300'}`}
+                                                    >
+                                                        {formatPercent(displayProfile.rankContest)}
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-purple-500/10 rounded-full h-2">
+                                                    <div
+                                                        className="bg-purple-400 h-2 rounded-full"
+                                                        style={{
+                                                            width: formatPercent(
+                                                                displayProfile.rankContest,
+                                                            ),
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </motion.div>
-                                ))}
-                            </motion.div>
 
-                            <motion.div
-                                variants={itemVariants}
-                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow min-w-0"
-                            >
-                                <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
-                                    {lang === 'RO' ? 'Activitate pe zile' : 'Activity by Day'}
-                                </h2>
-                                <div className="w-full overflow-x-auto custom-scrollbar pb-2">
-                                    <div className="flex flex-col gap-1.5 min-w-max">
-                                        <div className="flex gap-1.5">
-                                            {heatmap.map((level, index) => {
-                                                const daysAgo = 83 - index;
-                                                const date = new Date();
-                                                date.setDate(date.getDate() - daysAgo);
-                                                const dateStr = date.toLocaleDateString();
-                                                return (
-                                                    <div
-                                                        key={index}
-                                                        className="w-4 h-4 rounded-[3px] transition-transform hover:scale-125 cursor-pointer border border-(--accent)/5 shrink-0"
-                                                        style={getHeatmapStyle(level)}
-                                                        title={`${dateStr}: ${level > 0 ? level * 2 + '+' : 0} submissions`}
-                                                    />
-                                                );
-                                            })}
-                                        </div>
-
-                                        <div className="flex gap-1.5">
-                                            {heatmap.map((_, index) => {
-                                                let dayLabel = '';
-                                                if (index % 14 === 0) dayLabel = '1';
-                                                else if (index % 14 === 7) dayLabel = '14';
-
-                                                return (
-                                                    <div
-                                                        key={`label-${index}`}
-                                                        className="w-4 text-[9px] font-semibold text-(--text-subtle) text-center shrink-0 flex items-start justify-center"
-                                                    >
-                                                        {dayLabel}
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-2 flex items-center justify-end gap-2 text-xs text-(--text-subtle) font-semibold">
-                                    <span>Less</span>
-                                    <div
-                                        className="w-3 h-3 rounded-xs"
-                                        style={getHeatmapStyle(0)}
-                                    />
-                                    <div
-                                        className="w-3 h-3 rounded-xs"
-                                        style={getHeatmapStyle(1)}
-                                    />
-                                    <div
-                                        className="w-3 h-3 rounded-xs"
-                                        style={getHeatmapStyle(2)}
-                                    />
-                                    <div
-                                        className="w-3 h-3 rounded-xs"
-                                        style={getHeatmapStyle(3)}
-                                    />
-                                    <div
-                                        className="w-3 h-3 rounded-xs"
-                                        style={getHeatmapStyle(4)}
-                                    />
-                                    <span>More</span>
-                                </div>
-                            </motion.div>
-
-                            <motion.div
-                                variants={itemVariants}
-                                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow mb-8 min-w-0"
-                            >
-                                <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
-                                    {lang === 'RO' ? 'Submisii Recente' : 'Recent Submissions'}
-                                </h2>
-                                {displayProfile.recentSubmissions.content.length > 0 ? (
                                     <motion.div
                                         variants={containerVariants}
                                         initial="hidden"
                                         animate="visible"
-                                        className="flex flex-col gap-2"
+                                        className="grid grid-cols-2 md:grid-cols-4 gap-3 min-w-0"
                                     >
-                                        {memoizedRecentSubmissions}
+                                        {statsCards.map((item) => (
+                                            <motion.div
+                                                key={item.label}
+                                                variants={itemVariants}
+                                                className="p-3 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) transition-colors cursor-pointer text-center"
+                                            >
+                                                <div className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold">
+                                                    {item.label}
+                                                </div>
+                                                <div className="mt-1 text-sm font-bold text-(--text-h)">
+                                                    {item.value}
+                                                </div>
+                                            </motion.div>
+                                        ))}
                                     </motion.div>
-                                ) : (
-                                    <p className="text-sm text-(--text-subtle)">
-                                        {lang === 'RO'
-                                            ? 'Nu există submisii recente.'
-                                            : 'No recent submissions.'}
-                                    </p>
-                                )}
-                            </motion.div>
+
+                                    <motion.div
+                                        variants={itemVariants}
+                                        className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow min-w-0"
+                                    >
+                                        <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
+                                            {lang === 'RO' ? 'Activitate pe zile' : 'Activity by Day'}
+                                        </h2>
+                                        <div className="w-full overflow-x-auto custom-scrollbar pb-2">
+                                            <div className="flex flex-col gap-1.5 min-w-max">
+                                                <div className="flex gap-1.5">
+                                                    {heatmap.map((level, index) => {
+                                                        const daysAgo = 83 - index;
+                                                        const date = new Date();
+                                                        date.setDate(date.getDate() - daysAgo);
+                                                        const dateStr = date.toLocaleDateString();
+                                                        return (
+                                                            <div
+                                                                key={index}
+                                                                className="w-4 h-4 rounded-[3px] transition-transform hover:scale-125 cursor-pointer border border-(--accent)/5 shrink-0"
+                                                                style={getHeatmapStyle(level)}
+                                                                title={`${dateStr}: ${level > 0 ? level * 2 + '+' : 0} submissions`}
+                                                            />
+                                                        );
+                                                    })}
+                                                </div>
+
+                                                <div className="flex gap-1.5">
+                                                    {heatmap.map((_, index) => {
+                                                        let dayLabel = '';
+                                                        if (index % 14 === 0) dayLabel = '1';
+                                                        else if (index % 14 === 7) dayLabel = '14';
+
+                                                        return (
+                                                            <div
+                                                                key={`label-${index}`}
+                                                                className="w-4 text-[9px] font-semibold text-(--text-subtle) text-center shrink-0 flex items-start justify-center"
+                                                            >
+                                                                {dayLabel}
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-2 flex items-center justify-end gap-2 text-xs text-(--text-subtle) font-semibold">
+                                            <span>Less</span>
+                                            <div
+                                                className="w-3 h-3 rounded-xs"
+                                                style={getHeatmapStyle(0)}
+                                            />
+                                            <div
+                                                className="w-3 h-3 rounded-xs"
+                                                style={getHeatmapStyle(1)}
+                                            />
+                                            <div
+                                                className="w-3 h-3 rounded-xs"
+                                                style={getHeatmapStyle(2)}
+                                            />
+                                            <div
+                                                className="w-3 h-3 rounded-xs"
+                                                style={getHeatmapStyle(3)}
+                                            />
+                                            <div
+                                                className="w-3 h-3 rounded-xs"
+                                                style={getHeatmapStyle(4)}
+                                            />
+                                            <span>More</span>
+                                        </div>
+                                    </motion.div>
+
+                                    <motion.div
+                                        variants={itemVariants}
+                                        className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow mb-8 min-w-0"
+                                    >
+                                        <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
+                                            {lang === 'RO' ? 'Submisii Recente' : 'Recent Submissions'}
+                                        </h2>
+                                        {displayProfile.recentSubmissions.content.length > 0 ? (
+                                            <motion.div
+                                                variants={containerVariants}
+                                                initial="hidden"
+                                                animate="visible"
+                                                className="flex flex-col gap-2"
+                                            >
+                                                {memoizedRecentSubmissions}
+                                            </motion.div>
+                                        ) : (
+                                            <p className="text-sm text-(--text-subtle)">
+                                                {lang === 'RO'
+                                                    ? 'Nu există submisii recente.'
+                                                    : 'No recent submissions.'}
+                                            </p>
+                                        )}
+                                    </motion.div>
+                                </>
+                            ) : (
+                                <motion.div variants={itemVariants} className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) card-glow min-w-0">
+                                    <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
+                                        {lang === 'RO' ? 'Propunerile Mele' : 'My Proposals'}
+                                    </h2>
+                                    {loadingProposals ? (
+                                        <p className="text-sm text-(--text-muted)">{lang === 'RO' ? 'Se încarcă...' : 'Loading...'}</p>
+                                    ) : !proposals || proposals.length === 0 ? (
+                                        <p className="text-sm text-(--text-subtle)">{lang === 'RO' ? 'Nu ai propuneri.' : 'You have no proposals.'}</p>
+                                    ) : (
+                                        <div className="flex flex-col gap-3">
+                                            {proposals.map((p) => (
+                                                <div key={p.id} className="p-3 rounded-2xl border border-(--accent)/10 bg-(--surface-muted) flex items-center justify-between">
+                                                    <div className="min-w-0">
+                                                        <div className="font-bold text-(--text-h) truncate">{p.title}</div>
+                                                        <div className="text-[11px] text-(--text-muted)">{new Date(p.submittedAt).toLocaleDateString()}</div>
+                                                    </div>
+                                                    <div className="text-right text-sm">
+                                                        <div className="font-mono text-[12px] text-(--text-muted)">{p.visibility}</div>
+                                                        <div className="mt-1 text-xs font-bold uppercase">{p.status.toUpperCase()}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </motion.div>
+                            )}
                         </div>
                     </motion.div>
                 </div>

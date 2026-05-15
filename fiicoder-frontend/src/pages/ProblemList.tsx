@@ -11,6 +11,7 @@ export default function ProblemList() {
     const { lang } = useLanguage();
     const t = translations[lang];
 
+    const [searchTerm, setSearchTerm] = useState('');
     const [difficultyFilter, setDifficultyFilter] = useState('ALL');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
@@ -71,9 +72,13 @@ export default function ProblemList() {
 
     const filteredProblems = useMemo(() => {
         return problems.filter(
-            (problem) => difficultyFilter === 'ALL' || problem.difficulty === difficultyFilter,
+            (problem) => {
+                const matchesDifficulty = difficultyFilter === 'ALL' || problem.difficulty === difficultyFilter;
+                const matchesSearch = problem.title.toLowerCase().includes(searchTerm.toLowerCase());
+                return matchesDifficulty && matchesSearch;
+            }
         );
-    }, [difficultyFilter, problems]);
+    }, [difficultyFilter, searchTerm, problems]);
 
     const handleTagsChange = (newTags: string[]) => {
         setSelectedTags(newTags);
@@ -83,6 +88,7 @@ export default function ProblemList() {
     const clearFilters = () => {
         setDifficultyFilter('ALL');
         setSelectedTags([]);
+        setSearchTerm('');
         setPage(1);
     };
 
@@ -99,8 +105,24 @@ export default function ProblemList() {
             />
 
             <section className="h-auto xl:h-[calc(100svh-8.5rem)] overflow-visible xl:overflow-y-auto p-5 bg-(--surface-card) border-2 border-(--accent) rounded-3xl xl:col-start-2 custom-scrollbar">
-                <h1 className="text-3xl font-bold text-(--text) mb-2">{t.problemsTitle}</h1>
-                <div className="page-line-horizontal" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <h1 className="text-3xl font-bold text-(--text)">{t.problemsTitle}</h1>
+                    <div className="relative group flex-1 max-w-sm">
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder={lang === 'RO' ? "Caută problemă..." : "Search problem..."}
+                            className="w-full bg-(--surface-muted) border border-(--accent)/30 rounded-2xl px-4 py-2 text-sm text-(--text-h) outline-none focus:border-(--accent) transition-all pl-10"
+                        />
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-(--accent)/60">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div className="page-line-horizontal mb-6" />
 
                 <div className="">
                     {loading && (

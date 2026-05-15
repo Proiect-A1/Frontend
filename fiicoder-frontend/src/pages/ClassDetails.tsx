@@ -9,6 +9,8 @@ import {
     type HomeworkResponseDTO,
     type HomeworkUpdateDeleteRequestDTO,
     type HomeworkUpdateRequestDTO,
+    type HomeworkStatisticsDTO,
+    type StudentProgressSummaryDTO,
 } from '../services/homeworkService';
 import { useLanguage } from '../language/Language';
 import { containerVariants, itemVariants, pageVariants } from '../utils/motionConfig';
@@ -65,13 +67,21 @@ function HomeworkItem({
     const [removeUsernamesInput, setRemoveUsernamesInput] = useState('');
     const [removeProblemTitlesInput, setRemoveProblemTitlesInput] = useState('');
 
+    const [stats, setStats] = useState<HomeworkStatisticsDTO | null>(null);
+    const [loadingStats, setLoadingStats] = useState(false);
+    const [selectedStudentProgress, setSelectedStudentProgress] = useState<StudentProgressSummaryDTO | null>(null);
+    const [loadingStudentProgress, setLoadingStudentProgress] = useState(false);
+
     useEffect(() => {
         if (!isSelected) {
             setSelectedHomeworkDetail(null);
+            setStats(null);
             return;
         }
 
         let cancelled = false;
+        const isCreator = userId && creatorId && userId.toLowerCase() === creatorId.toLowerCase();
+
         async function loadDetails() {
             try {
                 setLoadingDetails(true);
@@ -88,11 +98,26 @@ function HomeworkItem({
                 if (!cancelled) setLoadingDetails(false);
             }
         }
+
+        async function loadStats() {
+            if (!isCreator || homework.status === 'DRAFT') return;
+            try {
+                setLoadingStats(true);
+                const data = await homeworkService.getStatistics(groupId, homework.id);
+                if (!cancelled) setStats(data);
+            } catch (err) {
+                console.error("Failed to load stats", err);
+            } finally {
+                if (!cancelled) setLoadingStats(false);
+            }
+        }
+
         void loadDetails();
+        void loadStats();
         return () => {
             cancelled = true;
         };
-    }, [isSelected, groupId, homework.id, lang]);
+    }, [isSelected, groupId, homework.id, lang, userId, creatorId, homework.status]);
 
     const handlePublish = async () => {
         try {
@@ -155,6 +180,18 @@ function HomeworkItem({
             setSelectedHomeworkDetail(details);
         } catch (err: any) {
             setError(err?.body?.message || 'Error');
+        }
+    };
+
+    const handleViewStudentProgress = async (studentId: string) => {
+        try {
+            setLoadingStudentProgress(true);
+            const data = await homeworkService.getStudentProgress(groupId, homework.id, studentId);
+            setSelectedStudentProgress(data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoadingStudentProgress(false);
         }
     };
 
@@ -261,7 +298,7 @@ function HomeworkItem({
                             </div>
 
                             {homework.status === 'DRAFT' && userId && creatorId && userId.toLowerCase() === creatorId.toLowerCase() && (
-                                <div className="grid gap-4 xl:grid-cols-2">
+                                <div className="grid gap-4 xl:grid-cols-2 mt-4">
                                     <div className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-3 space-y-2">
                                         <h4 className="text-sm font-bold text-(--text-h)">
                                             {lang === 'RO' ? 'Adaugă' : 'Add'}
@@ -274,9 +311,7 @@ function HomeworkItem({
                                         />
                                         <input
                                             value={addProblemTitlesInput}
-                                            onChange={(e) =>
-                                                setAddProblemTitlesInput(e.target.value)
-                                            }
+                                            onChange={(e) => setAddProblemTitlesInput(e.target.value)}
                                             placeholder="p1, p2"
                                             className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
                                         />
@@ -299,17 +334,13 @@ function HomeworkItem({
                                         </h4>
                                         <input
                                             value={removeUsernamesInput}
-                                            onChange={(e) =>
-                                                setRemoveUsernamesInput(e.target.value)
-                                            }
+                                            onChange={(e) => setRemoveUsernamesInput(e.target.value)}
                                             placeholder="user1, user2"
                                             className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
                                         />
                                         <input
                                             value={removeProblemTitlesInput}
-                                            onChange={(e) =>
-                                                setRemoveProblemTitlesInput(e.target.value)
-                                            }
+                                            onChange={(e) => setRemoveProblemTitlesInput(e.target.value)}
                                             placeholder="p1, p2"
                                             className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
                                         />
@@ -320,6 +351,96 @@ function HomeworkItem({
                                             OK
                                         </button>
                                     </div>
+                                </div>
+                            )}
+
+                            {stats && userId && creatorId && userId.toLowerCase() === creatorId.toLowerCase() && (
+                                <div className="space-y-4 border-t border-(--accent)/10 pt-4 mt-4">
+                                    <h4 className="text-xs uppercase tracking-widest text-(--text-muted) font-bold">
+                                        {lang === 'RO' ? 'Progres Elevi' : 'Student Progress'}
+                                    </h4>
+
+                                    {loadingStats && <p className="text-xs text-(--text-muted)">...</p>}
+
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left text-xs border-collapse">
+                                            <thead>
+                                                <tr className="border-b border-(--accent)/10 text-(--text-muted)">
+                                                    <th className="py-2 px-1 font-bold">{lang === 'RO' ? 'Elev' : 'Student'}</th>
+                                                    <th className="py-2 px-1 text-center font-bold">{lang === 'RO' ? 'Probleme' : 'Problems'}</th>
+                                                    <th className="py-2 px-1 text-center font-bold">{lang === 'RO' ? 'Scor Mediu' : 'Avg Score'}</th>
+                                                    <th className="py-2 px-1 text-center font-bold">Status</th>
+                                                    <th className="py-2 px-1 text-right"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {stats.students.map((student) => (
+                                                    <tr key={student.userId} className="border-b border-(--accent)/5 hover:bg-(--accent)/5 transition-colors">
+                                                        <td className="py-2 px-1">
+                                                            <div className="font-bold text-(--text-h)">{student.username}</div>
+                                                            <div className="text-[10px] text-(--text-muted)">{student.firstName} {student.lastName}</div>
+                                                        </td>
+                                                        <td className="py-2 px-1 text-center">
+                                                            {student.completedProblems} / {student.totalProblems}
+                                                        </td>
+                                                        <td className="py-2 px-1 text-center font-mono">
+                                                            {student.averageScore.toFixed(1)}
+                                                        </td>
+                                                        <td className="py-2 px-1 text-center">
+                                                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${student.isCompleted ? 'bg-emerald-500/20 text-emerald-400' : student.hasStarted ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/10 text-red-400/60'}`}>
+                                                                {student.isCompleted ? (lang === 'RO' ? 'GATA' : 'DONE') : student.hasStarted ? (lang === 'RO' ? 'ÎN LUCRU' : 'WORKING') : (lang === 'RO' ? 'NU A ÎNCEPUT' : 'IDLE')}
+                                                            </span>
+                                                        </td>
+                                                        <td className="py-2 px-1 text-right">
+                                                            <button
+                                                                onClick={() => handleViewStudentProgress(student.userId)}
+                                                                disabled={loadingStudentProgress}
+                                                                className="text-(--accent) hover:underline font-bold disabled:opacity-50"
+                                                            >
+                                                                {loadingStudentProgress
+                                                                    ? (lang === 'RO' ? 'Se încarcă...' : 'Loading...')
+                                                                    : (lang === 'RO' ? 'Detalii' : 'Details')}
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    {selectedStudentProgress && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="mt-4 p-4 rounded-2xl border-2 border-(--accent)/30 bg-(--surface-card)"
+                                        >
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div>
+                                                    <h5 className="font-bold text-(--text-h)">
+                                                        {lang === 'RO' ? 'Detalii progres:' : 'Progress details:'} {selectedStudentProgress.username}
+                                                    </h5>
+                                                    <p className="text-[10px] text-(--text-muted)">
+                                                        {lang === 'RO' ? 'Scor mediu:' : 'Avg score:'} {selectedStudentProgress.averageScore.toFixed(1)} • {selectedStudentProgress.attemptedProblems} {lang === 'RO' ? 'probleme încercate' : 'attempted problems'}
+                                                    </p>
+                                                </div>
+                                                <button onClick={() => setSelectedStudentProgress(null)} className="text-(--text-muted) hover:text-(--text-h)">✕</button>
+                                            </div>
+
+                                            <div className="grid gap-2">
+                                                {selectedStudentProgress.problems.map((p) => (
+                                                    <div key={p.problemId} className="flex items-center justify-between p-2 rounded-xl bg-(--accent)/5 text-[11px]">
+                                                        <span className="font-bold truncate max-w-[150px]">{p.problemTitle}</span>
+                                                        <div className="flex items-center gap-3">
+                                                            <span className="text-(--text-muted)">{p.attempts} {lang === 'RO' ? 'înc' : 'try'}</span>
+                                                            <span className={`font-mono font-bold ${p.bestScore === 100 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                                                                {p.bestScore.toFixed(0)} pct
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </motion.div>
+                                    )}
                                 </div>
                             )}
                         </>
