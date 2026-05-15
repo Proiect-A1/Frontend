@@ -196,7 +196,7 @@ function HomeworkItem({
                               ? 'Detalii'
                               : 'Details'}
                     </button>
-                    {userId === creatorId && (
+                    {(userId && creatorId && userId.toLowerCase() === creatorId.toLowerCase()) && (
                         <>
                             {homework.status === 'DRAFT' && (
                                 <button
@@ -246,19 +246,21 @@ function HomeworkItem({
                                         ))}
                                     </div>
                                 </div>
-                                <div className="text-[11px] text-(--text-muted)">
-                                    <p>
-                                        {lang === 'RO' ? 'Elevi:' : 'Users:'}{' '}
-                                        {selectedHomeworkDetail.assignedUsers.length}
-                                    </p>
-                                    <p>
-                                        {lang === 'RO' ? 'Submisii:' : 'Submissions:'}{' '}
-                                        {selectedHomeworkDetail.submissions.length}
-                                    </p>
-                                </div>
+                                {userId && creatorId && userId.toLowerCase() === creatorId.toLowerCase() && (
+                                    <div className="text-[11px] text-(--text-muted)">
+                                        <p>
+                                            {lang === 'RO' ? 'Elevi:' : 'Users:'}{' '}
+                                            {selectedHomeworkDetail.assignedUsers?.length || 0}
+                                        </p>
+                                        <p>
+                                            {lang === 'RO' ? 'Submisii:' : 'Submissions:'}{' '}
+                                            {selectedHomeworkDetail.submissions?.length || 0}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
 
-                            {homework.status === 'DRAFT' && userId === creatorId && (
+                            {homework.status === 'DRAFT' && userId && creatorId && userId.toLowerCase() === creatorId.toLowerCase() && (
                                 <div className="grid gap-4 xl:grid-cols-2">
                                     <div className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-3 space-y-2">
                                         <h4 className="text-sm font-bold text-(--text-h)">

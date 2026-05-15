@@ -3,7 +3,7 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 # Deoarece în docker-compose calea de build este `./Frontend/fiicoder-frontend`,
-# suntem deja în folder-ul corect.
+# suntem deja în folder-ul corect
 COPY package*.json ./
 RUN npm install
 
