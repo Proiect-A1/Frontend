@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage, translations } from '../language/Language';
 import { useAuth } from '../services/AuthContext';
-import { submissionService, connectToEvaluation, type DoneTestEvent, type DoneSubtaskEvent, type DoneSubmissionEvent, type EvaluationEvent } from '../services/submissionService';
+import { submissionService, connectToEvaluation, type DoneTestEvent, type DoneSubmissionEvent } from '../services/submissionService';
 import { problemService } from '../services/problemService';
 import type { ProblemFindResponseDTO } from '../services/problemService';
 import Editor, { type OnMount } from '@monaco-editor/react';
@@ -171,7 +171,6 @@ export default function ProblemDetails() {
 
     // ── Evaluation WebSocket state ──
     const [evalTests, setEvalTests] = useState<DoneTestEvent[]>([]);
-    const [evalSubtasks, setEvalSubtasks] = useState<DoneSubtaskEvent[]>([]);
     const [evalSummary, setEvalSummary] = useState<DoneSubmissionEvent | null>(null);
     const [evalStatus, setEvalStatus] = useState<'idle' | 'connecting' | 'evaluating' | 'done' | 'error'>('idle');
     const [evalError, setEvalError] = useState<string | null>(null);
@@ -360,7 +359,6 @@ export default function ProblemDetails() {
 
         // Reset evaluation state
         setEvalTests([]);
-        setEvalSubtasks([]);
         setEvalSummary(null);
         setEvalError(null);
         setEvalStatus('connecting');
@@ -385,8 +383,6 @@ export default function ProblemDetails() {
                 (event) => {
                     if (event.request === 'doneTest') {
                         setEvalTests((prev) => [...prev, event as DoneTestEvent]);
-                    } else if (event.request === 'doneSubtask') {
-                        setEvalSubtasks((prev) => [...prev, event as DoneSubtaskEvent]);
                     }
                 },
                 // onDone — final submission result
