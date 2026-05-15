@@ -3,7 +3,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { proposeProblemService, saveDraft, loadDraft, clearDraft } from '../services/proposeProblemService';
-import type { ProposeProblemForm, ProblemProposalResponse } from '../types/proposeProblem';
+import type { ProposeProblemForm } from '../types/proposeProblem';
 
 import GeneralTab from '../components/ProposeProblem/GeneralTab';
 import StatementTab from '../components/ProposeProblem/StatementTab';
@@ -53,9 +53,6 @@ export default function ProposeProblem() {
     const [errorMessage, setErrorMessage] = useState('');
     const [hasDraft, setHasDraft] = useState(false);
     const [showDraftBanner, setShowDraftBanner] = useState(false);
-    const [showSidebar, setShowSidebar] = useState(false);
-    const [myProposals, setMyProposals] = useState<ProblemProposalResponse[]>([]);
-    const [isLoadingProposals, setIsLoadingProposals] = useState(false);
 
     const methods = useForm<ProposeProblemForm>({
         defaultValues,
@@ -135,23 +132,6 @@ export default function ProposeProblem() {
         setHasDraft(false);
     }, []);
 
-    // ── Submit / Update ──
-    // Fetch my proposals on mount
-    useEffect(() => {
-        const fetchProposals = async () => {
-            setIsLoadingProposals(true);
-            try {
-                const data = await proposeProblemService.getMyProposals();
-                setMyProposals(data);
-            } catch (err) {
-                console.error("Failed to fetch proposals", err);
-            } finally {
-                setIsLoadingProposals(false);
-            }
-        };
-        fetchProposals();
-    }, []);
-
     const onSubmit = async (data: ProposeProblemForm) => {
         setIsSubmitting(true);
         setSubmitStatus('idle');
@@ -205,85 +185,6 @@ export default function ProposeProblem() {
                     animate="visible"
                     variants={pageVariants}
                 >
-                    {/* Floating Sidebar (Overlay) */}
-                    <AnimatePresence>
-                        {showSidebar && (
-                            <>
-                                <motion.div 
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    onClick={() => setShowSidebar(false)}
-                                    className="absolute inset-0 z-40 bg-black/20 backdrop-blur-[2px]"
-                                />
-                                <motion.aside
-                                    initial={{ x: -340, opacity: 0 }}
-                                    animate={{ x: 0, opacity: 1 }}
-                                    exit={{ x: -340, opacity: 0 }}
-                                    className="absolute z-50 left-0 top-0 w-80 h-full bg-(--surface-card) border-r-2 border-(--accent) flex flex-col shadow-[10px_0_30px_rgba(0,0,0,0.3)]"
-                                >
-                                    <div className="p-4 border-(--accent)/20 flex items-center justify-between">
-                                        <h2 className="text-xl font-bold text-(--text-h) flex items-center gap-2">
-                                            <svg className="w-4 h-4 text-(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
-                                            Propunerile mele
-                                        </h2>
-                                        <button 
-                                            onClick={() => setShowSidebar(false)}
-                                            className="rounded-full border border-(--accent)/30 bg-(--accent)/10 p-2 text-(--text-h) hover:bg-(--accent)/20 transition-colors"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                                        </button>
-                                    </div>
-                                    <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
-                                        {isLoadingProposals ? (
-                                            <div className="p-8 flex flex-col items-center gap-2 text-(--text-muted) text-sm">
-                                                <div className="w-5 h-5 border-2 border-(--accent) border-t-transparent rounded-full animate-spin" />
-                                                <span>Se încarcă...</span>
-                                            </div>
-                                        ) : myProposals.length === 0 ? (
-                                            <div className="p-8 text-center text-(--text-muted) text-sm">
-                                                Nicio propunere găsită.
-                                            </div>
-                                        ) : (
-                                            myProposals.map(p => (
-                                                <button
-                                                    key={p.id}
-                                                    type="button"
-                                                    onClick={() => {
-                                                        navigate(`/propose/${p.id}`);
-                                                        setShowSidebar(false);
-                                                    }}
-                                                    className={`w-full text-left p-3 rounded-2xl border border-(--accent) transition-all ${
-                                                        proposalId === p.id 
-                                                        ? 'border-(--accent) bg-(--accent)/10' 
-                                                        : 'bg-(--surface-muted)/50 hover:bg-(--accent)/20'
-                                                    }`}
-                                                >
-                                                    <div className="font-bold text-sm text-(--text-h) truncate">{p.title}</div>
-                                                    <div className="flex items-center justify-between mt-1">
-                                                        <span 
-                                                            style={{ 
-                                                                borderColor: `color-mix(in srgb, var(--status-${p.status === 'approved' ? 'success' : p.status === 'rejected' ? 'error' : 'warning'}) 40%, transparent)`,
-                                                                color: `var(--status-${p.status === 'approved' ? 'success' : p.status === 'rejected' ? 'error' : 'warning'})`,
-                                                                backgroundColor: `color-mix(in srgb, var(--status-${p.status === 'approved' ? 'success' : p.status === 'rejected' ? 'error' : 'warning'}) 5%, transparent)`
-                                                            }}
-                                                            className="text-[10px] px-1.5 py-0.5 rounded-full border uppercase tracking-wider font-bold"
-                                                        >
-                                                            {p.status}
-                                                        </span>
-                                                        <span className="text-[10px] text-(--text-muted)">
-                                                            {new Date(p.submittedAt).toLocaleDateString()}
-                                                        </span>
-                                                    </div>
-                                                </button>
-                                            ))
-                                        )}
-                                    </div>
-                                </motion.aside>
-                            </>
-                        )}
-                    </AnimatePresence>
-
                     <form 
                         onSubmit={methods.handleSubmit(onSubmit)} 
                         className="flex-1 h-full flex flex-col overflow-hidden relative"
@@ -377,23 +278,9 @@ export default function ProposeProblem() {
 
                                 {/* Header */}
                                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-                                    <div className="flex items-center gap-4">
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowSidebar(!showSidebar)}
-                                            className={`p-2.5 rounded-xl border-2 transition-all ${
-                                                showSidebar 
-                                                ? 'bg-(--accent) text-white border-(--accent)' 
-                                                : 'bg-(--accent)/10 border-(--accent)/20 text-(--accent) hover:bg-(--accent)/20'
-                                            }`}
-                                            title={showSidebar ? "Ascunde propunerile" : "Vezi propunerile mele"}
-                                        >
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                                        </button>
-                                        <h1 className="text-3xl font-bold text-(--text-h)">
-                                            {isEditMode ? 'Editează Propunerea' : 'Propune o Problemă'}
-                                        </h1>
-                                    </div>
+                                    <h1 className="text-3xl font-bold text-(--text-h)">
+                                        {isEditMode ? 'Editează Propunerea' : 'Propune o Problemă'}
+                                    </h1>
 
                                     {/* Tabs Navigation */}
                                     <div className="flex flex-wrap gap-2 lg:justify-end">
