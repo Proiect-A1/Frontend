@@ -196,7 +196,7 @@ function HomeworkItem({
                               ? 'Detalii'
                               : 'Details'}
                     </button>
-                    {userId === creatorId && (
+                    {(userId && creatorId && userId.toLowerCase() === creatorId.toLowerCase()) && (
                         <>
                             {homework.status === 'DRAFT' && (
                                 <button
