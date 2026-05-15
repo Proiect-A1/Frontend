@@ -227,23 +227,35 @@ export default function ProblemDetails() {
                                 ],
                             },
                             {
-                                type: 'tabset',
+                                type: 'row',
                                 weight: 35,
                                 children: [
                                     {
-                                        type: 'tab',
-                                        name: lang === 'RO' ? 'Date Test' : 'Testcase',
-                                        component: 'testcase',
+                                        type: 'tabset',
+                                        weight: 50,
+                                        children: [
+                                            {
+                                                type: 'tab',
+                                                name: lang === 'RO' ? 'Date Test' : 'Testcase',
+                                                component: 'testcase',
+                                            },
+                                        ],
                                     },
                                     {
-                                        type: 'tab',
-                                        name: lang === 'RO' ? 'Rezultat' : 'Result',
-                                        component: 'testresult',
-                                    },
-                                    {
-                                        type: 'tab',
-                                        name: lang === 'RO' ? 'Submisii' : 'Submissions',
-                                        component: 'submissions',
+                                        type: 'tabset',
+                                        weight: 50,
+                                        children: [
+                                            {
+                                                type: 'tab',
+                                                name: lang === 'RO' ? 'Rezultat' : 'Result',
+                                                component: 'testresult',
+                                            },
+                                            {
+                                                type: 'tab',
+                                                name: lang === 'RO' ? 'Submisii' : 'Submissions',
+                                                component: 'submissions',
+                                            },
+                                        ],
                                     },
                                 ],
                             },
