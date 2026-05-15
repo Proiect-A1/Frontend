@@ -309,7 +309,15 @@ export const adminService = {
 
     async getProposals(): Promise<ProblemProposal[]> {
         try {
-            return await apiClient.get('/admin/problem-proposals');
+            const data = await apiClient.get<any[]>('/problems/pending-review');
+            return data.map(p => ({
+                id: p.id,
+                title: p.title,
+                authorUsername: p.proposedBy,
+                description: p.difficulty, // Map difficulty to description for summary
+                status: 'PENDING',
+                createdAt: p.submittedAt
+            }));
         } catch {
             return cloneProposals()
                 .filter((proposal) => proposal.status === 'PENDING')
@@ -330,9 +338,25 @@ export const adminService = {
         }
     },
 
-    async getProblemProposal(id: string): Promise<ProblemProposalDetail> {
+    async getProblemProposal(id: string, title?: string): Promise<ProblemProposalDetail> {
         try {
-            return await apiClient.get(`/admin/problem-proposals/${id}`);
+            // Use the form details endpoint from ProblemController as it provides full metadata
+            const p = await apiClient.get<any>(`/problems/${encodeURIComponent(title || id)}/form/details`);
+            return {
+                id: p.id || id,
+                title: p.title,
+                authorUsername: p.authorUsername || 'unknown',
+                description: p.description || '',
+                status: 'PENDING',
+                createdAt: p.createdAt || new Date().toISOString(),
+                statement: p.statement,
+                inputDescription: p.inputDescription,
+                outputDescription: p.outputDescription,
+                constraints: p.constraints,
+                sampleInput: p.sampleInput,
+                sampleOutput: p.sampleOutput,
+                tags: p.tags
+            };
         } catch {
             const proposal = mockProposalDetails.find((entry) => entry.id === id) || 
                              mockProposalDetails[0];
@@ -347,7 +371,10 @@ export const adminService = {
 
     async approveProposal(id: string): Promise<void> {
         try {
-            await apiClient.post(`/admin/problem-proposals/${id}/approve`);
+            await apiClient.patch(`/problems/${id}/review`, {
+                status: 'ACCEPTED',
+                isPublic: true
+            });
         } catch {
             const proposal = mockProposalDetails.find((entry) => entry.id === id);
             if (proposal && proposal.status === 'PENDING') {
@@ -365,7 +392,10 @@ export const adminService = {
 
     async rejectProposal(id: string): Promise<void> {
         try {
-            await apiClient.post(`/admin/problem-proposals/${id}/reject`);
+            await apiClient.patch(`/problems/${id}/review`, {
+                status: 'REJECTED',
+                rejectedAction: 'KEEP_REJECTED'
+            });
         } catch {
             const proposal = mockProposalDetails.find((entry) => entry.id === id);
             if (proposal && proposal.status === 'PENDING') {

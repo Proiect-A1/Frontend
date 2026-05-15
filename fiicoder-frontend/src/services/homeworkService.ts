@@ -67,6 +67,67 @@ export interface HomeworkDetailDTO {
   submissions: HomeworkSubmissionSummaryDTO[];
 }
 
+export interface StudentSummaryDTO {
+  userId: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  totalProblems: number;
+  attemptedProblems: number;
+  completedProblems: number;
+  averageScore: number;
+  completionRate: number;
+  lastSubmissionTime: string | null;
+  hasStarted: boolean;
+  isCompleted: boolean;
+}
+
+export interface HomeworkStatisticsDTO {
+  homeworkId: string;
+  homeworkTitle: string;
+  groupId: string;
+  groupName: string;
+  deadline: string;
+  status: "ACTIVE" | "CLOSED" | "DRAFT";
+  totalAssignedStudents: number;
+  studentsWithSubmissions: number;
+  studentsWithoutSubmissions: number;
+  completionRate: number;
+  students: StudentSummaryDTO[];
+}
+
+export interface ProblemProgressDTO {
+  problemId: string;
+  problemTitle: string;
+  difficulty: string;
+  attempts: number;
+  bestScore: number;
+  lastStatus: string;
+  lastSubmissionTime: string | null;
+  isCompleted: boolean;
+  timeSpentMinutes: number | null;
+}
+
+export interface StudentProgressSummaryDTO {
+  userId: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  homeworkId: string;
+  homeworkTitle: string;
+  totalProblems: number;
+  attemptedProblems: number;
+  completedProblems: number;
+  completionRate: number;
+  averageScore: number;
+  problems: ProblemProgressDTO[];
+  hasStarted: boolean;
+  isCompleted: boolean;
+  isOverdue: boolean;
+}
+
 export const homeworkService = {
   getAll(groupId: string) {
     return apiClient.get<HomeworkResponseDTO[]>(`/group/${groupId}/homeworks`);
@@ -101,4 +162,12 @@ export const homeworkService = {
   delete(groupId: string, homeworkId: string) {
     return apiClient.delete<void>(`/group/${groupId}/homeworks/${homeworkId}`);
   },
+
+  getStatistics(groupId: string, homeworkId: string) {
+    return apiClient.get<HomeworkStatisticsDTO>(`/group/${groupId}/homeworks/${homeworkId}/statistics`);
+  },
+
+  getStudentProgress(groupId: string, homeworkId: string, studentId: string) {
+    return apiClient.get<StudentProgressSummaryDTO>(`/group/${groupId}/homeworks/${homeworkId}/students/${studentId}/progress`);
+  }
 };
