@@ -83,12 +83,9 @@ export default function Navbar() {
     }, []);
 
     return (
-        <div className="sticky top-0 z-50 w-full px-4 md:px-6 pt-4 backdrop-blur-sm">
+        <div className="sticky top-0 z-50 w-full px-4 md:px-6 pt-4">
             <nav className="w-full relative">
-                {/* ── Pill ─────────────────────────────────────────────────────── */}
-                {/* backdrop-blur-sm moved up to the sticky wrapper so that the
-                    pill's stacking context never clips its absolute descendants. */}
-                <div className="bg-(--surface-card) border-2 border-(--accent) rounded-full px-5 py-2.5 flex items-center justify-between">
+                <div className="bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-full px-5 py-2.5 flex items-center justify-between">
                     <Link
                         to="/"
                         onClick={closeMenu}
