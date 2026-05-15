@@ -1,10 +1,10 @@
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { ProfileResponseDTO, RecentSubmissionDTO } from '../../services/profileService';
 import { containerVariants, itemVariants } from '../../utils/motionConfig';
 import {
     formatPercent,
-    generateHeatmapFromSubmissions,
     getHeatmapStyle,
     submissionStatusLabels,
 } from './profileUtils';
@@ -15,9 +15,26 @@ type ProfileOverviewContentProps = {
     theme: string;
 };
 
+// calculeaza numarul de submisii acceptate (status OK) per zi, returneaza un map dateKey -> count
+const getSubmissionCounts = (submissions: RecentSubmissionDTO[] | undefined): Record<string, number> => {
+    if (!submissions || submissions.length === 0) return {};
+    const counts: Record<string, number> = {};
+    submissions.forEach((submission) => {
+        if (submission.status === 'OK') {
+            const date = new Date(submission.submissionDate);
+            const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            counts[dateKey] = (counts[dateKey] || 0) + 1;
+        }
+    });
+    return counts;
+};
+
 export default function ProfileOverviewContent({ profile, lang, theme }: ProfileOverviewContentProps) {
     const isLightTheme = theme === 'cream' || theme === 'sage';
-    const heatmap = generateHeatmapFromSubmissions(profile.recentSubmissions?.content);
+
+    // starea pentru luna afisata in calendar
+    const [calendarDate, setCalendarDate] = useState(new Date());
+
     const performanceItems = [
         { label: lang === 'RO' ? 'Ușoare' : 'Easy', value: profile.rankEasy, cls: 'emerald' },
         { label: lang === 'RO' ? 'Mediu' : 'Medium', value: profile.rankMedium, cls: 'amber' },
@@ -68,6 +85,48 @@ export default function ProfileOverviewContent({ profile, lang, theme }: Profile
         const label = submissionStatusLabels[status];
         return lang === 'RO' ? label.ro : label.en;
     };
+
+    const handlePrevMonth = () =>
+        setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1, 1));
+    const handleNextMonth = () =>
+        setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1, 1));
+
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+
+    // offset pentru prima zi a lunii (luni = 0, duminica = 6)
+    let startDay = firstDay.getDay();
+    startDay = startDay === 0 ? 6 : startDay - 1;
+
+    // construieste array-ul de celule: null pentru zilele goale din start, string dateKey pentru zilele reale
+    const cells: (string | null)[] = Array(startDay).fill(null);
+    for (let dayCounter = 1; dayCounter <= daysInMonth; dayCounter++) {
+        cells.push(`${year}-${String(month + 1).padStart(2, '0')}-${String(dayCounter).padStart(2, '0')}`);
+    }
+    // umple randul final cu celule goale ca grila sa fie completa
+    const remainingCells = (7 - (cells.length % 7)) % 7;
+    for (let i = 0; i < remainingCells; i++) cells.push(null);
+
+    const weekDays = lang === 'RO' ? ['L', 'Ma', 'Mi', 'J', 'V', 'S', 'D'] : ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    const monthName = calendarDate.toLocaleDateString(lang === 'RO' ? 'ro-RO' : 'en-US', {
+        month: 'long',
+        year: 'numeric',
+    });
+
+    // datekey pentru ziua de azi, folosit pentru highlight
+    const todayKey = (() => {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    })();
+
+    // submission counts memo ca sa nu recalculeze la fiecare render
+    const submissionCounts = useMemo(
+        () => getSubmissionCounts(profile.recentSubmissions?.content),
+        [profile.recentSubmissions?.content],
+    );
 
     return (
         <>
@@ -130,55 +189,82 @@ export default function ProfileOverviewContent({ profile, lang, theme }: Profile
                 variants={itemVariants}
                 className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow min-w-0"
             >
-                <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
-                    {lang === 'RO' ? 'Activitate pe zile' : 'Activity by Day'}
-                </h2>
-                <div className="w-full overflow-x-auto custom-scrollbar pb-2">
-                    <div className="flex flex-col gap-1.5 min-w-max">
-                        <div className="flex gap-1.5">
-                            {heatmap.map((level, index) => {
-                                const daysAgo = 83 - index;
-                                const date = new Date();
-                                date.setDate(date.getDate() - daysAgo);
-                                const dateStr = date.toLocaleDateString();
-                                return (
-                                    <div
-                                        key={index}
-                                        className="w-4 h-4 rounded-[3px] transition-transform hover:scale-125 cursor-pointer border border-(--accent)/5 shrink-0"
-                                        style={getHeatmapStyle(level)}
-                                        title={`${dateStr}: ${level > 0 ? level * 2 + '+' : 0} submissions`}
-                                    />
-                                );
-                            })}
-                        </div>
+                <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
+                    <h2 className="text-sm font-bold text-(--text-h) uppercase tracking-wider">
+                        {lang === 'RO' ? 'Activitate Lunară' : 'Monthly Activity'}
+                    </h2>
 
-                        <div className="flex gap-1.5">
-                            {heatmap.map((_, index) => {
-                                let dayLabel = '';
-                                if (index % 14 === 0) dayLabel = '1';
-                                else if (index % 14 === 7) dayLabel = '14';
-
-                                return (
-                                    <div
-                                        key={`label-${index}`}
-                                        className="w-4 text-[9px] font-semibold text-(--text-subtle) text-center shrink-0 flex items-start justify-center"
-                                    >
-                                        {dayLabel}
-                                    </div>
-                                );
-                            })}
-                        </div>
+                    {/* navigare luna precedenta / urmatoare */}
+                    <div className="flex items-center gap-3 bg-(--surface-card) px-3 py-1.5 rounded-xl border border-(--accent)/20">
+                        <button
+                            onClick={handlePrevMonth}
+                            className="p-1 hover:bg-(--surface-hover) rounded-md text-(--text-muted) hover:text-(--accent) transition-colors cursor-pointer"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path fillRule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+                            </svg>
+                        </button>
+                        <span className="text-xs font-bold text-(--text-h) capitalize min-w-[110px] text-center select-none">
+                            {monthName}
+                        </span>
+                        <button
+                            onClick={handleNextMonth}
+                            className="p-1 hover:bg-(--surface-hover) rounded-md text-(--text-muted) hover:text-(--accent) transition-colors cursor-pointer"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
-                <div className="mt-2 flex items-center justify-end gap-2 text-xs text-(--text-subtle) font-semibold">
-                    <span>Less</span>
-                    <div className="w-3 h-3 rounded-xs" style={getHeatmapStyle(0)} />
-                    <div className="w-3 h-3 rounded-xs" style={getHeatmapStyle(1)} />
-                    <div className="w-3 h-3 rounded-xs" style={getHeatmapStyle(2)} />
-                    <div className="w-3 h-3 rounded-xs" style={getHeatmapStyle(3)} />
-                    <div className="w-3 h-3 rounded-xs" style={getHeatmapStyle(4)} />
-                    <span>More</span>
+                <div className="w-full max-w-sm mx-auto">
+                    <div className="grid grid-cols-7 gap-2">
+                        {/* header zile saptamana */}
+                        {weekDays.map((day, idx) => (
+                            <div key={idx} className="text-center text-[10px] font-bold text-(--text-subtle) pb-2">
+                                {day}
+                            </div>
+                        ))}
+
+                        {/* celulele calendarului */}
+                        {cells.map((dateKey, index) => {
+                            // celula goala pentru alinierea primei zile
+                            if (!dateKey) return <div key={`empty-${index}`} className="w-full aspect-square" />;
+
+                            const count = submissionCounts[dateKey] || 0;
+                            // level 0-4 de intensitate bazat pe numarul de submisii
+                            const level = Math.min(4, Math.ceil(count / 2));
+                            const dayNumber = parseInt(dateKey.split('-')[2], 10);
+                            const isToday = dateKey === todayKey;
+
+                            return (
+                                <div
+                                    key={dateKey}
+                                    className={`w-full aspect-square rounded-lg flex items-center justify-center text-xs font-bold transition-transform hover:scale-105 cursor-pointer select-none ${isToday ? 'ring-2 ring-(--accent) ring-offset-2 ring-offset-(--surface-muted)' : ''}`}
+                                    style={{
+                                        ...getHeatmapStyle(level),
+                                        color: level > 2 || (isLightTheme && level > 1) ? '#fff' : 'var(--text-h)',
+                                        border: level === 0 ? '1px solid color-mix(in srgb, var(--accent) 15%, transparent)' : 'none',
+                                    }}
+                                    title={`${dateKey}: ${count} ${lang === 'RO' ? 'submisii' : 'submissions'}`}
+                                >
+                                    {dayNumber}
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* intensity levels :) */}
+                    <div className="mt-6 flex items-center justify-end gap-2 text-[11px] text-(--text-subtle) font-semibold">
+                        <span>{lang === 'RO' ? 'Mai puțin' : 'Less'}</span>
+                        <div className="w-3.5 h-3.5 rounded-[3px]" style={getHeatmapStyle(0)} />
+                        <div className="w-3.5 h-3.5 rounded-[3px]" style={getHeatmapStyle(1)} />
+                        <div className="w-3.5 h-3.5 rounded-[3px]" style={getHeatmapStyle(2)} />
+                        <div className="w-3.5 h-3.5 rounded-[3px]" style={getHeatmapStyle(3)} />
+                        <div className="w-3.5 h-3.5 rounded-[3px]" style={getHeatmapStyle(4)} />
+                        <span>{lang === 'RO' ? 'Mai mult' : 'More'}</span>
+                    </div>
                 </div>
             </motion.div>
 
