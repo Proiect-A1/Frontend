@@ -15,7 +15,6 @@ type ProfileOverviewContentProps = {
     theme: string;
 };
 
-// calculeaza numarul de submisii acceptate (status OK) per zi, returneaza un map dateKey -> count
 const getSubmissionCounts = (submissions: RecentSubmissionDTO[] | undefined): Record<string, number> => {
     if (!submissions || submissions.length === 0) return {};
     const counts: Record<string, number> = {};
@@ -32,7 +31,6 @@ const getSubmissionCounts = (submissions: RecentSubmissionDTO[] | undefined): Re
 export default function ProfileOverviewContent({ profile, lang, theme }: ProfileOverviewContentProps) {
     const isLightTheme = theme === 'cream' || theme === 'sage';
 
-    // starea pentru luna afisata in calendar
     const [calendarDate, setCalendarDate] = useState(new Date());
 
     const performanceItems = [
@@ -97,16 +95,15 @@ export default function ProfileOverviewContent({ profile, lang, theme }: Profile
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
 
-    // offset pentru prima zi a lunii (luni = 0, duminica = 6)
+    // offset pentru prima zi a lunii, luni = 0, duminica = 6
     let startDay = firstDay.getDay();
     startDay = startDay === 0 ? 6 : startDay - 1;
 
-    // construieste array-ul de celule: null pentru zilele goale din start, string dateKey pentru zilele reale
+    // construieste array-ul de celule: null pentru zilele goale, string dateKey pentru zilele reale
     const cells: (string | null)[] = Array(startDay).fill(null);
     for (let dayCounter = 1; dayCounter <= daysInMonth; dayCounter++) {
         cells.push(`${year}-${String(month + 1).padStart(2, '0')}-${String(dayCounter).padStart(2, '0')}`);
     }
-    // umple randul final cu celule goale ca grila sa fie completa
     const remainingCells = (7 - (cells.length % 7)) % 7;
     for (let i = 0; i < remainingCells; i++) cells.push(null);
 
@@ -116,7 +113,6 @@ export default function ProfileOverviewContent({ profile, lang, theme }: Profile
         year: 'numeric',
     });
 
-    // datekey pentru ziua de azi, folosit pentru highlight
     const todayKey = (() => {
         const d = new Date();
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -185,51 +181,53 @@ export default function ProfileOverviewContent({ profile, lang, theme }: Profile
                 ))}
             </motion.div>
 
+            {/* calendar lunar + submisii recente side by side pe desktop, stacked pe mobile */}
             <motion.div
-                variants={itemVariants}
-                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow min-w-0"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-1 lg:grid-cols-2 gap-4 min-w-0 mb-8"
             >
-                <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
-                    <h2 className="text-sm font-bold text-(--text-h) uppercase tracking-wider">
-                        {lang === 'RO' ? 'Activitate Lunară' : 'Monthly Activity'}
-                    </h2>
-
-                    {/* navigare luna precedenta / urmatoare */}
-                    <div className="flex items-center gap-3 bg-(--surface-card) px-3 py-1.5 rounded-xl border border-(--accent)/20">
-                        <button
-                            onClick={handlePrevMonth}
-                            className="p-1 hover:bg-(--surface-hover) rounded-md text-(--text-muted) hover:text-(--accent) transition-colors cursor-pointer"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path fillRule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
-                            </svg>
-                        </button>
-                        <span className="text-xs font-bold text-(--text-h) capitalize min-w-[110px] text-center select-none">
-                            {monthName}
-                        </span>
-                        <button
-                            onClick={handleNextMonth}
-                            className="p-1 hover:bg-(--surface-hover) rounded-md text-(--text-muted) hover:text-(--accent) transition-colors cursor-pointer"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
-                            </svg>
-                        </button>
+                <motion.div
+                    variants={itemVariants}
+                    className="p-4 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow min-w-0"
+                >
+                    <div className="flex items-center justify-between mb-4 gap-2">
+                        <h2 className="text-sm font-bold text-(--text-h) uppercase tracking-wider">
+                            {lang === 'RO' ? 'Activitate Lunară' : 'Monthly Activity'}
+                        </h2>
+                        <div className="flex items-center gap-2 bg-(--surface-card) px-2 py-1 rounded-xl border border-(--accent)/20">
+                            <button
+                                onClick={handlePrevMonth}
+                                className="p-0.5 hover:bg-(--surface-hover) rounded-md text-(--text-muted) hover:text-(--accent) transition-colors cursor-pointer"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fillRule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+                                </svg>
+                            </button>
+                            <span className="text-[11px] font-bold text-(--text-h) capitalize min-w-[90px] text-center select-none">
+                                {monthName}
+                            </span>
+                            <button
+                                onClick={handleNextMonth}
+                                className="p-0.5 hover:bg-(--surface-hover) rounded-md text-(--text-muted) hover:text-(--accent) transition-colors cursor-pointer"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <div className="w-full max-w-sm mx-auto">
-                    <div className="grid grid-cols-7 gap-2">
-                        {/* header zile saptamana */}
+                    <div className="grid grid-cols-7 gap-1">
                         {weekDays.map((day, idx) => (
-                            <div key={idx} className="text-center text-[10px] font-bold text-(--text-subtle) pb-2">
+                            <div key={idx} className="text-center text-[9px] font-bold text-(--text-subtle) pb-1">
                                 {day}
                             </div>
                         ))}
 
-                        {/* celulele calendarului */}
+                        {/* celulele zilelor */}
                         {cells.map((dateKey, index) => {
-                            // celula goala pentru alinierea primei zile
                             if (!dateKey) return <div key={`empty-${index}`} className="w-full aspect-square" />;
 
                             const count = submissionCounts[dateKey] || 0;
@@ -241,7 +239,7 @@ export default function ProfileOverviewContent({ profile, lang, theme }: Profile
                             return (
                                 <div
                                     key={dateKey}
-                                    className={`w-full aspect-square rounded-lg flex items-center justify-center text-xs font-bold transition-transform hover:scale-105 cursor-pointer select-none ${isToday ? 'ring-2 ring-(--accent) ring-offset-2 ring-offset-(--surface-muted)' : ''}`}
+                                    className={`w-full aspect-square rounded-md flex items-center justify-center text-[10px] font-bold transition-transform hover:scale-105 cursor-pointer select-none ${isToday ? 'ring-2 ring-(--accent) ring-offset-1 ring-offset-(--surface-muted)' : ''}`}
                                     style={{
                                         ...getHeatmapStyle(level),
                                         color: level > 2 || (isLightTheme && level > 1) ? '#fff' : 'var(--text-h)',
@@ -255,81 +253,80 @@ export default function ProfileOverviewContent({ profile, lang, theme }: Profile
                         })}
                     </div>
 
-                    {/* intensity levels :) */}
-                    <div className="mt-6 flex items-center justify-end gap-2 text-[11px] text-(--text-subtle) font-semibold">
+                    {/* intensity */}
+                    <div className="mt-3 flex items-center justify-end gap-1.5 text-[10px] text-(--text-subtle) font-semibold">
                         <span>{lang === 'RO' ? 'Mai puțin' : 'Less'}</span>
-                        <div className="w-3.5 h-3.5 rounded-[3px]" style={getHeatmapStyle(0)} />
-                        <div className="w-3.5 h-3.5 rounded-[3px]" style={getHeatmapStyle(1)} />
-                        <div className="w-3.5 h-3.5 rounded-[3px]" style={getHeatmapStyle(2)} />
-                        <div className="w-3.5 h-3.5 rounded-[3px]" style={getHeatmapStyle(3)} />
-                        <div className="w-3.5 h-3.5 rounded-[3px]" style={getHeatmapStyle(4)} />
+                        <div className="w-3 h-3 rounded-[3px]" style={getHeatmapStyle(0)} />
+                        <div className="w-3 h-3 rounded-[3px]" style={getHeatmapStyle(1)} />
+                        <div className="w-3 h-3 rounded-[3px]" style={getHeatmapStyle(2)} />
+                        <div className="w-3 h-3 rounded-[3px]" style={getHeatmapStyle(3)} />
+                        <div className="w-3 h-3 rounded-[3px]" style={getHeatmapStyle(4)} />
                         <span>{lang === 'RO' ? 'Mai mult' : 'More'}</span>
                     </div>
-                </div>
-            </motion.div>
+                </motion.div>
 
-            <motion.div
-                variants={itemVariants}
-                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow mb-8 min-w-0"
-            >
-                <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
-                    {lang === 'RO' ? 'Submisii Recente' : 'Recent Submissions'}
-                </h2>
-                {profile.recentSubmissions.content.length > 0 ? (
-                    <motion.div
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="visible"
-                        className="flex flex-col gap-2"
-                    >
-                        {profile.recentSubmissions.content.map((submission) => {
-                            const isAccepted = submission.status === 'OK';
-                            const badgeClasses = isAccepted
-                                ? isLightTheme
-                                    ? 'bg-emerald-500/20 text-emerald-700 border-emerald-500/40'
-                                    : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
-                                : isLightTheme
-                                  ? 'bg-red-500/20 text-red-700 border-red-500/40'
-                                  : 'bg-red-500/10 text-red-300 border-red-500/30';
+                <motion.div
+                    variants={itemVariants}
+                    className="p-4 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow min-w-0 flex flex-col"
+                >
+                    <h2 className="text-sm font-bold text-(--text-h) mb-3 uppercase tracking-wider shrink-0">
+                        {lang === 'RO' ? 'Submisii Recente' : 'Recent Submissions'}
+                    </h2>
 
-                            return (
-                                <motion.div
-                                    key={`${submission.problemTitle}-${submission.submissionDate}`}
-                                    variants={itemVariants}
-                                    className="p-3 md:p-4 rounded-2xl border border-(--accent)/20 bg-(--accent)/5 flex justify-between items-center gap-3 transition-colors hover:bg-(--accent)/10"
-                                >
-                                    <div className="min-w-0 pr-2">
-                                        <Link
-                                            to={`/problems/${submission.problemTitle}`}
-                                            className="text-sm md:text-base font-bold text-(--text-h) hover:text-(--accent) hover:underline underline-offset-2 transition-colors line-clamp-1 truncate block"
-                                        >
-                                            {submission.problemTitle}
-                                        </Link>
-                                        <p className="mt-1 text-[11px] text-(--text-subtle)">
-                                            {formatSubmissionDate(submission.submissionDate)}
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center gap-3 shrink-0 ml-2 flex-wrap justify-end">
-                                        <span className="text-[11px] font-mono text-(--text-subtle) hidden sm:inline-block">
-                                            Score: {submission.score}
-                                        </span>
-                                        <span
-                                            className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap border ${badgeClasses}`}
-                                        >
-                                            {formatStatus(submission.status)}
-                                        </span>
-                                    </div>
-                                </motion.div>
-                            );
-                        })}
-                    </motion.div>
-                ) : (
-                    <p className="text-sm text-(--text-subtle)">
-                        {lang === 'RO'
-                            ? 'Nu există submisii recente.'
-                            : 'No recent submissions.'}
-                    </p>
-                )}
+                    {profile.recentSubmissions.content.length > 0 ? (
+                        <motion.div
+                            variants={containerVariants}
+                            initial="hidden"
+                            animate="visible"
+                            className="flex flex-col gap-2 overflow-y-auto custom-scrollbar flex-1"
+                        >
+                            {profile.recentSubmissions.content.map((submission) => {
+                                const isAccepted = submission.status === 'OK';
+                                const badgeClasses = isAccepted
+                                    ? isLightTheme
+                                        ? 'bg-emerald-500/20 text-emerald-700 border-emerald-500/40'
+                                        : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                                    : isLightTheme
+                                      ? 'bg-red-500/20 text-red-700 border-red-500/40'
+                                      : 'bg-red-500/10 text-red-300 border-red-500/30';
+
+                                return (
+                                    <motion.div
+                                        key={`${submission.problemTitle}-${submission.submissionDate}`}
+                                        variants={itemVariants}
+                                        className="p-3 rounded-2xl border border-(--accent)/20 bg-(--accent)/5 flex justify-between items-center gap-3 transition-colors hover:bg-(--accent)/10 shrink-0"
+                                    >
+                                        <div className="min-w-0 pr-2">
+                                            <Link
+                                                to={`/problems/${submission.problemTitle}`}
+                                                className="text-sm font-bold text-(--text-h) hover:text-(--accent) hover:underline underline-offset-2 transition-colors line-clamp-1 truncate block"
+                                            >
+                                                {submission.problemTitle}
+                                            </Link>
+                                            <p className="mt-0.5 text-[11px] text-(--text-subtle)">
+                                                {formatSubmissionDate(submission.submissionDate)}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+                                            <span className="text-[11px] font-mono text-(--text-subtle) hidden sm:inline-block">
+                                                Score: {submission.score}
+                                            </span>
+                                            <span
+                                                className={`px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap border ${badgeClasses}`}
+                                            >
+                                                {formatStatus(submission.status)}
+                                            </span>
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
+                        </motion.div>
+                    ) : (
+                        <p className="text-sm text-(--text-subtle)">
+                            {lang === 'RO' ? 'Nu există submisii recente.' : 'No recent submissions.'}
+                        </p>
+                    )}
+                </motion.div>
             </motion.div>
         </>
     );
