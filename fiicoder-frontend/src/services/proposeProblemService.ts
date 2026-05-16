@@ -2,6 +2,12 @@ import { apiClient } from "./apiClient";
 import type { ProposeProblemForm, ProblemProposalResponse } from "../types/proposeProblem";
 import { createProblemZip } from "../utils/zipHelper";
 
+type BackendProblemProposal = {
+  title: string;
+  problemVisibility?: string;
+  problemStatus?: string;
+};
+
 export const proposeProblemService = {
   // Submit a new problem proposal
   submitProposal: async (formData: ProposeProblemForm): Promise<ProblemProposalResponse> => {
@@ -68,29 +74,19 @@ export const proposeProblemService = {
     } as ProposeProblemForm;
   },
 
-  // Get list of proposals for the current user (Mock for now)
-  getMyProposals: async (_page: number = 1, _size: number = 20): Promise<ProblemProposalResponse[]> => {
-    // This would normally call an endpoint like /api/problems/my-proposals
-    // For now, returning mock data to populate the UI
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return [
-      {
-        id: "GolderbergPrivate",
-        title: "GolderbergPrivate",
-        status: 'pending',
-        visibility: 'private',
-        hasPendingUpdate: false,
-        submittedAt: new Date().toISOString(),
-      },
-      {
-        id: "Ecuatii-Complexe",
-        title: "Ecuatii Complexe",
-        status: 'approved',
-        visibility: 'public',
-        hasPendingUpdate: false,
-        submittedAt: "2026-05-01T10:00:00Z",
-      }
-    ];
+  // Get list of proposals for the current user
+  getMyProposals: async (page: number = 1, size: number = 20): Promise<ProblemProposalResponse[]> => {
+    const data = await apiClient.get<BackendProblemProposal[]>(`/problems/proposed?page=${page}&size=${size}`);
+
+    return data.map((proposal) => ({
+      id: proposal.title,
+      title: proposal.title,
+      status: mapProblemStatus(proposal.problemStatus),
+      visibility: mapProblemVisibility(proposal.problemVisibility),
+      hasPendingUpdate: false,
+      // Backend list endpoint currently does not expose submission/update timestamps.
+      submittedAt: new Date().toISOString(),
+    }));
   },
 };
 
@@ -106,6 +102,21 @@ function buildPayload(formData: ProposeProblemForm) {
     tagTitles: formData.tags,
     visibility: formData.visibility.toUpperCase(),
   };
+}
+
+function mapProblemStatus(status?: string): ProblemProposalResponse["status"] {
+  switch ((status ?? "").toUpperCase()) {
+    case "ACCEPTED":
+      return "approved";
+    case "REJECTED":
+      return "rejected";
+    default:
+      return "pending";
+  }
+}
+
+function mapProblemVisibility(visibility?: string): ProblemProposalResponse["visibility"] {
+  return (visibility ?? "").toUpperCase() === "PUBLIC" ? "public" : "private";
 }
 
 // ── Draft persistence (localStorage) ──
