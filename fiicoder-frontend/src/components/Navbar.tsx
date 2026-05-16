@@ -139,7 +139,7 @@ export default function Navbar() {
                         </Link>
 
                         {/* left area: search (desktop) */}
-                        <div className="hidden min-[1200px]:flex items-center">
+                        <div className="hidden min-[1400px]:flex items-center">
                             <div className="w-64">
                                 <SearchInput
                                     value={navSearch}
@@ -154,8 +154,8 @@ export default function Navbar() {
 
                     </div>
 
-                    {/* desktop navigation — collapses at 1200 px to avoid logo overlap */}
-                    <div className="hidden min-[1200px]:flex gap-3 items-center flex-nowrap whitespace-nowrap">
+                    {/* desktop navigation — collapses at 1400 px to avoid logo overlap */}
+                    <div className="hidden min-[1400px]:flex gap-3 items-center flex-nowrap whitespace-nowrap">
                         
 
                         <Link to="/problems" className={getNavLinkClass('/problems')}>
@@ -252,7 +252,7 @@ export default function Navbar() {
 
                     {/* mobile hamburger */}
                     <button
-                        className="min-[1200px]:hidden p-2 text-(--text) hover:text-(--text-h) focus:outline-none"
+                        className="min-[1400px]:hidden p-2 text-(--text) hover:text-(--text-h) focus:outline-none"
                         onClick={() => setIsMobileOpen(!isMobileOpen)}
                     >
                         {isMobileOpen ? (
@@ -279,7 +279,7 @@ export default function Navbar() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -8 }}
                             transition={{ duration: 0.15 }}
-                            className="hidden min-[1200px]:block absolute right-5 top-full mt-3 w-36 bg-(--surface-dropdown) border border-(--accent)/40 rounded-2xl shadow-xl overflow-hidden z-50"
+                            className="hidden min-[1400px]:block absolute right-5 top-full mt-3 w-36 bg-(--surface-dropdown) border border-(--accent)/40 rounded-2xl shadow-xl overflow-hidden z-50"
                         >
                             {themes.map((themeName) => (
                                 <button
