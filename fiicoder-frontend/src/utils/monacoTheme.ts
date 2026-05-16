@@ -69,7 +69,7 @@ export function applyMonacoTheme(
   options: ApplyMonacoThemeOptions = {},
 ) {
   const palette = getMonacoThemePalette(themeName);
-  const themeId = options.themeId ?? `fiicoder-${themeName}`; // era 'fiicoder-dark' hardcodat
+  const themeId = options.themeId ?? `fiicoder-${themeName}`; // era 'fiicoder-dark' hardcodata
   const isLight = ["custom", "sage"].includes(themeName);
 
   monaco.editor.defineTheme(themeId, {
@@ -102,6 +102,7 @@ export function applyMonacoTheme(
       "scrollbarSlider.activeBackground": `${palette.accent}80`,
       ...(options.extraColors ?? {}),
     },
+
   });
 
   monaco.editor.setTheme(themeId);
