@@ -62,7 +62,7 @@ export default function ProfileProposalsPanel({ proposals, loading, lang }: Prof
                                         color: `var(--status-${proposal.status === 'approved' ? 'success' : proposal.status === 'rejected' ? 'error' : 'warning'})`,
                                         backgroundColor: `color-mix(in srgb, var(--status-${proposal.status === 'approved' ? 'success' : proposal.status === 'rejected' ? 'error' : 'warning'}) 5%, transparent)`
                                     }}
-                                    className="text-[10px] px-2 py-0.5 rounded-full border uppercase tracking-wider font-bold self-start"
+                                    className="text-[10px] px-2 py-0.5 rounded-full border uppercase tracking-wider font-bold self-start sm:self-center"
                                 >
                                     {proposal.status}
                                 </span>
