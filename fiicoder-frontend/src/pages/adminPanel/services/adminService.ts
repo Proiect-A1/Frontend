@@ -16,7 +16,7 @@ type AdminOverviewResponse = {
     submissions: number;
     classes: number;
     assignments: number;
-    pendingProblems: number;
+    draftProposals: number;
 };
 
 export interface AdminUser {
@@ -46,6 +46,9 @@ export interface ProblemProposalDetail extends ProblemProposal {
     constraints?: string[];
     sampleInput?: string;
     sampleOutput?: string;
+    zipDownloadLink?: string;
+    timeLimit?: number;
+    memoryLimit?: number;
 }
 
 export interface ProblemTestDetails {
@@ -120,7 +123,7 @@ function normalizeOverview(payload: AdminOverviewResponse): AdminOverview {
         submissions: payload.submissions,
         classes: payload.classes,
         assignments: payload.assignments,
-        pendingProposals: payload.pendingProblems,
+        pendingProposals: payload.draftProposals,
     };
 }
 
@@ -155,17 +158,18 @@ export const adminService = {
         await apiClient.put(`/users/update-role`, { username, role });
     },
 
-    async getProposals(page: number = 1, size: number = 20): Promise<ProblemProposal[]> {
+    async getProposals(): Promise<ProblemProposal[]> {
         try {
-            const data = await apiClient.get<any[]>(`/api/problems/pending?page=${page}&size=${size}`);
+            // Using pending-review endpoint which returns ProblemPendingReviewDTO
+            const data = await apiClient.get<any[]>('/problems/pending-review');
             return data.map(p => ({
-                id: p.title, // Title is often the ID/slug in this system
+                id: p.title, 
                 title: p.title,
-                authorUsername: p.authorUsername || 'unknown',
-                description: p.description || '',
-                status: p.status || 'PENDING',
-                createdAt: p.createdAt || new Date().toISOString(),
-                tags: p.tagTitles
+                authorUsername: p.proposedBy || 'unknown',
+                description: p.difficulty || '',
+                status: 'PENDING',
+                createdAt: p.submittedAt || new Date().toISOString(),
+                tags: Array.from(p.tags || [])
             }));
         } catch {
             return mockProposalDetails;
@@ -174,21 +178,20 @@ export const adminService = {
 
     async getProblemProposal(title: string): Promise<ProblemProposalDetail> {
         try {
-            const p = await apiClient.get<any>(`/api/problems/${encodeURIComponent(title)}/form/details`);
+            // Using form details endpoint which returns ProblemCreationDetailsResponseDTO
+            const p = await apiClient.get<any>(`/problems/${encodeURIComponent(title)}/form/details`);
             return {
                 id: p.title,
                 title: p.title,
-                authorUsername: p.authorUsername || 'unknown',
+                authorUsername: 'unknown', // Not provided by this DTO
                 description: p.description || '',
-                status: p.status || 'PENDING',
-                createdAt: p.createdAt || new Date().toISOString(),
-                statement: p.statement,
-                inputDescription: p.inputDescription,
-                outputDescription: p.outputDescription,
-                constraints: p.constraints,
-                sampleInput: p.sampleInput,
-                sampleOutput: p.sampleOutput,
-                tags: p.tagTitles
+                status: 'PENDING',
+                createdAt: new Date().toISOString(),
+                statement: p.description,
+                tags: Array.from(p.tagTitles || []),
+                zipDownloadLink: p.zipDownloadLink,
+                timeLimit: p.timeLimit,
+                memoryLimit: p.memoryLimit
             };
         } catch {
             return mockProposalDetails[0];
@@ -196,13 +199,13 @@ export const adminService = {
     },
 
     async reviewProposal(title: string, action: 'approve' | 'reject'): Promise<void> {
-        await apiClient.patch(`/api/problems/${encodeURIComponent(title)}/status`, {
+        await apiClient.patch(`/problems/${encodeURIComponent(title)}/status`, {
             updatedStatus: action === 'approve' ? 'ACCEPTED' : 'REJECTED'
         });
     },
 
     async getProblemTests(title: string): Promise<ProblemTestDetails> {
-        return await apiClient.get(`/api/problems/${encodeURIComponent(title)}/tests`);
+        return await apiClient.get(`/problems/${encodeURIComponent(title)}/tests`);
     },
 
     async getAnnouncements(): Promise<Announcement[]> {
