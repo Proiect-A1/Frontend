@@ -10,6 +10,9 @@ type ProfileProposalsPanelProps = {
 };
 
 export default function ProfileProposalsPanel({ proposals, loading, lang }: ProfileProposalsPanelProps) {
+    const viewLabel = lang === 'RO' ? 'Vezi' : 'View';
+    const editLabel = lang === 'RO' ? 'Editează' : 'Edit';
+
     return (
         <motion.div
             variants={itemVariants}
@@ -33,10 +36,9 @@ export default function ProfileProposalsPanel({ proposals, loading, lang }: Prof
             ) : (
                 <div className="flex flex-col gap-3">
                     {proposals.map((proposal) => (
-                        <Link
+                        <div
                             key={proposal.id}
-                            to={`/propose/${proposal.id}`}
-                            className="p-4 rounded-2xl border border-(--accent)/15 bg-(--surface-muted) hover:border-(--accent)/40 transition-all flex items-center justify-between group"
+                            className="p-4 rounded-2xl border border-(--accent)/15 bg-(--surface-muted) hover:border-(--accent)/40 transition-all flex flex-col gap-4 md:flex-row md:items-center md:justify-between group"
                         >
                             <div className="min-w-0">
                                 <div className="font-bold text-(--text-h) truncate group-hover:text-(--accent) transition-colors">
@@ -52,24 +54,34 @@ export default function ProfileProposalsPanel({ proposals, loading, lang }: Prof
                                     </span>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3">
+
+                            <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
                                 <span
                                     style={{
                                         borderColor: `color-mix(in srgb, var(--status-${proposal.status === 'approved' ? 'success' : proposal.status === 'rejected' ? 'error' : 'warning'}) 40%, transparent)`,
                                         color: `var(--status-${proposal.status === 'approved' ? 'success' : proposal.status === 'rejected' ? 'error' : 'warning'})`,
                                         backgroundColor: `color-mix(in srgb, var(--status-${proposal.status === 'approved' ? 'success' : proposal.status === 'rejected' ? 'error' : 'warning'}) 5%, transparent)`
                                     }}
-                                    className="text-[10px] px-2 py-0.5 rounded-full border uppercase tracking-wider font-bold"
+                                    className="text-[10px] px-2 py-0.5 rounded-full border uppercase tracking-wider font-bold self-start"
                                 >
                                     {proposal.status}
                                 </span>
-                                <div className="text-(--accent) opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                                    </svg>
+                                <div className="flex flex-wrap gap-2">
+                                    <Link
+                                        to={`/problems/${encodeURIComponent(proposal.title)}`}
+                                        className="px-3 py-1.5 rounded-full border-2 border-(--accent)/40 bg-transparent text-xs font-bold text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) transition-colors"
+                                    >
+                                        {viewLabel}
+                                    </Link>
+                                    <Link
+                                        to={`/propose/${proposal.id}`}
+                                        className="px-3 py-1.5 rounded-full border-2 border-(--accent) bg-(--accent)/15 text-xs font-bold text-(--text-h) hover:bg-(--accent)/25 transition-colors"
+                                    >
+                                        {editLabel}
+                                    </Link>
                                 </div>
                             </div>
-                        </Link>
+                        </div>
                     ))}
                 </div>
             )}
