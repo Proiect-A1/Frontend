@@ -1,6 +1,7 @@
 import Editor from '@monaco-editor/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import React from 'react';
+import { useTheme } from '../../services/ThemeContext';
 
 type Props = {
     isAuthenticated: boolean;
@@ -33,6 +34,9 @@ export default function EditorPanel({
     handleSubmit,
     monacoLanguageMap,
 }: Props) {
+
+    const { theme } = useTheme();
+
     if (isAuthenticated) {
         return (
             <div className="h-full p-6 flex flex-col bg-(--surface-card) overflow-hidden">
@@ -82,7 +86,7 @@ export default function EditorPanel({
                             language={monacoLanguageMap[language] || 'cpp'}
                             value={code}
                             onChange={(val) => setCode(val || '')}
-                            theme="fiicoder-dark"
+                            theme={theme === 'custom' ? 'fiicoder-dark' : theme}
                             onMount={handleEditorMount}
                             loading={
                                 <div className="animate-spin w-8 h-8 border border-(--accent)/50 border-t-(--accent) rounded-full" />
