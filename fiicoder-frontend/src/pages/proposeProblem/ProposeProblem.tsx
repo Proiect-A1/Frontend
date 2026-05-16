@@ -71,8 +71,7 @@ export default function ProposeProblem() {
 
     if (isLoading) {
         return (
-            <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
-                <div className="w-full max-w-7xl rounded-2xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 flex items-center justify-center">
+                <div className="w-full max-w-7xl mx-auto rounded-2xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 flex items-center justify-center xl:flex-1 xl:min-h-0">
                     <div className="text-center space-y-3">
                         <div className="flex justify-center">
                             <svg className="animate-spin h-8 w-8 text-(--accent)" fill="none" viewBox="0 0 24 24">
@@ -83,19 +82,17 @@ export default function ProposeProblem() {
                         <p className="text-(--text-muted) font-medium">Se încarcă propunerea...</p>
                     </div>
                 </div>
-            </div>
         );
     }
 
     return (
         <FormProvider {...methods}>
-            <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
-                <motion.div
-                    className="w-full max-w-7xl rounded-3xl border-2 border-(--accent) bg-(--surface-card) h-full flex overflow-hidden relative"
-                    initial="hidden"
-                    animate="visible"
-                    variants={pageVariants}
-                >
+            <motion.div
+                className="w-full max-w-7xl mx-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) xl:flex-1 xl:min-h-0 h-full flex overflow-hidden relative"
+                initial="hidden"
+                animate="visible"
+                variants={pageVariants}
+            >
                     <form onSubmit={methods.handleSubmit(handleSubmit)} className="flex-1 h-full flex flex-col overflow-hidden relative">
                         <div className="flex-1 overflow-y-auto custom-scrollbar p-5 md:p-8">
                             <div className="w-full">
@@ -214,7 +211,6 @@ export default function ProposeProblem() {
                         </div>
                     </form>
                 </motion.div>
-            </div>
         </FormProvider>
     );
 }

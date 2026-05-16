@@ -48,13 +48,12 @@ export default function AdminPanel() {
     if (!isAdmin) return <Navigate to="/" replace />;
 
     return (
-        <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
-            <motion.div
-                className="w-full max-w-7xl rounded-3xl border-2 border-(--accent) bg-(--surface-card) h-full flex overflow-hidden relative"
-                initial="hidden"
-                animate="visible"
-                variants={pageVariants}
-            >
+        <motion.div
+            className="w-full max-w-7xl mx-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) xl:flex-1 xl:min-h-0 h-full flex overflow-hidden relative"
+            initial="hidden"
+            animate="visible"
+            variants={pageVariants}
+        >
                 <div className="flex-1 h-full flex flex-col overflow-hidden relative">
                     <div className="flex-1 overflow-y-auto custom-scrollbar p-5 md:p-8">
                         <div className="w-full">
@@ -120,7 +119,6 @@ export default function AdminPanel() {
                         />
                     )}
                 </AnimatePresence>
-            </motion.div>
-        </div>
+        </motion.div>
     );
 }
