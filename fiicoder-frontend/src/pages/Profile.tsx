@@ -134,6 +134,34 @@ export default function Profile() {
                                 {lang === 'RO' ? 'Profil' : 'Profile'}
                             </h1>
                         </div>
+
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab('overview')}
+                                className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'overview' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
+                            >
+                                {lang === 'RO' ? 'Prezentare' : 'Overview'}
+                            </button>
+                            {canViewProposals && (
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab('proposals')}
+                                    className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'proposals' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
+                                >
+                                    {lang === 'RO' ? 'Propunerile Mele' : 'My Proposals'}
+                                </button>
+                            )}
+
+                            {isAdmin && (
+                                <Link
+                                    to="/admin"
+                                    className="px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 ml-4 bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5"
+                                >
+                                    {lang === 'RO' ? 'Panou Administrare' : 'Admin Dashboard'}
+                                </Link>
+                            )}
+                        </div>
                     </div>
 
                     <motion.div
@@ -147,34 +175,6 @@ export default function Profile() {
                         </div>
 
                         <div className="flex flex-col gap-6 min-w-0 w-full">
-                            <div className="flex items-center gap-2 mb-4 flex-wrap">
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab('overview')}
-                                    className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'overview' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
-                                >
-                                    {lang === 'RO' ? 'Prezentare' : 'Overview'}
-                                </button>
-                                {canViewProposals && (
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('proposals')}
-                                        className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'proposals' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
-                                    >
-                                        {lang === 'RO' ? 'Propunerile Mele' : 'My Proposals'}
-                                    </button>
-                                )}
-
-                                {/* Butonul de Admin integrat direct în bara de tab-uri, aliniat la dreapta */}
-                                {isAdmin && (
-                                    <Link
-                                        to="/admin"
-                                        className="px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 ml-auto bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5"
-                                    >
-                                        {lang === 'RO' ? 'Panou Administrare' : 'Admin Dashboard'}
-                                    </Link>
-                                )}
-                            </div>
 
                             {activeTab === 'overview' ? (
                                 <ProfileOverviewContent profile={profile} lang={lang} theme={theme} />
