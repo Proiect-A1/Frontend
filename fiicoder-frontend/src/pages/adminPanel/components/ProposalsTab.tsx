@@ -47,7 +47,7 @@ export default function ProposalsTab({
                 <motion.div variants={containerVariants} className="space-y-3">
                     <motion.div
                         variants={itemVariants}
-                        className="flex items-center justify-between text-xs uppercase tracking-widest text-(--text-muted) font-bold"
+                        className="flex items-center justify-between text-sm text-(--text-muted) font-semibold"
                     >
                         <span>
                             {lang === 'RO' ? 'Propuneri în așteptare' : 'Pending proposals'}
@@ -85,7 +85,7 @@ export default function ProposalsTab({
                                         <h3 className="text-lg font-bold text-(--text-h) line-clamp-1">
                                             {proposal.title}
                                         </h3>
-                                        <span className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold whitespace-nowrap">
+                                        <span className="text-xs text-(--text-muted) font-semibold whitespace-nowrap">
                                             {proposal.createdAt}
                                         </span>
                                     </div>
@@ -97,7 +97,7 @@ export default function ProposalsTab({
                                             {lang === 'RO' ? 'Propus de' : 'By'}:{' '}
                                             <span className="text-(--text)">{proposal.authorUsername}</span>
                                         </span>
-                                        <span className="rounded-full border border-amber-400/60 bg-amber-400/20 px-2.5 py-1 text-amber-400 uppercase tracking-widest">
+                                        <span className="rounded-full border border-amber-400/60 bg-amber-400/20 px-2.5 py-1 text-amber-500 font-bold">
                                             {proposal.status}
                                         </span>
                                     </div>
@@ -120,7 +120,7 @@ export default function ProposalsTab({
                     )}
 
                     {!selectedProposal && !selectedProposalId && (
-                        <p className="text-(--text-muted) text-sm">
+                        <p className="text-(--text-muted) text-sm text-center py-8">
                             {lang === 'RO'
                                 ? 'Selectează o propunere pentru a vedea detaliile.'
                                 : 'Select a proposal to see the details.'}
@@ -136,10 +136,10 @@ export default function ProposalsTab({
                                     </h3>
                                     <p className="text-sm text-(--text-muted) mt-1">
                                         {lang === 'RO' ? 'Propus de' : 'Author'}{' '}
-                                        <span className="text-(--text-h)">{selectedProposal.authorUsername}</span>
+                                        <span className="text-(--text-h) font-bold">{selectedProposal.authorUsername}</span>
                                     </p>
                                 </div>
-                                <span className="rounded-full border border-amber-400/40 bg-amber-400/20 px-3 py-1 text-xs font-bold uppercase tracking-widest text-amber-400 whitespace-nowrap">
+                                <span className="rounded-full border border-amber-400/40 bg-amber-400/20 px-3 py-1 text-xs font-bold text-amber-500 whitespace-nowrap">
                                     {selectedProposal.status}
                                 </span>
                             </div>
@@ -147,13 +147,13 @@ export default function ProposalsTab({
                             <div className="flex gap-2 border-b border-(--accent)/20 pb-2">
                                 <button
                                     onClick={() => setShowTests(false)}
-                                    className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-lg transition-colors ${!showTests ? 'bg-(--accent)/20 text-(--text-h)' : 'text-(--text-muted) hover:bg-(--accent)/10'}`}
+                                    className={`text-xs font-bold px-3 py-1.5 rounded-full border-2 transition-all ${!showTests ? 'bg-(--accent)/25 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15'}`}
                                 >
                                     {lang === 'RO' ? 'Detalii' : 'Details'}
                                 </button>
                                 <button
                                     onClick={() => setShowTests(true)}
-                                    className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-lg transition-colors ${showTests ? 'bg-(--accent)/20 text-(--text-h)' : 'text-(--text-muted) hover:bg-(--accent)/10'}`}
+                                    className={`text-xs font-bold px-3 py-1.5 rounded-full border-2 transition-all ${showTests ? 'bg-(--accent)/25 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15'}`}
                                 >
                                     {lang === 'RO' ? 'Teste' : 'Tests'}
                                 </button>
@@ -214,7 +214,7 @@ export default function ProposalsTab({
                                     {selectedProposal.tags && selectedProposal.tags.length > 0 && (
                                         <div className="flex flex-wrap gap-2">
                                             {selectedProposal.tags.map((tag) => (
-                                                <span key={tag} className="rounded-full border border-(--accent)/30 bg-(--accent)/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-(--text-h)">{tag}</span>
+                                                <span key={tag} className="rounded-full border border-(--accent)/30 bg-(--accent)/10 px-2.5 py-1 text-[10px] font-bold text-(--text-h)">{tag}</span>
                                             ))}
                                         </div>
                                     )}
@@ -224,13 +224,13 @@ export default function ProposalsTab({
                             <div className="flex flex-wrap items-center justify-end gap-2 pt-4 border-t border-(--accent)/20">
                                 <button
                                     onClick={() => handleReviewProposal(selectedProposal.id, 'reject')}
-                                    className="px-4 py-2 rounded-full border border-red-500/40 bg-red-500/10 text-red-500 text-xs font-bold hover:bg-red-500/20 transition-colors"
+                                    className="px-4 py-2 rounded-full border-2 border-red-500/40 bg-red-500/10 text-red-500 text-xs font-bold hover:bg-red-500/20 transition-all active:scale-95"
                                 >
                                     {lang === 'RO' ? 'Respinge' : 'Reject'}
                                 </button>
                                 <button
                                     onClick={() => handleReviewProposal(selectedProposal.id, 'approve')}
-                                    className="px-4 py-2 rounded-full bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors"
+                                    className="px-4 py-2 rounded-full border-2 border-green-500/40 bg-green-500/10 text-green-500 text-xs font-bold hover:bg-green-500/20 transition-all active:scale-95"
                                 >
                                     {lang === 'RO' ? 'Aprobă' : 'Approve'}
                                 </button>
