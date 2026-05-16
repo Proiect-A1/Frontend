@@ -86,7 +86,7 @@ export default function EditorPanel({
                             language={monacoLanguageMap[language] || 'cpp'}
                             value={code}
                             onChange={(val) => setCode(val || '')}
-                            theme={theme === 'custom' ? 'fiicoder-dark' : theme}
+                            theme={theme === 'custom' ? 'vs' : theme}
                             onMount={handleEditorMount}
                             loading={
                                 <div className="animate-spin w-8 h-8 border border-(--accent)/50 border-t-(--accent) rounded-full" />
