@@ -39,7 +39,6 @@ export default function ProblemDetails() {
         model,
         handleEditorMount,
         handleSubmit,
-        monacoLanguageMap,
     } = useProblemDetails();
 
     if (loading) {
@@ -85,7 +84,6 @@ export default function ProblemDetails() {
                         setSelectedLanguageId={setSelectedLanguageId}
                         handleEditorMount={handleEditorMount}
                         handleSubmit={handleSubmit}
-                        monacoLanguageMap={monacoLanguageMap}
                     />
                 );
             case 'testcase':
@@ -150,7 +148,6 @@ export default function ProblemDetails() {
                         setSelectedLanguageId={setSelectedLanguageId}
                         handleEditorMount={handleEditorMount}
                         handleSubmit={handleSubmit}
-                        monacoLanguageMap={monacoLanguageMap}
                     />
                 </div>
                 <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-3xl mb-4">

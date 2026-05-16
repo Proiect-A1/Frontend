@@ -1,7 +1,7 @@
 import Editor from '@monaco-editor/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import React from 'react';
-
+import { getMonacoLanguageId } from '../../../utils/monacoTheme';
 
 type Props = {
     isAuthenticated: boolean;
@@ -16,7 +16,6 @@ type Props = {
     setSelectedLanguageId: (id: string) => void;
     handleEditorMount: any;
     handleSubmit: (e: React.FormEvent) => void;
-    monacoLanguageMap: Record<string, string>;
 };
 
 export default function EditorPanel({
@@ -32,7 +31,6 @@ export default function EditorPanel({
     setSelectedLanguageId,
     handleEditorMount,
     handleSubmit,
-    monacoLanguageMap,
 }: Props) {
 
     if (isAuthenticated) {
@@ -81,7 +79,7 @@ export default function EditorPanel({
                     <div className="relative flex-1 rounded-2xl overflow-hidden border border-(--accent)/20 bg-(--surface-editor) min-h-0">
                         <Editor
                             height="100%"
-                            language={monacoLanguageMap[language] || 'cpp'}
+                            language={getMonacoLanguageId(language)}
                             value={code}
                             onChange={(val) => setCode(val || '')}
                             theme="vs-dark"

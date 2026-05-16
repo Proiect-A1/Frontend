@@ -11,16 +11,9 @@ import { languageService } from '../services/languageService';
 import { profileService, type RecentSubmissionDTO } from '../../../services/profileService';
 import type { OnMount } from '@monaco-editor/react';
 import * as FlexLayout from 'flexlayout-react';
-import { applyMonacoTheme, getEffectivePalette } from '../../../utils/monacoTheme';
+import { applyMonacoTheme } from '../../../utils/monacoTheme';
 import { unindent } from '../utils/textUtils';
 
-const monacoLanguageMap: Record<string, string> = {
-    'C++': 'cpp',
-    Python: 'python',
-    Java: 'java',
-    JavaScript: 'javascript',
-    Rust: 'rust',
-};
 
 export function useProblemDetails() {
     const { problemTitle } = useParams();
@@ -143,15 +136,7 @@ export function useProblemDetails() {
     const handleEditorMount: OnMount = useCallback(
         (_editor, monaco) => {
             monacoRef.current = monaco;
-            const palette = getEffectivePalette(theme, customColors);
-            applyMonacoTheme(monaco, theme, {
-                customColors,
-                extraRules: [
-                    { token: 'type', foreground: palette.accentSecondary.replace('#', '') },
-                    { token: 'function', foreground: palette.accent.replace('#', '') },
-                    { token: 'variable', foreground: palette.text.replace('#', '') },
-                ],
-            });
+            applyMonacoTheme(monaco, theme, { customColors });
             setTimeout(() => _editor.layout(), 100);
         },
         [theme, customColors],
@@ -159,15 +144,7 @@ export function useProblemDetails() {
 
     useEffect(() => {
         if (monacoRef.current) {
-            const palette = getEffectivePalette(theme, customColors);
-            applyMonacoTheme(monacoRef.current, theme, {
-                customColors,
-                extraRules: [
-                    { token: 'type', foreground: palette.accentSecondary.replace('#', '') },
-                    { token: 'function', foreground: palette.accent.replace('#', '') },
-                    { token: 'variable', foreground: palette.text.replace('#', '') },
-                ],
-            });
+            applyMonacoTheme(monacoRef.current, theme, { customColors });
         }
     }, [theme, customColors]);
 
@@ -348,7 +325,6 @@ export function useProblemDetails() {
         model,
         handleEditorMount,
         handleSubmit,
-        monacoLanguageMap,
         problemTitle,
     };
 }

@@ -101,6 +101,38 @@ function buildCustomPalette(customColors: { bg: string; accent: string }): Monac
   };
 }
 
+const LANGUAGE_MAP: Record<string, string> = {
+  // Full names
+  'c++':        'cpp',
+  'c':          'c',
+  'cpp':        'cpp',
+  'python':     'python',
+  'java':       'java',
+  'javascript': 'javascript',
+  'typescript': 'typescript',
+  'rust':       'rust',
+  'go':         'go',
+  'golang':     'go',
+  'kotlin':     'kotlin',
+  'swift':      'swift',
+  'ruby':       'ruby',
+  'scala':      'scala',
+  'php':        'php',
+  'csharp':     'csharp',
+  'c#':         'csharp',
+  // Short codes the backend sends
+  'py':  'python',
+  'rs':  'rust',
+  'js':  'javascript',
+  'ts':  'typescript',
+  'kt':  'kotlin',
+  'rb':  'ruby',
+};
+
+export function getMonacoLanguageId(langName: string): string {
+  return LANGUAGE_MAP[langName.toLowerCase().trim()] ?? 'plaintext';
+}
+
 export function getMonacoThemePalette(themeName: string): MonacoThemePalette {
   return monacoThemes[themeName] || monacoThemes.rose;
 }
@@ -132,18 +164,65 @@ export function applyMonacoTheme(
       ? hexBrightness(palette.editorBg) > 128
       : ['sage'].includes(themeName);
 
+  const a = palette.accent.replace('#', '');
+  const s = palette.accentSecondary.replace('#', '');
+  const t = palette.text.replace('#', '');
+  const m = palette.textMuted.replace('#', '');
+
   monaco.editor.defineTheme(themeId, {
     base: isLight ? 'vs' : 'vs-dark',
     inherit: true,
     rules: [
-      {
-        token: "comment",
-        foreground: palette.textMuted.replace("#", ""),
-        fontStyle: "italic",
-      },
-      { token: "keyword", foreground: palette.accent.replace("#", "") },
-      { token: "string", foreground: palette.accentSecondary.replace("#", "") },
-      { token: "number", foreground: palette.accent.replace("#", "") },
+      // Comments — all languages
+      { token: 'comment',     foreground: m, fontStyle: 'italic' },
+      { token: 'comment.doc', foreground: m, fontStyle: 'italic' }, // C++/Java javadoc
+
+      // Keywords — base covers Python; subtypes cover C++/Java ($0 expansion), Rust, JS
+      { token: 'keyword',                   foreground: a },
+      { token: 'keyword.control',           foreground: a },
+      { token: 'keyword.operator',          foreground: a },
+      { token: 'keyword.type',              foreground: a }, // Rust: i32, u64, bool, str…
+      { token: 'keyword.directive',         foreground: a }, // C++: #define, #pragma
+      { token: 'keyword.directive.include', foreground: a }, // C++: #include
+      { token: 'keyword.other',             foreground: a }, // JS: import, export
+
+      // Types
+      { token: 'type',            foreground: s },
+      { token: 'type.identifier', foreground: s }, // JS/TS class names
+
+      // Strings — all variants across languages
+      { token: 'string',          foreground: s },
+      { token: 'string.escape',   foreground: s },
+      { token: 'string.raw',      foreground: s }, // C++ R"(...)"
+      { token: 'string.byteliteral', foreground: s }, // Rust b"..."
+      { token: 'string.quote',    foreground: s }, // Rust char literals
+
+      // Numbers — all variants
+      { token: 'number',        foreground: a },
+      { token: 'number.float',  foreground: a },
+      { token: 'number.hex',    foreground: a },
+      { token: 'number.octal',  foreground: a },
+      { token: 'number.binary', foreground: a },
+
+      // Functions & variables
+      { token: 'function',            foreground: a },
+      { token: 'variable',            foreground: t },
+      { token: 'variable.predefined', foreground: s }, // Python built-ins: print, len, True…
+
+      // Annotations / attributes
+      { token: 'annotation', foreground: a }, // Java @Override; C++ [[nodiscard]]
+      { token: 'attribute',  foreground: a }, // Rust #[derive(...)]
+
+      // Regexp (JavaScript/TypeScript)
+      { token: 'regexp',         foreground: s },
+      { token: 'regexp.escape',  foreground: s },
+
+      // Operators
+      { token: 'operator', foreground: m }, // Rust explicit operator token
+
+      // Python decorators / magic names
+      { token: 'tag', foreground: a },
+
       ...(options.extraRules ?? []),
     ],
     colors: {
