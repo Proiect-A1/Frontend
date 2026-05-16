@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage, translations } from "../language/Language";
-import { useAuth } from "../services/AuthContext";
-import { useTheme } from "../services/ThemeContext";
+import { useAuth } from "../contexts/AuthContext";
+import { useTheme } from "../contexts/ThemeContext";
 import SearchInput from "./SearchInput";
 import { problemService } from "../services/problemService";
 

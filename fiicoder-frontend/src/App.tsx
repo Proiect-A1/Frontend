@@ -6,15 +6,15 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { pageVariants } from "./utils/motionConfig";
 
 // Lazy load pages - se vor încărca doar când e nevoie
-const Landing = lazy(() => import("./pages/Landing"));
-const Login = lazy(() => import("./pages/Login"));
-const ProblemList = lazy(() => import("./pages/ProblemList"));
-const ProblemDetails = lazy(() => import("./pages/ProblemDetails"));
-const ClassesHub = lazy(() => import("./pages/ClassesHub"));
-const ClassDetails = lazy(() => import("./pages/ClassDetails"));
-const Profile = lazy(() => import("./pages/Profile"));
-const AdminPanel = lazy(() => import("./pages/AdminPanel"));
-const ProposeProblem = lazy(() => import("./pages/ProposeProblem"));
+const Landing = lazy(() => import("./pages/landing/Landing"));
+const Login = lazy(() => import("./pages/login/Login"));
+const ProblemList = lazy(() => import("./pages/problemList/ProblemList"));
+const ProblemDetails = lazy(() => import("./pages/problemDetails/ProblemDetails"));
+const ClassesHub = lazy(() => import("./pages/classesHub/ClassesHub"));
+const ClassDetails = lazy(() => import("./pages/classDetails/ClassDetails"));
+const Profile = lazy(() => import("./pages/profile/Profile"));
+const AdminPanel = lazy(() => import("./pages/adminPanel/AdminPanel"));
+const ProposeProblem = lazy(() => import("./pages/proposeProblem/ProposeProblem"));
 
 // Loading component for Suspense fallback
 function PageLoader() {
