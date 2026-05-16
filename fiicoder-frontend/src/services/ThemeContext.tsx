@@ -62,16 +62,30 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             const brightnessScore = (redChannel * 299 + greenChannel * 587 + blueChannel * 114) / 1000;
             const isLightBackground = brightnessScore > 128;
 
+            let textHex = '#e5e9f0';
+            let textHHex = '#ffffff';
+
             if (isLightBackground) {
-                document.documentElement.style.setProperty('--text', '#2d2530');
-                document.documentElement.style.setProperty('--text-h', '#120c14');
+                textHex = '#2d2530';
+                textHHex = '#120c14';
+                document.documentElement.style.setProperty('--text', textHex);
+                document.documentElement.style.setProperty('--text-h', textHHex);
                 document.documentElement.style.setProperty('--color-scheme', 'light');
             } else {
-                document.documentElement.style.setProperty('--text', '#e5e9f0');
-                document.documentElement.style.setProperty('--text-h', '#ffffff');
+                textHex = '#e5e9f0';
+                textHHex = '#ffffff';
+                document.documentElement.style.setProperty('--text', textHex);
+                document.documentElement.style.setProperty('--text-h', textHHex);
                 document.documentElement.style.setProperty('--color-scheme', 'dark');
             }
 
+            const cursorDefault = `<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'><circle cx='13' cy='13' r='5.4' fill='none' stroke='${textHHex}' stroke-width='1.4'/><circle cx='13' cy='13' r='2.8' fill='${customColors.accent}'/></svg>`;
+            const cursorPointer = `<svg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'><path d='M8 4L31 24L17 24.5L8 32Z' fill='${customColors.accent}' stroke='color-mix(in srgb, ${customColors.accent} 50%, black 50%)' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/></svg>`;
+            const cursorText = `<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'><path d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='${customColors.accent}' stroke-width='1.9' stroke-linecap='round'/><circle cx='13' cy='13' r='1.1' fill='${textHHex}'/></svg>`;
+
+            document.documentElement.style.setProperty('--cursor-default', `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(cursorDefault)}")`);
+            document.documentElement.style.setProperty('--cursor-pointer', `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(cursorPointer)}")`);
+            document.documentElement.style.setProperty('--cursor-text', `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(cursorText)}")`);
             localStorage.setItem('fiicoder_custom_colors', JSON.stringify(customColors));
         } else {
             document.documentElement.style.removeProperty('--bg-color');
@@ -79,6 +93,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             document.documentElement.style.removeProperty('--text');
             document.documentElement.style.removeProperty('--text-h');
             document.documentElement.style.removeProperty('--color-scheme');
+            document.documentElement.style.removeProperty('--cursor-default');
+            document.documentElement.style.removeProperty('--cursor-pointer');
+            document.documentElement.style.removeProperty('--cursor-text');
         }
 
         const existingFavicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
@@ -95,8 +112,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
                 <path style="fill: color-mix(in srgb, ${customColors.accent} 30%, black 70%)" d="m145.08 88q0 0 0 0c-1.74 0.85-3.68 0.82-5.31 0.06l-0.49-0.22c-1.25-0.57-2.33-1.56-2.99-2.9-1.5-3.07-0.23-6.77 2.83-8.27 1.72-0.84 3.65-0.81 5.27-0.08l0.57 0.26c1.23 0.57 2.3 1.56 2.95 2.88 1.5 3.07 0.24 6.77-2.83 8.27z"/>
                 <path style="fill: color-mix(in srgb, ${customColors.accent} 30%, black 70%)" d="m48.56 131.24c1.53 0.12 3.17-0.17 4.7-0.92 4.6-2.25 6.5-7.81 4.25-12.4-1.51-3.06-4.48-4.93-7.65-5.16-1.59-0.12-3.22 0.17-4.76 0.92-4.59 2.25-6.49 7.8-4.24 12.4 1.51 3.06 4.47 4.93 7.65 5.16z"/>
             </svg>`;
-            
-            // folosim encodeURIComponent obligatoriu, altfel semnul "#" din HEX ar strica link-ul
             favicon.href = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(faviconSvg)}`;
         } else {
             favicon.href = THEME_FAVICONS[theme];
