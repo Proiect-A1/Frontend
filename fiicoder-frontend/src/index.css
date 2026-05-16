@@ -163,17 +163,16 @@
 }
 
 [data-theme='custom'] {
-    /* valori default daca nu a fost setat nimic */
-    --bg-color: #ffffff; 
+    --bg-color: #090812; 
     --accent: #ff5eb6;
 
-    --surface-page: color-mix(in srgb, var(--bg-color) 78%, #151221 22%);
-    --surface-card: color-mix(in srgb, #151221 80%, transparent);
-    --surface-muted: color-mix(in srgb, #100d19 80%, transparent);
-    --surface-input: #0f0c18;
-    --surface-dropdown: #1a1629;
-    --surface-editor: #0a0812;
-    --surface-hover: color-mix(in srgb, #1a1530 80%, transparent);
+    --surface-page: var(--bg-color);
+    --surface-card: color-mix(in srgb, var(--bg-color) 93%, var(--text) 7%);
+    --surface-muted: color-mix(in srgb, var(--bg-color) 85%, var(--text) 15%);
+    --surface-input: color-mix(in srgb, var(--bg-color) 96%, var(--text) 4%);
+    --surface-dropdown: color-mix(in srgb, var(--bg-color) 90%, var(--text) 10%);
+    --surface-editor: color-mix(in srgb, var(--bg-color) 97%, var(--text) 3%);
+    --surface-hover: color-mix(in srgb, var(--accent) 12%, transparent);
 
     --text: #e5e9f0;
     --text-h: #ffffff;
@@ -181,14 +180,14 @@
     --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
 
     --bg: var(--surface-page);
-    --code-bg: color-mix(in srgb, var(--bg-color) 55%, #1a1322 45%);
-    --hero-start: color-mix(in srgb, var(--accent) 15%, var(--bg-color));
-    --hero-mid: color-mix(in srgb, var(--accent) 5%, var(--bg-color));
+    --code-bg: color-mix(in srgb, var(--bg-color) 90%, var(--text) 10%);
+    --hero-start: color-mix(in srgb, var(--accent) 12%, var(--bg-color));
+    --hero-mid: color-mix(in srgb, var(--accent) 4%, var(--bg-color));
     --hero-end: var(--bg-color);
-    --line-color: color-mix(in srgb, var(--accent) 75%, white 25%);
+    --line-color: color-mix(in srgb, var(--accent) 75%, var(--text) 25%);
     --accent-secondary: color-mix(in srgb, var(--accent) 72%, #a78bfa 28%);
     
-    color-scheme: light;
+    color-scheme: var(--color-scheme, dark);
     color: var(--text);
 }
 
