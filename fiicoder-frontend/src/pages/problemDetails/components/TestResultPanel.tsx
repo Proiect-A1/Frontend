@@ -1,14 +1,16 @@
 import { motion } from 'framer-motion';
+import type { DoneSubtaskEvent } from '../types/problemDetails';
 
 type Props = {
     evalStatus: string;
     evalError?: string | null;
     evalSummary?: any;
     evalTests: any[];
+    evalSubtasks: DoneSubtaskEvent[];
     lang: string;
 };
 
-export default function TestResultPanel({ evalStatus, evalError, evalSummary, evalTests, lang }: Props) {
+export default function TestResultPanel({ evalStatus, evalError, evalSummary, evalTests, evalSubtasks, lang }: Props) {
     return (
         <div className="h-full p-6 bg-(--surface-card) overflow-y-auto custom-scrollbar">
             {evalStatus === 'idle' && (
@@ -78,6 +80,47 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                     ? `Evaluare... (${evalTests.length} teste)`
                                     : `Evaluating... (${evalTests.length} tests)`}
                             </span>
+                        </div>
+                    )}
+
+                    {evalSubtasks.length > 0 && (
+                        <div className="space-y-1.5">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-(--text-muted) px-1">
+                                {lang === 'RO' ? 'Subtask-uri' : 'Subtasks'}
+                            </p>
+                            {evalSubtasks.map((st) => {
+                                const full = st.score >= st.maxScore;
+                                const partial = st.score > 0 && !full;
+                                const color = full
+                                    ? 'border-green-500/40 bg-green-500/10 text-green-300'
+                                    : partial
+                                    ? 'border-amber-500/40 bg-amber-500/10 text-amber-300'
+                                    : 'border-red-500/40 bg-red-500/10 text-red-300';
+                                const maxMemKB = st.max_memory ? (st.max_memory / 1024).toFixed(0) : '—';
+                                const maxTimeMs = st.max_time ? (st.max_time / 1_000_000).toFixed(0) : '—';
+                                return (
+                                    <motion.div
+                                        key={st.subtaskId}
+                                        initial={{ opacity: 0, y: 8 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.2, delay: st.subtaskId * 0.05 }}
+                                        className={`flex items-center gap-3 p-2.5 rounded-xl border ${color}`}
+                                    >
+                                        <span className="text-[10px] font-mono font-bold w-16 shrink-0">
+                                            Subtask #{st.subtaskId}
+                                        </span>
+                                        <span className="text-[10px] font-black ml-auto shrink-0">
+                                            {st.score}/{st.maxScore}
+                                        </span>
+                                        <span className="text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">
+                                            {maxTimeMs}ms
+                                        </span>
+                                        <span className="text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">
+                                            {maxMemKB}KB
+                                        </span>
+                                    </motion.div>
+                                );
+                            })}
                         </div>
                     )}
 

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { submissionService, connectToEvaluation } from '../services/submissionService';
-import type { DoneTestEvent, DoneSubmissionEvent, LanguageDTO } from '../types/problemDetails';
+import type { DoneTestEvent, DoneSubtaskEvent, DoneSubmissionEvent, LanguageDTO } from '../types/problemDetails';
 import { problemService } from '../../../services/problemService';
 import type { ProblemFindResponseDTO } from '../../../services/problemService';
 import { useLanguage, translations } from '../../../language/Language';
@@ -45,6 +45,7 @@ export function useProblemDetails() {
     const [activeTab, setActiveTab] = useState<'testcase' | 'testresult' | 'submissions'>('testcase');
 
     const [evalTests, setEvalTests] = useState<DoneTestEvent[]>([]);
+    const [evalSubtasks, setEvalSubtasks] = useState<DoneSubtaskEvent[]>([]);
     const [evalSummary, setEvalSummary] = useState<DoneSubmissionEvent | null>(null);
     const [evalStatus, setEvalStatus] = useState<'idle' | 'connecting' | 'evaluating' | 'done' | 'error'>('idle');
     const [evalError, setEvalError] = useState<string | null>(null);
@@ -253,6 +254,7 @@ export function useProblemDetails() {
             }
 
             setEvalTests([]);
+            setEvalSubtasks([]);
             setEvalSummary(null);
             setEvalError(null);
             setEvalStatus('connecting');
@@ -273,6 +275,8 @@ export function useProblemDetails() {
                     (event: any) => {
                         if (event.request === 'doneTest') {
                             setEvalTests((prev) => [...prev, event as DoneTestEvent]);
+                        } else if (event.request === 'doneSubtask') {
+                            setEvalSubtasks((prev) => [...prev, event as DoneSubtaskEvent]);
                         }
                     },
                     (summary: any) => {
@@ -334,6 +338,7 @@ export function useProblemDetails() {
         activeTab,
         setActiveTab,
         evalTests,
+        evalSubtasks,
         evalSummary,
         evalStatus,
         evalError,

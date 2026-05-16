@@ -31,6 +31,7 @@ export default function ProblemDetails() {
         activeTab,
         setActiveTab,
         evalTests,
+        evalSubtasks,
         evalSummary,
         evalStatus,
         evalError,
@@ -96,6 +97,7 @@ export default function ProblemDetails() {
                         evalError={evalError}
                         evalSummary={evalSummary}
                         evalTests={evalTests}
+                        evalSubtasks={evalSubtasks}
                         lang={lang}
                     />
                 );
