@@ -47,35 +47,52 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem(THEME_STORAGE_KEY, theme);
 
-    if (theme === "custom") {
-      document.documentElement.style.setProperty("--bg-color", customColors.bg);
-      document.documentElement.style.setProperty(
-        "--accent",
-        customColors.accent,
-      );
-      localStorage.setItem(
-        "fiicoder_custom_colors",
-        JSON.stringify(customColors),
-      );
-    } else {
-      document.documentElement.style.removeProperty("--bg-color");
-      document.documentElement.style.removeProperty("--accent");
-    }
+        if (theme === 'custom') {
+            document.documentElement.style.setProperty('--bg-color', customColors.bg);
+            document.documentElement.style.setProperty('--accent', customColors.accent);
 
-    const existingFavicon =
-      document.querySelector<HTMLLinkElement>('link[rel="icon"]');
-    const favicon = existingFavicon ?? document.createElement("link");
-    favicon.rel = "icon";
-    favicon.type = "image/svg+xml";
-    favicon.href = THEME_FAVICONS[theme];
+            const hexColor = customColors.bg.replace('#', '');
+            const redChannel = parseInt(hexColor.substring(0, 2), 16);
+            const greenChannel = parseInt(hexColor.substring(2, 4), 16);
+            const blueChannel = parseInt(hexColor.substring(4, 6), 16);
 
-    if (!existingFavicon) {
-      document.head.appendChild(favicon);
-    }
-  }, [theme, customColors]);
+            const brightnessScore = (redChannel * 299 + greenChannel * 587 + blueChannel * 114) / 1000;
+            const isLightBackground = brightnessScore > 128;
+
+            if (isLightBackground) {
+                // Dacă utilizatorul alege un fundal deschis, textul devine închis
+                document.documentElement.style.setProperty('--text', '#2d2530');
+                document.documentElement.style.setProperty('--text-h', '#120c14');
+                document.documentElement.style.setProperty('color-scheme', 'light');
+            } else {
+                // Dacă fundalul este întunecat, păstrăm textul deschis la culoare
+                document.documentElement.style.setProperty('--text', '#e5e9f0');
+                document.documentElement.style.setProperty('--text-h', '#ffffff');
+                document.documentElement.style.setProperty('color-scheme', 'dark');
+            }
+
+            localStorage.setItem('fiicoder_custom_colors', JSON.stringify(customColors));
+        } else {
+            document.documentElement.style.removeProperty('--bg-color');
+            document.documentElement.style.removeProperty('--accent');
+            document.documentElement.style.removeProperty('--text');
+            document.documentElement.style.removeProperty('--text-h');
+            document.documentElement.style.removeProperty('color-scheme');
+        }
+
+        const existingFavicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+        const favicon = existingFavicon ?? document.createElement('link');
+        favicon.rel = 'icon';
+        favicon.type = 'image/svg+xml';
+        favicon.href = THEME_FAVICONS[theme];
+
+        if (!existingFavicon) {
+            document.head.appendChild(favicon);
+        }
+    }, [theme, customColors]);
 
   const value = useMemo(
     () => ({
