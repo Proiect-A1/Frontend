@@ -162,6 +162,36 @@
     color-scheme: light;
 }
 
+[data-theme='custom'] {
+    /* valori default daca nu a fost setat nimic */
+    --bg-color: #ffffff; 
+    --accent: #ff5eb6;
+
+    --surface-page: color-mix(in srgb, var(--bg-color) 78%, #151221 22%);
+    --surface-card: color-mix(in srgb, #151221 80%, transparent);
+    --surface-muted: color-mix(in srgb, #100d19 80%, transparent);
+    --surface-input: #0f0c18;
+    --surface-dropdown: #1a1629;
+    --surface-editor: #0a0812;
+    --surface-hover: color-mix(in srgb, #1a1530 80%, transparent);
+
+    --text: #e5e9f0;
+    --text-h: #ffffff;
+    --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
+    --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
+
+    --bg: var(--surface-page);
+    --code-bg: color-mix(in srgb, var(--bg-color) 55%, #1a1322 45%);
+    --hero-start: color-mix(in srgb, var(--accent) 15%, var(--bg-color));
+    --hero-mid: color-mix(in srgb, var(--accent) 5%, var(--bg-color));
+    --hero-end: var(--bg-color);
+    --line-color: color-mix(in srgb, var(--accent) 75%, white 25%);
+    --accent-secondary: color-mix(in srgb, var(--accent) 72%, #a78bfa 28%);
+    
+    color-scheme: light;
+    color: var(--text);
+}
+
 /* xl: layout fix, scroll pe componente individuale */
 @media (min-width: 1280px) {
     body {
