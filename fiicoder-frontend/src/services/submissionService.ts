@@ -64,13 +64,13 @@ export type EvaluationEvent = DoneTestEvent | DoneSubtaskEvent | DoneSubmissionE
 // ── API wrappers ──────────────────────────────────────────────────
 
 export const submissionService = {
-  // POST /api/submission/request-evaluation
+  // POST /api/submissions/request-evaluation
   submit: (data: SubmissionRequest) =>
-    apiClient.post<SubmissionResponse>("/submission/request-evaluation", data),
+    apiClient.post<SubmissionResponse>("/submissions/request-evaluation", data),
 
-  // GET /api/submission/view/{id}
+  // GET /api/submissions/view/{id}
   getStatus: (id: string) =>
-    apiClient.get<SubmissionStatus>(`/submission/view/${id}`),
+    apiClient.get<SubmissionStatus>(`/submissions/view/${id}`),
 };
 
 // ── WebSocket evaluation stream ───────────────────────────────────
