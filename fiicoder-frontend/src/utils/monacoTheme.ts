@@ -18,6 +18,7 @@ type ApplyMonacoThemeOptions = {
   themeId?: string;
   extraRules?: MonacoThemeRule[];
   extraColors?: Record<string, string>;
+  customColors?: { bg: string; accent: string };
 };
 
 const monacoThemes: Record<string, MonacoThemePalette> = {
@@ -59,8 +60,58 @@ const monacoThemes: Record<string, MonacoThemePalette> = {
   },
 };
 
+function hexBrightness(hex: string): number {
+  const h = hex.replace('#', '').substring(0, 6);
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000;
+}
+
+function adjustBrightness(hex: string, amount: number): string {
+  const h = hex.replace('#', '');
+  const r = Math.max(0, Math.min(255, parseInt(h.substring(0, 2), 16) + amount));
+  const g = Math.max(0, Math.min(255, parseInt(h.substring(2, 4), 16) + amount));
+  const b = Math.max(0, Math.min(255, parseInt(h.substring(4, 6), 16) + amount));
+  return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
+function blendHex(hex1: string, hex2: string, t: number): string {
+  const h1 = hex1.replace('#', '');
+  const h2 = hex2.replace('#', '');
+  const r = Math.round(parseInt(h1.substring(0, 2), 16) * t + parseInt(h2.substring(0, 2), 16) * (1 - t));
+  const g = Math.round(parseInt(h1.substring(2, 4), 16) * t + parseInt(h2.substring(2, 4), 16) * (1 - t));
+  const b = Math.round(parseInt(h1.substring(4, 6), 16) * t + parseInt(h2.substring(4, 6), 16) * (1 - t));
+  return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
+function buildCustomPalette(customColors: { bg: string; accent: string }): MonacoThemePalette {
+  const { bg, accent } = customColors;
+  const isLight = hexBrightness(bg) > 128;
+  const text = isLight ? '#2d2530' : '#e5e9f0';
+  const codeBg = adjustBrightness(bg, isLight ? -10 : 12);
+  return {
+    accent,
+    accentSecondary: blendHex(accent, '#a78bfa', 0.7),
+    text,
+    textMuted: blendHex(text, bg, 0.6),
+    textSubtle: blendHex(text, bg, 0.45),
+    editorBg: bg,
+    codeBg,
+  };
+}
+
 export function getMonacoThemePalette(themeName: string): MonacoThemePalette {
   return monacoThemes[themeName] || monacoThemes.rose;
+}
+
+export function getEffectivePalette(
+  themeName: string,
+  customColors?: { bg: string; accent: string },
+): MonacoThemePalette {
+  return themeName === 'custom' && customColors
+    ? buildCustomPalette(customColors)
+    : getMonacoThemePalette(themeName);
 }
 
 export function applyMonacoTheme(
@@ -68,9 +119,18 @@ export function applyMonacoTheme(
   themeName: string,
   options: ApplyMonacoThemeOptions = {},
 ) {
-  const palette = getMonacoThemePalette(themeName);
-  const themeId = options.themeId ?? `fiicoder-${themeName}`; // era 'fiicoder-dark' hardcodata
-  const isLight = ["custom", "sage"].includes(themeName);
+  const palette =
+    themeName === 'custom' && options.customColors
+      ? buildCustomPalette(options.customColors)
+      : getMonacoThemePalette(themeName);
+
+  const themeId = options.themeId ?? `fiicoder-${themeName}`;
+
+  // dynamic for custom, static mapping for named themes
+  const isLight =
+    themeName === 'custom'
+      ? hexBrightness(palette.editorBg) > 128
+      : ['sage'].includes(themeName);
 
   monaco.editor.defineTheme(themeId, {
     base: isLight ? 'vs' : 'vs-dark',
@@ -102,7 +162,6 @@ export function applyMonacoTheme(
       "scrollbarSlider.activeBackground": `${palette.accent}80`,
       ...(options.extraColors ?? {}),
     },
-
   });
 
   monaco.editor.setTheme(themeId);

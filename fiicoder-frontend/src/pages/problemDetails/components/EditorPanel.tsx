@@ -1,7 +1,7 @@
 import Editor from '@monaco-editor/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import React from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
+
 
 type Props = {
     isAuthenticated: boolean;
@@ -34,8 +34,6 @@ export default function EditorPanel({
     handleSubmit,
     monacoLanguageMap,
 }: Props) {
-
-    const { theme } = useTheme();
 
     if (isAuthenticated) {
         return (
@@ -86,7 +84,7 @@ export default function EditorPanel({
                             language={monacoLanguageMap[language] || 'cpp'}
                             value={code}
                             onChange={(val) => setCode(val || '')}
-                            theme={theme === 'custom' ? 'vs' : theme}
+                            theme="vs-dark"
                             onMount={handleEditorMount}
                             loading={
                                 <div className="animate-spin w-8 h-8 border border-(--accent)/50 border-t-(--accent) rounded-full" />

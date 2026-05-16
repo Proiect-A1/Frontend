@@ -7,7 +7,7 @@ import type { ProposeProblemForm } from '../types/proposeProblem';
 import { itemVariants, staggerConfig } from '../../../utils/motionConfig';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { registerGeneratorLanguage, LANGUAGE_ID } from '../utils/generatorLanguage';
-import { applyMonacoTheme, getMonacoThemePalette } from '../../../utils/monacoTheme';
+import { applyMonacoTheme, getEffectivePalette } from '../../../utils/monacoTheme';
 import { useGeneratorValidation } from '../hooks/useGeneratorValidation';
 
 const EXAMPLE_SCRIPT = `#MAIN main
@@ -33,7 +33,7 @@ const EXAMPLE_SCRIPT = `#MAIN main
 
 export default function GeneratorTab() {
     const { watch, setValue } = useFormContext<ProposeProblemForm>();
-    const { theme } = useTheme();
+    const { theme, customColors } = useTheme();
     const monacoRef = useRef<any>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -42,8 +42,8 @@ export default function GeneratorTab() {
     const { status, errors, handleSave } = useGeneratorValidation(generatorScript);
     const [showDocsTooltip, setShowDocsTooltip] = useState(false);
 
-    const buildGeneratorRules = (themeName: string) => {
-        const palette = getMonacoThemePalette(themeName);
+    const buildGeneratorRules = () => {
+        const palette = getEffectivePalette(theme, customColors);
         return [
             { token: 'keyword.directive', foreground: palette.accent.replace('#', ''), fontStyle: 'bold' },
             { token: 'string.filename', foreground: 'e0c97b', fontStyle: 'underline' },
@@ -61,7 +61,8 @@ export default function GeneratorTab() {
         registerGeneratorLanguage(monaco);
         applyMonacoTheme(monaco, theme, {
             themeId: 'fiicoder-gen-theme',
-            extraRules: buildGeneratorRules(theme),
+            customColors,
+            extraRules: buildGeneratorRules(),
         });
     };
 
@@ -70,10 +71,12 @@ export default function GeneratorTab() {
         if (monacoRef.current) {
             applyMonacoTheme(monacoRef.current, theme, {
                 themeId: 'fiicoder-gen-theme',
-                extraRules: buildGeneratorRules(theme),
+                customColors,
+                extraRules: buildGeneratorRules(),
             });
         }
-    }, [theme]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [theme, customColors]);
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];

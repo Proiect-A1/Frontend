@@ -10,7 +10,7 @@ import 'katex/dist/katex.min.css';
 import type { ProposeProblemForm } from '../types/proposeProblem';
 import { itemVariants, staggerConfig } from '../../../utils/motionConfig';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { applyMonacoTheme, getMonacoThemePalette } from '../../../utils/monacoTheme';
+import { applyMonacoTheme, getEffectivePalette } from '../../../utils/monacoTheme';
 import { useMonacoTheming } from '../hooks/useMonacoTheming';
 
 // Utility to fix database indentation issues for Markdown
@@ -42,12 +42,12 @@ function unindent(str: string): string {
 
 export default function StatementTab() {
     const { control } = useFormContext<ProposeProblemForm>();
-    const { theme } = useTheme();
+    const { theme, customColors } = useTheme();
     const [showPreview, setShowPreview] = useState(true);
     const monacoRef = useRef<any>(null);
 
     const buildStatementRules = (themeName: string) => {
-        const palette = getMonacoThemePalette(themeName);
+        const palette = getEffectivePalette(themeName, customColors);
         return [
             { token: 'type', foreground: palette.accentSecondary.replace('#', '') },
             { token: 'function', foreground: palette.accent.replace('#', '') },
@@ -57,11 +57,11 @@ export default function StatementTab() {
 
     const handleEditorMount: OnMount = (_editor, monaco) => {
         monacoRef.current = monaco;
-        applyMonacoTheme(monaco, theme, { extraRules: buildStatementRules(theme) });
+        applyMonacoTheme(monaco, theme, { customColors, extraRules: buildStatementRules(theme) });
     };
 
     // Apply theme reactively when theme changes (hook)
-    useMonacoTheming(monacoRef, theme, buildStatementRules);
+    useMonacoTheming(monacoRef, theme, buildStatementRules, customColors);
 
     return (
         <motion.div

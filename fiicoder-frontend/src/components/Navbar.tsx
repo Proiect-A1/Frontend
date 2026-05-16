@@ -376,8 +376,7 @@ export default function Navbar() {
 
                   {themeName === "custom" && theme === "custom" && (
                     <div className="px-4 py-3 flex flex-col gap-3 bg-black/10 border-t border-(--accent)/20">
-                      <div className="flex items-center justify-between text-xs text-(--text-muted)">
-                        <span>{lang === "RO" ? "Fundal" : "Background"}</span>
+                      <div className="flex items-center gap-2 text-xs text-(--text-muted)">
                         <input
                           type="color"
                           value={customColors.bg}
@@ -387,19 +386,20 @@ export default function Navbar() {
                               customColors.accent,
                             )
                           }
-                          className="w-7 h-7 rounded cursor-pointer bg-transparent border-none p-0"
+                          className="w-7 h-7 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
                         />
+                        <span>{lang === "RO" ? "Fundal" : "Background"}</span>
                       </div>
-                      <div className="flex items-center justify-between text-xs text-(--text-muted)">
-                        <span>Accent</span>
+                      <div className="flex items-center gap-2 text-xs text-(--text-muted)">
                         <input
                           type="color"
                           value={customColors.accent}
                           onChange={(event) =>
                             setCustomColors(customColors.bg, event.target.value)
                           }
-                          className="w-7 h-7 rounded cursor-pointer bg-transparent border-none p-0"
+                          className="w-7 h-7 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
                         />
+                        <span>Accent</span>
                       </div>
                     </div>
                   )}
@@ -562,8 +562,7 @@ export default function Navbar() {
 
                           {themeName === "custom" && theme === "custom" && (
                             <div className="px-4 py-3 flex flex-col gap-3 bg-black/15 border-t border-(--accent)/20">
-                              <div className="flex items-center justify-between text-sm text-(--text-muted)">
-                                <span>{lang === "RO" ? "Fundal" : "Background"}</span>
+                              <div className="flex items-center gap-2 text-sm text-(--text-muted)">
                                 <input
                                   type="color"
                                   value={customColors.bg}
@@ -573,11 +572,11 @@ export default function Navbar() {
                                       customColors.accent,
                                     )
                                   }
-                                  className="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0"
+                                  className="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
                                 />
+                                <span>{lang === "RO" ? "Fundal" : "Background"}</span>
                               </div>
-                              <div className="flex items-center justify-between text-sm text-(--text-muted)">
-                                <span>Accent</span>
+                              <div className="flex items-center gap-2 text-sm text-(--text-muted)">
                                 <input
                                   type="color"
                                   value={customColors.accent}
@@ -587,8 +586,9 @@ export default function Navbar() {
                                       event.target.value,
                                     )
                                   }
-                                  className="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0"
+                                  className="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
                                 />
+                                <span>Accent</span>
                               </div>
                             </div>
                           )}

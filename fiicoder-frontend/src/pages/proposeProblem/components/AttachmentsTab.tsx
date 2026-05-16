@@ -38,7 +38,7 @@ const verdictColors: Record<string, string> = {
 
 export default function AttachmentsTab() {
     const { watch, setValue } = useFormContext<ProposeProblemForm>();
-    const { theme } = useTheme();
+    const { theme, customColors } = useTheme();
     const files = watch('files') || [];
     const isInteractive = watch('isInteractive');
 
@@ -61,14 +61,14 @@ export default function AttachmentsTab() {
 
     const handleEditorMount: OnMount = (_editor, monaco) => {
         monacoRef.current = monaco;
-        applyMonacoTheme(monaco, theme);
+        applyMonacoTheme(monaco, theme, { customColors });
     };
 
     useEffect(() => {
         if (monacoRef.current) {
-            applyMonacoTheme(monacoRef.current, theme);
+            applyMonacoTheme(monacoRef.current, theme, { customColors });
         }
-    }, [theme]);
+    }, [theme, customColors]);
 
     const activeCat = categories.find((c) => c.id === activeCategory)!;
     const isSources = activeCategory === 'sources';
