@@ -329,7 +329,7 @@ export default function Navbar() {
                   {themeName === "custom" && theme === "custom" && (
                     <div className="px-4 py-3 flex flex-col gap-3 bg-black/10 border-t border-(--accent)/20">
                       <div className="flex items-center justify-between text-xs text-(--text-muted)">
-                        <span>Fundal</span>
+                        {lang === 'RO' ? 'Fundal' : 'Background'}
                         <input
                           type="color"
                           value={customColors.bg}
@@ -515,7 +515,7 @@ export default function Navbar() {
                           {themeName === "custom" && theme === "custom" && (
                             <div className="px-4 py-3 flex flex-col gap-3 bg-black/15 border-t border-(--accent)/20">
                               <div className="flex items-center justify-between text-sm text-(--text-muted)">
-                                <span>Culoare Fundal</span>
+                                {lang === 'RO' ? 'Fundal' : 'Background'}
                                 <input
                                   type="color"
                                   value={customColors.bg}
@@ -529,7 +529,7 @@ export default function Navbar() {
                                 />
                               </div>
                               <div className="flex items-center justify-between text-sm text-(--text-muted)">
-                                <span>Culoare Accent</span>
+                                <span>Accent</span>
                                 <input
                                   type="color"
                                   value={customColors.accent}

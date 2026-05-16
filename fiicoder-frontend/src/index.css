@@ -332,6 +332,10 @@ textarea {
         text;
 }
 
+input[type="color"] {
+    cursor: var(--cursor-pointer) 6 3, pointer !important;
+}
+
 @keyframes expandLineHorizontal {
     0% {
         opacity: 0;
