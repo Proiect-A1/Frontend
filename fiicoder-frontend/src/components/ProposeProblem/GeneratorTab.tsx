@@ -1,13 +1,14 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import Editor from '@monaco-editor/react';
 import type { OnMount } from '@monaco-editor/react';
-import type { ProposeProblemForm, GeneratorValidationError } from '../../types/proposeProblem';
+import type { ProposeProblemForm } from '../../types/proposeProblem';
 import { itemVariants, staggerConfig } from '../../utils/motionConfig';
 import { useTheme } from '../../services/ThemeContext';
 import { registerGeneratorLanguage, LANGUAGE_ID } from '../../utils/generatorLanguage';
 import { applyMonacoTheme, getMonacoThemePalette } from './monacoTheme';
+import { useGeneratorValidation } from './useGeneratorValidation';
 
 const EXAMPLE_SCRIPT = `#MAIN main
 #DEFGRP 10 exemple
@@ -28,7 +29,7 @@ const EXAMPLE_SCRIPT = `#MAIN main
 5
 `;
 
-type ValidationStatus = 'idle' | 'validating' | 'success' | 'error';
+// validation status handled by hook
 
 export default function GeneratorTab() {
     const { watch, setValue } = useFormContext<ProposeProblemForm>();
@@ -38,8 +39,7 @@ export default function GeneratorTab() {
 
     const generatorScript = watch('generatorScript') || '';
 
-    const [status, setStatus] = useState<ValidationStatus>('idle');
-    const [errors, setErrors] = useState<GeneratorValidationError[]>([]);
+    const { status, errors, handleSave } = useGeneratorValidation(generatorScript);
     const [showDocsTooltip, setShowDocsTooltip] = useState(false);
 
     const buildGeneratorRules = (themeName: string) => {
@@ -54,47 +54,7 @@ export default function GeneratorTab() {
         ];
     };
 
-    const handleSave = useCallback(async () => {
-        setStatus('validating');
-        setErrors([]);
-
-        try {
-            // Mock API call
-            await new Promise((resolve) => setTimeout(resolve, 1200));
-
-            const script = watch('generatorScript') || '';
-            if (script.trim().length === 0) {
-                setStatus('error');
-                setErrors([{ line: 1, col: 1, message: 'Scriptul de generare este gol.' }]);
-                return;
-            }
-
-            const mockSuccess = script.length > 10;
-            if (mockSuccess) {
-                setStatus('success');
-                setErrors([]);
-            } else {
-                setStatus('error');
-                setErrors([
-                    { line: 1, col: 1, message: 'Scriptul este prea scurt. Adaugă comenzi de generare.' },
-                ]);
-            }
-        } catch {
-            setStatus('error');
-            setErrors([{ line: 0, col: 0, message: 'Eroare de conexiune la server.' }]);
-        }
-    }, [watch]);
-
-    useEffect(() => {
-        const handler = (e: KeyboardEvent) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                handleSave();
-            }
-        };
-        window.addEventListener('keydown', handler);
-        return () => window.removeEventListener('keydown', handler);
-    }, [handleSave]);
+    // `handleSave` from hook handles validation and Ctrl+S binding
 
     const handleEditorMount: OnMount = (_editor, monaco) => {
         monacoRef.current = monaco;

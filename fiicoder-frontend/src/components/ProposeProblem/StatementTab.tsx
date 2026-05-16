@@ -1,5 +1,5 @@
 import { Controller, useFormContext } from 'react-hook-form';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import type { OnMount } from '@monaco-editor/react';
 import Editor from '@monaco-editor/react';
@@ -11,6 +11,7 @@ import type { ProposeProblemForm } from '../../types/proposeProblem';
 import { itemVariants, staggerConfig } from '../../utils/motionConfig';
 import { useTheme } from '../../services/ThemeContext';
 import { applyMonacoTheme, getMonacoThemePalette } from './monacoTheme';
+import { useMonacoTheming } from './useMonacoTheming';
 
 // Utility to fix database indentation issues for Markdown
 function unindent(str: string): string {
@@ -59,12 +60,8 @@ export default function StatementTab() {
         applyMonacoTheme(monaco, theme, { extraRules: buildStatementRules(theme) });
     };
 
-    // Reactively update Monaco theme when app theme changes
-    useEffect(() => {
-        if (monacoRef.current) {
-            applyMonacoTheme(monacoRef.current, theme, { extraRules: buildStatementRules(theme) });
-        }
-    }, [theme]);
+    // Apply theme reactively when theme changes (hook)
+    useMonacoTheming(monacoRef, theme, buildStatementRules);
 
     return (
         <motion.div
