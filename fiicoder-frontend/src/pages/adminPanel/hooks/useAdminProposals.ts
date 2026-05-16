@@ -74,11 +74,7 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
 
     const handleReviewProposal = async (proposalId: string, action: 'approve' | 'reject') => {
         try {
-            if (action === 'approve') {
-                await adminService.approveProposal(proposalId);
-            } else {
-                await adminService.rejectProposal(proposalId);
-            }
+            await adminService.reviewProposal(proposalId, action);
 
             toast.success(
                 action === 'approve'

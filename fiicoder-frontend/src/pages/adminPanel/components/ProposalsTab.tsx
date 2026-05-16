@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 import { containerVariants, itemVariants } from '../../../utils/motionConfig';
 import { useLanguage } from '../../../language/Language';
-import type { ProblemProposal, ProblemProposalDetail } from '../services/adminService';
+import { adminService, type ProblemProposal, type ProblemProposalDetail } from '../services/adminService';
 
 type Props = {
     proposals: ProblemProposal[];
@@ -19,6 +21,13 @@ export default function ProposalsTab({
     handleReviewProposal
 }: Props) {
     const { lang } = useLanguage();
+    const [showTests, setShowTests] = useState(false);
+
+    const { data: testsData, isLoading: isTestsLoading } = useQuery({
+        queryKey: ['admin', 'proposal', selectedProposalId, 'tests'],
+        enabled: !!selectedProposalId && showTests,
+        queryFn: () => adminService.getProblemTests(selectedProposalId as string),
+    });
 
     return (
         <motion.div
@@ -62,7 +71,10 @@ export default function ProposalsTab({
                                 <motion.button
                                     variants={itemVariants}
                                     key={proposal.id}
-                                    onClick={() => setSelectedProposalId(proposal.id)}
+                                    onClick={() => {
+                                        setSelectedProposalId(proposal.id);
+                                        setShowTests(false);
+                                    }}
                                     className={`text-left p-4 rounded-2xl border transition-colors duration-200 ${
                                         isSelected
                                             ? 'border-(--accent) bg-(--accent)/15'
@@ -97,7 +109,7 @@ export default function ProposalsTab({
 
                 <motion.div
                     variants={itemVariants}
-                    className="p-5 rounded-2xl border border-(--accent)/20 bg-(--surface-muted)"
+                    className="p-5 rounded-2xl border border-(--accent)/20 bg-(--surface-muted) h-fit sticky top-0"
                 >
                     {!selectedProposal && selectedProposalId && (
                         <p className="text-(--text-muted) text-sm">
@@ -132,75 +144,84 @@ export default function ProposalsTab({
                                 </span>
                             </div>
 
-                            <p className="text-sm text-(--text) leading-relaxed">
-                                {selectedProposal.statement ?? selectedProposal.description}
-                            </p>
-
-                            <div className="grid gap-3 sm:grid-cols-2">
-                                <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
-                                    <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">
-                                        Input
-                                    </p>
-                                    <p className="text-sm text-(--text) whitespace-pre-wrap">
-                                        {selectedProposal.inputDescription ?? '-'}
-                                    </p>
-                                </div>
-                                <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
-                                    <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">
-                                        Output
-                                    </p>
-                                    <p className="text-sm text-(--text) whitespace-pre-wrap">
-                                        {selectedProposal.outputDescription ?? '-'}
-                                    </p>
-                                </div>
+                            <div className="flex gap-2 border-b border-(--accent)/20 pb-2">
+                                <button
+                                    onClick={() => setShowTests(false)}
+                                    className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-lg transition-colors ${!showTests ? 'bg-(--accent)/20 text-(--text-h)' : 'text-(--text-muted) hover:bg-(--accent)/10'}`}
+                                >
+                                    {lang === 'RO' ? 'Detalii' : 'Details'}
+                                </button>
+                                <button
+                                    onClick={() => setShowTests(true)}
+                                    className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-lg transition-colors ${showTests ? 'bg-(--accent)/20 text-(--text-h)' : 'text-(--text-muted) hover:bg-(--accent)/10'}`}
+                                >
+                                    {lang === 'RO' ? 'Teste' : 'Tests'}
+                                </button>
                             </div>
 
-                            {selectedProposal.constraints && selectedProposal.constraints.length > 0 && (
-                                <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
-                                    <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">
-                                        {lang === 'RO' ? 'Restricții' : 'Constraints'}
+                            {showTests ? (
+                                <div className="space-y-4">
+                                    {isTestsLoading ? (
+                                        <p className="text-sm text-(--text-muted)">{lang === 'RO' ? 'Se încarcă testele...' : 'Loading tests...'}</p>
+                                    ) : testsData?.subtasks && testsData.subtasks.length > 0 ? (
+                                        <div className="space-y-4">
+                                            {testsData.subtasks.map((subtask) => (
+                                                <div key={subtask.index} className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
+                                                    <div className="flex justify-between items-center mb-2">
+                                                        <p className="text-xs font-bold text-(--text-h)">Subtask {subtask.index + 1}</p>
+                                                        <p className="text-xs font-black text-(--accent)">{subtask.score} pct</p>
+                                                    </div>
+                                                    <div className="grid grid-cols-5 gap-1">
+                                                        {subtask.tests.map((test) => (
+                                                            <div key={test.index} className="aspect-square rounded-md bg-(--accent)/10 border border-(--accent)/30 flex items-center justify-center text-[10px] font-bold text-(--text-h)" title={`Test ${test.index + 1}: ${test.score} pct`}>
+                                                                {test.index + 1}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm text-(--text-muted)">{lang === 'RO' ? 'Nu există teste generate pentru această propunere.' : 'No tests generated for this proposal.'}</p>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    <p className="text-sm text-(--text) leading-relaxed">
+                                        {selectedProposal.statement ?? selectedProposal.description}
                                     </p>
-                                    <ul className="space-y-1 text-sm text-(--text)">
-                                        {selectedProposal.constraints.map((constraint) => (
-                                            <li key={constraint}>• {constraint}</li>
-                                        ))}
-                                    </ul>
+
+                                    <div className="grid gap-3 sm:grid-cols-2">
+                                        <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
+                                            <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">Input</p>
+                                            <p className="text-sm text-(--text) whitespace-pre-wrap">{selectedProposal.inputDescription ?? '-'}</p>
+                                        </div>
+                                        <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
+                                            <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">Output</p>
+                                            <p className="text-sm text-(--text) whitespace-pre-wrap">{selectedProposal.outputDescription ?? '-'}</p>
+                                        </div>
+                                    </div>
+
+                                    {selectedProposal.constraints && selectedProposal.constraints.length > 0 && (
+                                        <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
+                                            <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">{lang === 'RO' ? 'Restricții' : 'Constraints'}</p>
+                                            <ul className="space-y-1 text-sm text-(--text)">
+                                                {selectedProposal.constraints.map((constraint) => <li key={constraint}>• {constraint}</li>)}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {selectedProposal.tags && selectedProposal.tags.length > 0 && (
+                                        <div className="flex flex-wrap gap-2">
+                                            {selectedProposal.tags.map((tag) => (
+                                                <span key={tag} className="rounded-full border border-(--accent)/30 bg-(--accent)/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-(--text-h)">{tag}</span>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
-                            <div className="grid gap-3 sm:grid-cols-2">
-                                <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
-                                    <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">
-                                        Sample Input
-                                    </p>
-                                    <pre className="text-xs text-(--text) whitespace-pre-wrap font-mono">
-                                        {selectedProposal.sampleInput ?? '-'}
-                                    </pre>
-                                </div>
-                                <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
-                                    <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">
-                                        Sample Output
-                                    </p>
-                                    <pre className="text-xs text-(--text) whitespace-pre-wrap font-mono">
-                                        {selectedProposal.sampleOutput ?? '-'}
-                                    </pre>
-                                </div>
-                            </div>
-
-                            {selectedProposal.tags && selectedProposal.tags.length > 0 && (
-                                <div className="flex flex-wrap gap-2">
-                                    {selectedProposal.tags.map((tag) => (
-                                        <span
-                                            key={tag}
-                                            className="rounded-full border border-(--accent)/30 bg-(--accent)/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-(--text-h)"
-                                        >
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
-                            )}
-
-                            <div className="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-(--accent)/20">
+                            <div className="flex flex-wrap items-center justify-end gap-2 pt-4 border-t border-(--accent)/20">
                                 <button
                                     onClick={() => handleReviewProposal(selectedProposal.id, 'reject')}
                                     className="px-4 py-2 rounded-full border border-red-500/40 bg-red-500/10 text-red-500 text-xs font-bold hover:bg-red-500/20 transition-colors"
