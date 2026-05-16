@@ -7,7 +7,6 @@ import { adminService, type Announcement } from '../services/adminService';
 import { itemVariants, staggerConfig } from '../utils/motionConfig';
 import { useTheme } from '../services/ThemeContext';
 import { createPortal } from 'react-dom';
-import { useTheme } from '../services/ThemeContext';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -150,7 +149,6 @@ export default function Landing() {
     const { lang } = useLanguage();
     const t = translations[lang];
     const { isAuthenticated } = useAuth();
-    const { theme } = useTheme();
 
     const logoSrc = useMemo(() => {
         const themeLogo: Record<string, string> = {
