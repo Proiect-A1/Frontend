@@ -4,6 +4,7 @@ import { adminService } from '../services/adminService';
 import type { Announcement } from '../../../types/announcement';
 import { toast } from 'sonner';
 import { useLanguage } from '../../../language/Language';
+import { extractErrorMessage } from '../utils/errorUtils';
 
 export function useAdminAnnouncements(isAdmin: boolean, activeTab: string) {
     const { lang } = useLanguage();
@@ -18,6 +19,7 @@ export function useAdminAnnouncements(isAdmin: boolean, activeTab: string) {
         queryKey: ['admin', 'announcements'],
         enabled: isAdmin && activeTab === 'announcements',
         queryFn: () => adminService.getAnnouncements(),
+        staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
     const handleAnnouncementSubmit = async (event: React.FormEvent) => {
@@ -53,7 +55,7 @@ export function useAdminAnnouncements(isAdmin: boolean, activeTab: string) {
             toast.success(lang === 'RO' ? 'Anunț șters.' : 'Announcement deleted.');
             await queryClient.invalidateQueries({ queryKey: ['admin', 'announcements'] });
         } catch (error) {
-            toast.error('Error');
+            toast.error(extractErrorMessage(error, 'Error'));
         }
     };
 

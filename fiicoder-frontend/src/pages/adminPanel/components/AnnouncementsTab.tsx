@@ -33,10 +33,15 @@ export default function AnnouncementsTab({
 
     return (
         <motion.div variants={containerVariants} className="space-y-6">
+            <motion.div variants={itemVariants} className="mb-6">
+                <h2 className="text-2xl font-bold text-(--text-h)">
+                    {lang === 'RO' ? 'Anunțuri Platformă' : 'Platform Announcements'}
+                </h2>
+            </motion.div>
             <motion.form
                 variants={itemVariants}
                 onSubmit={handleAnnouncementSubmit}
-                className="p-6 rounded-3xl border-2 border-(--accent)/30 bg-(--surface-muted) space-y-4"
+                className="p-5 rounded-3xl border-2 border-(--accent)/30 bg-(--surface-muted) space-y-4"
             >
                 <div className="space-y-2">
                     <label className="text-sm font-bold text-(--text-h) px-1 uppercase tracking-widest">

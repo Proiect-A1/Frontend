@@ -6,6 +6,7 @@ export function useAdminAudit(isAdmin: boolean, activeTab: string) {
         queryKey: ['admin', 'audit'],
         enabled: isAdmin && activeTab === 'audit',
         queryFn: () => adminService.getAuditLog(),
+        staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
     return {

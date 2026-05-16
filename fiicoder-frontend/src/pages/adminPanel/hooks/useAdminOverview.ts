@@ -6,6 +6,7 @@ export function useAdminOverview(isAdmin: boolean) {
         queryKey: ['admin', 'overview'],
         enabled: isAdmin,
         queryFn: () => adminService.getOverview(),
+        staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
     return {

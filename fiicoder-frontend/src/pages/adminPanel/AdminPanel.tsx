@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Navigate } from 'react-router-dom';
 import { useLanguage } from '../../language/Language';
 import { useAuth } from '../../contexts/AuthContext';
+import { containerVariants } from '../../utils/motionConfig';
 
 // Hooks
 import { useAdminOverview } from './hooks/useAdminOverview';
@@ -49,7 +50,7 @@ export default function AdminPanel() {
     return (
         <div className="w-full flex justify-center h-auto xl:flex-1 xl:min-h-0">
             <motion.div
-                className="w-full max-w-7xl rounded-3xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm h-auto xl:h-full relative overflow-hidden"
+                className="w-full max-w-7xl rounded-3xl border-2 border-(--accent) bg-(--surface-card) h-full flex overflow-hidden relative"
                 initial="hidden"
                 animate="visible"
             >
@@ -62,56 +63,56 @@ export default function AdminPanel() {
                     )}
                 </AnimatePresence>
 
-                <div className="h-full flex flex-col relative z-10">
-                    <div className="p-4 sm:p-6 border-b border-(--accent)/20 bg-(--surface-card)/80 backdrop-blur-sm">
-                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                            <div className="flex items-center gap-4">
-                                <button
-                                    onClick={() => setShowOverviewSidebar(true)}
-                                    className="p-2 rounded-2xl border-2 border-(--accent)/30 bg-(--accent)/10 text-(--accent) hover:bg-(--accent)/20 transition-all group"
-                                    title={lang === 'RO' ? 'Vezi statistici' : 'View stats'}
-                                >
-                                    <svg className="h-6 w-6 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 19h16M4 15h4M4 11h10M4 7h16" />
-                                    </svg>
-                                </button>
-                                <div>
-                                    <h1 className="text-2xl font-black text-(--text-h) tracking-tight">
-                                        Admin <span className="text-(--accent)">Panel</span>
-                                    </h1>
-                                    <p className="text-xs font-bold text-(--text-muted) uppercase tracking-widest">
-                                        Control Center
-                                    </p>
+                <div className="flex-1 h-full flex flex-col overflow-hidden relative">
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-5 md:p-8">
+                        <div className="w-full">
+                            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+                                <div className="flex items-center gap-4">
+                                    <button
+                                        onClick={() => setShowOverviewSidebar(true)}
+                                        className="p-2.5 rounded-full border-2 border-(--accent)/30 bg-(--accent)/10 text-(--accent) hover:bg-(--accent)/20 transition-all group shadow-sm"
+                                    >
+                                        <svg className="h-6 w-6 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 19h16M4 15h4M4 11h10M4 7h16" />
+                                        </svg>
+                                    </button>
+                                    <div>
+                                        <h1 className="text-3xl font-bold text-(--text-h)">
+                                            Admin <span className="text-(--accent)">Panel</span>
+                                        </h1>
+                                        <p className="text-[10px] font-black text-(--text-muted) uppercase tracking-[0.2em] leading-none mt-1">
+                                            Control Center
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-wrap gap-2 lg:justify-end">
+                                    {tabs.map((tab) => {
+                                        const isActive = activeTab === tab.id;
+                                        const baseClasses = 'px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center cursor-pointer outline-none uppercase tracking-widest';
+                                        return (
+                                            <button
+                                                key={tab.id}
+                                                type="button"
+                                                onClick={() => setActiveTab(tab.id)}
+                                                className={`${baseClasses} ${isActive ? 'bg-(--accent)/25 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5'}`}
+                                            >
+                                                {lang === 'RO' ? tab.labelRO : tab.labelEN}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
 
-                            <div className="flex bg-black/20 p-1 rounded-2xl border border-(--accent)/20 overflow-x-auto no-scrollbar">
-                                {tabs.map((tab) => (
-                                    <button
-                                        key={tab.id}
-                                        onClick={() => setActiveTab(tab.id)}
-                                        className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${
-                                            activeTab === tab.id
-                                                ? 'bg-(--accent) text-white shadow-lg shadow-(--accent)/20'
-                                                : 'text-(--text-muted) hover:text-(--text-h) hover:bg-white/5'
-                                        }`}
-                                    >
-                                        {lang === 'RO' ? tab.labelRO : tab.labelEN}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+                            <div className="page-line-horizontal mb-6" />
 
-                    <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 bg-black/5">
-                        <div className="max-w-6xl mx-auto">
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={activeTab}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    transition={{ duration: 0.2 }}
+                                    initial="hidden"
+                                    animate="visible"
+                                    exit="exit"
+                                    variants={containerVariants}
                                 >
                                     {activeTab === 'users' && <UserTab {...usersState} />}
                                     {activeTab === 'proposals' && <ProposalsTab {...proposalsState} />}

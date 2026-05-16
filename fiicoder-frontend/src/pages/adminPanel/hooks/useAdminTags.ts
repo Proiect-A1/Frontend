@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { tagService, type TagResponseDTO } from '../../../services/tagService';
 import { toast } from 'sonner';
 import { useLanguage } from '../../../language/Language';
+import { extractErrorMessage } from '../utils/errorUtils';
 
 export function useAdminTags(isAdmin: boolean, activeTab: string) {
     const { lang } = useLanguage();
@@ -16,6 +17,7 @@ export function useAdminTags(isAdmin: boolean, activeTab: string) {
         queryKey: ['admin', 'tags'],
         enabled: isAdmin && activeTab === 'tags',
         queryFn: () => tagService.getAllTags(),
+        staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
     const handleTagSubmit = async (e: React.FormEvent) => {
@@ -36,7 +38,7 @@ export function useAdminTags(isAdmin: boolean, activeTab: string) {
             toast.success(lang === 'RO' ? 'Tag salvat.' : 'Tag saved.');
             await queryClient.invalidateQueries({ queryKey: ['admin', 'tags'] });
         } catch (err) {
-            toast.error(lang === 'RO' ? 'Eroare la salvarea tag-ului.' : 'Failed to save tag.');
+            toast.error(extractErrorMessage(err, lang === 'RO' ? 'Eroare la salvarea tag-ului.' : 'Failed to save tag.'));
         } finally {
             setIsSavingTag(false);
         }
@@ -52,7 +54,7 @@ export function useAdminTags(isAdmin: boolean, activeTab: string) {
             toast.success(lang === 'RO' ? 'Tag șters.' : 'Tag deleted.');
             await queryClient.invalidateQueries({ queryKey: ['admin', 'tags'] });
         } catch (err) {
-            toast.error(lang === 'RO' ? "Eroare la ștergere (posibil tag-ul e folosit deja)." : "Error deleting tag (it might be in use).");
+            toast.error(extractErrorMessage(err, lang === 'RO' ? "Eroare la ștergere (posibil tag-ul e folosit deja)." : "Error deleting tag (it might be in use)."));
         }
     };
 

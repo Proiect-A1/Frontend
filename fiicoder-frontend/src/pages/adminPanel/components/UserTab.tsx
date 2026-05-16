@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
-import { itemVariants } from '../../../utils/motionConfig';
+import { containerVariants, itemVariants } from '../../../utils/motionConfig';
 import { useLanguage } from '../../../language/Language';
 import type { AdminUser } from '../services/adminService';
 
 type Props = {
     users: AdminUser[];
     userPage: number;
-    setUserPage: (page: number) => void;
+    setUserPage: (page: (p: number) => number) => void;
     processingUsers: Set<string>;
     handleRoleChange: (username: string, role: 'USER' | 'ADMIN' | 'PROFESSOR') => void;
     handleBanToggle: (username: string, isBanned: boolean) => void;
@@ -25,31 +25,41 @@ export default function UserTab({
     const { lang } = useLanguage();
 
     return (
-        <div className="space-y-4">
-            <div className="flex items-center justify-between px-2">
-                <h2 className="text-xl font-bold text-(--text-h)">
+        <motion.div
+            variants={containerVariants}
+            className="space-y-4"
+        >
+            <motion.div
+                variants={itemVariants}
+                className="flex items-center justify-between mb-6"
+            >
+                <h2 className="text-2xl font-bold text-(--text-h)">
                     {lang === 'RO' ? 'Gestionare Utilizatori' : 'User Management'}
                 </h2>
-                <div className="flex items-center gap-2">
+                
+                <div className="flex items-center gap-4">
                     <button
-                        onClick={() => setUserPage(Math.max(1, userPage - 1))}
+                        onClick={() => setUserPage((currentPage) => Math.max(currentPage - 1, 1))}
                         disabled={userPage === 1}
-                        className="p-2 rounded-xl border border-(--accent)/30 hover:bg-(--accent)/10 disabled:opacity-30"
+                        className="w-10 h-10 rounded-full border border-(--accent)/30 bg-(--accent)/5 flex items-center justify-center text-(--text-muted) hover:bg-(--accent)/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                     >
                         ←
                     </button>
-                    <span className="text-sm font-bold text-(--text-h)">{userPage}</span>
+                    <span className="text-sm font-black text-(--text-h)">{userPage}</span>
                     <button
-                        onClick={() => setUserPage(userPage + 1)}
+                        onClick={() => setUserPage((currentPage) => currentPage + 1)}
                         disabled={users.length < 20}
-                        className="p-2 rounded-xl border border-(--accent)/30 hover:bg-(--accent)/10 disabled:opacity-30"
+                        className="w-10 h-10 rounded-full border border-(--accent)/30 bg-(--accent)/5 flex items-center justify-center text-(--text-muted) hover:bg-(--accent)/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                     >
                         →
                     </button>
                 </div>
-            </div>
+            </motion.div>
 
-            <div className="grid gap-3">
+            <motion.div
+                variants={containerVariants}
+                className="grid gap-3"
+            >
                 {users.map((user) => (
                     <motion.div
                         variants={itemVariants}
@@ -124,7 +134,7 @@ export default function UserTab({
                         </div>
                     </motion.div>
                 ))}
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 }

@@ -4,6 +4,7 @@ import { adminService, type ProblemProposal, type ProblemProposalDetail } from '
 import { mockProposals } from '../../proposeProblem/services/mockProposals';
 import { toast } from 'sonner';
 import { useLanguage } from '../../../language/Language';
+import { extractErrorMessage } from '../utils/errorUtils';
 
 export function useAdminProposals(isAdmin: boolean, activeTab: string) {
     const { lang } = useLanguage();
@@ -31,6 +32,7 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
                 })) as unknown as ProblemProposal[];
             }
         },
+        staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
     const proposals = proposalsQuery.data ?? [];
@@ -92,7 +94,11 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
                 setSelectedProposalId(remainingProposals[0]?.id ?? null);
             }
         } catch (error) {
-            toast.error(lang === 'RO' ? 'Eroare la procesarea propunerii.' : 'Failed to process proposal.');
+            const message = extractErrorMessage(
+                error,
+                lang === 'RO' ? 'Eroare la procesarea propunerii.' : 'Failed to process proposal.',
+            );
+            toast.error(message);
         }
     };
 

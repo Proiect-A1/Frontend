@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { adminService, type AdminUser } from '../services/adminService';
 import { toast } from 'sonner';
 import { useLanguage } from '../../../language/Language';
+import { extractErrorMessage } from '../utils/errorUtils';
 
 const USERS_PER_PAGE = 20;
 
@@ -16,6 +17,7 @@ export function useAdminUsers(isAdmin: boolean, activeTab: string) {
         queryKey: ['admin', 'users', userPage],
         enabled: isAdmin && activeTab === 'users',
         queryFn: () => adminService.getUsers(userPage, USERS_PER_PAGE),
+        staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
     const handleBanToggle = async (username: string, isBanned: boolean) => {
@@ -37,7 +39,7 @@ export function useAdminUsers(isAdmin: boolean, activeTab: string) {
                 ) ?? [],
             );
         } catch (error) {
-            toast.error('Error');
+            toast.error(extractErrorMessage(error, 'Error'));
         }
     };
 
@@ -80,7 +82,7 @@ export function useAdminUsers(isAdmin: boolean, activeTab: string) {
             toast.success(lang === 'RO' ? 'Rol actualizat.' : 'Role updated.');
             await queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
         } catch (error) {
-            toast.error('Error');
+            toast.error(extractErrorMessage(error, 'Error'));
         }
     };
 

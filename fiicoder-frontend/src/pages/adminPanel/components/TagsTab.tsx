@@ -28,6 +28,11 @@ export default function TagsTab({
 
     return (
         <motion.div variants={containerVariants} className="space-y-6">
+            <motion.div variants={itemVariants} className="mb-6">
+                <h2 className="text-2xl font-bold text-(--text-h)">
+                    {lang === 'RO' ? 'Gestionare Tag-uri' : 'Tag Management'}
+                </h2>
+            </motion.div>
             <motion.form
                 variants={itemVariants}
                 onSubmit={handleTagSubmit}
