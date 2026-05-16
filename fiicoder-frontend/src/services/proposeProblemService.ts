@@ -20,7 +20,8 @@ export const proposeProblemService = {
       method: "PUT",
       body: zipBlob,
       headers: {
-        "Content-Type": "application/zip",
+        // Must match the content type baked into the presigned PUT URL.
+        "Content-Type": "application/octet-stream",
       },
     });
 
