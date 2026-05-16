@@ -82,4 +82,12 @@ export const classService = {
   declineInvitation(invitationId: string) {
     return apiClient.post<void>(`/group/invitations/${invitationId}/decline`);
   },
+
+  deleteGroup(groupId: string) {
+    return apiClient.delete<void>(`/group/${groupId}`);
+  },
+
+  getGroupInvitations(groupId: string) {
+    return apiClient.get<GroupInvitationResponseDTO[]>(`/group/${groupId}/invitations`);
+  },
 };

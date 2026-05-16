@@ -211,9 +211,19 @@ export default function Landing() {
         { num: '98%', label: t.satisfactionRate },
     ], [t]);
 
-    const handleOpenAnnouncement = (announcement: AnnouncementWithPriority) => {
+    const handleOpenAnnouncement = async (announcement: AnnouncementWithPriority) => {
         setSelectedAnnouncement(announcement);
         setIsModalOpen(true);
+        try {
+            const fresh = await adminService.getAnnouncementById(announcement.id);
+            setSelectedAnnouncement({
+                ...fresh,
+                priority: getPriorityFromTitle(fresh.title),
+                icon: getIconForAnnouncement(fresh.title),
+            });
+        } catch {
+            // keep cached data if fetch fails
+        }
     };
 
     const handleCloseModal = () => {

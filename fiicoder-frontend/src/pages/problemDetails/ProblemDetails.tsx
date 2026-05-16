@@ -131,10 +131,10 @@ export default function ProblemDetails() {
 
             {/* Mobile View: Standard Stacked Grid */}
             <div className="xl:hidden flex flex-col gap-4">
-                <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-3xl">
+                <div className="overflow-hidden bg-(--surface-card) border-2 border-(--accent) rounded-3xl">
                     <DescriptionPanel problem={problem} processedDescription={processedDescription} lang={lang} />
                 </div>
-                <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-3xl min-h-100 flex flex-col">
+                <div className="overflow-hidden bg-(--surface-card) border-2 border-(--accent) rounded-3xl min-h-100 flex flex-col">
                     <EditorPanel
                         isAuthenticated={isAuthenticated}
                         t={t}

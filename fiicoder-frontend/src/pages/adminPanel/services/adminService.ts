@@ -160,8 +160,7 @@ export const adminService = {
 
     async getProposals(): Promise<ProblemProposal[]> {
         try {
-            // Using pending-review endpoint which returns ProblemPendingReviewDTO
-            const data = await apiClient.get<any[]>('/problems/pending-review');
+            const data = await apiClient.get<any[]>('/problems/pending');
             return data.map(p => ({
                 id: p.title, 
                 title: p.title,
@@ -226,6 +225,10 @@ export const adminService = {
 
     async deleteAnnouncement(id: string): Promise<void> {
         await apiClient.delete(`/announcements/${id}`);
+    },
+
+    async getAnnouncementById(id: string): Promise<Announcement> {
+        return await apiClient.get(`/announcements/${id}`);
     },
 
     async getAuditLog(): Promise<AuditLogEntry[]> {

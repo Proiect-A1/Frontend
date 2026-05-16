@@ -7,9 +7,11 @@ type ProfileProposalsPanelProps = {
     proposals: ProblemProposalResponse[] | null;
     loading: boolean;
     lang: 'RO' | 'EN';
+    onToggleVisibility?: (title: string, current: 'public' | 'private') => void;
+    togglingTitle?: string | null;
 };
 
-export default function ProfileProposalsPanel({ proposals, loading, lang }: ProfileProposalsPanelProps) {
+export default function ProfileProposalsPanel({ proposals, loading, lang, onToggleVisibility, togglingTitle }: ProfileProposalsPanelProps) {
     const viewLabel = lang === 'RO' ? 'Vezi' : 'View';
     const editLabel = lang === 'RO' ? 'Editează' : 'Edit';
 
@@ -67,6 +69,19 @@ export default function ProfileProposalsPanel({ proposals, loading, lang }: Prof
                                     {proposal.status}
                                 </span>
                                 <div className="flex flex-wrap gap-2">
+                                    {proposal.status === 'approved' && onToggleVisibility && (
+                                        <button
+                                            onClick={() => onToggleVisibility(proposal.title, proposal.visibility)}
+                                            disabled={togglingTitle === proposal.title}
+                                            className="px-3 py-1.5 rounded-full border-2 border-(--accent)/40 bg-transparent text-xs font-bold text-(--text-muted) hover:bg-(--accent)/10 hover:text-(--text-h) disabled:opacity-50 transition-colors"
+                                        >
+                                            {togglingTitle === proposal.title
+                                                ? '...'
+                                                : proposal.visibility === 'public'
+                                                ? (lang === 'RO' ? 'Fă privat' : 'Make private')
+                                                : (lang === 'RO' ? 'Fă public' : 'Make public')}
+                                        </button>
+                                    )}
                                     <Link
                                         to={`/problems/${encodeURIComponent(proposal.title)}`}
                                         className="px-3 py-1.5 rounded-full border-2 border-(--accent)/40 bg-transparent text-xs font-bold text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) transition-colors"

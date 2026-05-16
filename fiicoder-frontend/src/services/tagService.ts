@@ -24,5 +24,9 @@ export const tagService = {
 
   async deleteTag(title: string): Promise<void> {
     return await apiClient.delete<void>(`/tags/${encodeURIComponent(title)}`);
-  }
+  },
+
+  async getTagByTitle(title: string): Promise<TagResponseDTO> {
+    return await apiClient.get<TagResponseDTO>(`/tags/${encodeURIComponent(title)}`);
+  },
 };

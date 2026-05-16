@@ -12,6 +12,12 @@ type Props = {
     isSavingTag: boolean;
     handleTagSubmit: (e: React.FormEvent) => void;
     handleDeleteTag: (tag: TagResponseDTO) => void;
+    tagSearch: string;
+    setTagSearch: (q: string) => void;
+    tagSearchResult: TagResponseDTO | null | 'not_found';
+    isSearchingTag: boolean;
+    handleTagSearch: (e: React.FormEvent) => void;
+    clearTagSearch: () => void;
 };
 
 export default function TagsTab({
@@ -22,7 +28,13 @@ export default function TagsTab({
     setEditingTag,
     isSavingTag,
     handleTagSubmit,
-    handleDeleteTag
+    handleDeleteTag,
+    tagSearch,
+    setTagSearch,
+    tagSearchResult,
+    isSearchingTag,
+    handleTagSearch,
+    clearTagSearch,
 }: Props) {
     const { lang } = useLanguage();
 
@@ -71,6 +83,42 @@ export default function TagsTab({
                     </div>
                 </div>
             </motion.form>
+
+            <motion.form
+                variants={itemVariants}
+                onSubmit={handleTagSearch}
+                className="flex gap-2"
+            >
+                <input
+                    type="text"
+                    value={tagSearch}
+                    onChange={(e) => setTagSearch(e.target.value)}
+                    placeholder={lang === 'RO' ? 'Caută tag după titlu exact...' : 'Search tag by exact title...'}
+                    className="flex-1 bg-(--surface-card) border border-(--accent)/40 rounded-2xl px-4 py-2 text-(--text-h) outline-none focus:border-(--accent) transition-all text-sm"
+                />
+                <button
+                    type="submit"
+                    disabled={isSearchingTag}
+                    className="rounded-2xl bg-(--accent)/20 border border-(--accent)/40 px-4 py-2 text-(--text-h) text-sm font-bold hover:bg-(--accent)/30 disabled:opacity-50 transition-all"
+                >
+                    {isSearchingTag ? '...' : (lang === 'RO' ? 'Caută' : 'Search')}
+                </button>
+                {(tagSearch || tagSearchResult) && (
+                    <button
+                        type="button"
+                        onClick={clearTagSearch}
+                        className="rounded-2xl border border-(--accent)/40 px-4 py-2 text-(--text-muted) text-sm hover:bg-(--accent)/10 transition-all"
+                    >
+                        ✕
+                    </button>
+                )}
+            </motion.form>
+
+            {tagSearchResult === 'not_found' && (
+                <motion.p variants={itemVariants} className="text-sm text-(--text-muted) px-1">
+                    {lang === 'RO' ? 'Niciun tag găsit.' : 'No tag found.'}
+                </motion.p>
+            )}
 
             <motion.div
                 variants={containerVariants}

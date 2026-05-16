@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
@@ -476,8 +476,9 @@ function HomeworkItem({
 
 export default function ClassDetails() {
     const { groupId } = useParams();
+    const navigate = useNavigate();
     const { lang } = useLanguage();
-    const { userId } = useAuth();
+    const { userId, isAdmin } = useAuth();
     const [inviteEmail, setInviteEmail] = useState('');
     const [inviteFeedback, setInviteFeedback] = useState<{ msg: string; isError: boolean } | null>(
         null,
@@ -504,6 +505,14 @@ export default function ClassDetails() {
     });
 
     const group = groupQuery.data ?? null;
+    const isCreator = !!(userId && group?.creatorId && userId.toLowerCase() === group.creatorId.toLowerCase());
+
+    const invitationsQuery = useQuery({
+        queryKey: ['class-invitations', groupId],
+        enabled: !!groupId && (isAdmin || isCreator),
+        queryFn: () => classService.getGroupInvitations(groupId as string),
+    });
+    const pendingInvitations = (invitationsQuery.data ?? []).filter(inv => inv.status === 'PENDING');
     const homeworks = homeworksQuery.data ?? [];
     const loading = groupQuery.isPending || homeworksQuery.isPending;
     const error =
@@ -512,6 +521,20 @@ export default function ClassDetails() {
     const reloadHomeworks = useCallback(async () => {
         await homeworksQuery.refetch();
     }, [homeworksQuery]);
+
+    const handleDeleteGroup = async () => {
+        const confirmMsg = lang === 'RO'
+            ? `Sigur vrei să ștergi clasa "${group?.name}"? Această acțiune este ireversibilă.`
+            : `Delete class "${group?.name}"? This action cannot be undone.`;
+        if (!window.confirm(confirmMsg)) return;
+        try {
+            await classService.deleteGroup(groupId!);
+            toast.success(lang === 'RO' ? 'Clasa a fost ștearsă.' : 'Class deleted.');
+            navigate('/classes');
+        } catch (err: any) {
+            toast.error(extractErrorMessage(err, lang === 'RO' ? 'Eroare la ștergere.' : 'Delete failed.'));
+        }
+    };
 
     const handleInviteStudent = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -601,12 +624,22 @@ export default function ClassDetails() {
                             </h1>
                             <p className="text-sm text-(--text-muted) mt-2">{group?.description}</p>
                         </div>
-                        <Link
-                            to="/classes"
-                            className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
-                        >
-                            {lang === 'RO' ? 'Înapoi' : 'Back'}
-                        </Link>
+                        <div className="flex items-center gap-2">
+                            {(isAdmin || (userId && group?.creatorId && userId.toLowerCase() === group.creatorId.toLowerCase())) && (
+                                <button
+                                    onClick={handleDeleteGroup}
+                                    className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-full font-semibold border-2 border-red-500/50 bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
+                                >
+                                    {lang === 'RO' ? 'Șterge clasa' : 'Delete class'}
+                                </button>
+                            )}
+                            <Link
+                                to="/classes"
+                                className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
+                            >
+                                {lang === 'RO' ? 'Înapoi' : 'Back'}
+                            </Link>
+                        </div>
                     </motion.div>
 
                     {(feedback || error) && (
@@ -653,6 +686,26 @@ export default function ClassDetails() {
                                         <p className="mt-2 text-xs">{inviteFeedback.msg}</p>
                                     )}
                                 </div>
+
+                                {(isCreator || isAdmin) && pendingInvitations.length > 0 && (
+                                    <div className="mt-4 p-4 rounded-2xl border border-(--accent)/20 bg-(--surface-card)">
+                                        <h3 className="text-sm font-bold mb-3 text-(--text-h)">
+                                            {lang === 'RO' ? `Invitații în așteptare (${pendingInvitations.length})` : `Pending invitations (${pendingInvitations.length})`}
+                                        </h3>
+                                        <div className="flex flex-col gap-2">
+                                            {pendingInvitations.map((inv) => (
+                                                <div key={inv.id} className="flex items-center justify-between text-xs text-(--text-muted) px-1">
+                                                    <span className="font-semibold text-(--text-h)">
+                                                        {inv.invitedUser?.username ?? inv.invitedUser?.email ?? '—'}
+                                                    </span>
+                                                    <span>
+                                                        {new Date(inv.sentAt).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </motion.section>
 
                             <motion.section variants={itemVariants} className="">

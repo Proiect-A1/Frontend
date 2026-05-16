@@ -8,10 +8,14 @@ import { extractErrorMessage } from '../utils/errorUtils';
 export function useAdminTags(isAdmin: boolean, activeTab: string) {
     const { lang } = useLanguage();
     const queryClient = useQueryClient();
-    
+
     const [tagForm, setTagForm] = useState({ title: '' });
     const [editingTag, setEditingTag] = useState<TagResponseDTO | null>(null);
     const [isSavingTag, setIsSavingTag] = useState(false);
+
+    const [tagSearch, setTagSearch] = useState('');
+    const [tagSearchResult, setTagSearchResult] = useState<TagResponseDTO | null | 'not_found'>(null);
+    const [isSearchingTag, setIsSearchingTag] = useState(false);
 
     const tagsQuery = useQuery({
         queryKey: ['admin', 'tags'],
@@ -58,8 +62,41 @@ export function useAdminTags(isAdmin: boolean, activeTab: string) {
         }
     };
 
+    const handleTagSearch = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const query = tagSearch.trim();
+        if (!query) {
+            setTagSearchResult(null);
+            return;
+        }
+        setIsSearchingTag(true);
+        try {
+            const result = await tagService.getTagByTitle(query);
+            setTagSearchResult(result);
+        } catch {
+            setTagSearchResult('not_found');
+        } finally {
+            setIsSearchingTag(false);
+        }
+    };
+
+    const clearTagSearch = () => {
+        setTagSearch('');
+        setTagSearchResult(null);
+    };
+
+    const allTags = tagsQuery.data ?? [];
+    const displayedTags =
+        tagSearchResult === 'not_found'
+            ? []
+            : tagSearchResult
+            ? [tagSearchResult]
+            : tagSearch
+            ? allTags.filter(t => t.title.toLowerCase().includes(tagSearch.toLowerCase()))
+            : allTags;
+
     return {
-        tags: tagsQuery.data ?? [],
+        tags: displayedTags,
         isLoading: tagsQuery.isLoading,
         tagForm,
         setTagForm,
@@ -67,6 +104,12 @@ export function useAdminTags(isAdmin: boolean, activeTab: string) {
         setEditingTag,
         isSavingTag,
         handleTagSubmit,
-        handleDeleteTag
+        handleDeleteTag,
+        tagSearch,
+        setTagSearch,
+        tagSearchResult,
+        isSearchingTag,
+        handleTagSearch,
+        clearTagSearch,
     };
 }

@@ -1,23 +1,28 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../language/Language';
 import { useTheme } from '../../contexts/ThemeContext';
 import { containerVariants, pageVariants } from '../../utils/motionConfig';
 import { profileService } from '../../services/profileService';
 import { proposeProblemService } from '../proposeProblem/services/proposeProblemService';
+import { problemService } from '../../services/problemService';
+import { toast } from 'sonner';
 import ProfileSidebar from './components/ProfileSidebar';
 import ProfileOverviewContent from './components/ProfileOverviewContent';
 import ProfileProposalsPanel from './components/ProfileProposalsPanel';
+import ProfileHomeworkPanel from './components/ProfileHomeworkPanel';
 
 export default function Profile() {
     const { username, isAdmin, isProfessor } = useAuth();
     const { lang } = useLanguage();
     const { theme } = useTheme();
+    const queryClient = useQueryClient();
     const canViewProposals = isAdmin || isProfessor;
-    const [activeTab, setActiveTab] = useState<'overview' | 'proposals'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'proposals' | 'homework'>('overview');
+    const [togglingTitle, setTogglingTitle] = useState<string | null>(null);
 
     const profileQuery = useQuery({
         queryKey: ['profile', 'me'],
@@ -39,6 +44,20 @@ export default function Profile() {
         : null;
     const proposals = proposalsQuery.data ?? [];
     const loadingProposals = proposalsQuery.isPending;
+
+    const handleToggleVisibility = async (title: string, currentVisibility: 'public' | 'private') => {
+        const newVisibility = currentVisibility === 'public' ? 'PRIVATE' : 'PUBLIC';
+        setTogglingTitle(title);
+        try {
+            await problemService.changeVisibility(title, newVisibility);
+            await queryClient.invalidateQueries({ queryKey: ['profile', 'proposals'] });
+            toast.success(lang === 'RO' ? 'Vizibilitate actualizată.' : 'Visibility updated.');
+        } catch {
+            toast.error(lang === 'RO' ? 'Eroare la actualizarea vizibilității.' : 'Failed to update visibility.');
+        } finally {
+            setTogglingTitle(null);
+        }
+    };
 
     useEffect(() => {
         if (!canViewProposals && activeTab === 'proposals') {
@@ -101,6 +120,13 @@ export default function Profile() {
                                     {lang === 'RO' ? 'Propunerile Mele' : 'My Proposals'}
                                 </button>
                             )}
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab('homework')}
+                                className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'homework' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
+                            >
+                                {lang === 'RO' ? 'Temele Mele' : 'My Homework'}
+                            </button>
 
                             {isAdmin && (
                                 <Link
@@ -127,12 +153,16 @@ export default function Profile() {
 
                             {activeTab === 'overview' ? (
                                 <ProfileOverviewContent profile={profile} lang={lang} theme={theme} />
-                            ) : (
+                            ) : activeTab === 'proposals' ? (
                                 <ProfileProposalsPanel
                                     proposals={proposals}
                                     loading={loadingProposals}
                                     lang={lang}
+                                    onToggleVisibility={handleToggleVisibility}
+                                    togglingTitle={togglingTitle}
                                 />
+                            ) : (
+                                <ProfileHomeworkPanel lang={lang} />
                             )}
                         </div>
                     </motion.div>

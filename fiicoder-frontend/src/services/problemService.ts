@@ -28,4 +28,9 @@ export const problemService = {
     const params = tags.map(t => `tags=${encodeURIComponent(t)}`).join("&");
     return await apiClient.get<ProblemFindResponseDTO[]>(`/problems/search/tags?page=${page}&size=${size}&${params}`);
   },
+
+  // PATCH /api/problems/{title}/visibility
+  async changeVisibility(title: string, visibility: 'PUBLIC' | 'PRIVATE'): Promise<void> {
+    return await apiClient.patch<void>(`/problems/${encodeURIComponent(title)}/visibility`, { visibility });
+  },
 };
