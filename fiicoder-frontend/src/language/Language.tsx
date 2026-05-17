@@ -23,7 +23,7 @@ export const translations = {
         disconnectBtn: 'Deconectare',
         continueAsGuest: 'Continua ca vizitator',
         // Problem List & Sidebars
-        filterTitle: 'Căutare & Filtre',
+        filterTitle: 'Filtrare',
         searchLabel: 'Nume problemă',
         difficultyLabel: 'Dificultate',
         allOption: 'Toate',
@@ -101,7 +101,7 @@ export const translations = {
         surnameLabel: 'Surname',
         continueAsGuest: 'Continue as Guest',
         // Search sidebar
-        filterTitle: 'Search & Filters',
+        filterTitle: 'Filter',
         searchLabel: 'Problem Name',
         difficultyLabel: 'Difficulty',
         allOption: 'All',

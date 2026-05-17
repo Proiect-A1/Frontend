@@ -30,7 +30,7 @@ export default function StatsSidebar() {
                 <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: staggerConfig } }}>
                 <motion.div variants={itemVariants} className="flex items-center justify-between">
                     <h2 className="text-m font-bold text-(--text-h) uppercase tracking-widest">
-                        {lang === 'RO' ? 'Top Rezolvatori' : 'Top Solvers'}
+                        {lang === 'RO' ? 'Top Utilizatori' : 'Top Solvers'}
                     </h2>
                     <span className="text-xs     bg-(--accent)/10 text-(--accent) px-2 py-0.5 rounded-full font-bold">
                         GLOBAL
