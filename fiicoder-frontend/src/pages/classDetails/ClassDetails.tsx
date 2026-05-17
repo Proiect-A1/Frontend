@@ -5,13 +5,13 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
 import { classService } from '../classesHub/services/classService';
 import { homeworkService } from './services/homeworkService';
-import type { 
-    HomeworkResponseDTO, 
-    HomeworkDetailDTO, 
+import type {
+    HomeworkResponseDTO,
+    HomeworkDetailDTO,
     HomeworkStatisticsDTO,
     StudentProgressSummaryDTO,
     HomeworkUpdateDeleteRequestDTO,
-    HomeworkUpdateRequestDTO
+    HomeworkUpdateRequestDTO,
 } from './types/homework';
 import { useLanguage } from '../../language/Language';
 import { containerVariants, itemVariants, pageVariants } from '../../utils/motionConfig';
@@ -80,7 +80,8 @@ function HomeworkItem({
 
     const [stats, setStats] = useState<HomeworkStatisticsDTO | null>(null);
     const [loadingStats, setLoadingStats] = useState(false);
-    const [selectedStudentProgress, setSelectedStudentProgress] = useState<StudentProgressSummaryDTO | null>(null);
+    const [selectedStudentProgress, setSelectedStudentProgress] =
+        useState<StudentProgressSummaryDTO | null>(null);
     const [loadingStudentProgress, setLoadingStudentProgress] = useState(false);
 
     useEffect(() => {
@@ -117,7 +118,7 @@ function HomeworkItem({
                 const data = await homeworkService.getStatistics(groupId, homework.id);
                 if (!cancelled) setStats(data);
             } catch (err) {
-                console.error("Failed to load stats", err);
+                console.error('Failed to load stats', err);
             } finally {
                 if (!cancelled) setLoadingStats(false);
             }
@@ -256,7 +257,7 @@ function HomeworkItem({
                               ? 'Detalii'
                               : 'Details'}
                     </button>
-                    {(userId && creatorId && userId.toLowerCase() === creatorId.toLowerCase()) && (
+                    {userId && creatorId && userId.toLowerCase() === creatorId.toLowerCase() && (
                         <>
                             {homework.status === 'DRAFT' && (
                                 <button
@@ -306,166 +307,259 @@ function HomeworkItem({
                                         ))}
                                     </div>
                                 </div>
-                                {userId && creatorId && userId.toLowerCase() === creatorId.toLowerCase() && (
-                                    <div className="text-[11px] text-(--text-muted)">
-                                        <p>
-                                            {lang === 'RO' ? 'Elevi:' : 'Users:'}{' '}
-                                            {selectedHomeworkDetail.assignedUsers?.length || 0}
-                                        </p>
-                                        <p>
-                                            {lang === 'RO' ? 'Submisii:' : 'Submissions:'}{' '}
-                                            {selectedHomeworkDetail.submissions?.length || 0}
-                                        </p>
-                                    </div>
-                                )}
+                                {userId &&
+                                    creatorId &&
+                                    userId.toLowerCase() === creatorId.toLowerCase() && (
+                                        <div className="text-[11px] text-(--text-muted)">
+                                            <p>
+                                                {lang === 'RO' ? 'Elevi:' : 'Users:'}{' '}
+                                                {selectedHomeworkDetail.assignedUsers?.length || 0}
+                                            </p>
+                                            <p>
+                                                {lang === 'RO' ? 'Submisii:' : 'Submissions:'}{' '}
+                                                {selectedHomeworkDetail.submissions?.length || 0}
+                                            </p>
+                                        </div>
+                                    )}
                             </div>
 
-                            {homework.status === 'DRAFT' && userId && creatorId && userId.toLowerCase() === creatorId.toLowerCase() && (
-                                <div className="grid gap-4 xl:grid-cols-2 mt-4">
-                                    <div className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-3 space-y-2">
-                                        <h4 className="text-sm font-bold text-(--text-h)">
-                                            {lang === 'RO' ? 'Adaugă' : 'Add'}
-                                        </h4>
-                                        <input
-                                            value={addUsernamesInput}
-                                            onChange={(e) => setAddUsernamesInput(e.target.value)}
-                                            placeholder="user1, user2"
-                                            className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
-                                        />
-                                        <input
-                                            value={addProblemTitlesInput}
-                                            onChange={(e) => setAddProblemTitlesInput(e.target.value)}
-                                            placeholder="p1, p2"
-                                            className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
-                                        />
-                                        <input
-                                            type="date"
-                                            value={addDeadline}
-                                            onChange={(e) => setAddDeadline(e.target.value)}
-                                            className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
-                                        />
-                                        <button
-                                            onClick={handleAddToDraft}
-                                            className="rounded-xl border border-emerald-400/50 px-3 py-1.5 text-xs font-semibold text-emerald-200"
-                                        >
-                                            OK
-                                        </button>
+                            {homework.status === 'DRAFT' &&
+                                userId &&
+                                creatorId &&
+                                userId.toLowerCase() === creatorId.toLowerCase() && (
+                                    <div className="grid gap-4 xl:grid-cols-2 mt-4">
+                                        <div className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-3 space-y-2">
+                                            <h4 className="text-sm font-bold text-(--text-h)">
+                                                {lang === 'RO' ? 'Adaugă' : 'Add'}
+                                            </h4>
+                                            <input
+                                                value={addUsernamesInput}
+                                                onChange={(e) =>
+                                                    setAddUsernamesInput(e.target.value)
+                                                }
+                                                placeholder="user1, user2"
+                                                className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
+                                            />
+                                            <input
+                                                value={addProblemTitlesInput}
+                                                onChange={(e) =>
+                                                    setAddProblemTitlesInput(e.target.value)
+                                                }
+                                                placeholder="p1, p2"
+                                                className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
+                                            />
+                                            <input
+                                                type="date"
+                                                value={addDeadline}
+                                                onChange={(e) => setAddDeadline(e.target.value)}
+                                                className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
+                                            />
+                                            <button
+                                                onClick={handleAddToDraft}
+                                                className="rounded-xl border border-emerald-400/50 px-3 py-1.5 text-xs font-semibold text-emerald-200"
+                                            >
+                                                OK
+                                            </button>
+                                        </div>
+                                        <div className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-3 space-y-2">
+                                            <h4 className="text-sm font-bold text-(--text-h)">
+                                                {lang === 'RO' ? 'Șterge' : 'Remove'}
+                                            </h4>
+                                            <input
+                                                value={removeUsernamesInput}
+                                                onChange={(e) =>
+                                                    setRemoveUsernamesInput(e.target.value)
+                                                }
+                                                placeholder="user1, user2"
+                                                className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
+                                            />
+                                            <input
+                                                value={removeProblemTitlesInput}
+                                                onChange={(e) =>
+                                                    setRemoveProblemTitlesInput(e.target.value)
+                                                }
+                                                placeholder="p1, p2"
+                                                className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
+                                            />
+                                            <button
+                                                onClick={handleRemoveFromDraft}
+                                                className="rounded-xl border border-red-400/50 px-3 py-1.5 text-xs font-semibold text-red-300"
+                                            >
+                                                OK
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-3 space-y-2">
-                                        <h4 className="text-sm font-bold text-(--text-h)">
-                                            {lang === 'RO' ? 'Șterge' : 'Remove'}
+                                )}
+
+                            {stats &&
+                                userId &&
+                                creatorId &&
+                                userId.toLowerCase() === creatorId.toLowerCase() && (
+                                    <div className="space-y-4 border-t border-(--accent)/10 pt-4 mt-4">
+                                        <h4 className="text-xs uppercase tracking-widest text-(--text-muted) font-bold">
+                                            {lang === 'RO' ? 'Progres Elevi' : 'Student Progress'}
                                         </h4>
-                                        <input
-                                            value={removeUsernamesInput}
-                                            onChange={(e) => setRemoveUsernamesInput(e.target.value)}
-                                            placeholder="user1, user2"
-                                            className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
-                                        />
-                                        <input
-                                            value={removeProblemTitlesInput}
-                                            onChange={(e) => setRemoveProblemTitlesInput(e.target.value)}
-                                            placeholder="p1, p2"
-                                            className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs"
-                                        />
-                                        <button
-                                            onClick={handleRemoveFromDraft}
-                                            className="rounded-xl border border-red-400/50 px-3 py-1.5 text-xs font-semibold text-red-300"
-                                        >
-                                            OK
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
 
-                            {stats && userId && creatorId && userId.toLowerCase() === creatorId.toLowerCase() && (
-                                <div className="space-y-4 border-t border-(--accent)/10 pt-4 mt-4">
-                                    <h4 className="text-xs uppercase tracking-widest text-(--text-muted) font-bold">
-                                        {lang === 'RO' ? 'Progres Elevi' : 'Student Progress'}
-                                    </h4>
+                                        {loadingStats && (
+                                            <p className="text-xs text-(--text-muted)">...</p>
+                                        )}
 
-                                    {loadingStats && <p className="text-xs text-(--text-muted)">...</p>}
-
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-left text-xs border-collapse">
-                                            <thead>
-                                                <tr className="border-b border-(--accent)/10 text-(--text-muted)">
-                                                    <th className="py-2 px-1 font-bold">{lang === 'RO' ? 'Elev' : 'Student'}</th>
-                                                    <th className="py-2 px-1 text-center font-bold">{lang === 'RO' ? 'Probleme' : 'Problems'}</th>
-                                                    <th className="py-2 px-1 text-center font-bold">{lang === 'RO' ? 'Scor Mediu' : 'Avg Score'}</th>
-                                                    <th className="py-2 px-1 text-center font-bold">Status</th>
-                                                    <th className="py-2 px-1 text-right"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {stats.students.map((student) => (
-                                                    <tr key={student.userId} className="border-b border-(--accent)/5 hover:bg-(--accent)/5 transition-colors">
-                                                        <td className="py-2 px-1">
-                                                            <div className="font-bold text-(--text-h)">{student.username}</div>
-                                                            <div className="text-[10px] text-(--text-muted)">{student.firstName} {student.lastName}</div>
-                                                        </td>
-                                                        <td className="py-2 px-1 text-center">
-                                                            {student.completedProblems} / {student.totalProblems}
-                                                        </td>
-                                                        <td className="py-2 px-1 text-center font-mono">
-                                                            {student.averageScore.toFixed(1)}
-                                                        </td>
-                                                        <td className="py-2 px-1 text-center">
-                                                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${student.isCompleted ? 'bg-emerald-500/20 text-emerald-400' : student.hasStarted ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/10 text-red-400/60'}`}>
-                                                                {student.isCompleted ? (lang === 'RO' ? 'GATA' : 'DONE') : student.hasStarted ? (lang === 'RO' ? 'ÎN LUCRU' : 'WORKING') : (lang === 'RO' ? 'NU A ÎNCEPUT' : 'IDLE')}
-                                                            </span>
-                                                        </td>
-                                                        <td className="py-2 px-1 text-right">
-                                                            <button
-                                                                onClick={() => handleViewStudentProgress(student.userId)}
-                                                                disabled={loadingStudentProgress}
-                                                                className="text-(--accent) hover:underline font-bold disabled:opacity-50"
-                                                            >
-                                                                {loadingStudentProgress
-                                                                    ? (lang === 'RO' ? 'Se încarcă...' : 'Loading...')
-                                                                    : (lang === 'RO' ? 'Detalii' : 'Details')}
-                                                            </button>
-                                                        </td>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left text-xs border-collapse">
+                                                <thead>
+                                                    <tr className="border-b border-(--accent)/10 text-(--text-muted)">
+                                                        <th className="py-2 px-1 font-bold">
+                                                            {lang === 'RO' ? 'Elev' : 'Student'}
+                                                        </th>
+                                                        <th className="py-2 px-1 text-center font-bold">
+                                                            {lang === 'RO'
+                                                                ? 'Probleme'
+                                                                : 'Problems'}
+                                                        </th>
+                                                        <th className="py-2 px-1 text-center font-bold">
+                                                            {lang === 'RO'
+                                                                ? 'Scor Mediu'
+                                                                : 'Avg Score'}
+                                                        </th>
+                                                        <th className="py-2 px-1 text-center font-bold">
+                                                            Status
+                                                        </th>
+                                                        <th className="py-2 px-1 text-right"></th>
                                                     </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                                </thead>
+                                                <tbody>
+                                                    {stats.students.map((student) => (
+                                                        <tr
+                                                            key={student.userId}
+                                                            className="border-b border-(--accent)/5 hover:bg-(--accent)/5 transition-colors"
+                                                        >
+                                                            <td className="py-2 px-1">
+                                                                <div className="font-bold text-(--text-h)">
+                                                                    {student.username}
+                                                                </div>
+                                                                <div className="text-[10px] text-(--text-muted)">
+                                                                    {student.firstName}{' '}
+                                                                    {student.lastName}
+                                                                </div>
+                                                            </td>
+                                                            <td className="py-2 px-1 text-center">
+                                                                {student.completedProblems} /{' '}
+                                                                {student.totalProblems}
+                                                            </td>
+                                                            <td className="py-2 px-1 text-center font-mono">
+                                                                {student.averageScore.toFixed(1)}
+                                                            </td>
+                                                            <td className="py-2 px-1 text-center">
+                                                                <span
+                                                                    className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${student.isCompleted ? 'bg-emerald-500/20 text-emerald-400' : student.hasStarted ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/10 text-red-400/60'}`}
+                                                                >
+                                                                    {student.isCompleted
+                                                                        ? lang === 'RO'
+                                                                            ? 'GATA'
+                                                                            : 'DONE'
+                                                                        : student.hasStarted
+                                                                          ? lang === 'RO'
+                                                                              ? 'ÎN LUCRU'
+                                                                              : 'WORKING'
+                                                                          : lang === 'RO'
+                                                                            ? 'NU A ÎNCEPUT'
+                                                                            : 'IDLE'}
+                                                                </span>
+                                                            </td>
+                                                            <td className="py-2 px-1 text-right">
+                                                                <button
+                                                                    onClick={() =>
+                                                                        handleViewStudentProgress(
+                                                                            student.userId,
+                                                                        )
+                                                                    }
+                                                                    disabled={
+                                                                        loadingStudentProgress
+                                                                    }
+                                                                    className="text-(--accent) hover:underline font-bold disabled:opacity-50"
+                                                                >
+                                                                    {loadingStudentProgress
+                                                                        ? lang === 'RO'
+                                                                            ? 'Se încarcă...'
+                                                                            : 'Loading...'
+                                                                        : lang === 'RO'
+                                                                          ? 'Detalii'
+                                                                          : 'Details'}
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
 
-                                    {selectedStudentProgress && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="mt-4 p-4 rounded-2xl border-2 border-(--accent)/30 bg-(--surface-card)"
-                                        >
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div>
-                                                    <h5 className="font-bold text-(--text-h)">
-                                                        {lang === 'RO' ? 'Detalii progres:' : 'Progress details:'} {selectedStudentProgress.username}
-                                                    </h5>
-                                                    <p className="text-[10px] text-(--text-muted)">
-                                                        {lang === 'RO' ? 'Scor mediu:' : 'Avg score:'} {selectedStudentProgress.averageScore.toFixed(1)} • {selectedStudentProgress.attemptedProblems} {lang === 'RO' ? 'probleme încercate' : 'attempted problems'}
-                                                    </p>
-                                                </div>
-                                                <button onClick={() => setSelectedStudentProgress(null)} className="text-(--text-muted) hover:text-(--text-h)">✕</button>
-                                            </div>
-
-                                            <div className="grid gap-2">
-                                                {selectedStudentProgress.problems.map((p) => (
-                                                    <div key={p.problemId} className="flex items-center justify-between p-2 rounded-xl bg-(--accent)/5 text-[11px]">
-                                                        <span className="font-bold truncate max-w-[150px]">{p.problemTitle}</span>
-                                                        <div className="flex items-center gap-3">
-                                                            <span className="text-(--text-muted)">{p.attempts} {lang === 'RO' ? 'înc' : 'try'}</span>
-                                                            <span className={`font-mono font-bold ${p.bestScore === 100 ? 'text-emerald-400' : 'text-amber-400'}`}>
-                                                                {p.bestScore.toFixed(0)} pct
-                                                            </span>
-                                                        </div>
+                                        {selectedStudentProgress && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="mt-4 p-4 rounded-2xl border-2 border-(--accent)/30 bg-(--surface-card)"
+                                            >
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <div>
+                                                        <h5 className="font-bold text-(--text-h)">
+                                                            {lang === 'RO'
+                                                                ? 'Detalii progres:'
+                                                                : 'Progress details:'}{' '}
+                                                            {selectedStudentProgress.username}
+                                                        </h5>
+                                                        <p className="text-[10px] text-(--text-muted)">
+                                                            {lang === 'RO'
+                                                                ? 'Scor mediu:'
+                                                                : 'Avg score:'}{' '}
+                                                            {selectedStudentProgress.averageScore.toFixed(
+                                                                1,
+                                                            )}{' '}
+                                                            •{' '}
+                                                            {
+                                                                selectedStudentProgress.attemptedProblems
+                                                            }{' '}
+                                                            {lang === 'RO'
+                                                                ? 'probleme încercate'
+                                                                : 'attempted problems'}
+                                                        </p>
                                                     </div>
-                                                ))}
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </div>
-                            )}
+                                                    <button
+                                                        onClick={() =>
+                                                            setSelectedStudentProgress(null)
+                                                        }
+                                                        className="text-(--text-muted) hover:text-(--text-h)"
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    {selectedStudentProgress.problems.map((p) => (
+                                                        <div
+                                                            key={p.problemId}
+                                                            className="flex items-center justify-between p-2 rounded-xl bg-(--accent)/5 text-[11px]"
+                                                        >
+                                                            <span className="font-bold truncate max-w-37.5">
+                                                                {p.problemTitle}
+                                                            </span>
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-(--text-muted)">
+                                                                    {p.attempts}{' '}
+                                                                    {lang === 'RO' ? 'înc' : 'try'}
+                                                                </span>
+                                                                <span
+                                                                    className={`font-mono font-bold ${p.bestScore === 100 ? 'text-emerald-400' : 'text-amber-400'}`}
+                                                                >
+                                                                    {p.bestScore.toFixed(0)} pct
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </div>
+                                )}
                         </>
                     )}
                 </div>
@@ -505,14 +599,20 @@ export default function ClassDetails() {
     });
 
     const group = groupQuery.data ?? null;
-    const isCreator = !!(userId && group?.creatorId && userId.toLowerCase() === group.creatorId.toLowerCase());
+    const isCreator = !!(
+        userId &&
+        group?.creatorId &&
+        userId.toLowerCase() === group.creatorId.toLowerCase()
+    );
 
     const invitationsQuery = useQuery({
         queryKey: ['class-invitations', groupId],
         enabled: !!groupId && (isAdmin || isCreator),
         queryFn: () => classService.getGroupInvitations(groupId as string),
     });
-    const pendingInvitations = (invitationsQuery.data ?? []).filter(inv => inv.status === 'PENDING');
+    const pendingInvitations = (invitationsQuery.data ?? []).filter(
+        (inv) => inv.status === 'PENDING',
+    );
     const homeworks = homeworksQuery.data ?? [];
     const loading = groupQuery.isPending || homeworksQuery.isPending;
     const error =
@@ -523,9 +623,10 @@ export default function ClassDetails() {
     }, [homeworksQuery]);
 
     const handleDeleteGroup = async () => {
-        const confirmMsg = lang === 'RO'
-            ? `Sigur vrei să ștergi clasa "${group?.name}"? Această acțiune este ireversibilă.`
-            : `Delete class "${group?.name}"? This action cannot be undone.`;
+        const confirmMsg =
+            lang === 'RO'
+                ? `Sigur vrei să ștergi clasa "${group?.name}"? Această acțiune este ireversibilă.`
+                : `Delete class "${group?.name}"? This action cannot be undone.`;
         if (!window.confirm(confirmMsg)) return;
         try {
             await classService.deleteGroup(groupId!);
@@ -535,14 +636,19 @@ export default function ClassDetails() {
                 if (stored) {
                     try {
                         const classes = JSON.parse(stored) as { id: string }[];
-                        localStorage.setItem(key, JSON.stringify(classes.filter((c) => c.id !== groupId)));
+                        localStorage.setItem(
+                            key,
+                            JSON.stringify(classes.filter((c) => c.id !== groupId)),
+                        );
                     } catch {}
                 }
             }
             toast.success(lang === 'RO' ? 'Clasa a fost ștearsă.' : 'Class deleted.');
             navigate('/classes');
         } catch (err: any) {
-            toast.error(extractErrorMessage(err, lang === 'RO' ? 'Eroare la ștergere.' : 'Delete failed.'));
+            toast.error(
+                extractErrorMessage(err, lang === 'RO' ? 'Eroare la ștergere.' : 'Delete failed.'),
+            );
         }
     };
 
@@ -614,175 +720,270 @@ export default function ClassDetails() {
     );
 
     return (
-            <motion.div
-                className="w-full max-w-7xl mx-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar xl:flex-1 xl:min-h-0"
-                variants={pageVariants}
-                initial="hidden"
-                animate="visible"
-            >
-                <motion.div variants={containerVariants} initial="hidden" animate="visible">
+        <motion.div
+            className="w-full max-w-7xl mx-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar xl:flex-1 xl:min-h-0"
+            variants={pageVariants}
+            initial="hidden"
+            animate="visible"
+        >
+            <motion.div variants={containerVariants} initial="hidden" animate="visible">
+                <motion.div
+                    variants={itemVariants}
+                    className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between mb-5"
+                >
+                    <div>
+                        <p className="text-xs uppercase tracking-widest text-(--text-muted)">
+                            {lang === 'RO' ? 'Clasă' : 'Class'}
+                        </p>
+                        <h1 className="text-3xl font-bold text-(--text-h) mt-1">
+                            {group?.name || '...'}
+                        </h1>
+                        <div className="page-line-horizontal mb-0!" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {(isAdmin ||
+                            (userId &&
+                                group?.creatorId &&
+                                userId.toLowerCase() === group.creatorId.toLowerCase())) && (
+                            <button
+                                onClick={handleDeleteGroup}
+                                className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-full font-semibold border-2 border-red-500/50 bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
+                            >
+                                {lang === 'RO' ? 'Șterge clasa' : 'Delete class'}
+                            </button>
+                        )}
+                        <Link
+                            to="/classes"
+                            className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
+                        >
+                            {lang === 'RO' ? 'Înapoi' : 'Back'}
+                        </Link>
+                    </div>
+                </motion.div>
+
+                {(feedback || error) && (
                     <motion.div
                         variants={itemVariants}
-                        className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between mb-8"
+                        className={`mb-6 rounded-2xl border-2 px-4 py-3 text-sm ${error ? 'border-red-500/40 bg-red-500/10' : 'border-(--accent)/40 bg-(--accent)/10'}`}
                     >
-                        <div>
-                            <p className="text-xs uppercase tracking-widest text-(--text-muted)">
-                                {lang === 'RO' ? 'Clasă' : 'Class'}
-                            </p>
-                            <h1 className="text-3xl font-bold text-(--text-h) mt-1">
-                                {group?.name || '...'}
-                            </h1>
-                            <p className="text-sm text-(--text-muted) mt-2">{group?.description}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {(isAdmin || (userId && group?.creatorId && userId.toLowerCase() === group.creatorId.toLowerCase())) && (
-                                <button
-                                    onClick={handleDeleteGroup}
-                                    className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-full font-semibold border-2 border-red-500/50 bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
-                                >
-                                    {lang === 'RO' ? 'Șterge clasa' : 'Delete class'}
-                                </button>
-                            )}
-                            <Link
-                                to="/classes"
-                                className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
-                            >
-                                {lang === 'RO' ? 'Înapoi' : 'Back'}
-                            </Link>
-                        </div>
+                        {error || feedback}
                     </motion.div>
+                )}
 
-                    {(feedback || error) && (
-                        <motion.div
+                {loading && (
+                    <motion.div variants={itemVariants} className="text-center py-6">
+                        <p className="text-(--text-muted)">
+                            {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
+                        </p>
+                    </motion.div>
+                )}
+
+                {!loading && group && (
+                    <div className="grid gap-4 md:gap-6 xl:grid-cols-[1fr_1fr]">
+                        {/* Details Section */}
+                        <motion.section
                             variants={itemVariants}
-                            className={`mb-6 rounded-2xl border-2 px-4 py-3 text-sm ${error ? 'border-red-500/40 bg-red-500/10' : 'border-(--accent)/40 bg-(--accent)/10'}`}
+                            className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4"
                         >
-                            {error || feedback}
-                        </motion.div>
-                    )}
-
-                    {loading && <p>{lang === 'RO' ? 'Se încarcă...' : 'Loading...'}</p>}
-
-                    {!loading && group && (
-                        <div className="grid gap-4 md:gap-6 xl:grid-cols-[1fr_1fr]">
-                            <motion.section variants={itemVariants} className="">
-                                <h2 className="text-xl font-bold text-(--text-h)">
-                                    {lang === 'RO' ? 'Detalii' : 'Details'}
-                                </h2>
-                                <div className="mt-3 text-xs text-(--text-muted)">
-                                    <p>Creator: {group.creatorUsername}</p>
-                                    <p>ID: {group.id}</p>
-                                </div>
-                                <div className="p-4 rounded-2xl border border-(--accent)/20 bg-(--surface-card)">
-                                    <h3 className="text-sm font-bold mb-2">
-                                        {lang === 'RO' ? 'Invită' : 'Invite'}
-                                    </h3>
-                                    <form onSubmit={handleInviteStudent} className="flex gap-2">
-                                        <input
-                                            value={inviteEmail}
-                                            onChange={(e) => setInviteEmail(e.target.value)}
-                                            placeholder="Email"
-                                            className="flex-1 rounded-2xl bg-(--surface-muted) border border-(--accent)/20 px-3 py-1.5 text-sm"
-                                        />
-                                        <button
-                                            type="submit"
-                                            disabled={loadingInvite}
-                                            className="px-3 py-1.5 bg-(--accent)/10 border border-(--accent)/40 rounded-xl text-xs"
-                                        >
-                                            {loadingInvite ? '...' : 'OK'}
-                                        </button>
-                                    </form>
-                                    {inviteFeedback && (
-                                        <p className="mt-2 text-xs">{inviteFeedback.msg}</p>
-                                    )}
-                                </div>
-
-                                {(isCreator || isAdmin) && pendingInvitations.length > 0 && (
-                                    <div className="mt-4 p-4 rounded-2xl border border-(--accent)/20 bg-(--surface-card)">
-                                        <h3 className="text-sm font-bold mb-3 text-(--text-h)">
-                                            {lang === 'RO' ? `Invitații în așteptare (${pendingInvitations.length})` : `Pending invitations (${pendingInvitations.length})`}
-                                        </h3>
-                                        <div className="flex flex-col gap-2">
-                                            {pendingInvitations.map((inv) => (
-                                                <div key={inv.id} className="flex items-center justify-between text-xs text-(--text-muted) px-1">
-                                                    <span className="font-semibold text-(--text-h)">
-                                                        {inv.invitedUser?.username ?? inv.invitedUser?.email ?? '—'}
-                                                    </span>
-                                                    <span>
-                                                        {new Date(inv.sentAt).toLocaleDateString()}
-                                                    </span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </motion.section>
-
-                            <motion.section variants={itemVariants} className="">
-                                <h2 className="text-xl font-bold text-(--text-h)">
-                                    {lang === 'RO' ? 'Temă nouă' : 'New homework'}
-                                </h2>
-                                <form onSubmit={handleCreateHomework} className="mt-4 space-y-3">
-                                    <input
-                                        value={homeworkTitle}
-                                        onChange={(e) => setHomeworkTitle(e.target.value)}
-                                        placeholder="Title"
-                                        required
-                                        className="w-full rounded-2xl bg-(--surface-muted) border border-(--accent)/20 px-3 py-2 text-sm"
-                                    />
-                                    <textarea
-                                        value={homeworkDescription}
-                                        onChange={(e) => setHomeworkDescription(e.target.value)}
-                                        placeholder="Desc"
-                                        className="w-full rounded-2xl bg-(--surface-muted) border border-(--accent)/20 px-3 py-2 text-sm"
-                                    />
-                                    <input
-                                        type="date"
-                                        value={homeworkDeadline}
-                                        onChange={(e) => setHomeworkDeadline(e.target.value)}
-                                        required
-                                        className="w-full rounded-2xl bg-(--surface-muted) border border-(--accent)/20 px-3 py-2 text-sm"
-                                    />
-                                    <div className="space-y-2 border-t border-(--accent)/10 pt-2">
-                                        <input
-                                            value={homeworkCreationUsernames}
-                                            onChange={(e) =>
-                                                setHomeworkCreationUsernames(e.target.value)
-                                            }
-                                            placeholder="Usernames (user1, user2)"
-                                            className="w-full rounded-2xl bg-(--surface-muted) border border-(--accent)/20 px-3 py-2 text-xs"
-                                        />
-                                        <input
-                                            value={homeworkCreationProblems}
-                                            onChange={(e) =>
-                                                setHomeworkCreationProblems(e.target.value)
-                                            }
-                                            placeholder="Problems (p1, p2)"
-                                            className="w-full rounded-2xl bg-(--surface-muted) border border-(--accent)/20 px-3 py-2 text-xs"
-                                        />
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        className="w-full bg-(--accent)/20 border border-(--accent)/50 py-2 rounded-2xl text-sm"
-                                    >
-                                        Create
-                                    </button>
-                                </form>
-                            </motion.section>
-
-                            <h2 className="text-xl font-bold">
-                                {lang === 'RO' ? 'Teme' : 'Homework'}
+                            <h2 className="text-xl font-bold text-(--text-h) mb-4">
+                                {lang === 'RO' ? 'Detalii' : 'Details'}
                             </h2>
 
+                            <div className="space-y-3 mb-5">
+                                <div className="rounded-xl border border-(--accent)/20 bg-(--surface-card) p-3">
+                                    <p className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-1">
+                                        {lang === 'RO' ? 'Creator' : 'Creator'}
+                                    </p>
+                                    <p className="text-sm font-semibold text-(--text-h)">
+                                        {group.creatorUsername}
+                                    </p>
+                                </div>
+                                <div className="rounded-xl border border-(--accent)/20 bg-(--surface-card) p-3">
+                                    <p className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-1">
+                                        ID
+                                    </p>
+                                    <p className="text-xs font-mono text-(--text-muted) break-all">
+                                        {group.id}
+                                    </p>
+                                </div>
+                                {group.description && (
+                                    <div className="rounded-xl border border-(--accent)/20 bg-(--surface-card) p-3">
+                                        <p className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-1">
+                                            {lang === 'RO' ? 'Descriere' : 'Description'}
+                                        </p>
+                                        <p className="text-sm text-(--text-h)">
+                                            {group.description}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="border-t border-(--accent)/20 pt-4">
+                                <h3 className="text-sm font-bold text-(--text-h) mb-3">
+                                    {lang === 'RO' ? 'Invită colegi' : 'Invite members'}
+                                </h3>
+                                <form onSubmit={handleInviteStudent} className="space-y-2">
+                                    <input
+                                        value={inviteEmail}
+                                        onChange={(e) => setInviteEmail(e.target.value)}
+                                        placeholder={lang === 'RO' ? 'Email' : 'Email'}
+                                        className="w-full rounded-xl bg-(--surface-card) border border-(--accent)/25 px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={loadingInvite}
+                                        className="w-full px-3 py-2 bg-(--accent)/10 border border-(--accent)/40 rounded-xl text-xs font-semibold text-(--text-h) hover:bg-(--accent)/20 transition-colors disabled:opacity-50"
+                                    >
+                                        {loadingInvite
+                                            ? '...'
+                                            : lang === 'RO'
+                                              ? 'Invită'
+                                              : 'Invite'}
+                                    </button>
+                                </form>
+                                {inviteFeedback && (
+                                    <p
+                                        className={`mt-2 text-xs ${inviteFeedback.isError ? 'text-red-400' : 'text-emerald-400'}`}
+                                    >
+                                        {inviteFeedback.msg}
+                                    </p>
+                                )}
+                            </div>
+                        </motion.section>
+
+                        {/* Create Homework Section */}
+                        <motion.section
+                            variants={itemVariants}
+                            className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4"
+                        >
+                            <h2 className="text-xl font-bold text-(--text-h) mb-4">
+                                {lang === 'RO' ? 'Temă nouă' : 'New homework'}
+                            </h2>
+                            <form onSubmit={handleCreateHomework} className="space-y-3">
+                                <input
+                                    value={homeworkTitle}
+                                    onChange={(e) => setHomeworkTitle(e.target.value)}
+                                    placeholder={lang === 'RO' ? 'Titlu' : 'Title'}
+                                    required
+                                    className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
+                                />
+                                <textarea
+                                    value={homeworkDescription}
+                                    onChange={(e) => setHomeworkDescription(e.target.value)}
+                                    placeholder={
+                                        lang === 'RO'
+                                            ? 'Descriere opțională'
+                                            : 'Optional description'
+                                    }
+                                    className="min-h-20 w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted) resize-none"
+                                />
+                                <input
+                                    type="date"
+                                    value={homeworkDeadline}
+                                    onChange={(e) => setHomeworkDeadline(e.target.value)}
+                                    required
+                                    className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition"
+                                />
+                                <div className="border-t border-(--accent)/20 pt-3 space-y-2">
+                                    <p className="text-xs uppercase tracking-widest text-(--text-muted) font-bold">
+                                        {lang === 'RO'
+                                            ? 'Inițial (opțional)'
+                                            : 'Initial setup (optional)'}
+                                    </p>
+                                    <input
+                                        value={homeworkCreationUsernames}
+                                        onChange={(e) =>
+                                            setHomeworkCreationUsernames(e.target.value)
+                                        }
+                                        placeholder={
+                                            lang === 'RO'
+                                                ? 'Utilizatori (user1, user2)'
+                                                : 'Users (user1, user2)'
+                                        }
+                                        className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
+                                    />
+                                    <input
+                                        value={homeworkCreationProblems}
+                                        onChange={(e) =>
+                                            setHomeworkCreationProblems(e.target.value)
+                                        }
+                                        placeholder={
+                                            lang === 'RO'
+                                                ? 'Probleme (p1, p2)'
+                                                : 'Problems (p1, p2)'
+                                        }
+                                        className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="w-full inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
+                                >
+                                    {lang === 'RO' ? 'Creează' : 'Create'}
+                                </button>
+                            </form>
+                        </motion.section>
+
+                        {/* Pending Invitations - if any */}
+                        {(isCreator || isAdmin) && pendingInvitations.length > 0 && (
                             <motion.section
                                 variants={itemVariants}
-                                className="xl:col-span-2 rounded-2xl border border-(--accent)/20 bg-(--surface-card) p-5"
+                                className="xl:col-span-2 rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4"
                             >
-                                <div className="grid gap-4">{memoizedHomeworkList}</div>
+                                <h2 className="text-xl font-bold text-(--text-h) mb-4">
+                                    {lang === 'RO'
+                                        ? `Invitații în așteptare (${pendingInvitations.length})`
+                                        : `Pending invitations (${pendingInvitations.length})`}
+                                </h2>
+                                <div className="grid gap-3 md:grid-cols-2">
+                                    {pendingInvitations.map((inv) => (
+                                        <div
+                                            key={inv.id}
+                                            className="rounded-xl border border-(--accent)/20 bg-(--surface-card) p-3"
+                                        >
+                                            <p className="text-sm font-semibold text-(--text-h)">
+                                                {inv.invitedUser?.username ??
+                                                    inv.invitedUser?.email ??
+                                                    '—'}
+                                            </p>
+                                            <p className="text-xs text-(--text-muted) mt-1">
+                                                {new Date(inv.sentAt).toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
                             </motion.section>
-                        </div>
-                    )}
-                </motion.div>
+                        )}
+
+                        {/* Homework Section */}
+                        <motion.section variants={itemVariants} className="xl:col-span-2">
+                            <div className="flex items-center justify-between gap-4 mb-4">
+                                <h2 className="text-xl font-bold text-(--text-h)">
+                                    {lang === 'RO' ? 'Teme' : 'Homework'}
+                                </h2>
+                                {homeworks.length > 0 && (
+                                    <span className="text-xs text-(--text-muted)">
+                                        {homeworks.length} {lang === 'RO' ? 'teme' : 'items'}
+                                    </span>
+                                )}
+                            </div>
+
+                            {homeworks.length === 0 ? (
+                                <motion.div
+                                    variants={itemVariants}
+                                    className="rounded-2xl border-2 border-(--accent)/20 bg-(--surface-muted) p-4 text-sm text-(--text-muted) text-center"
+                                >
+                                    {lang === 'RO'
+                                        ? 'Nicio temă creată încă. Creează una mai sus.'
+                                        : 'No homework yet. Create one above.'}
+                                </motion.div>
+                            ) : (
+                                <div className="grid gap-4">{memoizedHomeworkList}</div>
+                            )}
+                        </motion.section>
+                    </div>
+                )}
             </motion.div>
+        </motion.div>
     );
 }
