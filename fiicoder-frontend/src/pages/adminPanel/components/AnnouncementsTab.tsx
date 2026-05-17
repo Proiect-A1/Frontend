@@ -40,7 +40,7 @@ export default function AnnouncementsTab({
                     'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
                 },
                 body: JSON.stringify({
-                    model: 'meta-llama/llama-3.3-70b-instruct:free',
+                    model: 'deepseek/deepseek-chat-v3-0324',
                     response_format: { type: 'json_object' },
                     messages: [
                         { 
