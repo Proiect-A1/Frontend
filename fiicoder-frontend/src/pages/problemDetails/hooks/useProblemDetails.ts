@@ -178,7 +178,7 @@ export function useProblemDetails() {
 
                 if (isAuthenticated) {
                     profileService
-                        .getMyProfile(1, 50)
+                        .getMyProfile(0, 50)
                         .then((data) => {
                             if (isMounted) {
                                 const filtered = data.recentSubmissions.content.filter(
@@ -267,7 +267,7 @@ export function useProblemDetails() {
 
                         if (isAuthenticated && problemTitle) {
                             profileService
-                                .getMyProfile(1, 50)
+                                .getMyProfile(0, 50)
                                 .then((data) => {
                                     const filtered = data.recentSubmissions.content.filter(
                                         (submission) => submission.problemTitle === problemTitle,

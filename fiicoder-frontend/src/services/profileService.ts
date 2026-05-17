@@ -52,7 +52,7 @@ export interface ProfileResponseDTO {
 }
 
 export const profileService = {
-    getMyProfile(page: number = 1, size: number = 5) {
+    getMyProfile(page: number = 0, size: number = 5) {
         return apiClient.get<ProfileResponseDTO>(`/profile/me?page=${page}&size=${size}`);
     },
 };
