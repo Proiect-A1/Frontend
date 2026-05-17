@@ -40,7 +40,7 @@ export default function AnnouncementsTab({
                     'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
                 },
                 body: JSON.stringify({
-                    model: 'google/gemini-2.5-flash',
+                    model: 'google/gemini-flash-1.5:free',
                     response_format: { type: 'json_object' },
                     messages: [
                         { 
