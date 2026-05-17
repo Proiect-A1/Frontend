@@ -1,12 +1,7 @@
 export function unpackTranslation(backendString: string | undefined | null, currentLang: 'RO' | 'EN'): string {
     if (!backendString) return '';
     try {
-        let sanitized = backendString;
-        if (typeof sanitized === 'string') {
-            sanitized = sanitized.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
-        }
-
-        let parsedData = JSON.parse(sanitized);
+        let parsedData = JSON.parse(backendString);
         if (typeof parsedData === 'string') parsedData = JSON.parse(parsedData);
 
         if (typeof parsedData === 'object' && parsedData !== null) {
@@ -43,12 +38,7 @@ export function packTranslation(roText: string, enText: string): string {
 export function getTranslationParts(backendString: string | undefined | null): { ro: string; en: string } {
     if (!backendString) return { ro: '', en: '' };
     try {
-        let sanitized = backendString;
-        if (typeof sanitized === 'string') {
-            sanitized = sanitized.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
-        }
-
-        let parsedData = JSON.parse(sanitized);
+        let parsedData = JSON.parse(backendString);
         if (typeof parsedData === 'string') parsedData = JSON.parse(parsedData);
 
         if (typeof parsedData === 'object' && parsedData !== null) {
