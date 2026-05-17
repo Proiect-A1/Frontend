@@ -82,7 +82,7 @@ export default function StatementTab() {
                     'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
                 },
                 body: JSON.stringify({
-                    model: 'google/gemini-flash-1.5:free',
+                    model: 'meta-llama/llama-3.3-70b-instruct:free',
                     messages: [
                         { 
                             role: 'system', 
