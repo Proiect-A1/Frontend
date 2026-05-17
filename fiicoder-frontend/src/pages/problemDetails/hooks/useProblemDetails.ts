@@ -13,7 +13,7 @@ import type { OnMount } from '@monaco-editor/react';
 import * as FlexLayout from 'flexlayout-react';
 import { applyMonacoTheme } from '../../../utils/monacoTheme';
 import { unindent } from '../utils/textUtils';
-
+import { unpackTranslation } from '../../../utils/translationPacker';
 
 export function useProblemDetails() {
     const { problemTitle } = useParams();
@@ -46,8 +46,9 @@ export function useProblemDetails() {
 
     const processedDescription = useMemo(() => {
         if (!problem?.description) return '';
-        return unindent(problem.description.replace(/\\\\/g, '\\'));
-    }, [problem?.description]);
+        const unpackedDescription = unpackTranslation(problem.description, lang);
+        return unindent(unpackedDescription.replace(/\\\\/g, '\\'));
+    }, [problem?.description, lang]);
 
     const [model] = useState(() => {
         const json = {

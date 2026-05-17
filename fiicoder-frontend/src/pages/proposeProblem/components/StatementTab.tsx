@@ -12,6 +12,7 @@ import { itemVariants, staggerConfig } from '../../../utils/motionConfig';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { applyMonacoTheme, getEffectivePalette } from '../../../utils/monacoTheme';
 import { useMonacoTheming } from '../hooks/useMonacoTheming';
+import { packTranslation, getTranslationParts } from '../../../utils/translationPacker';
 
 // Utility to fix database indentation issues for Markdown
 function unindent(str: string): string {
@@ -41,9 +42,12 @@ function unindent(str: string): string {
 }
 
 export default function StatementTab() {
-    const { control } = useFormContext<ProposeProblemForm>();
+    // Am adăugat setValue și getValues pentru a putea traduce fără să stricăm controllerele
+    const { control, setValue, getValues } = useFormContext<ProposeProblemForm>();
     const { theme, customColors } = useTheme();
     const [showPreview, setShowPreview] = useState(true);
+    const [activeLang, setActiveLang] = useState<'ro' | 'en'>('ro');
+    const [isTranslating, setIsTranslating] = useState(false);
     const monacoRef = useRef<any>(null);
 
     const buildStatementRules = (themeName: string) => {
@@ -63,6 +67,45 @@ export default function StatementTab() {
     // Apply theme reactively when theme changes (hook)
     useMonacoTheming(monacoRef, theme, buildStatementRules, customColors);
 
+    const handleTranslate = async () => {
+        const currentValue = getValues('statement');
+        const translationParts = getTranslationParts(currentValue);
+        
+        if (!translationParts.ro.trim()) return;
+        
+        setIsTranslating(true);
+        try {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    messages: [
+                        { 
+                            role: 'system', 
+                            content: 'You are an expert technical translator from Romanian to English. Translate the following text. STRICT RULE: Keep all Markdown formatting exactly as is. Keep all KaTeX/LaTeX math formulas (enclosed in $ or $$) completely untouched. Do not alter code blocks.' 
+                        },
+                        { role: 'user', content: translationParts.ro }
+                    ]
+                })
+            });
+            const data = await response.json();
+            if (data.choices && data.choices[0]) {
+                const translated = data.choices[0].message.content;
+                // Folosim setValue pentru a actualiza valoarea în hook-form global
+                setValue('statement', packTranslation(translationParts.ro, translated), { shouldValidate: true, shouldDirty: true });
+                setActiveLang('en');
+            }
+        } catch (e) {
+            console.error('Translation failed', e);
+        } finally {
+            setIsTranslating(false);
+        }
+    };
+
     return (
         <motion.div
             initial="hidden"
@@ -71,15 +114,40 @@ export default function StatementTab() {
             className="space-y-3"
         >
 
-
-            {/* Preview Toggle */}
-            <motion.div variants={itemVariants} className="flex gap-2">
+            {/* Preview Toggle & Language Controls */}
+            <motion.div variants={itemVariants} className="flex flex-wrap gap-2 justify-between items-center">
+                <div className="flex gap-2">
+                    <button
+                        type="button"
+                        onClick={() => setShowPreview(!showPreview)}
+                        className="inline-flex items-center justify-center px-3 py-1.5 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
+                    >
+                        {showPreview ? 'Ascunde Preview' : 'Arăta Preview'}
+                    </button>
+                    <div className="flex bg-(--surface-muted) rounded-full p-1 border border-(--accent)/20">
+                        <button
+                            type="button"
+                            onClick={() => setActiveLang('ro')}
+                            className={`px-3 py-1 text-sm rounded-full font-bold transition-all ${activeLang === 'ro' ? 'bg-(--accent) text-white' : 'text-(--text-muted) hover:text-(--text)'}`}
+                        >
+                            RO
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveLang('en')}
+                            className={`px-3 py-1 text-sm rounded-full font-bold transition-all ${activeLang === 'en' ? 'bg-(--accent) text-white' : 'text-(--text-muted) hover:text-(--text)'}`}
+                        >
+                            EN
+                        </button>
+                    </div>
+                </div>
                 <button
                     type="button"
-                    onClick={() => setShowPreview(!showPreview)}
-                    className="inline-flex items-center justify-center px-3 py-1.5 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
+                    disabled={isTranslating}
+                    onClick={handleTranslate}
+                    className="inline-flex items-center justify-center px-3 py-1.5 text-sm rounded-full font-bold border border-(--accent) bg-(--accent)/10 text-(--accent) hover:bg-(--accent)/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    {showPreview ? 'Ascunde Preview' : 'Arăta Preview'}
+                    {isTranslating ? 'Se traduce...' : 'Auto-Translate to EN'}
                 </button>
             </motion.div>
 
@@ -90,29 +158,42 @@ export default function StatementTab() {
             >
                 {/* Monaco Editor */}
                 <div className="space-y-1">
-                    <label className="text-(--text) text-sm font-semibold">Enunț</label>
+                    <label className="text-(--text) text-sm font-semibold">Enunț ({activeLang.toUpperCase()})</label>
                     <Controller
                         name="statement"
                         control={control}
                         rules={{ required: 'Enunțul este obligatoriu' }}
-                        render={({ field }) => (
-                            <div className="bg-(--surface-card) rounded-2xl border border-(--accent)/25 overflow-hidden h-96">
-                                <Editor
-                                    height="100%"
-                                    defaultLanguage="markdown"
-                                    theme="fiicoder-dark"
-                                    value={field.value}
-                                    onChange={(val) => field.onChange(val || '')}
-                                    onMount={handleEditorMount}
-                                    options={{
-                                        minimap: { enabled: false },
-                                        wordWrap: 'on',
-                                        lineNumbers: 'on',
-                                        scrollBeyondLastLine: false,
-                                    }}
-                                />
-                            </div>
-                        )}
+                        render={({ field }) => {
+                            const translationParts = getTranslationParts(field.value);
+                            
+                            const handleChange = (val: string | undefined) => {
+                                const newVal = val || '';
+                                if (activeLang === 'ro') {
+                                    field.onChange(packTranslation(newVal, translationParts.en));
+                                } else {
+                                    field.onChange(packTranslation(translationParts.ro, newVal));
+                                }
+                            };
+
+                            return (
+                                <div className="bg-(--surface-card) rounded-2xl border border-(--accent)/25 overflow-hidden h-96">
+                                    <Editor
+                                        height="100%"
+                                        defaultLanguage="markdown"
+                                        theme="fiicoder-dark"
+                                        value={activeLang === 'ro' ? translationParts.ro : translationParts.en}
+                                        onChange={handleChange}
+                                        onMount={handleEditorMount}
+                                        options={{
+                                            minimap: { enabled: false },
+                                            wordWrap: 'on',
+                                            lineNumbers: 'on',
+                                            scrollBeyondLastLine: false,
+                                        }}
+                                    />
+                                </div>
+                            );
+                        }}
                     />
                     <p className="text-xs text-(--text-muted)">
                         Folosește <strong>Markdown</strong> pentru formatare. Poți folosi și{' '}
@@ -124,140 +205,145 @@ export default function StatementTab() {
                 {showPreview && (
                     <div className="">
                         <label className="text-(--text) text-sm font-semibold">
-                            Previzualizare
+                            Previzualizare ({activeLang.toUpperCase()})
                         </label>
                         <Controller
                             name="statement"
                             control={control}
-                            render={({ field }) => (
-                                <div className="border border-(--accent)/25 rounded-2xl p-4 h-96 overflow-y-auto bg-(--surface-muted) custom-scrollbar text-(--text) leading-relaxed">
-                                    <ReactMarkdown
-                                        remarkPlugins={[remarkMath]}
-                                        rehypePlugins={[rehypeKatex]}
-                                        components={{
-                                            // Titluri
-                                            h1: ({ ...props }) => (
-                                                <h1
-                                                    className="text-2xl font-bold text-(--accent) mt-6 mb-3 border-b border-(--accent)/30 pb-1"
-                                                    {...props}
-                                                />
-                                            ),
-                                            h2: ({ ...props }) => (
-                                                <h2
-                                                    className="text-xl font-bold text-(--accent) mt-5 mb-2"
-                                                    {...props}
-                                                />
-                                            ),
-                                            h3: ({ ...props }) => (
-                                                <h3
-                                                    className="text-lg font-bold text-(--accent) mt-4 mb-1"
-                                                    {...props}
-                                                />
-                                            ),
+                            render={({ field }) => {
+                                const translationParts = getTranslationParts(field.value);
+                                const displayValue = activeLang === 'ro' ? translationParts.ro : translationParts.en;
 
-                                            // Paragrafe
-                                            p: ({ ...props }) => (
-                                                <p
-                                                    className="mb-4 whitespace-pre-wrap"
-                                                    {...props}
-                                                />
-                                            ),
+                                return (
+                                    <div className="border border-(--accent)/25 rounded-2xl p-4 h-96 overflow-y-auto bg-(--surface-muted) custom-scrollbar text-(--text) leading-relaxed">
+                                        <ReactMarkdown
+                                            remarkPlugins={[remarkMath]}
+                                            rehypePlugins={[rehypeKatex]}
+                                            components={{
+                                                // Titluri
+                                                h1: ({ ...props }) => (
+                                                    <h1
+                                                        className="text-2xl font-bold text-(--accent) mt-6 mb-3 border-b border-(--accent)/30 pb-1"
+                                                        {...props}
+                                                    />
+                                                ),
+                                                h2: ({ ...props }) => (
+                                                    <h2
+                                                        className="text-xl font-bold text-(--accent) mt-5 mb-2"
+                                                        {...props}
+                                                    />
+                                                ),
+                                                h3: ({ ...props }) => (
+                                                    <h3
+                                                        className="text-lg font-bold text-(--accent) mt-4 mb-1"
+                                                        {...props}
+                                                    />
+                                                ),
 
-                                            // Liste
-                                            ul: ({ ...props }) => (
-                                                <ul
-                                                    className="list-disc pl-6 mb-4 space-y-1"
-                                                    {...props}
-                                                />
-                                            ),
-                                            ol: ({ ...props }) => (
-                                                <ol
-                                                    className="list-decimal pl-6 mb-4 space-y-1"
-                                                    {...props}
-                                                />
-                                            ),
-                                            li: ({ ...props }) => (
-                                                <li className="ml-2" {...props} />
-                                            ),
+                                                // Paragrafe
+                                                p: ({ ...props }) => (
+                                                    <p
+                                                        className="mb-4 whitespace-pre-wrap"
+                                                        {...props}
+                                                    />
+                                                ),
 
-                                            // Formule matematice inline
-                                            span: ({ className, children, ...props }: any) => {
-                                                if (className && className.includes('katex')) {
+                                                // Liste
+                                                ul: ({ ...props }) => (
+                                                    <ul
+                                                        className="list-disc pl-6 mb-4 space-y-1"
+                                                        {...props}
+                                                    />
+                                                ),
+                                                ol: ({ ...props }) => (
+                                                    <ol
+                                                        className="list-decimal pl-6 mb-4 space-y-1"
+                                                        {...props}
+                                                    />
+                                                ),
+                                                li: ({ ...props }) => (
+                                                    <li className="ml-2" {...props} />
+                                                ),
+
+                                                // Formule matematice inline
+                                                span: ({ className, children, ...props }: any) => {
+                                                    if (className && className.includes('katex')) {
+                                                        return (
+                                                            <span
+                                                                className={`${className} text-(--accent)`}
+                                                                {...props}
+                                                            >
+                                                                {children}
+                                                            </span>
+                                                        );
+                                                    }
                                                     return (
-                                                        <span
-                                                            className={`${className} text-(--accent)`}
-                                                            {...props}
-                                                        >
+                                                        <span className={className} {...props}>
                                                             {children}
                                                         </span>
                                                     );
-                                                }
-                                                return (
-                                                    <span className={className} {...props}>
-                                                        {children}
-                                                    </span>
-                                                );
-                                            },
+                                                },
 
-                                            // Cod inline
-                                            code: ({ className, children, ...props }: any) => {
-                                                if (className) {
-                                                    // Cod în bloc (cu pre)
+                                                // Cod inline
+                                                code: ({ className, children, ...props }: any) => {
+                                                    if (className) {
+                                                        // Cod în bloc (cu pre)
+                                                        return (
+                                                            <code
+                                                                className={`${className} text-(--accent) font-mono`}
+                                                                {...props}
+                                                            >
+                                                                {children}
+                                                            </code>
+                                                        );
+                                                    }
+                                                    // Cod inline
                                                     return (
                                                         <code
-                                                            className={`${className} text-(--accent) font-mono`}
+                                                            className="text-(--accent) font-mono bg-(--accent)/10 px-1.5 py-0.5 rounded text-sm"
                                                             {...props}
                                                         >
                                                             {children}
                                                         </code>
                                                     );
-                                                }
-                                                // Cod inline
-                                                return (
-                                                    <code
-                                                        className="text-(--accent) font-mono bg-(--accent)/10 px-1.5 py-0.5 rounded text-sm"
+                                                },
+
+                                                // Blocuri de cod
+                                                pre: ({ children, ...props }: any) => (
+                                                    <div className="relative group my-4">
+                                                        <pre
+                                                            className="bg-(--surface-card) p-4 rounded-2xl border border-(--accent)/30 overflow-x-auto text-sm text-(--text) shadow-inner [&>code]:text-(--text)"
+                                                            {...props}
+                                                        >
+                                                            {children}
+                                                        </pre>
+                                                    </div>
+                                                ),
+
+                                                // Citate
+                                                blockquote: ({ ...props }) => (
+                                                    <blockquote
+                                                        className="border-l-4 border-(--accent) pl-4 italic text-(--text-muted) my-4"
                                                         {...props}
-                                                    >
-                                                        {children}
-                                                    </code>
-                                                );
-                                            },
+                                                    />
+                                                ),
 
-                                            // Blocuri de cod
-                                            pre: ({ children, ...props }: any) => (
-                                                <div className="relative group my-4">
-                                                    <pre
-                                                        className="bg-(--surface-card) p-4 rounded-2xl border border-(--accent)/30 overflow-x-auto text-sm text-(--text) shadow-inner [&>code]:text-(--text)"
+                                                // Link-uri
+                                                a: ({ ...props }) => (
+                                                    <a
+                                                        className="text-(--accent) hover:opacity-80 underline"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
                                                         {...props}
-                                                    >
-                                                        {children}
-                                                    </pre>
-                                                </div>
-                                            ),
-
-                                            // Citate
-                                            blockquote: ({ ...props }) => (
-                                                <blockquote
-                                                    className="border-l-4 border-(--accent) pl-4 italic text-(--text-muted) my-4"
-                                                    {...props}
-                                                />
-                                            ),
-
-                                            // Link-uri
-                                            a: ({ ...props }) => (
-                                                <a
-                                                    className="text-(--accent) hover:opacity-80 underline"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    {...props}
-                                                />
-                                            ),
-                                        }}
-                                    >
-                                        {unindent(field.value || '*Enunțul tău va apărea aici...*')}
-                                    </ReactMarkdown>
-                                </div>
-                            )}
+                                                    />
+                                                ),
+                                            }}
+                                        >
+                                            {unindent(displayValue || '*Enunțul tău va apărea aici...*')}
+                                        </ReactMarkdown>
+                                    </div>
+                                );
+                            }}
                         />
                     </div>
                 )}
@@ -296,4 +382,3 @@ Descrie ce trebuie să facă soluția...
         </motion.div>
     );
 }
-

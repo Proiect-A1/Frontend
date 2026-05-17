@@ -5,6 +5,11 @@ import type { Announcement } from '../../../types/announcement';
 import { toast } from 'sonner';
 import { useLanguage } from '../../../language/Language';
 import { extractErrorMessage } from '../utils/errorUtils';
+import { packTranslation, getTranslationParts } from '../../../utils/translationPacker';
+
+export type AnnouncementFormState = {
+    titleRo: string; titleEn: string; contentRo: string; contentEn: string;
+};
 
 export function useAdminAnnouncements(isAdmin: boolean, activeTab: string) {
     const { lang } = useLanguage();
@@ -12,32 +17,50 @@ export function useAdminAnnouncements(isAdmin: boolean, activeTab: string) {
     
     const [editingAnnouncementId, setEditingAnnouncementId] = useState<string | null>(null);
     const [selectedAnnouncementId, setSelectedAnnouncementId] = useState<string | null>(null);
-    const [announcementForm, setAnnouncementForm] = useState({ title: '', content: '' });
+    
+    const [announcementForm, setAnnouncementForm] = useState<AnnouncementFormState>({ 
+        titleRo: '', titleEn: '', contentRo: '', contentEn: '' 
+    });
     const [isSavingAnnouncement, setIsSavingAnnouncement] = useState(false);
 
     const announcementsQuery = useQuery({
         queryKey: ['admin', 'announcements'],
         enabled: isAdmin && activeTab === 'announcements',
         queryFn: () => adminService.getAnnouncements(),
-        staleTime: 1000 * 60 * 5, // 5 minutes
+        staleTime: 1000 * 60 * 5,
     });
+
+    const handleEditStart = (announcement: Announcement) => {
+        setEditingAnnouncementId(announcement.id);
+        const titleParts = getTranslationParts(announcement.title);
+        const contentParts = getTranslationParts(announcement.content);
+        setAnnouncementForm({
+            titleRo: titleParts.ro, titleEn: titleParts.en,
+            contentRo: contentParts.ro, contentEn: contentParts.en
+        });
+    };
 
     const handleAnnouncementSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        if (!announcementForm.title.trim() || !announcementForm.content.trim()) return;
+        if (!announcementForm.titleRo.trim() || !announcementForm.contentRo.trim()) return;
 
         setIsSavingAnnouncement(true);
+        const payload = {
+            title: packTranslation(announcementForm.titleRo, announcementForm.titleEn),
+            content: packTranslation(announcementForm.contentRo, announcementForm.contentEn)
+        };
+
         try {
             if (editingAnnouncementId) {
-                const updated = await adminService.updateAnnouncement(editingAnnouncementId, announcementForm);
+                const updated = await adminService.updateAnnouncement(editingAnnouncementId, payload);
                 queryClient.setQueryData<Announcement[]>(['admin', 'announcements'], (prev) =>
                     prev?.map((a) => a.id === editingAnnouncementId ? updated : a) ?? []
                 );
             } else {
-                const created = await adminService.createAnnouncement(announcementForm);
+                const created = await adminService.createAnnouncement(payload);
                 queryClient.setQueryData<Announcement[]>(['admin', 'announcements'], (prev) => [created, ...(prev ?? [])]);
             }
-            setAnnouncementForm({ title: '', content: '' });
+            setAnnouncementForm({ titleRo: '', titleEn: '', contentRo: '', contentEn: '' });
             setEditingAnnouncementId(null);
             toast.success(lang === 'RO' ? 'Anunț salvat.' : 'Announcement saved.');
             await queryClient.invalidateQueries({ queryKey: ['admin', 'announcements'] });
@@ -66,6 +89,7 @@ export function useAdminAnnouncements(isAdmin: boolean, activeTab: string) {
         setAnnouncementForm,
         editingAnnouncementId,
         setEditingAnnouncementId,
+        handleEditStart,
         selectedAnnouncementId,
         setSelectedAnnouncementId,
         isSavingAnnouncement,
