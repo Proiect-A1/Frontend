@@ -1,65 +1,68 @@
 export function unpackTranslation(backendString: string | undefined | null, currentLang: 'RO' | 'EN'): string {
     if (!backendString) return '';
     try {
-        let sanitizedString = backendString;
-        if (typeof sanitizedString === 'string') {
-            sanitizedString = sanitizedString
-                .replace(/\n/g, '\\n')
-                .replace(/\r/g, '\\r')
-                .replace(/\t/g, '\\t');
+        let sanitized = backendString;
+        if (typeof sanitized === 'string') {
+            sanitized = sanitized.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
         }
 
-        let parsedData = JSON.parse(sanitizedString);
-
-        if (typeof parsedData === 'string') {
-            parsedData = JSON.parse(parsedData);
-        }
+        let parsedData = JSON.parse(sanitized);
+        if (typeof parsedData === 'string') parsedData = JSON.parse(parsedData);
 
         if (typeof parsedData === 'object' && parsedData !== null) {
             const langKey = currentLang.toLowerCase() as 'ro' | 'en';
-            if (parsedData[langKey] !== undefined && parsedData[langKey] !== '') {
-                return parsedData[langKey];
+            let text = parsedData[langKey];
+            
+            if (text === undefined) text = parsedData['ro'];
+            if (text === undefined) text = parsedData['en'];
+            if (text === undefined) return backendString;
+
+            if (parsedData._encoded) {
+                try { 
+                    return decodeURIComponent(text); 
+                } catch (e) { 
+                    return text; 
+                }
             }
-            // Fallbacks
-            if (parsedData['ro']) return parsedData['ro'];
-            if (parsedData['en']) return parsedData['en'];
+            return text;
         }
-        
-        return backendString; 
-    } catch (parseError) {
+    } catch (e) {
         return backendString; 
     }
+    return backendString;
 }
 
 export function packTranslation(roText: string, enText: string): string {
-    return JSON.stringify({ ro: roText, en: enText });
+    return JSON.stringify({ 
+        _encoded: true, 
+        ro: encodeURIComponent(roText), 
+        en: encodeURIComponent(enText) 
+    });
 }
 
 export function getTranslationParts(backendString: string | undefined | null): { ro: string; en: string } {
     if (!backendString) return { ro: '', en: '' };
     try {
-        let sanitizedString = backendString;
-        if (typeof sanitizedString === 'string') {
-            sanitizedString = sanitizedString
-                .replace(/\n/g, '\\n')
-                .replace(/\r/g, '\\r')
-                .replace(/\t/g, '\\t');
+        let sanitized = backendString;
+        if (typeof sanitized === 'string') {
+            sanitized = sanitized.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
         }
 
-        let parsedData = JSON.parse(sanitizedString);
-        
-        if (typeof parsedData === 'string') {
-            parsedData = JSON.parse(parsedData);
-        }
+        let parsedData = JSON.parse(sanitized);
+        if (typeof parsedData === 'string') parsedData = JSON.parse(parsedData);
 
         if (typeof parsedData === 'object' && parsedData !== null) {
-            return {
-                ro: parsedData.ro || '',
-                en: parsedData.en || ''
-            };
+            let ro = parsedData.ro || '';
+            let en = parsedData.en || '';
+
+            if (parsedData._encoded) {
+                try { ro = decodeURIComponent(ro); } catch(e) {}
+                try { en = decodeURIComponent(en); } catch(e) {}
+            }
+            return { ro, en };
         }
-        return { ro: backendString, en: '' };
-    } catch (parseError) {
+    } catch (e) {
         return { ro: backendString, en: '' };
     }
+    return { ro: backendString, en: '' };
 }
