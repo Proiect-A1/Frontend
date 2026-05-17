@@ -529,6 +529,16 @@ export default function ClassDetails() {
         if (!window.confirm(confirmMsg)) return;
         try {
             await classService.deleteGroup(groupId!);
+            if (userId) {
+                const key = `fiicoder_recent_classes_${userId}`;
+                const stored = localStorage.getItem(key);
+                if (stored) {
+                    try {
+                        const classes = JSON.parse(stored) as { id: string }[];
+                        localStorage.setItem(key, JSON.stringify(classes.filter((c) => c.id !== groupId)));
+                    } catch {}
+                }
+            }
             toast.success(lang === 'RO' ? 'Clasa a fost ștearsă.' : 'Class deleted.');
             navigate('/classes');
         } catch (err: any) {
