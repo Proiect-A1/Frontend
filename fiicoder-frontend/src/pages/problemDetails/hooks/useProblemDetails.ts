@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../../contexts/AuthContext';
 import { submissionService, connectToEvaluation } from '../services/submissionService';
 import type { DoneTestEvent, DoneSubtaskEvent, DoneSubmissionEvent, LanguageDTO } from '../types/problemDetails';
@@ -21,6 +22,7 @@ export function useProblemDetails() {
     const t = translations[lang];
     const { isAuthenticated } = useAuth();
     const { theme, customColors } = useTheme();
+    const queryClient = useQueryClient();
 
     const [problem, setProblem] = useState<ProblemFindResponseDTO | null>(null);
     const [loading, setLoading] = useState(true);
@@ -266,6 +268,7 @@ export function useProblemDetails() {
                         setTimeout(() => setStatus(null), 4000);
 
                         if (isAuthenticated && problemTitle) {
+                            queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
                             profileService
                                 .getMyProfile(0, 50)
                                 .then((data) => {

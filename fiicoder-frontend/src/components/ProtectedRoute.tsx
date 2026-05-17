@@ -5,16 +5,18 @@ import type { ReactNode } from "react";
 interface ProtectedRouteProps {
   children: ReactNode;
   requireStaff?: boolean;
+  requireAdmin?: boolean;
 }
 
-/**
- * Wraps a route so that unauthenticated users are redirected to /login.
- */
-export default function ProtectedRoute({ children, requireStaff = false }: ProtectedRouteProps) {
+export default function ProtectedRoute({ children, requireStaff = false, requireAdmin = false }: ProtectedRouteProps) {
   const { isAuthenticated, isAdmin, isProfessor } = useAuth();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (requireAdmin && !isAdmin) {
+    return <Navigate to="/" replace />;
   }
 
   if (requireStaff && !isAdmin && !isProfessor) {
