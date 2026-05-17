@@ -9,6 +9,7 @@ import type { Announcement } from '../../types/announcement';
 import { itemVariants, staggerConfig } from '../../utils/motionConfig';
 import { useTheme } from '../../contexts/ThemeContext';
 import { createPortal } from 'react-dom';
+import { unpackTranslation } from '../../utils/translationPacker';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -113,10 +114,10 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                                     isHighPriority ? 'text-(--accent)' : 'text-(--text-h)'
                                 }`}
                             >
-                                {announcement.title}
+                                {unpackTranslation(announcement.title, lang)}
                             </h2>
                             <div className="text-sm text-(--text) leading-relaxed mb-6 whitespace-pre-wrap max-h-96 overflow-y-auto wrap-anywhere">
-                                {announcement.content}
+                                {unpackTranslation(announcement.content, lang)}
                             </div>
                             <div
                                 className={`flex items-center justify-between pt-4 border-t ${
@@ -166,11 +167,14 @@ export default function Landing() {
         queryFn: async () => {
             const data = await adminService.getAnnouncements();
             return data
-                .map((announcement) => ({
-                    ...announcement,
-                    priority: getPriorityFromTitle(announcement.title),
-                    icon: getIconForAnnouncement(announcement.title),
-                }))
+                .map((announcement) => {
+                    const unpackedTitle = unpackTranslation(announcement.title, 'RO');
+                    return {
+                        ...announcement,
+                        priority: getPriorityFromTitle(unpackedTitle),
+                        icon: getIconForAnnouncement(unpackedTitle),
+                    };
+                })
                 .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         },
     });
@@ -216,10 +220,11 @@ export default function Landing() {
         setIsModalOpen(true);
         try {
             const fresh = await adminService.getAnnouncementById(announcement.id);
+            const unpackedFreshTitle = unpackTranslation(fresh.title, lang);
             setSelectedAnnouncement({
                 ...fresh,
-                priority: getPriorityFromTitle(fresh.title),
-                icon: getIconForAnnouncement(fresh.title),
+                priority: getPriorityFromTitle(unpackedFreshTitle),
+                icon: getIconForAnnouncement(unpackedFreshTitle),
             });
         } catch {
             // keep cached data if fetch fails
@@ -389,7 +394,7 @@ export default function Landing() {
                                                                 : 'text-(--text-h)'
                                                         }`}
                                                     >
-                                                        {ann.title}
+                                                        {unpackTranslation(ann.title, lang)}
                                                     </h3>
                                                     {ann.priority === 'high' && (
                                                         <span className="shrink-0 px-1 py-0 rounded-md bg-(--accent) text-(--surface-card) text-[7px] font-black uppercase">
@@ -398,7 +403,7 @@ export default function Landing() {
                                                     )}
                                                 </div>
                                                 <p className="text-[11px] text-(--text-muted) mb-1.5 line-clamp-2 leading-tight">
-                                                    {ann.content}
+                                                    {unpackTranslation(ann.content, lang)}
                                                 </p>
                                                 <div className="text-[9px] text-(--text-subtle) font-bold uppercase tracking-wider">
                                                     {ann.createdAt}
