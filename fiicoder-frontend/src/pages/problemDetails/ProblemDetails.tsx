@@ -157,6 +157,7 @@ export default function ProblemDetails() {
                         setSelectedLanguageId={setSelectedLanguageId}
                         handleEditorMount={handleEditorMount}
                         handleSubmit={handleSubmit}
+                        showClipboardButtons
                     />
                 </div>
                 <div className="bg-(--surface-card) border-2 border-(--accent) rounded-3xl mb-4 flex flex-col overflow-hidden">

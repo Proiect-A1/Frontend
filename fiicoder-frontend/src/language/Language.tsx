@@ -54,7 +54,7 @@ export const translations = {
         tagsLabel: 'Tag-uri',
         noTagsAvailable: 'Niciun tag disponibil.',
         // Navbar
-        archiveBtn: 'Arhivă probleme',
+        archiveBtn: 'Probleme',
         // Landing
         welcomeTitle: 'Bine ai venit la',
         welcomeDesc:
@@ -133,7 +133,7 @@ export const translations = {
         tagsLabel: 'Tags',
         noTagsAvailable: 'No tags available.',
         // Navbar
-        archiveBtn: 'Problem Archive',
+        archiveBtn: 'Problems',
         // Landing
         welcomeTitle: 'Welcome to',
         welcomeDesc:

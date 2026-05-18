@@ -1,6 +1,6 @@
 import Editor from '@monaco-editor/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import React from 'react';
+import React, { useRef } from 'react';
 import { getMonacoLanguageId } from '../../../utils/monacoTheme';
 
 type Props = {
@@ -16,6 +16,7 @@ type Props = {
     setSelectedLanguageId: (id: string) => void;
     handleEditorMount: any;
     handleSubmit: (e: React.FormEvent) => void;
+    showClipboardButtons?: boolean;
 };
 
 export default function EditorPanel({
@@ -31,7 +32,50 @@ export default function EditorPanel({
     setSelectedLanguageId,
     handleEditorMount,
     handleSubmit,
+    showClipboardButtons = false,
 }: Props) {
+    const editorInstanceRef = useRef<any>(null);
+
+    const onEditorMount = (editor: any, monaco: any) => {
+        editorInstanceRef.current = editor;
+        handleEditorMount(editor, monaco);
+    };
+
+    const handleCopy = async () => {
+        const editor = editorInstanceRef.current;
+        if (!editor) return;
+        const model = editor.getModel();
+        const selection = editor.getSelection();
+        const text = model?.getValueInRange(selection) || model?.getValue();
+        if (text) await navigator.clipboard.writeText(text);
+    };
+
+    const handleCut = async () => {
+        const editor = editorInstanceRef.current;
+        if (!editor) return;
+        const model = editor.getModel();
+        const selection = editor.getSelection();
+        const selectedText = model?.getValueInRange(selection);
+        if (selectedText) {
+            await navigator.clipboard.writeText(selectedText);
+            editor.executeEdits('clipboard-cut', [{ range: selection, text: '' }]);
+        } else {
+            const allText = model?.getValue();
+            if (allText) {
+                await navigator.clipboard.writeText(allText);
+                editor.executeEdits('clipboard-cut', [{ range: model.getFullModelRange(), text: '' }]);
+            }
+        }
+    };
+
+    const handlePaste = async () => {
+        const editor = editorInstanceRef.current;
+        if (!editor) return;
+        const text = await navigator.clipboard.readText();
+        if (text) {
+            editor.executeEdits('clipboard-paste', [{ range: editor.getSelection(), text }]);
+        }
+    };
 
     if (isAuthenticated) {
         return (
@@ -76,6 +120,24 @@ export default function EditorPanel({
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-4 overflow-hidden">
+                    {showClipboardButtons && (
+                        <div className="flex gap-2 shrink-0">
+                            {[
+                                { label: 'Copy', action: handleCopy },
+                                { label: 'Cut', action: handleCut },
+                                { label: 'Paste', action: handlePaste },
+                            ].map(({ label, action }) => (
+                                <button
+                                    key={label}
+                                    type="button"
+                                    onClick={action}
+                                    className="px-3 py-1 rounded-lg border border-(--accent)/40 bg-(--accent)/10 text-xs font-bold text-(--text-muted) hover:bg-(--accent)/20 hover:text-(--text-h) transition-colors"
+                                >
+                                    {label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                     <div className="relative flex-1 rounded-2xl overflow-hidden border border-(--accent)/20 bg-(--surface-editor) min-h-0">
                         <Editor
                             height="100%"
@@ -83,7 +145,7 @@ export default function EditorPanel({
                             value={code}
                             onChange={(val) => setCode(val || '')}
                             theme="vs-dark"
-                            onMount={handleEditorMount}
+                            onMount={onEditorMount}
                             loading={
                                 <div className="animate-spin w-8 h-8 border border-(--accent)/50 border-t-(--accent) rounded-full" />
                             }

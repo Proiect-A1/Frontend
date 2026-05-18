@@ -1,7 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { adminService, type ProblemProposal, type ProblemProposalDetail } from '../services/adminService';
-import { mockProposals } from '../../proposeProblem/services/mockProposals';
+import { adminService } from '../services/adminService';
 import { toast } from 'sonner';
 import { useLanguage } from '../../../language/Language';
 import { extractErrorMessage } from '../utils/errorUtils';
@@ -15,24 +14,13 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
         queryKey: ['admin', 'proposals'],
         enabled: isAdmin && activeTab === 'proposals',
         queryFn: async () => {
-            try {
-                const data = await adminService.getProposals();
-                return data.filter(
-                    (proposal) =>
-                        proposal.status === 'PENDING' || (proposal.status as string) === 'pending',
-                );
-            } catch {
-                return mockProposals.map((proposal, index) => ({
-                    id: `mock_${index}`,
-                    title: proposal.title,
-                    description: proposal.difficulty,
-                    status: 'PENDING',
-                    authorUsername: 'Mock Author',
-                    createdAt: new Date().toISOString(),
-                })) as unknown as ProblemProposal[];
-            }
+            const data = await adminService.getProposals();
+            return data.filter(
+                (proposal) =>
+                    proposal.status === 'PENDING' || (proposal.status as string) === 'pending',
+            );
         },
-        staleTime: 1000 * 60 * 5, // 5 minutes
+        staleTime: 1000 * 60 * 5,
     });
 
     const proposals = proposalsQuery.data ?? [];
@@ -43,34 +31,25 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
         queryFn: () => adminService.getProblemProposal(selectedProposalId as string),
     });
 
-    const selectedProposal = useMemo(() => {
-        if (selectedProposalQuery.data) return selectedProposalQuery.data;
+    const selectedProposal = selectedProposalQuery.data ?? null;
 
-        if (!selectedProposalId) return null;
-
-        if (selectedProposalQuery.isError) {
-            const mockMatch = mockProposals.find(
-                (p, idx) =>
-                    p.title === selectedProposalId ||
-                    `mock_${idx}` === selectedProposalId ||
-                    `p${idx + 1}` === selectedProposalId,
-            ) || mockProposals[0];
-
-            if (mockMatch) {
-                return {
-                    id: selectedProposalId,
-                    title: mockMatch.title,
-                    authorUsername: 'Mock User',
-                    description: mockMatch.statement.slice(0, 160),
-                    status: 'PENDING',
-                    createdAt: new Date().toISOString(),
-                    statement: mockMatch.statement,
-                    tags: mockMatch.tags,
-                } as unknown as ProblemProposalDetail;
+    const handleDeleteProposal = async (proposalId: string) => {
+        try {
+            await adminService.deleteProblem(proposalId);
+            toast.success(lang === 'RO' ? 'Propunerea a fost ștearsă.' : 'Proposal deleted.');
+            const remainingProposals = proposals.filter((p) => p.id !== proposalId);
+            queryClient.setQueryData(['admin', 'proposals'], remainingProposals);
+            if (selectedProposalId === proposalId) {
+                setSelectedProposalId(remainingProposals[0]?.id ?? null);
             }
+        } catch (error) {
+            const message = extractErrorMessage(
+                error,
+                lang === 'RO' ? 'Eroare la ștergerea propunerii.' : 'Failed to delete proposal.',
+            );
+            toast.error(message);
         }
-        return null;
-    }, [selectedProposalQuery.data, selectedProposalQuery.isError, selectedProposalId]);
+    };
 
     const handleReviewProposal = async (proposalId: string, action: 'approve' | 'reject') => {
         try {
@@ -105,6 +84,7 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
         selectedProposalId,
         setSelectedProposalId,
         handleReviewProposal,
+        handleDeleteProposal,
         isSelectedLoading: selectedProposalQuery.isLoading
     };
 }
