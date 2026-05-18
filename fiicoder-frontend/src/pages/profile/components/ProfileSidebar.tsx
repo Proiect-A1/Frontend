@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import type { ProfileResponseDTO } from '../../../services/profileService';
 import { itemVariants } from '../../../utils/motionConfig';
-import { getGravatarUrl } from '../../../utils/gravatar';
+import { getGravatarUrl, getDiceBearUrl } from '../../../utils/gravatar';
 
 type ProfileSidebarProps = {
     profile: ProfileResponseDTO;
@@ -11,8 +11,13 @@ type ProfileSidebarProps = {
 };
 
 export default function ProfileSidebar({ profile, username, lang }: ProfileSidebarProps) {
-    const avatarUrl = getGravatarUrl(profile.email);
-    const [imgError, setImgError] = useState(false);
+    const [src, setSrc] = useState(() => getGravatarUrl(profile.email));
+    const [failed, setFailed] = useState(false);
+
+    const handleError = () => {
+        if (src === getGravatarUrl(profile.email)) setSrc(getDiceBearUrl(profile.email));
+        else setFailed(true);
+    };
 
     const roleLabel =
         profile.username === 'GolderbergPrivate'
@@ -32,12 +37,12 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
                 className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm flex flex-col items-center lg:items-start text-center lg:text-left"
             >
                 <div className="relative group mb-4">
-                    {avatarUrl && !imgError ? (
+                    {!failed ? (
                         <img
-                            src={avatarUrl}
+                            src={src}
                             alt="avatar"
                             className="w-24 h-24 rounded-full shadow-lg outline-4 outline-offset-4 outline-(--accent) shrink-0"
-                            onError={() => setImgError(true)}
+                            onError={handleError}
                         />
                     ) : (
                         <div className="w-24 h-24 rounded-full bg-linear-to-br from-(--accent) to-purple-500 flex items-center justify-center text-4xl font-bold text-white uppercase shadow-lg outline-4 outline-offset-4 outline-(--accent) shrink-0">

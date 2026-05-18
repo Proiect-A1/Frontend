@@ -64,10 +64,10 @@ function md5(str: string): string {
 }
 
 export function getGravatarUrl(email: string, size = 80): string {
-  const normalized = email.trim().toLowerCase();
-  const hash = md5(normalized);
-  const fallback = encodeURIComponent(
-    `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(normalized)}`
-  );
-  return `https://www.gravatar.com/avatar/${hash}?s=${size}&d=${fallback}`;
+  const hash = md5(email.trim().toLowerCase());
+  return `https://www.gravatar.com/avatar/${hash}?s=${size}&d=404`;
+}
+
+export function getDiceBearUrl(email: string): string {
+  return `https://api.dicebear.com/9.x/avataaars/png?seed=${encodeURIComponent(email.trim().toLowerCase())}`;
 }

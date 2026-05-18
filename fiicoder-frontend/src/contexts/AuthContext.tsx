@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { profileService } from '../services/profileService';
-import { getGravatarUrl } from '../utils/gravatar';
+import { getGravatarUrl, getDiceBearUrl } from '../utils/gravatar';
 
 interface JwtPayload {
   sub: string;
@@ -32,6 +32,7 @@ interface AuthContextType {
   username: string | null;
   userId: string | null;
   gravatarUrl: string | null;
+  dicebearUrl: string | null;
   isAdmin: boolean;
   isProfessor: boolean;
   isAuthenticated: boolean;
@@ -44,6 +45,7 @@ const AuthContext = createContext<AuthContextType>({
   username: null,
   userId: null,
   gravatarUrl: null,
+  dicebearUrl: null,
   isAdmin: false,
   isProfessor: false,
   isAuthenticated: false,
@@ -54,6 +56,7 @@ const AuthContext = createContext<AuthContextType>({
 const TOKEN_KEY = 'fiicoder_jwt';
 const USERNAME_KEY = 'fiicoder_username';
 const GRAVATAR_KEY = 'fiicoder_gravatar';
+const DICEBEAR_KEY = 'fiicoder_dicebear';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() => {
@@ -71,6 +74,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return localStorage.getItem(GRAVATAR_KEY);
   });
 
+  const [dicebearUrl, setDicebearUrl] = useState<string | null>(() => {
+    return localStorage.getItem(DICEBEAR_KEY);
+  });
+
   const payload = token ? decodeJwt(token) : null;
   const userId = payload?.sub ?? null;
   const isAdmin = payload?.role === 'ADMIN';
@@ -84,19 +91,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then((profile) => {
         setStoredUsername(profile.username);
         localStorage.setItem(USERNAME_KEY, profile.username);
-        const url = getGravatarUrl(profile.email);
-        setGravatarUrl(url);
-        localStorage.setItem(GRAVATAR_KEY, url);
+        const gravatar = getGravatarUrl(profile.email);
+        const dicebear = getDiceBearUrl(profile.email);
+        setGravatarUrl(gravatar);
+        setDicebearUrl(dicebear);
+        localStorage.setItem(GRAVATAR_KEY, gravatar);
+        localStorage.setItem(DICEBEAR_KEY, dicebear);
       })
       .catch(() => {});
   }, [token]);
 
   const login = useCallback((newToken: string, username?: string) => {
     localStorage.setItem(TOKEN_KEY, newToken);
-    if (username) {
-      localStorage.setItem(USERNAME_KEY, username);
-      setStoredUsername(username);
-    }
+    localStorage.removeItem(GRAVATAR_KEY);
+    localStorage.removeItem(DICEBEAR_KEY);
+    localStorage.removeItem(USERNAME_KEY);
+    setGravatarUrl(null);
+    setDicebearUrl(null);
+    setStoredUsername(username ?? null);
+    if (username) localStorage.setItem(USERNAME_KEY, username);
     setToken(newToken);
   }, []);
 
@@ -104,8 +117,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USERNAME_KEY);
     localStorage.removeItem(GRAVATAR_KEY);
+    localStorage.removeItem(DICEBEAR_KEY);
     setStoredUsername(null);
     setGravatarUrl(null);
+    setDicebearUrl(null);
     setToken(null);
   }, []);
 
@@ -125,6 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         username: storedUsername,
         userId,
         gravatarUrl,
+        dicebearUrl,
         isAdmin,
         isProfessor,
         isAuthenticated,

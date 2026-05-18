@@ -13,7 +13,14 @@ export default function Navbar() {
 
   const { lang, setLang } = useLanguage();
   const t = translations[lang];
-  const { isAuthenticated, username, gravatarUrl, isAdmin, isProfessor, logout } = useAuth();
+  const { isAuthenticated, username, gravatarUrl, dicebearUrl, isAdmin, isProfessor, logout } = useAuth();
+  const [avatarSrc, setAvatarSrc] = useState<string | null>(gravatarUrl);
+  const [avatarFailed, setAvatarFailed] = useState(false);
+
+  const handleAvatarError = () => {
+    if (avatarSrc === gravatarUrl && dicebearUrl) setAvatarSrc(dicebearUrl);
+    else setAvatarFailed(true);
+  };
 
   const { theme, themes, setTheme, customColors, setCustomColors } = useTheme();
 
@@ -233,8 +240,8 @@ export default function Navbar() {
                   to="/profile"
                   className={`${getNavLinkClass("/profile")} min-w-0`}
                 >
-                  {gravatarUrl ? (
-                    <img src={gravatarUrl} alt="avatar" className="w-5 h-5 rounded-full shadow-sm" />
+                  {avatarSrc && !avatarFailed ? (
+                    <img src={avatarSrc} alt="avatar" className="w-5 h-5 rounded-full shadow-sm" onError={handleAvatarError} />
                   ) : (
                     <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white uppercase bg-(--accent) shadow-sm shadow-(--accent)/20">
                       {username?.charAt(0) || "?"}
@@ -456,8 +463,8 @@ export default function Navbar() {
                     onClick={closeMenu}
                     className={getNavLinkClass("/profile") + " text-center"}
                   >
-                    {gravatarUrl ? (
-                      <img src={gravatarUrl} alt="avatar" className="w-5 h-5 rounded-full shadow-md" />
+                    {avatarSrc && !avatarFailed ? (
+                      <img src={avatarSrc} alt="avatar" className="w-5 h-5 rounded-full shadow-md" onError={handleAvatarError} />
                     ) : (
                       <div className="w-5 h-5 rounded-full flex items-center justify-center text-sm font-black text-white uppercase bg-(--accent) shadow-md shadow-(--accent)/20">
                         {username?.charAt(0) || "?"}
