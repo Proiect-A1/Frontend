@@ -12,7 +12,7 @@ type Props = {
 
 export default function TestResultPanel({ evalStatus, evalError, evalSummary, evalTests, evalSubtasks, lang }: Props) {
     return (
-        <div className="h-full p-6 bg-(--surface-card) overflow-y-auto custom-scrollbar">
+        <div className="h-full bg-(--surface-card) overflow-y-auto custom-scrollbar">
             {evalStatus === 'idle' && (
                 <div className="h-full flex flex-col items-center justify-center text-center">
                     <div className="w-12 h-12 rounded-full bg-(--accent)/5 border-2 border-dashed border-(--accent)/20 flex items-center justify-center mb-3">
