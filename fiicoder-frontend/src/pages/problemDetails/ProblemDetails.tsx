@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import * as FlexLayout from 'flexlayout-react';
 import DescriptionPanel from './components/DescriptionPanel';
 import EditorPanel from './components/EditorPanel';
@@ -182,114 +181,15 @@ export default function ProblemDetails() {
                         </button>
                     </div>
                     <div className="mt-2">
-                        {activeTab === 'testcase' && (
-                            <textarea
-                                className="w-full bg-(--surface-input) border border-(--accent)/20 rounded-2xl p-3 text-xs"
-                                rows={4}
-                                placeholder="Input..."
-                            />
-                        )}
                         {activeTab === 'testresult' && (
-                            <div className="min-h-30">
-                                {evalStatus === 'idle' && (
-                                    <div className="py-8 text-center text-xs text-(--text-muted) italic">
-                                        {lang === 'RO'
-                                            ? 'Trimite codul pentru rezultate.'
-                                            : 'Submit code for results.'}
-                                    </div>
-                                )}
-                                {(evalStatus === 'connecting' ||
-                                    (evalStatus === 'evaluating' && evalTests.length === 0)) && (
-                                    <div className="py-8 flex flex-col items-center gap-3">
-                                        <div className="animate-spin w-6 h-6 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
-                                        <span className="text-xs text-(--text-muted)">
-                                            {lang === 'RO' ? 'Se evaluează...' : 'Evaluating...'}
-                                        </span>
-                                    </div>
-                                )}
-                                {evalStatus === 'error' && (
-                                    <div className="py-8 text-center text-xs text-red-400 font-bold">
-                                        {evalError}
-                                    </div>
-                                )}
-                                {(evalStatus === 'evaluating' || evalStatus === 'done') &&
-                                    evalTests.length > 0 && (
-                                        <div className="space-y-3">
-                                            {evalSummary && (
-                                                <div
-                                                    className={`p-3 rounded-2xl border-2 flex items-center justify-between ${
-                                                        evalSummary.score >= evalSummary.maxScore
-                                                            ? 'border-green-500/40 bg-green-500/10'
-                                                            : 'border-amber-500/40 bg-amber-500/10'
-                                                    }`}
-                                                >
-                                                    <span
-                                                        className={`text-lg font-black ${evalSummary.score >= evalSummary.maxScore ? 'text-green-400' : 'text-amber-400'}`}
-                                                    >
-                                                        {evalSummary.score}/{evalSummary.maxScore}
-                                                    </span>
-                                                    <span
-                                                        className={`px-2 py-0.5 rounded-full text-[10px] font-black border ${
-                                                            evalSummary.score >=
-                                                            evalSummary.maxScore
-                                                                ? 'border-green-500/50 text-green-300'
-                                                                : 'border-amber-500/50 text-amber-300'
-                                                        }`}
-                                                    >
-                                                        {evalSummary.score >= evalSummary.maxScore
-                                                            ? 'Accepted'
-                                                            : 'Partial'}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            {!evalSummary && (
-                                                <div className="p-2 rounded-xl border border-(--accent)/20 bg-(--accent)/5 flex items-center gap-2">
-                                                    <div className="animate-spin w-3 h-3 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
-                                                    <span className="text-[10px] font-bold text-(--text-muted)">
-                                                        {lang === 'RO'
-                                                            ? `Evaluare... (${evalTests.length})`
-                                                            : `Evaluating... (${evalTests.length})`}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            <div className="space-y-1">
-                                                {evalTests.map((t: any, idx: number) => {
-                                                    const vc: Record<string, string> = {
-                                                        OK: 'border-green-500/40 bg-green-500/10 text-green-300',
-                                                        WA: 'border-red-500/40 bg-red-500/10 text-red-300',
-                                                        TLE: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
-                                                        MLE: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
-                                                        RTE: 'border-red-500/40 bg-red-500/10 text-red-300',
-                                                        CPE: 'border-purple-500/40 bg-purple-500/10 text-purple-300',
-                                                    };
-                                                    return (
-                                                        <motion.div
-                                                            key={idx}
-                                                            initial={{ opacity: 0 }}
-                                                            animate={{ opacity: 1 }}
-                                                            className="flex items-center gap-2 p-2 rounded-lg border border-(--accent)/10 bg-(--accent)/5 text-[10px]"
-                                                        >
-                                                            <span className="font-mono font-bold text-(--text-subtle) w-5">
-                                                                #{t.testId}
-                                                            </span>
-                                                            <span
-                                                                className={`px-1.5 py-0.5 rounded text-[9px] font-black border ${vc[t.verdict] || 'border-(--accent)/30 text-(--text-muted)'}`}
-                                                            >
-                                                                {t.verdict}
-                                                            </span>
-                                                            <span className="font-bold text-(--text-muted) ml-auto">
-                                                                {t.score}/{t.maxScore}
-                                                            </span>
-                                                            <span className="font-mono text-(--text-subtle)">
-                                                                {(t.time / 1_000_000).toFixed(0)}ms
-                                                            </span>
-                                                        </motion.div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    )}
-                            </div>
+                            <TestResultPanel
+                                evalStatus={evalStatus}
+                                evalError={evalError}
+                                evalSummary={evalSummary}
+                                evalTests={evalTests}
+                                evalSubtasks={evalSubtasks}
+                                lang={lang}
+                            />
                         )}
                         {activeTab === 'submissions' && (
                             <div className="space-y-2">
