@@ -132,7 +132,7 @@ export default function EditorPanel({
                 <h3 className="text-lg font-bold text-(--text) mb-1">
                     {t.submitTitle}
                 </h3>
-                <p className="text-sm text-(--text-muted) max-w-xs">
+                <p className="text-sm text-(--text-muted)">
                     {t.submitAuthHelpful}
                 </p>
             </div>
@@ -140,7 +140,7 @@ export default function EditorPanel({
                 href="/login"
                 className="px-6 py-2.5 rounded-xl border border-(--accent)/50 bg-(--accent)/20 text-sm font-bold text-(--text-h) transition hover:border-(--accent) hover:bg-(--accent)/30"
             >
-                {t.login}
+                {t.loginTitle}
             </a>
         </div>
     );
