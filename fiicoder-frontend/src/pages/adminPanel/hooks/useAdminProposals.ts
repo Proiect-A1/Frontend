@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { adminService } from '../services/adminService';
+import { adminService, type AcceptedProblem } from '../services/adminService';
 import { toast } from 'sonner';
 import { useLanguage } from '../../../language/Language';
 import { extractErrorMessage } from '../utils/errorUtils';
@@ -12,7 +12,7 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
 
     const proposalsQuery = useQuery({
         queryKey: ['admin', 'proposals'],
-        enabled: isAdmin && activeTab === 'proposals',
+        enabled: isAdmin && activeTab === 'problems',
         queryFn: async () => {
             const data = await adminService.getProposals();
             return data.filter(
@@ -23,7 +23,15 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
         staleTime: 1000 * 60 * 5,
     });
 
+    const acceptedQuery = useQuery({
+        queryKey: ['admin', 'accepted-problems'],
+        enabled: isAdmin && activeTab === 'problems',
+        queryFn: () => adminService.getAcceptedProblems(),
+        staleTime: 1000 * 60 * 5,
+    });
+
     const proposals = proposalsQuery.data ?? [];
+    const acceptedProblems = acceptedQuery.data ?? [];
 
     const selectedProposalQuery = useQuery({
         queryKey: ['admin', 'proposal', selectedProposalId],
@@ -46,6 +54,42 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
             const message = extractErrorMessage(
                 error,
                 lang === 'RO' ? 'Eroare la ștergerea propunerii.' : 'Failed to delete proposal.',
+            );
+            toast.error(message);
+        }
+    };
+
+    const handleDeleteAccepted = async (title: string) => {
+        try {
+            await adminService.deleteProblem(title);
+            toast.success(lang === 'RO' ? 'Problema a fost ștearsă.' : 'Problem deleted.');
+            queryClient.setQueryData(['admin', 'accepted-problems'],
+                acceptedProblems.filter((p: AcceptedProblem) => p.title !== title));
+        } catch (error) {
+            const message = extractErrorMessage(
+                error,
+                lang === 'RO' ? 'Eroare la ștergerea problemei.' : 'Failed to delete problem.',
+            );
+            toast.error(message);
+        }
+    };
+
+    const handleChangeVisibility = async (title: string, newVisibility: 'PUBLIC' | 'PRIVATE') => {
+        try {
+            await adminService.changeVisibility(title, newVisibility);
+            toast.success(
+                newVisibility === 'PUBLIC'
+                    ? lang === 'RO' ? 'Problema este acum publică.' : 'Problem is now public.'
+                    : lang === 'RO' ? 'Problema este acum privată.' : 'Problem is now private.',
+            );
+            queryClient.setQueryData(['admin', 'accepted-problems'],
+                acceptedProblems.map((p: AcceptedProblem) =>
+                    p.title === title ? { ...p, visibility: newVisibility } : p
+                ));
+        } catch (error) {
+            const message = extractErrorMessage(
+                error,
+                lang === 'RO' ? 'Eroare la schimbarea vizibilității.' : 'Failed to change visibility.',
             );
             toast.error(message);
         }
@@ -85,6 +129,10 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
         setSelectedProposalId,
         handleReviewProposal,
         handleDeleteProposal,
-        isSelectedLoading: selectedProposalQuery.isLoading
+        isSelectedLoading: selectedProposalQuery.isLoading,
+        acceptedProblems,
+        isAcceptedLoading: acceptedQuery.isLoading,
+        handleDeleteAccepted,
+        handleChangeVisibility,
     };
 }

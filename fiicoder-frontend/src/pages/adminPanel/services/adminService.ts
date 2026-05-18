@@ -127,7 +127,26 @@ function normalizeOverview(payload: AdminOverviewResponse): AdminOverview {
     };
 }
 
+export interface AcceptedProblem {
+    title: string;
+    description: string;
+    memoryLimit: number;
+    timeLimit: number;
+    difficulty: string;
+    tags: string[];
+    visibility: 'PUBLIC' | 'PRIVATE';
+    status: string;
+}
+
 export const adminService = {
+    async getAcceptedProblems(): Promise<AcceptedProblem[]> {
+        return await apiClient.get<AcceptedProblem[]>('/problems/all?page=1&size=200');
+    },
+
+    async changeVisibility(title: string, visibility: 'PUBLIC' | 'PRIVATE'): Promise<void> {
+        await apiClient.patch(`/problems/${encodeURIComponent(title)}/visibility`, { visibility });
+    },
+
     async getOverview(): Promise<AdminOverview> {
         try {
             const data = await apiClient.get<AdminOverviewResponse>('/admin/overview');

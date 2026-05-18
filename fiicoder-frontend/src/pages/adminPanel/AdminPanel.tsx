@@ -23,7 +23,7 @@ import AdminSidebar from './components/AdminSidebar';
 
 const tabs = [
     { id: 'users', labelRO: 'Utilizatori', labelEN: 'Users' },
-    { id: 'proposals', labelRO: 'Propuneri', labelEN: 'Proposals' },
+    { id: 'problems', labelRO: 'Probleme', labelEN: 'Problems' },
     { id: 'tags', labelRO: 'Tag-uri', labelEN: 'Tags' },
     { id: 'announcements', labelRO: 'Anunțuri', labelEN: 'Announcements' },
     { id: 'audit', labelRO: 'Audit', labelEN: 'Audit Log' },
@@ -101,7 +101,7 @@ export default function AdminPanel() {
                                     className="min-h-0 flex-1"
                                 >
                                     {activeTab === 'users' && <UserTab {...usersState} />}
-                                    {activeTab === 'proposals' && <ProposalsTab {...proposalsState} />}
+                                    {activeTab === 'problems' && <ProposalsTab {...proposalsState} />}
                                     {activeTab === 'tags' && <TagsTab {...tagsState} />}
                                     {activeTab === 'announcements' && <AnnouncementsTab {...announcementsState} />}
                                     {activeTab === 'audit' && <AuditLogTab {...auditState} />}
