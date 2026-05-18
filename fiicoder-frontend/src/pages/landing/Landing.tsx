@@ -282,7 +282,7 @@ export default function Landing() {
                             ) : (
                                 <img
                                     src={logoSrc}
-                                    alt="FiiCoder"
+                                    alt="fiicoder_logo"
                                     className="theme-logo h-16 w-16 md:h-20 md:w-20 mx-auto theme-logo-glow"
                                 />
                             )}
@@ -293,7 +293,7 @@ export default function Landing() {
                             className="text-4xl md:text-5xl font-black text-(--text-h) mb-3 tracking-tighter"
                         >
                             {t.welcomeTitle}{' '}
-                            <span className="text-(--accent)">{`<_FiiCoder>`}</span>
+                            <span className="text-(--accent)">{`<_fiicoder>`}</span>
                         </motion.h1>
 
                         <motion.p
