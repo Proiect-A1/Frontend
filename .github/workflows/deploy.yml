@@ -46,7 +46,7 @@ jobs:
               echo "⚠️ Warning: Lipsă permisiuni de scriere în /etc/environment. Rămânem la config-ul din fișierul .env."
             fi
 
-            docker compose down && docker compose up --quiet-build --build -d 
+            docker compose down frontend && docker compose up --quiet-build --build -d frontend  
 
             docker image prune -f
             sleep 20
