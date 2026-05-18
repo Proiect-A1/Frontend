@@ -19,7 +19,7 @@ export default function Login() {
     const { login } = useAuth();
 
     // Form state
-    const [usernameOrEmail, setUsernameOrEmail] = useState('');
+    const [loginEmail, setLoginEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     // Register-only fields
@@ -45,13 +45,8 @@ export default function Login() {
         return Object.values(errors).join('. ');
     }
 
-    function deriveUsername(value: string): string {
-        const trimmed = value.trim();
-        if (!trimmed) return '';
-        if (trimmed.includes('@')) {
-            return trimmed.split('@')[0].trim();
-        }
-        return trimmed;
+    function deriveUsername(emailValue: string): string {
+        return emailValue.trim().split('@')[0].trim();
     }
 
     // Submit handler
@@ -63,10 +58,10 @@ export default function Login() {
         try {
             if (isLogin) {
                 const token = await authService.login({
-                    email: usernameOrEmail,
+                    email: loginEmail,
                     password,
                 });
-                const displayUsername = deriveUsername(usernameOrEmail);
+                const displayUsername = deriveUsername(loginEmail);
                 if (displayUsername) {
                     login(token, displayUsername);
                 } else {
@@ -74,7 +69,7 @@ export default function Login() {
                 }
                 toast.success(lang === 'RO' ? 'Autentificare reușită.' : 'Login successful.');
                 // clear any persisted non-sensitive info after successful login
-                setUsernameOrEmail('');
+                setLoginEmail('');
                 setUsername('');
                 setFirstName('');
                 setLastName('');
@@ -111,7 +106,7 @@ export default function Login() {
                 setIsLogin(true);
 
                 // clear any persisted non-sensitive info after successful registration
-                setUsernameOrEmail('');
+                setLoginEmail('');
                 setUsername('');
                 setFirstName('');
                 setLastName('');
@@ -204,8 +199,8 @@ export default function Login() {
                                 type="email"
                                 required
                                 autoComplete="email"
-                                value={usernameOrEmail}
-                                onChange={(e) => setUsernameOrEmail(e.target.value)}
+                                value={loginEmail}
+                                onChange={(e) => setLoginEmail(e.target.value)}
                                 placeholder="ex: nume@email.com"
                                 className="w-full rounded-2xl border border-(--accent)/30 bg-(--surface-input) px-3 py-2 text-sm text-(--text-h) outline-none transition hover:border-(--accent) focus:border-(--accent)"
                             />
@@ -237,7 +232,7 @@ export default function Login() {
                                 required
                                 minLength={3}
                                 maxLength={30}
-                                autoComplete="username"
+                                autoComplete="off"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 placeholder="ex: fiicoder"
