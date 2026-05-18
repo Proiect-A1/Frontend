@@ -81,10 +81,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!token || isTokenExpired(token)) return;
 
     profileService.getMyProfile()
-      .then(async (profile) => {
+      .then((profile) => {
         setStoredUsername(profile.username);
         localStorage.setItem(USERNAME_KEY, profile.username);
-        const url = await getGravatarUrl(profile.email);
+        const url = getGravatarUrl(profile.email);
         setGravatarUrl(url);
         localStorage.setItem(GRAVATAR_KEY, url);
       })

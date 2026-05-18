@@ -159,10 +159,7 @@ export function applyMonacoTheme(
   const themeId = options.themeId ?? `fiicoder-${themeName}`;
 
   // dynamic for custom, static mapping for named themes
-  const isLight =
-    themeName === 'custom'
-      ? hexBrightness(palette.editorBg) > 128
-      : ['sage'].includes(themeName);
+  const isLight = hexBrightness(palette.editorBg) > 128;
 
   const a = palette.accent.replace('#', '');
   const s = palette.accentSecondary.replace('#', '');

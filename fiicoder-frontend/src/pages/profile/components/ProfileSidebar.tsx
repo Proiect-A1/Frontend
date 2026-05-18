@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { ProfileResponseDTO } from '../../../services/profileService';
 import { itemVariants } from '../../../utils/motionConfig';
 import { getGravatarUrl } from '../../../utils/gravatar';
@@ -11,13 +11,8 @@ type ProfileSidebarProps = {
 };
 
 export default function ProfileSidebar({ profile, username, lang }: ProfileSidebarProps) {
-    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+    const avatarUrl = getGravatarUrl(profile.email);
     const [imgError, setImgError] = useState(false);
-
-    useEffect(() => {
-        setImgError(false);
-        getGravatarUrl(profile.email).then(setAvatarUrl);
-    }, [profile.email]);
 
     const roleLabel =
         profile.username === 'GolderbergPrivate'
