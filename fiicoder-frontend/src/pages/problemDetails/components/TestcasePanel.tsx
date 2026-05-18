@@ -4,7 +4,7 @@ type Props = {
 
 export default function TestcasePanel(_: Props) {
     return (
-        <div className="h-full bg-(--surface-card) overflow-y-auto custom-scrollbar">
+        <div className="h-full -6 bg-(--surface-card) overflow-y-auto custom-scrollbar">
             <div className="space-y-4">
                 <div className="flex gap-2">
                     {['Case 1', 'Case 2', 'Case 3'].map((c, i) => (

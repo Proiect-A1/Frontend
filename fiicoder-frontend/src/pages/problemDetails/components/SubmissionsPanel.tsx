@@ -8,7 +8,7 @@ type Props = {
 
 export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, lang }: Props) {
     return (
-        <div className="h-full bg-(--surface-card) overflow-y-auto custom-scrollbar">
+        <div className="h-full p-6 bg-(--surface-card) overflow-y-auto custom-scrollbar">
             <div className="space-y-3">
                 {!isAuthenticated ? (
                     <p className="text-sm text-(--text-muted) italic">

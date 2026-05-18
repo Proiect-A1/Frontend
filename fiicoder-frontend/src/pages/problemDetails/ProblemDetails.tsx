@@ -159,7 +159,7 @@ export default function ProblemDetails() {
                         handleSubmit={handleSubmit}
                     />
                 </div>
-                <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-3xl mb-4">
+                <div className="bg-(--surface-card) border-2 border-(--accent) rounded-3xl mb-4">
                     <div className="flex items-center gap-4 mb-4 overflow-x-auto">
                         <button
                             onClick={() => setActiveTab('testcase')}
