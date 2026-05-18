@@ -347,7 +347,7 @@ export default function ClassesHub() {
                                 value={className}
                                 onChange={(event) => setClassName(event.target.value)}
                                 placeholder={lang === 'RO' ? 'Nume clasă' : 'Class name'}
-                                className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-muted) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
+                                className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
                             />
                             <textarea
                                 value={classDescription}
@@ -355,7 +355,7 @@ export default function ClassesHub() {
                                 placeholder={
                                     lang === 'RO' ? 'Descriere opțională' : 'Optional description'
                                 }
-                                className="min-h-24 w-full rounded-xl border border-(--accent)/25 bg-(--surface-muted) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
+                                className="min-h-24 w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
                             />
                             <button
                                 type="submit"
