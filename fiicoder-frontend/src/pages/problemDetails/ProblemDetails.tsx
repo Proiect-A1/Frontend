@@ -159,8 +159,8 @@ export default function ProblemDetails() {
                         handleSubmit={handleSubmit}
                     />
                 </div>
-                <div className="bg-(--surface-card) border-2 border-(--accent) rounded-3xl mb-4">
-                    <div className="flex items-center gap-4 mb-4 overflow-x-auto">
+                <div className="bg-(--surface-card) border-2 border-(--accent) rounded-3xl mb-4 flex flex-col overflow-hidden">
+                    <div className="flex items-center gap-4 px-6 pt-6 pb-2 mb-2 bg-(--surface-card) overflow-x-auto border-b border-(--accent)/10">
                         <button
                             onClick={() => setActiveTab('testcase')}
                             className={`text-xs font-bold pb-1 border-b-2 whitespace-nowrap ${activeTab === 'testcase' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
@@ -180,7 +180,7 @@ export default function ProblemDetails() {
                             Submissions
                         </button>
                     </div>
-                    <div className="mt-2">
+                    <div className="flex-1">
                         {activeTab === 'testcase' && <TestcasePanel />}
                         {activeTab === 'testresult' && (
                             <TestResultPanel
@@ -200,29 +200,35 @@ export default function ProblemDetails() {
                             />
                         )}
                     </div>
-                    <button
-                        onClick={handleSubmit}
-                        disabled={status === 'pending'}
-                        className="px-6 py-1.5 rounded-xl bg-(--accent) border-2 border-(--accent) text-xs text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group ml-auto mt-4"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={3}
+                    <div className="px-6 pb-6 bg-(--surface-card)">
+                        <button
+                            onClick={handleSubmit}
+                            disabled={status === 'pending'}
+                            className="px-6 py-1.5 rounded-xl bg-(--accent) border-2 border-(--accent) text-xs text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group ml-auto mt-2"
                         >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                        {status === 'pending'
-                            ? lang === 'RO'
-                                ? 'Trimitere...'
-                                : 'Submitting...'
-                            : lang === 'RO'
-                              ? 'Trimite'
-                              : 'Submit'}
-                    </button>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={3}
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M5 13l4 4L19 7"
+                                />
+                            </svg>
+                            {status === 'pending'
+                                ? lang === 'RO'
+                                    ? 'Trimitere...'
+                                    : 'Submitting...'
+                                : lang === 'RO'
+                                  ? 'Trimite'
+                                  : 'Submit'}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
