@@ -8,6 +8,7 @@ import {
     classService,
     type GroupFindResponseDTO,
     type GroupInvitationResponseDTO,
+    type GroupMembershipDTO,
 } from './services/classService';
 import { containerVariants, itemVariants, pageVariants } from '../../utils/motionConfig';
 import { toast } from 'sonner';
@@ -76,8 +77,16 @@ export default function ClassesHub() {
         },
     });
 
+    const myGroupsQuery = useQuery({
+        queryKey: ['my-groups', userId],
+        enabled: !!userId,
+        queryFn: () => classService.getMyGroups(),
+    });
+
     const invitations = invitationsQuery.data ?? [];
     const loadingInvitations = invitationsQuery.isPending;
+    const myGroups = myGroupsQuery.data ?? [];
+    const loadingMyGroups = myGroupsQuery.isPending;
 
     const handleCreateClass = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -439,6 +448,69 @@ export default function ClassesHub() {
                     </div>
 
                     {memoizedRecentClasses}
+                </motion.section>
+
+                <motion.section variants={itemVariants} className="mt-4 md:mt-6">
+                    <div className="flex items-center justify-between gap-4">
+                        <h2 className="text-xl font-bold text-(--text-h)">
+                            {lang === 'RO' ? 'Grupurile mele' : 'My groups'}
+                        </h2>
+                        {loadingMyGroups && (
+                            <span className="text-xs text-(--text-muted)">
+                                {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
+                            </span>
+                        )}
+                    </div>
+
+                    <motion.div variants={containerVariants} className="mt-4 grid gap-3">
+                        {!loadingMyGroups && myGroups.length === 0 && (
+                            <motion.div
+                                variants={itemVariants}
+                                className="rounded-2xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)"
+                            >
+                                {lang === 'RO'
+                                    ? 'Nu faci parte din niciun grup. Creează unul sau acceptă o invitație.'
+                                    : 'You are not part of any group. Create one or accept an invitation.'}
+                            </motion.div>
+                        )}
+
+                        {myGroups.map((group: GroupMembershipDTO) => (
+                            <motion.div
+                                variants={itemVariants}
+                                key={group.id}
+                                className="rounded-xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3"
+                            >
+                                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                                    <div className="min-w-0">
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <p className="text-base font-semibold text-(--text-h)">
+                                                {group.name}
+                                            </p>
+                                            {group.isCreator && (
+                                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border border-(--accent)/40 bg-(--accent)/15 text-(--text-h)">
+                                                    {lang === 'RO' ? 'Creator' : 'Creator'}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="text-xs text-(--text-muted) mt-0.5">
+                                            {group.description ||
+                                                (lang === 'RO' ? 'Fără descriere.' : 'No description.')}
+                                        </p>
+                                        <p className="text-[10px] text-(--text-muted) mt-1">
+                                            {lang === 'RO' ? 'Creator' : 'Created by'}:{' '}
+                                            {group.creatorUsername}
+                                        </p>
+                                    </div>
+                                    <Link
+                                        to={`/classes/${group.id}`}
+                                        className="inline-flex self-start shrink-0 rounded-xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
+                                    >
+                                        {lang === 'RO' ? 'Deschide' : 'Open'}
+                                    </Link>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </motion.div>
                 </motion.section>
 
                 <motion.section variants={itemVariants} className="mt-4 md:mt-6">

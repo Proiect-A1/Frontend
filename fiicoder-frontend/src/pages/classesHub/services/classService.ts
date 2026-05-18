@@ -54,7 +54,22 @@ export interface GroupInvitationResponseDTO {
   };
 }
 
+export interface GroupMembershipDTO {
+  id: string;
+  name: string;
+  description: string | null;
+  creatorId: string;
+  creatorUsername: string;
+  createdAt: string;
+  isCreator: boolean;
+}
+
 export const classService = {
+  getMyGroups() {
+    return apiClient.get<GroupMembershipDTO[]>('/group/me');
+  },
+
+
   getById(groupId: string) {
     return apiClient.get<GroupFindResponseDTO>(`/group/${groupId}`);
   },

@@ -17,6 +17,11 @@ export default function Navbar() {
   const [avatarSrc, setAvatarSrc] = useState<string | null>(gravatarUrl);
   const [avatarFailed, setAvatarFailed] = useState(false);
 
+  useEffect(() => {
+    setAvatarSrc(gravatarUrl);
+    setAvatarFailed(false);
+  }, [gravatarUrl]);
+
   const handleAvatarError = () => {
     if (avatarSrc === gravatarUrl && dicebearUrl) setAvatarSrc(dicebearUrl);
     else setAvatarFailed(true);

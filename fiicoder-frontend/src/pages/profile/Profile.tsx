@@ -16,7 +16,7 @@ import ProfileProposalsPanel from './components/ProfileProposalsPanel';
 import ProfileHomeworkPanel from './components/ProfileHomeworkPanel';
 
 export default function Profile() {
-    const { username, isAdmin, isProfessor } = useAuth();
+    const { username, userId, isAdmin, isProfessor } = useAuth();
     const { lang } = useLanguage();
     const { theme } = useTheme();
     const queryClient = useQueryClient();
@@ -25,12 +25,12 @@ export default function Profile() {
     const [togglingTitle, setTogglingTitle] = useState<string | null>(null);
 
     const profileQuery = useQuery({
-        queryKey: ['profile', 'me'],
+        queryKey: ['profile', 'me', userId],
         queryFn: () => profileService.getMyProfile(),
     });
 
     const proposalsQuery = useQuery({
-        queryKey: ['profile', 'proposals'],
+        queryKey: ['profile', 'proposals', userId],
         queryFn: () => proposeProblemService.getMyProposals(),
         enabled: canViewProposals && activeTab === 'proposals',
     });
