@@ -13,7 +13,7 @@ export default function Navbar() {
 
   const { lang, setLang } = useLanguage();
   const t = translations[lang];
-  const { isAuthenticated, username, isAdmin, isProfessor, logout } = useAuth();
+  const { isAuthenticated, username, gravatarUrl, isAdmin, isProfessor, logout } = useAuth();
 
   const { theme, themes, setTheme, customColors, setCustomColors } = useTheme();
 
@@ -233,9 +233,13 @@ export default function Navbar() {
                   to="/profile"
                   className={`${getNavLinkClass("/profile")} min-w-0`}
                 >
-                  <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white uppercase bg-(--accent) shadow-sm shadow-(--accent)/20">
-                    {username?.charAt(0) || "?"}
-                  </div>
+                  {gravatarUrl ? (
+                    <img src={gravatarUrl} alt="avatar" className="w-5 h-5 rounded-full shadow-sm" />
+                  ) : (
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white uppercase bg-(--accent) shadow-sm shadow-(--accent)/20">
+                      {username?.charAt(0) || "?"}
+                    </div>
+                  )}
                   <span className="text-sm font-bold text-(--text) max-w-25 truncate">
                     {username}
                   </span>
@@ -452,9 +456,13 @@ export default function Navbar() {
                     onClick={closeMenu}
                     className={getNavLinkClass("/profile") + " text-center"}
                   >
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-sm font-black text-white uppercase bg-(--accent) shadow-md shadow-(--accent)/20">
-                      {username?.charAt(0) || "?"}
-                    </div>
+                    {gravatarUrl ? (
+                      <img src={gravatarUrl} alt="avatar" className="w-5 h-5 rounded-full shadow-md" />
+                    ) : (
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center text-sm font-black text-white uppercase bg-(--accent) shadow-md shadow-(--accent)/20">
+                        {username?.charAt(0) || "?"}
+                      </div>
+                    )}
                     <span className="text-base font-medium text-(--text) truncate">
                       {username}
                     </span>

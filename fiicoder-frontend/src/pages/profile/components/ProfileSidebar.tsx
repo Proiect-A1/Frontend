@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import type { ProfileResponseDTO } from '../../../services/profileService';
 import { itemVariants } from '../../../utils/motionConfig';
+import { getGravatarUrl } from '../../../utils/gravatar';
 
 type ProfileSidebarProps = {
     profile: ProfileResponseDTO;
@@ -9,6 +11,14 @@ type ProfileSidebarProps = {
 };
 
 export default function ProfileSidebar({ profile, username, lang }: ProfileSidebarProps) {
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+    const [imgError, setImgError] = useState(false);
+
+    useEffect(() => {
+        setImgError(false);
+        getGravatarUrl(profile.email).then(setAvatarUrl);
+    }, [profile.email]);
+
     const roleLabel =
         profile.username === 'GolderbergPrivate'
             ? 'Admin'
@@ -26,8 +36,30 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
                 variants={itemVariants}
                 className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm flex flex-col items-center lg:items-start text-center lg:text-left"
             >
-                <div className="w-24 h-24 mb-4 rounded-full bg-linear-to-br from-(--accent) to-purple-500 flex items-center justify-center text-4xl font-bold text-white uppercase shadow-lg outline-4 outline-offset-4 outline-(--accent) overflow-hidden shrink-0">
-                    {(profile.username || username || profile.firstName).charAt(0).toUpperCase()}
+                <div className="relative group mb-4">
+                    {avatarUrl && !imgError ? (
+                        <img
+                            src={avatarUrl}
+                            alt="avatar"
+                            className="w-24 h-24 rounded-full shadow-lg outline-4 outline-offset-4 outline-(--accent) shrink-0"
+                            onError={() => setImgError(true)}
+                        />
+                    ) : (
+                        <div className="w-24 h-24 rounded-full bg-linear-to-br from-(--accent) to-purple-500 flex items-center justify-center text-4xl font-bold text-white uppercase shadow-lg outline-4 outline-offset-4 outline-(--accent) shrink-0">
+                            {(profile.username || username || profile.firstName).charAt(0).toUpperCase()}
+                        </div>
+                    )}
+                    <a
+                        href="https://gravatar.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        title={lang === 'RO' ? 'Schimbă poza pe Gravatar' : 'Change photo on Gravatar'}
+                    >
+                        <span className="text-white text-xs font-semibold text-center leading-tight px-1">
+                            {lang === 'RO' ? 'Schimbă\npoza' : 'Change\nphoto'}
+                        </span>
+                    </a>
                 </div>
                 <h1 className="text-2xl font-bold text-(--text-h)">
                     {profile.firstName} {profile.lastName}
