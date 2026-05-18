@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { containerVariants, itemVariants } from '../../../utils/motionConfig';
 import { useLanguage } from '../../../language/Language';
 import { adminService, type ProblemProposal, type ProblemProposalDetail } from '../services/adminService';
+import { unpackTranslation } from '../../../utils/translationPacker';
 
 type Props = {
     proposals: ProblemProposal[];
@@ -92,7 +93,7 @@ export default function ProposalsTab({
                                         </span>
                                     </div>
                                     <p className="text-sm text-(--text) line-clamp-2 mb-3">
-                                        {proposal.description}
+                                        {unpackTranslation(proposal.description, lang)}
                                     </p>
                                     <div className="flex items-center justify-between text-xs text-(--text-muted) font-semibold">
                                         <span>
@@ -190,7 +191,7 @@ export default function ProposalsTab({
                             ) : (
                                 <div className="space-y-4">
                                     <p className="text-sm text-(--text) leading-relaxed">
-                                        {selectedProposal.statement ?? selectedProposal.description}
+                                        {unpackTranslation(selectedProposal.statement ?? selectedProposal.description, lang)}
                                     </p>
 
                                     <div className="grid gap-3 sm:grid-cols-2">
