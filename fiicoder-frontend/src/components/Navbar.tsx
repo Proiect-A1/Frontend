@@ -193,7 +193,7 @@ export default function Navbar() {
 
             {/* left area: search (desktop) */}
             <div className="hidden xl:flex items-center">
-              <div className="w-64">
+              <div className="w-44">
                 <SearchInput
                   value={navSearch}
                   onChange={setNavSearch}
