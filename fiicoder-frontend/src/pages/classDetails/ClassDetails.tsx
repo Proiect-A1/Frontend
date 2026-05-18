@@ -247,7 +247,7 @@ function HomeworkItem({
                 <div className="flex flex-wrap items-center gap-2">
                     <button
                         onClick={() => onToggle(homework.id)}
-                        className="rounded-xl border border-(--accent)/40 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
+                        className="rounded-full border border-(--accent)/40 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
                     >
                         {isSelected
                             ? lang === 'RO'
@@ -262,14 +262,14 @@ function HomeworkItem({
                             {homework.status === 'DRAFT' && (
                                 <button
                                     onClick={handlePublish}
-                                    className="rounded-lg border border-emerald-400/50 px-3 py-1.5 text-xs font-semibold text-emerald-200 hover:bg-emerald-500/10"
+                                    className="rounded-full border border-emerald-400/50 px-3 py-1.5 text-xs font-semibold text-emerald-200 hover:bg-emerald-500/10"
                                 >
                                     {lang === 'RO' ? 'Publică' : 'Publish'}
                                 </button>
                             )}
                             <button
                                 onClick={handleDelete}
-                                className="rounded-lg border border-red-400/50 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/10"
+                                className="rounded-full border border-red-400/50 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/10"
                             >
                                 {lang === 'RO' ? 'Șterge' : 'Delete'}
                             </button>
@@ -783,7 +783,7 @@ export default function ClassDetails() {
                         {/* Details Section */}
                         <motion.section
                             variants={itemVariants}
-                            className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4"
+                            className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4 flex flex-col"
                         >
                             <h2 className="text-xl font-bold text-(--text-h) mb-4">
                                 {lang === 'RO' ? 'Detalii' : 'Details'}
@@ -818,7 +818,7 @@ export default function ClassDetails() {
                                 )}
                             </div>
 
-                            <div className="border-t border-(--accent)/20 pt-4">
+                            <div className="border-t border-(--accent)/20 pt-4 mt-auto">
                                 <h3 className="text-sm font-bold text-(--text-h) mb-3">
                                     {lang === 'RO' ? 'Invită colegi' : 'Invite members'}
                                 </h3>
@@ -854,12 +854,15 @@ export default function ClassDetails() {
                         {/* Create Homework Section */}
                         <motion.section
                             variants={itemVariants}
-                            className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4"
+                            className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4 flex flex-col"
                         >
                             <h2 className="text-xl font-bold text-(--text-h) mb-4">
                                 {lang === 'RO' ? 'Temă nouă' : 'New homework'}
                             </h2>
-                            <form onSubmit={handleCreateHomework} className="space-y-3">
+                            <form
+                                onSubmit={handleCreateHomework}
+                                className="space-y-3 flex flex-col"
+                            >
                                 <input
                                     value={homeworkTitle}
                                     onChange={(e) => setHomeworkTitle(e.target.value)}
@@ -917,7 +920,7 @@ export default function ClassDetails() {
                                 </div>
                                 <button
                                     type="submit"
-                                    className="w-full inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
+                                    className="w-full mt-auto inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                                 >
                                     {lang === 'RO' ? 'Creează' : 'Create'}
                                 </button>

@@ -296,183 +296,166 @@ export default function ClassesHub() {
     );
 
     return (
-            <motion.div
-                className="w-full max-w-7xl mx-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar xl:flex-1 xl:min-h-0"
-                variants={pageVariants}
-                initial="hidden"
-                animate="visible"
-            >
-                <motion.div variants={containerVariants} initial="hidden" animate="visible">
+        <motion.div
+            className="w-full max-w-7xl mx-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar xl:flex-1 xl:min-h-0"
+            variants={pageVariants}
+            initial="hidden"
+            animate="visible"
+        >
+            <motion.div variants={containerVariants} initial="hidden" animate="visible">
+                <motion.div
+                    variants={itemVariants}
+                    className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between mb-5"
+                >
+                    <div>
+                        <p className="text-xs uppercase tracking-widest text-(--text-muted)">
+                            {lang === 'RO' ? 'Clase' : 'Classes'}
+                        </p>
+                        <h1 className="text-3xl font-bold text-(--text-h) mt-1">
+                            {lang === 'RO' ? 'Hub-ul de clase' : 'Class hub'}
+                        </h1>
+                        <div className="page-line-horizontal mb-0!" />
+                    </div>
+                    <Link
+                        to="/problems"
+                        className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
+                    >
+                        {lang === 'RO' ? 'Mergi la probleme' : 'Go to problems'}
+                    </Link>
+                </motion.div>
+
+                {(feedback || error) && (
                     <motion.div
                         variants={itemVariants}
-                        className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between mb-5"
+                        className={`mb-6 rounded-2xl border-2 px-4 py-3 text-sm ${error ? 'border-red-500/40 bg-red-500/10 text-(--text-h)' : 'border-(--accent)/40 bg-(--accent)/10 text-(--text-h)'}`}
                     >
-                        <div>
-                            <p className="text-xs uppercase tracking-widest text-(--text-muted)">
-                                {lang === 'RO' ? 'Clase' : 'Classes'}
-                            </p>
-                            <h1 className="text-3xl font-bold text-(--text-h) mt-1">
-                                {lang === 'RO' ? 'Hub-ul de clase' : 'Class hub'}
-                            </h1>
-                            <div className="page-line-horizontal mb-0!" />
-                        </div>
-                        <Link
-                            to="/problems"
-                            className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
-                        >
-                            {lang === 'RO' ? 'Mergi la probleme' : 'Go to problems'}
-                        </Link>
+                        {error || feedback}
                     </motion.div>
+                )}
 
-                    {(feedback || error) && (
-                        <motion.div
-                            variants={itemVariants}
-                            className={`mb-6 rounded-2xl border-2 px-4 py-3 text-sm ${error ? 'border-red-500/40 bg-red-500/10 text-(--text-h)' : 'border-(--accent)/40 bg-(--accent)/10 text-(--text-h)'}`}
-                        >
-                            {error || feedback}
-                        </motion.div>
-                    )}
+                <div className="grid gap-4 md:gap-6 xl:grid-cols-[1fr_1fr]">
+                    <motion.section
+                        variants={itemVariants}
+                        className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4 flex flex-col"
+                    >
+                        <h2 className="text-xl font-bold text-(--text-h) mb-4">
+                            {lang === 'RO' ? 'Creează o clasă' : 'Create a class'}
+                        </h2>
 
-                    <div className="grid gap-4 md:gap-6 xl:grid-cols-[1fr_1fr]">
-                        <motion.section
-                            variants={itemVariants}
-                            className=""
-                        >
-                            <h2 className="text-xl font-bold text-(--text-h)">
-                                {lang === 'RO' ? 'Creează o clasă' : 'Create a class'}
-                            </h2>
-                            <p className="mt-2 text-xs text-(--text-muted)">
-                                {lang === 'RO'
-                                    ? 'Backend-ul cere creatorId, deci folosim direct userul din JWT.'
-                                    : 'The backend expects creatorId, so we use the user id from the JWT.'}
-                            </p>
-
-                            <form onSubmit={handleCreateClass} className="mt-4 space-y-3">
-                                <input
-                                    value={className}
-                                    onChange={(event) => setClassName(event.target.value)}
-                                    placeholder={lang === 'RO' ? 'Nume clasă' : 'Class name'}
-                                    className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-muted) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
-                                />
-                                <textarea
-                                    value={classDescription}
-                                    onChange={(event) => setClassDescription(event.target.value)}
-                                    placeholder={
-                                        lang === 'RO'
-                                            ? 'Descriere opțională'
-                                            : 'Optional description'
-                                    }
-                                    className="min-h-24 w-full rounded-xl border border-(--accent)/25 bg-(--surface-muted) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
-                                />
-                                <button
-                                    type="submit"
-                                    className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
-                                >
-                                    {lang === 'RO' ? 'Creează clasa' : 'Create class'}
-                                </button>
-                            </form>
-                        </motion.section>
-                        <motion.section
-                            variants={itemVariants}
-                            className=""
-                        >
-                            <h2 className="text-xl font-bold text-(--text-h)">
-                                {lang === 'RO' ? 'Găsește o clasă' : 'Find a class'}
-                            </h2>
-                            <form
-                                onSubmit={handleLookupClass}
-                                className="mt-4 flex flex-col sm:flex-row gap-3"
+                        <form onSubmit={handleCreateClass} className="space-y-3 flex flex-col">
+                            <input
+                                value={className}
+                                onChange={(event) => setClassName(event.target.value)}
+                                placeholder={lang === 'RO' ? 'Nume clasă' : 'Class name'}
+                                className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-muted) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
+                            />
+                            <textarea
+                                value={classDescription}
+                                onChange={(event) => setClassDescription(event.target.value)}
+                                placeholder={
+                                    lang === 'RO' ? 'Descriere opțională' : 'Optional description'
+                                }
+                                className="min-h-24 w-full rounded-xl border border-(--accent)/25 bg-(--surface-muted) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
+                            />
+                            <button
+                                type="submit"
+                                className="w-full mt-auto inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                             >
-                                <input
-                                    value={lookupId}
-                                    onChange={(event) => setLookupId(event.target.value)}
-                                    placeholder={lang === 'RO' ? 'UUID clasă' : 'Class UUID'}
-                                    className="flex-1 rounded-xl border border-(--accent)/25 bg-(--surface-muted) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
-                                />
-                                <button
-                                    type="submit"
-                                    className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
-                                >
-                                    {lang === 'RO' ? 'Caută' : 'Search'}
-                                </button>
-                            </form>
+                                {lang === 'RO' ? 'Creează clasa' : 'Create class'}
+                            </button>
+                        </form>
+                    </motion.section>
+                    <motion.section
+                        variants={itemVariants}
+                        className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4 flex flex-col"
+                    >
+                        <h2 className="text-xl font-bold text-(--text-h) mb-4">
+                            {lang === 'RO' ? 'Găsește o clasă' : 'Find a class'}
+                        </h2>
+                        <form onSubmit={handleLookupClass} className="space-y-3 flex flex-col">
+                            <input
+                                value={lookupId}
+                                onChange={(event) => setLookupId(event.target.value)}
+                                placeholder={lang === 'RO' ? 'UUID clasă' : 'Class UUID'}
+                                className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
+                            />
+                            <button
+                                type="submit"
+                                className="w-full inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
+                            >
+                                {lang === 'RO' ? 'Caută' : 'Search'}
+                            </button>
+                        </form>
 
-                            {foundClass && (
-                                <motion.div
-                                    variants={itemVariants}
-                                    className="mt-4 rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4"
-                                >
-                                    <h3 className="text-lg font-semibold text-(--text-h)">
-                                        {foundClass.name}
-                                    </h3>
-                                    <p className="mt-1 text-sm text-(--text-muted)">
-                                        {foundClass.description ||
-                                            (lang === 'RO' ? 'Fără descriere.' : 'No description.')}
-                                    </p>
-                                    <div className="mt-3 grid gap-1 text-xs text-(--text-muted)">
-                                        <div>
-                                            {lang === 'RO' ? 'Creată de' : 'Created by'}:{' '}
-                                            {foundClass.creatorUsername}
-                                        </div>
-                                        <div>ID: {foundClass.id}</div>
-                                        <div>{foundClass.createdAt}</div>
+                        {foundClass && (
+                            <motion.div
+                                variants={itemVariants}
+                                className="mt-4 rounded-xl border border-(--accent)/20 bg-(--surface-card) p-3"
+                            >
+                                <h3 className="text-sm font-semibold text-(--text-h)">
+                                    {foundClass.name}
+                                </h3>
+                                <p className="mt-1 text-xs text-(--text-muted)">
+                                    {foundClass.description ||
+                                        (lang === 'RO' ? 'Fără descriere.' : 'No description.')}
+                                </p>
+                                <div className="mt-2 space-y-1 text-[11px] text-(--text-muted)">
+                                    <div>
+                                        {lang === 'RO' ? 'Creată de' : 'Created by'}:{' '}
+                                        {foundClass.creatorUsername}
                                     </div>
-                                    <Link
-                                        to={`/classes/${foundClass.id}`}
-                                        className="mt-3 inline-flex rounded-2xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
-                                    >
-                                        {lang === 'RO' ? 'Deschide clasa' : 'Open class'}
-                                    </Link>
-                                </motion.div>
-                            )}
-                        </motion.section>
+                                    <div className="font-mono break-all">{foundClass.id}</div>
+                                </div>
+                                <Link
+                                    to={`/classes/${foundClass.id}`}
+                                    className="mt-3 inline-flex rounded-xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
+                                >
+                                    {lang === 'RO' ? 'Deschide clasa' : 'Open class'}
+                                </Link>
+                            </motion.div>
+                        )}
+                    </motion.section>
+                </div>
+
+                <motion.section variants={itemVariants} className="mt-4 md:mt-6">
+                    <div className="flex items-center justify-between gap-4">
+                        <h2 className="text-xl font-bold text-(--text-h)">
+                            {lang === 'RO' ? 'Clase recente' : 'Recent classes'}
+                        </h2>
+                        {recentClasses.length > 0 && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (userId) {
+                                        setRecentClasses([]);
+                                        saveRecentClasses(userId, []);
+                                    }
+                                }}
+                                className="rounded-2xl border border-(--accent)/35 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
+                            >
+                                {lang === 'RO' ? 'Curăță' : 'Clear'}
+                            </button>
+                        )}
                     </div>
 
-                    <motion.section
-                        variants={itemVariants}
-                        className="mt-4 md:mt-6"
-                    >
-                        <div className="flex items-center justify-between gap-4">
-                            <h2 className="text-xl font-bold text-(--text-h)">
-                                {lang === 'RO' ? 'Clase recente' : 'Recent classes'}
-                            </h2>
-                            {recentClasses.length > 0 && (
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        if (userId) {
-                                            setRecentClasses([]);
-                                            saveRecentClasses(userId, []);
-                                        }
-                                    }}
-                                    className="rounded-2xl border border-(--accent)/35 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
-                                >
-                                    {lang === 'RO' ? 'Curăță' : 'Clear'}
-                                </button>
-                            )}
-                        </div>
+                    {memoizedRecentClasses}
+                </motion.section>
 
-                        {memoizedRecentClasses}
-                    </motion.section>
+                <motion.section variants={itemVariants} className="mt-4 md:mt-6">
+                    <div className="flex items-center justify-between gap-4">
+                        <h2 className="text-xl font-bold text-(--text-h)">
+                            {lang === 'RO' ? 'Invitațiile mele' : 'My invitations'}
+                        </h2>
+                        {loadingInvitations && (
+                            <span className="text-xs text-(--text-muted)">
+                                {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
+                            </span>
+                        )}
+                    </div>
 
-                    <motion.section
-                        variants={itemVariants}
-                        className="mt-4 md:mt-6"
-                    >
-                        <div className="flex items-center justify-between gap-4">
-                            <h2 className="text-xl font-bold text-(--text-h)">
-                                {lang === 'RO' ? 'Invitațiile mele' : 'My invitations'}
-                            </h2>
-                            {loadingInvitations && (
-                                <span className="text-xs text-(--text-muted)">
-                                    {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
-                                </span>
-                            )}
-                        </div>
-
-                        {memoizedInvitations}
-                    </motion.section>
-                </motion.div>
+                    {memoizedInvitations}
+                </motion.section>
             </motion.div>
+        </motion.div>
     );
 }
