@@ -168,18 +168,6 @@ export default function StatementTab() {
         >
           {isTranslating ? "Se traduce..." : "Auto-Translate to EN"}
         </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            const mockPayload =
-              '{"_encoded":true,"ro":"test%20enunt%20in%20română","en":"test%20english%20statement"}';
-            setValue("statement", mockPayload, { shouldDirty: true });
-          }}
-          className="inline-flex items-center justify-center px-3 py-1.5 text-sm rounded-full font-bold border border-orange-400 bg-orange-400/10 text-orange-400"
-        >
-            Load Mock Data
-        </button>
       </motion.div>
 
       {/* Editor & Preview Layout */}
