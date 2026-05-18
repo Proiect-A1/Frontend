@@ -203,6 +203,7 @@ export default function Login() {
                             <input
                                 type="email"
                                 required
+                                autoComplete="email"
                                 value={usernameOrEmail}
                                 onChange={(e) => setUsernameOrEmail(e.target.value)}
                                 placeholder="ex: nume@email.com"
@@ -216,6 +217,7 @@ export default function Login() {
                             <input
                                 type="password"
                                 required
+                                autoComplete="current-password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
@@ -235,6 +237,7 @@ export default function Login() {
                                 required
                                 minLength={3}
                                 maxLength={30}
+                                autoComplete="username"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 placeholder="ex: fiicoder"
@@ -257,6 +260,7 @@ export default function Login() {
                                     type="text"
                                     required
                                     maxLength={50}
+                                    autoComplete="given-name"
                                     value={firstName}
                                     onChange={(e) => setFirstName(e.target.value)}
                                     placeholder={t.namePlaceholder}
@@ -280,6 +284,7 @@ export default function Login() {
                                     type="text"
                                     required
                                     maxLength={50}
+                                    autoComplete="family-name"
                                     value={lastName}
                                     onChange={(e) => setLastName(e.target.value)}
                                     placeholder={t.surnamePlaceholder}
@@ -303,6 +308,7 @@ export default function Login() {
                             <input
                                 type="email"
                                 required
+                                autoComplete="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder={t.emailPlaceholder}
@@ -322,6 +328,7 @@ export default function Login() {
                                 type="password"
                                 required
                                 minLength={8}
+                                autoComplete="new-password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
@@ -342,6 +349,7 @@ export default function Login() {
                             <input
                                 type="password"
                                 required
+                                autoComplete="new-password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 placeholder="••••••••"
