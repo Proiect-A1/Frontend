@@ -832,7 +832,7 @@ export default function ClassDetails() {
                                     <button
                                         type="submit"
                                         disabled={loadingInvite}
-                                        className="w-full px-3 py-2 bg-(--accent)/10 border border-(--accent)/40 rounded-xl text-xs font-semibold text-(--text-h) hover:bg-(--accent)/20 transition-colors disabled:opacity-50"
+                                        className="w-full inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                                     >
                                         {loadingInvite
                                             ? '...'
