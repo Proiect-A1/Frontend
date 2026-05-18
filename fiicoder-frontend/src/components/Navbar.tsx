@@ -339,10 +339,6 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* ── Desktop theme dropdown panel ─────────────────────────────── */}
-        {/* Rendered outside the pill so the lang-toggle's overflow-hidden
-                    (and any backdrop-filter stacking context on the pill) cannot
-                    clip the panel. Positioned relative to <nav>. */}
         <AnimatePresence>
           {isThemeOpen && (
             <motion.div
@@ -409,7 +405,7 @@ export default function Navbar() {
           )}
         </AnimatePresence>
 
-        {/* ── Mobile dropdown ───────────────────────────────────────────── */}
+        {/*  Mobile dropdown */}
         <AnimatePresence>
           {isMobileOpen && (
             <motion.div
@@ -417,7 +413,7 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.12 }}
-              className="min-[1200px]:hidden absolute top-full left-0 right-0 mt-6 p-6 bg-(--surface-card) backdrop-blur-xl border-2 border-(--accent) rounded-3xl flex flex-col gap-4 shadow-2xl z-10"
+              className="min-[1200px]:hidden absolute top-full left-0 right-0 mt-6 p-6 bg-(--surface-card) backdrop-blur-xl border-2 border-(--accent) rounded-3xl flex flex-col gap-4"
             >
               <Link
                 to="/problems"
@@ -454,9 +450,9 @@ export default function Navbar() {
                   <Link
                     to="/profile"
                     onClick={closeMenu}
-                    className="flex items-center justify-center gap-3 px-3 py-2.5 rounded-2xl border-2 border-(--accent)/30 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors cursor-pointer"
+                    className={getNavLinkClass("/profile") + " text-center"}
                   >
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-black text-white uppercase bg-(--accent) shadow-md shadow-(--accent)/20">
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-sm font-black text-white uppercase bg-(--accent) shadow-md shadow-(--accent)/20">
                       {username?.charAt(0) || "?"}
                     </div>
                     <span className="text-base font-medium text-(--text) truncate">
@@ -472,7 +468,7 @@ export default function Navbar() {
                       backgroundColor:
                         "color-mix(in srgb, var(--status-error) 10%, transparent)",
                     }}
-                    className="px-4 py-2.5 rounded-2xl text-sm font-bold border-2 transition-all duration-200 hover:bg-black/5"
+                    className={getNavLinkClass("/logout") + " text-center"}
                   >
                     {t.disconnectBtn}
                   </button>
@@ -500,7 +496,7 @@ export default function Navbar() {
                       setLang("RO");
                       closeMenu();
                     }}
-                    className={`px-6 py-2 rounded-xl text-sm font-bold border-2 transition-colors ${lang === "RO" ? "border-(--accent) text-(--text-h) bg-(--accent)/20" : "border-(--accent)/20 text-(--text-muted)"}`}
+                    className={`px-6 py-2 rounded-full text-sm font-bold border-2 transition-colors ${lang === "RO" ? "border-(--accent) text-(--text-h) bg-(--accent)/20" : "border-(--accent)/20 text-(--text-muted)"}`}
                   >
                     RO
                   </button>
@@ -509,7 +505,7 @@ export default function Navbar() {
                       setLang("EN");
                       closeMenu();
                     }}
-                    className={`px-6 py-2 rounded-xl text-sm font-bold border-2 transition-colors ${lang === "EN" ? "border-(--accent) text-(--text-h) bg-(--accent)/20" : "border-(--accent)/20 text-(--text-muted)"}`}
+                    className={`px-6 py-2 rounded-full text-sm font-bold border-2 transition-colors ${lang === "EN" ? "border-(--accent) text-(--text-h) bg-(--accent)/20" : "border-(--accent)/20 text-(--text-muted)"}`}
                   >
                     EN
                   </button>
@@ -520,7 +516,7 @@ export default function Navbar() {
               <div className="relative w-full" ref={mobileThemeDropdownRef}>
                 <button
                   onClick={() => setIsMobileThemeOpen(!isMobileThemeOpen)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-bold border-2 border-(--accent)/40 text-(--text-h) bg-(--accent)/10 transition-all duration-200 hover:bg-(--accent)/20"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold border-2 border-(--accent)/40 text-(--text-h) bg-(--accent)/10 transition-all duration-200 hover:bg-(--accent)/20"
                 >
                   {lang === "RO" ? "Temă:" : "Theme:"} {formatThemeLabel(theme)}
                   <motion.span
