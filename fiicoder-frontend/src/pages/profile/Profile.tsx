@@ -45,6 +45,16 @@ export default function Profile() {
     const proposals = proposalsQuery.data ?? [];
     const loadingProposals = proposalsQuery.isPending;
 
+    const handleDeleteProposal = async (title: string) => {
+        try {
+            await proposeProblemService.deleteProblem(title);
+            await queryClient.invalidateQueries({ queryKey: ['profile', 'proposals'] });
+            toast.success(lang === 'RO' ? 'Propunerea a fost ștearsă.' : 'Proposal deleted.');
+        } catch {
+            toast.error(lang === 'RO' ? 'Eroare la ștergerea propunerii.' : 'Failed to delete proposal.');
+        }
+    };
+
     const handleToggleVisibility = async (title: string, currentVisibility: 'public' | 'private') => {
         const newVisibility = currentVisibility === 'public' ? 'PRIVATE' : 'PUBLIC';
         setTogglingTitle(title);
@@ -160,6 +170,7 @@ export default function Profile() {
                                     lang={lang}
                                     onToggleVisibility={handleToggleVisibility}
                                     togglingTitle={togglingTitle}
+                                    onDelete={handleDeleteProposal}
                                 />
                             ) : (
                                 <ProfileHomeworkPanel lang={lang} />

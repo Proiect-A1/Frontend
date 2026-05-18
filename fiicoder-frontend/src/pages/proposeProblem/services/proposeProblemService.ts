@@ -74,6 +74,11 @@ export const proposeProblemService = {
     } as ProposeProblemForm;
   },
 
+  // Delete a proposal (DRAFT/REJECTED: author or admin; ACCEPTED: admin only)
+  deleteProblem: async (title: string): Promise<void> => {
+    await apiClient.delete(`/problems/${encodeURIComponent(title)}`);
+  },
+
   // Get list of proposals for the current user
   getMyProposals: async (page: number = 1, size: number = 20): Promise<ProblemProposalResponse[]> => {
     const data = await apiClient.get<BackendProblemProposal[]>(`/problems/proposed?page=${page}&size=${size}`);

@@ -9,9 +9,10 @@ type ProfileProposalsPanelProps = {
     lang: 'RO' | 'EN';
     onToggleVisibility?: (title: string, current: 'public' | 'private') => void;
     togglingTitle?: string | null;
+    onDelete?: (title: string) => Promise<void>;
 };
 
-export default function ProfileProposalsPanel({ proposals, loading, lang, onToggleVisibility, togglingTitle }: ProfileProposalsPanelProps) {
+export default function ProfileProposalsPanel({ proposals, loading, lang, onToggleVisibility, togglingTitle, onDelete }: ProfileProposalsPanelProps) {
     const viewLabel = lang === 'RO' ? 'Vezi' : 'View';
     const editLabel = lang === 'RO' ? 'Editează' : 'Edit';
 
@@ -94,6 +95,14 @@ export default function ProfileProposalsPanel({ proposals, loading, lang, onTogg
                                     >
                                         {editLabel}
                                     </Link>
+                                    {proposal.status !== 'approved' && onDelete && (
+                                        <button
+                                            onClick={() => onDelete(proposal.title)}
+                                            className="px-3 py-1.5 rounded-full border-2 border-red-500/40 bg-red-500/10 text-xs font-bold text-red-500 hover:bg-red-500/20 transition-colors"
+                                        >
+                                            {lang === 'RO' ? 'Șterge' : 'Delete'}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>

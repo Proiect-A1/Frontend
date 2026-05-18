@@ -197,6 +197,10 @@ export const adminService = {
         }
     },
 
+    async deleteProblem(title: string): Promise<void> {
+        await apiClient.delete(`/problems/${encodeURIComponent(title)}`);
+    },
+
     async reviewProposal(title: string, action: 'approve' | 'reject'): Promise<void> {
         await apiClient.patch(`/problems/${encodeURIComponent(title)}/status`, {
             updatedStatus: action === 'approve' ? 'ACCEPTED' : 'REJECTED'

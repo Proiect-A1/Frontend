@@ -11,6 +11,7 @@ type Props = {
     selectedProposalId: string | null;
     setSelectedProposalId: (id: string | null) => void;
     handleReviewProposal: (id: string, action: 'approve' | 'reject') => void;
+    handleDeleteProposal: (id: string) => void;
 };
 
 export default function ProposalsTab({
@@ -18,7 +19,8 @@ export default function ProposalsTab({
     selectedProposal,
     selectedProposalId,
     setSelectedProposalId,
-    handleReviewProposal
+    handleReviewProposal,
+    handleDeleteProposal,
 }: Props) {
     const { lang } = useLanguage();
     const [showTests, setShowTests] = useState(false);
@@ -222,6 +224,12 @@ export default function ProposalsTab({
                             )}
 
                             <div className="flex flex-wrap items-center justify-end gap-2 pt-4 border-t border-(--accent)/20">
+                                <button
+                                    onClick={() => handleDeleteProposal(selectedProposal.id)}
+                                    className="px-4 py-2 rounded-full border-2 border-red-900/40 bg-red-900/10 text-red-400 text-xs font-bold hover:bg-red-900/20 transition-all active:scale-95 mr-auto"
+                                >
+                                    {lang === 'RO' ? 'Șterge' : 'Delete'}
+                                </button>
                                 <button
                                     onClick={() => handleReviewProposal(selectedProposal.id, 'reject')}
                                     className="px-4 py-2 rounded-full border-2 border-red-500/40 bg-red-500/10 text-red-500 text-xs font-bold hover:bg-red-500/20 transition-all active:scale-95"
