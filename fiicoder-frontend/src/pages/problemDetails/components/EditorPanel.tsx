@@ -44,18 +44,27 @@ export default function EditorPanel({
     const handleCopy = async () => {
         const editor = editorInstanceRef.current;
         if (!editor) return;
-        const text = editor.getModel()?.getValueInRange(editor.getSelection());
+        const model = editor.getModel();
+        const selection = editor.getSelection();
+        const text = model?.getValueInRange(selection) || model?.getValue();
         if (text) await navigator.clipboard.writeText(text);
     };
 
     const handleCut = async () => {
         const editor = editorInstanceRef.current;
         if (!editor) return;
+        const model = editor.getModel();
         const selection = editor.getSelection();
-        const text = editor.getModel()?.getValueInRange(selection);
-        if (text) {
-            await navigator.clipboard.writeText(text);
+        const selectedText = model?.getValueInRange(selection);
+        if (selectedText) {
+            await navigator.clipboard.writeText(selectedText);
             editor.executeEdits('clipboard-cut', [{ range: selection, text: '' }]);
+        } else {
+            const allText = model?.getValue();
+            if (allText) {
+                await navigator.clipboard.writeText(allText);
+                editor.executeEdits('clipboard-cut', [{ range: model.getFullModelRange(), text: '' }]);
+            }
         }
     };
 
