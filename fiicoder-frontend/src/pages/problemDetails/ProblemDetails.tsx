@@ -161,35 +161,35 @@ export default function ProblemDetails() {
                     />
                 </div>
                 <div className="p-6 bg-(--surface-card) border-2 border-(--accent) rounded-3xl mb-4 max-h-96 overflow-y-auto custom-scrollbar flex flex-col">
-                    <div className="flex items-center gap-4 mb-4 overflow-x-auto">
+                    <div className="sticky top-0 bg-(--surface-card) z-10 flex items-center gap-4 mb-4 overflow-x-auto pb-4 -mx-6 px-6">
                         <button
                             onClick={() => setActiveTab('testcase')}
-                            className={`text-xs font-bold pb-1 border-b-2 ${activeTab === 'testcase' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
+                            className={`text-xs font-bold pb-1 border-b-2 whitespace-nowrap ${activeTab === 'testcase' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
                         >
                             Testcase
                         </button>
                         <button
                             onClick={() => setActiveTab('testresult')}
-                            className={`text-xs font-bold pb-1 border-b-2 ${activeTab === 'testresult' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
+                            className={`text-xs font-bold pb-1 border-b-2 whitespace-nowrap ${activeTab === 'testresult' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
                         >
                             Result
                         </button>
                         <button
                             onClick={() => setActiveTab('submissions')}
-                            className={`text-xs font-bold pb-1 border-b-2 ${activeTab === 'submissions' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
+                            className={`text-xs font-bold pb-1 border-b-2 whitespace-nowrap ${activeTab === 'submissions' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
                         >
                             Submissions
                         </button>
                     </div>
                     {activeTab === 'testcase' && (
                         <textarea
-                            className="w-full bg-(--surface-input) border border-(--accent)/20 rounded-2xl p-3 text-xs"
+                            className="w-full bg-(--surface-input) border border-(--accent)/20 rounded-2xl p-3 text-xs flex-1"
                             rows={4}
                             placeholder="Input..."
                         />
                     )}
                     {activeTab === 'testresult' && (
-                        <div className="min-h-30">
+                        <div className="min-h-30 flex-1 overflow-y-auto">
                             {evalStatus === 'idle' && (
                                 <div className="py-8 text-center text-xs text-(--text-muted) italic">
                                     {lang === 'RO'
@@ -290,7 +290,7 @@ export default function ProblemDetails() {
                         </div>
                     )}
                     {activeTab === 'submissions' && (
-                        <div className="space-y-2">
+                        <div className="space-y-2 flex-1 overflow-y-auto">
                             {recentSubmissions.map((s: any, i: number) => (
                                 <div
                                     key={i}
