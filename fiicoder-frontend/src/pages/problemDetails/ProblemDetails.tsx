@@ -181,6 +181,7 @@ export default function ProblemDetails() {
                         </button>
                     </div>
                     <div className="mt-2">
+                        {activeTab === 'testcase' && <TestcasePanel />}
                         {activeTab === 'testresult' && (
                             <TestResultPanel
                                 evalStatus={evalStatus}
@@ -192,17 +193,11 @@ export default function ProblemDetails() {
                             />
                         )}
                         {activeTab === 'submissions' && (
-                            <div className="space-y-2">
-                                {recentSubmissions.map((s: any, i: number) => (
-                                    <div
-                                        key={i}
-                                        className="text-xs p-2 bg-(--accent)/5 rounded-2xl border border-(--accent)/10 flex justify-between"
-                                    >
-                                        <span>{s.status}</span>
-                                        <span>{s.score}</span>
-                                    </div>
-                                ))}
-                            </div>
+                            <SubmissionsPanel
+                                isAuthenticated={isAuthenticated}
+                                recentSubmissions={recentSubmissions}
+                                lang={lang}
+                            />
                         )}
                     </div>
                     <button
