@@ -20,6 +20,34 @@ import {
   getTranslationParts,
 } from "../../../utils/translationPacker";
 
+const STATEMENT_TEMPLATE = `# Cerință
+Descrie ce trebuie să facă soluția...
+
+# Date de intrare
+Descrie formatul datelor de intrare.
+
+# Date de ieșire
+Descrie formatul datelor de ieșire.
+
+# Restricții și precizări
+- $1 \\leq n \\leq 10^5$
+- $-30 \\leq v_i \\leq 30$
+- Testul 0 valorează 0 puncte și este exemplul din enunț.
+
+# Exemplu
+\`stdin\`
+\`\`\`
+date intrare
+\`\`\`
+\`stdout\`
+\`\`\`
+date ieșire
+\`\`\`
+
+## Explicație
+Explică de ce outputul este corect pentru exemplul dat.
+`;
+
 // Utility to fix database indentation issues for Markdown
 function unindent(str: string): string {
   if (!str) return "";
@@ -75,6 +103,16 @@ export default function StatementTab() {
 
   // Apply theme reactively when theme changes (hook)
   useMonacoTheming(monacoRef, theme, buildStatementRules, customColors);
+
+  const insertExample = () => {
+    const currentValue = getValues("statement");
+    const { en } = getTranslationParts(currentValue);
+    setValue("statement", packTranslation(STATEMENT_TEMPLATE, en), {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    setActiveLang("ro");
+  };
 
   const handleTranslate = async () => {
     const currentValue = getValues("statement");
@@ -160,14 +198,36 @@ export default function StatementTab() {
             </button>
           </div>
         </div>
-        <button
-          type="button"
-          disabled={isTranslating}
-          onClick={handleTranslate}
-          className="inline-flex items-center justify-center px-3 py-1.5 text-sm rounded-full font-bold border border-(--accent) bg-(--accent)/10 text-(--accent) hover:bg-(--accent)/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isTranslating ? "Se traduce..." : "Auto-Translate to EN"}
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={insertExample}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full font-semibold border border-(--accent)/40 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors text-(--text-h)"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+            Exemplu
+          </button>
+          <button
+            type="button"
+            disabled={isTranslating}
+            onClick={handleTranslate}
+            className="inline-flex items-center justify-center px-3 py-1.5 text-sm rounded-full font-bold border border-(--accent) bg-(--accent)/10 text-(--accent) hover:bg-(--accent)/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isTranslating ? "Se traduce..." : "Auto-Translate to EN"}
+          </button>
+        </div>
+      </motion.div>
+
+      {/* Format warning */}
+      <motion.div
+        variants={itemVariants}
+        className="flex items-start gap-3 p-3 rounded-2xl border border-yellow-500/40 bg-yellow-500/5"
+      >
+        <svg className="w-5 h-5 text-yellow-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+        <div className="text-sm text-yellow-300/90 space-y-0.5">
+          <p className="font-bold text-yellow-300">Format obligatoriu</p>
+          <p>Enunțul trebuie să urmeze <strong>exact</strong> structura din template: <code className="bg-yellow-500/10 px-1 rounded font-mono text-xs"># Cerință</code> → <code className="bg-yellow-500/10 px-1 rounded font-mono text-xs"># Date de intrare</code> → <code className="bg-yellow-500/10 px-1 rounded font-mono text-xs"># Date de ieșire</code> → <code className="bg-yellow-500/10 px-1 rounded font-mono text-xs"># Restricții și precizări</code> → <code className="bg-yellow-500/10 px-1 rounded font-mono text-xs"># Exemplu</code> cu <code className="bg-yellow-500/10 px-1 rounded font-mono text-xs">`stdin`</code> / <code className="bg-yellow-500/10 px-1 rounded font-mono text-xs">`stdout`</code>. Orice altă structură va afișa greșit în platformă.</p>
+        </div>
       </motion.div>
 
       {/* Editor & Preview Layout */}
@@ -376,36 +436,6 @@ export default function StatementTab() {
         )}
       </motion.div>
 
-      {/* Template Helper */}
-      <motion.div
-        variants={itemVariants}
-        className="p-4 bg-(--surface-muted) rounded-2xl border border-(--accent)/25 space-y-2"
-      >
-        <h4 className="font-semibold text-(--accent)">Template Rapid:</h4>
-        <pre className="text-xs text-(--text) overflow-x-auto bg-(--surface-muted) p-3 rounded">
-          {`# Descrierea Problemei
-
-## Cerință
-Descrie ce trebuie să facă soluția...
-
-## Restricții
-- $1 \\leq n \\leq 10^5$
-- $0 \\leq a_i \\leq 10^9$
-
-## Exemple
-
-### Exemplul 1
-**Input:**
-\`\`\`
-3
-1 2 3
-\`\`\`
-**Output:**
-\`\`\`
-6
-\`\`\``}
-        </pre>
-      </motion.div>
     </motion.div>
   );
 }

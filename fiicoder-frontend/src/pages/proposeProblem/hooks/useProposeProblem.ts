@@ -8,7 +8,17 @@ import {
     loadDraft,
     clearDraft,
 } from '../services/proposeProblemService';
+import { createProblemZip } from '../utils/zipHelper';
 import type { ProposeProblemForm, ProblemProposalResponse } from '../types/proposeProblem';
+
+function triggerDownload(blob: Blob, filename: string) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+}
 
 type UseProposeProblemOptions = {
     proposalId?: string;
@@ -29,6 +39,7 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
     const [showDraftBanner, setShowDraftBanner] = useState(false);
     const [proposals, setProposals] = useState<ProblemProposalResponse[] | null>(null);
     const [loadingProposals, setLoadingProposals] = useState(false);
+    const [isImporting, setIsImporting] = useState(false);
 
     const draftTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -167,6 +178,30 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
         navigate('/propose');
     }, [navigate]);
 
+    const handleExport = useCallback(async () => {
+        try {
+            const formData = methods.getValues();
+            const blob = await createProblemZip(formData);
+            triggerDownload(blob, `${formData.title || 'problem'}.zip`);
+        } catch {
+            toast.error('Eroare la generarea zip-ului.');
+        }
+    }, [methods]);
+
+    const handleImport = useCallback(async (file: File) => {
+        setIsImporting(true);
+        try {
+            const { extractProblemZipFromBlob } = await import('../utils/unzipHelper');
+            const formData = await extractProblemZipFromBlob(file);
+            methods.reset(formData);
+            toast.success('Zip importat cu succes.');
+        } catch {
+            toast.error('Eroare la parsarea zip-ului. Asigură-te că e un pachet valid.');
+        } finally {
+            setIsImporting(false);
+        }
+    }, [methods]);
+
     return {
         isEditMode,
         activeTab,
@@ -185,5 +220,8 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
         handleGoToNewProposal,
         proposals,
         loadingProposals,
+        handleExport,
+        handleImport,
+        isImporting,
     };
 }

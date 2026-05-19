@@ -7,7 +7,6 @@ import DifficultySelect from './DifficultySelect';
 import LimitsInput from './LimitsInput';
 import InteractiveToggle from './InteractiveToggle';
 import TagsAutocomplete from './TagsAutocomplete';
-import VisibilitySelect from './VisibilitySelect';
 import GeneralPreview from './GeneralPreview';
 
 export default function GeneralTab() {
@@ -59,15 +58,6 @@ export default function GeneralTab() {
                     <strong>Sfat:</strong> Alege limite care sunt realiste pentru problema ta. Timp
                     prea mic poate frustra utilizatorii.
                 </p>
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="space-y-4">
-                <div className="page-line-horizontal" />
-                <h3 className="text-base font-bold text-(--text-h)">Vizibilitate & Acces</h3>
-                <VisibilitySelect
-                    value={formData.visibility}
-                    onChange={(value) => setValue('visibility', value)}
-                />
             </motion.div>
 
             <GeneralPreview data={formData} />

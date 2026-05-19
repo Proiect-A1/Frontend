@@ -69,5 +69,5 @@ export function getGravatarUrl(email: string, size = 80): string {
 }
 
 export function getDiceBearUrl(email: string): string {
-  return `https://api.dicebear.com/9.x/avataaars/png?seed=${encodeURIComponent(email.trim().toLowerCase())}`;
+  return `https://api.dicebear.com/9.x/thumbs/svg?seed=${encodeURIComponent(email.trim().toLowerCase())}`;
 }

@@ -140,7 +140,7 @@ export interface AcceptedProblem {
 
 export const adminService = {
     async getAcceptedProblems(): Promise<AcceptedProblem[]> {
-        return await apiClient.get<AcceptedProblem[]>('/problems/all?page=1&size=200');
+        return await apiClient.get<AcceptedProblem[]>('/problems/accepted?page=1&size=200');
     },
 
     async changeVisibility(title: string, visibility: 'PUBLIC' | 'PRIVATE'): Promise<void> {

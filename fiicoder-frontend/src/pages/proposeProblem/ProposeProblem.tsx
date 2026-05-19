@@ -1,4 +1,5 @@
 import { useForm, FormProvider } from 'react-hook-form';
+import { useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ProposeProblemForm } from './types/proposeProblem';
@@ -47,6 +48,8 @@ export default function ProposeProblem() {
         mode: 'onChange',
     });
 
+    const importInputRef = useRef<HTMLInputElement>(null);
+
     const {
         isEditMode,
         activeTab,
@@ -60,8 +63,10 @@ export default function ProposeProblem() {
         handleRestoreDraft,
         handleDiscardDraft,
         handleSubmit,
-        handleSaveDraftManual,
         handleResetForm,
+        handleExport,
+        handleImport,
+        isImporting,
     } = useProposeProblem({
         proposalId,
         navigate,
@@ -193,12 +198,30 @@ export default function ProposeProblem() {
                         </div>
 
                         <div className="px-6 py-4 md:px-8 rounded-b-2xl flex gap-3 justify-end flex-wrap z-10">
-                            {!isEditMode && (
-                                <button type="button" onClick={handleSaveDraftManual} className="inline-flex items-center justify-center px-3 py-1.5 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors">
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
-                                    Salvează Ciornă
-                                </button>
-                            )}
+                            <input
+                                ref={importInputRef}
+                                type="file"
+                                accept=".zip"
+                                className="hidden"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) handleImport(file);
+                                    e.target.value = '';
+                                }}
+                            />
+
+                            <button type="button" onClick={() => importInputRef.current?.click()} disabled={isImporting} className="inline-flex items-center gap-1.5 justify-center px-3 py-1.5 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors disabled:opacity-50">
+                                {isImporting
+                                    ? <div className="w-4 h-4 border-2 border-(--text-h) border-t-transparent rounded-full animate-spin" />
+                                    : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                }
+                                {isImporting ? 'Se importă...' : 'Import ZIP'}
+                            </button>
+
+                            <button type="button" onClick={handleExport} className="inline-flex items-center gap-1.5 justify-center px-3 py-1.5 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                                Export ZIP
+                            </button>
 
                             <button type="button" onClick={handleResetForm} className="inline-flex items-center justify-center px-3 py-1.5 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors">
                                 Resetează

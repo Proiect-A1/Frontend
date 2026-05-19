@@ -1,7 +1,37 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from '../../../utils/motionConfig';
 import { useLanguage } from '../../../language/Language';
 import type { AdminUser } from '../services/adminService';
+import { getGravatarUrl, getDiceBearUrl } from '../../../utils/gravatar';
+
+function UserAvatar({ user }: { user: AdminUser }) {
+    const gravatar = getGravatarUrl(user.email, 40);
+    const [src, setSrc] = useState(gravatar);
+    const [failed, setFailed] = useState(false);
+
+    const handleError = () => {
+        if (src === gravatar) setSrc(getDiceBearUrl(user.email));
+        else setFailed(true);
+    };
+
+    if (failed) {
+        return (
+            <div className="w-10 h-10 rounded-full bg-(--accent)/20 border border-(--accent)/30 flex items-center justify-center text-sm font-bold text-(--text-h) shrink-0 uppercase">
+                {(user.firstName || user.username).charAt(0)}
+            </div>
+        );
+    }
+
+    return (
+        <img
+            src={src}
+            alt={user.username}
+            onError={handleError}
+            className="w-10 h-10 rounded-full border border-(--accent)/30 object-cover shrink-0"
+        />
+    );
+}
 
 type Props = {
     users: AdminUser[];
@@ -66,7 +96,9 @@ export default function UserTab({
                         key={user.username}
                         className="p-4 rounded-2xl border border-(--accent)/20 bg-(--surface-muted) flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
                     >
-                        <div className="min-w-0">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <UserAvatar user={user} />
+                            <div className="min-w-0">
                             <h3 className="text-(--text-h) font-bold text-lg flex flex-wrap items-center gap-4">
                                 <span className="truncate">{user.username}</span>
                                 {user.role === 'ADMIN' && (
@@ -88,6 +120,7 @@ export default function UserTab({
                             <p className="text-(--text-muted) text-sm truncate">
                                 {user.firstName} {user.lastName} • {user.email}
                             </p>
+                            </div>
                         </div>
 
                         <div className="flex flex-wrap gap-2">
