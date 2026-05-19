@@ -112,10 +112,7 @@ export default function UserTab({
                                     </span>
                                 )}
                                 {user.banned && (
-                                    <span
-                                        className="bg-red-500/20 text-red-500/60 border border-red-500/60 text-xs px-2.5 py-1 rounded-full uppercase"
-                                        title={user.banReason ?? undefined}
-                                    >
+                                    <span className="bg-red-500/20 text-red-500/60 border border-red-500/60 text-xs px-2.5 py-1 rounded-full uppercase">
                                         Banned
                                     </span>
                                 )}
@@ -123,6 +120,11 @@ export default function UserTab({
                             <p className="text-(--text-muted) text-sm truncate">
                                 {user.firstName} {user.lastName} • {user.email}
                             </p>
+                            {user.banned && user.banReason && (
+                                <p className="text-red-400/70 text-xs mt-0.5 truncate">
+                                    Motiv: {user.banReason}
+                                </p>
+                            )}
                             </div>
                         </div>
 
