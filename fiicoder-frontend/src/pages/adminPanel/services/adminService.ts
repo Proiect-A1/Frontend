@@ -20,13 +20,15 @@ type AdminOverviewResponse = {
 };
 
 export interface AdminUser {
+    id?: string;
     username: string;
     firstName: string;
     lastName: string;
     email: string;
     role: 'USER' | 'ADMIN' | 'PROFESSOR';
     creationDate: string;
-    isBanned?: boolean;
+    banned: boolean;
+    banReason?: string | null;
 }
 
 export interface ProblemProposal {
@@ -73,9 +75,9 @@ export interface AuditLogEntry {
 }
 
 const mockUsers: AdminUser[] = [
-    { username: 'student1', firstName: 'Student', lastName: 'One', email: 'student1@fii.ro', role: 'USER', creationDate: '2026-04-20', isBanned: false },
-    { username: 'hacker_boi', firstName: 'Hacker', lastName: 'Boi', email: 'hacker@test.ro', role: 'USER', creationDate: '2026-04-21', isBanned: true },
-    { username: 'profesor_info', firstName: 'Prof', lastName: 'Info', email: 'prof@fii.ro', role: 'ADMIN', creationDate: '2026-04-22', isBanned: false },
+    { username: 'student1', firstName: 'Student', lastName: 'One', email: 'student1@fii.ro', role: 'USER', creationDate: '2026-04-20', banned: false },
+    { username: 'hacker_boi', firstName: 'Hacker', lastName: 'Boi', email: 'hacker@test.ro', role: 'USER', creationDate: '2026-04-21', banned: true, banReason: 'Comportament inadecvat' },
+    { username: 'profesor_info', firstName: 'Prof', lastName: 'Info', email: 'prof@fii.ro', role: 'ADMIN', creationDate: '2026-04-22', banned: false },
     ...Array.from({ length: 37 }, (_, index) => {
         const userNumber = index + 4;
         return {
@@ -85,7 +87,7 @@ const mockUsers: AdminUser[] = [
             email: `student_${userNumber}@fii.ro`,
             role: userNumber % 11 === 0 ? 'ADMIN' : (userNumber % 5 === 0 ? 'PROFESSOR' : 'USER'),
             creationDate: '2026-04-23',
-            isBanned: userNumber % 7 === 0,
+            banned: userNumber % 7 === 0,
         } satisfies AdminUser;
     }),
 ];
@@ -165,8 +167,12 @@ export const adminService = {
         }
     },
 
-    async toggleBan(username: string, isBanned: boolean): Promise<void> {
-        await apiClient.patch(`/admin/users/${username}/${isBanned ? 'unban' : 'ban'}`);
+    async toggleBan(userId: string, banned: boolean, reason?: string): Promise<void> {
+        if (banned) {
+            await apiClient.patch(`/admin/users/${userId}/unban`);
+        } else {
+            await apiClient.patch(`/admin/users/${userId}/ban`, { reason });
+        }
     },
 
     async deleteUser(username: string): Promise<void> {

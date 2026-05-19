@@ -35,12 +35,12 @@ export const authService = {
   // POST /api/auth/login
   async login(request: LoginRequest): Promise<string> {
     try {
-      // extrag tokenul din raspunsul API-ului
       const response = await apiClient.post<LoginResponse>('/auth/login', request);
-      
       return response.token;
-      
     } catch (err: any) {
+      if (err.status === 403) {
+        throw new AuthError('banned', 403, err.body);
+      }
       throw new AuthError(
         err.body?.message || err.body?.error || 'Login failed',
         err.status || 500,

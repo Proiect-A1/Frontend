@@ -20,15 +20,11 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
     };
 
     const roleLabel =
-        profile.username === 'GolderbergPrivate'
+        profile.role === 'ADMIN'
             ? 'Admin'
-            : lang === 'RO'
-              ? profile.submissions > 50
-                  ? 'Veteran'
-                  : 'Elev'
-              : profile.submissions > 50
-                ? 'Veteran'
-                : 'Student';
+            : profile.role === 'PROFESSOR'
+              ? lang === 'RO' ? 'Profesor' : 'Professor'
+              : lang === 'RO' ? 'Elev' : 'Student';
 
     return (
         <>

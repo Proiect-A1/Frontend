@@ -116,14 +116,20 @@ export default function Login() {
             }
         } catch (err) {
             if (err instanceof AuthError) {
-                if (err.status === 400 && (err.body as ValidationErrors)?.errors) {
+                if (err.status === 403) {
+                    const msg = lang === 'RO'
+                        ? 'Contul tău a fost suspendat. Contactează un administrator.'
+                        : 'Your account has been suspended. Contact an administrator.';
+                    setError(msg);
+                    toast.error(msg);
+                } else if (err.status === 400 && (err.body as ValidationErrors)?.errors) {
                     const validationErrors = (err.body as ValidationErrors).errors;
                     setFieldErrors(validationErrors);
                     setError(formatFieldErrors(validationErrors));
-                        toast.error(formatFieldErrors(validationErrors));
+                    toast.error(formatFieldErrors(validationErrors));
                 } else {
                     setError(err.message);
-                        toast.error(err.message);
+                    toast.error(err.message);
                 }
             } else {
                 const message =

@@ -37,6 +37,7 @@ export interface ProfileResponseDTO {
     lastName: string;
     email: string;
     createdAt: string;
+    role: 'USER' | 'PROFESSOR' | 'ADMIN';
     problemsSolved: number;
     submissions: number;
     acceptanceRate: number;

@@ -20,11 +20,24 @@ export function useAdminUsers(isAdmin: boolean, activeTab: string) {
         staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
-    const handleBanToggle = async (username: string, isBanned: boolean) => {
+    const handleBanToggle = async (userId: string, username: string, banned: boolean) => {
+        let reason: string | undefined;
+        if (!banned) {
+            const input = window.prompt(
+                lang === 'RO' ? 'Motivul banării (obligatoriu):' : 'Ban reason (required):'
+            );
+            if (input === null) return;
+            if (!input.trim()) {
+                toast.error(lang === 'RO' ? 'Motivul nu poate fi gol.' : 'Reason cannot be empty.');
+                return;
+            }
+            reason = input.trim();
+        }
+
         try {
-            await adminService.toggleBan(username, isBanned);
+            await adminService.toggleBan(userId, banned, reason);
             toast.success(
-                isBanned
+                banned
                     ? lang === 'RO'
                         ? 'Utilizatorul a fost deblocat.'
                         : 'User unbanned.'
@@ -35,7 +48,7 @@ export function useAdminUsers(isAdmin: boolean, activeTab: string) {
             await queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
             queryClient.setQueryData<AdminUser[]>(['admin', 'users', userPage], (previousUsers) =>
                 previousUsers?.map((user) =>
-                    user.username === username ? { ...user, isBanned: !isBanned } : user,
+                    user.username === username ? { ...user, banned: !banned, banReason: reason ?? null } : user,
                 ) ?? [],
             );
         } catch (error) {

@@ -39,7 +39,7 @@ type Props = {
     setUserPage: (page: (p: number) => number) => void;
     processingUsers: Set<string>;
     handleRoleChange: (username: string, role: 'USER' | 'ADMIN' | 'PROFESSOR') => void;
-    handleBanToggle: (username: string, isBanned: boolean) => void;
+    handleBanToggle: (userId: string, username: string, banned: boolean) => void;
     handleDeleteUser: (username: string) => void;
 };
 
@@ -111,8 +111,11 @@ export default function UserTab({
                                         Professor
                                     </span>
                                 )}
-                                {user.isBanned && (
-                                    <span className="bg-red-500/20 text-red-500/60 border border-red-500/60 text-xs px-2.5 py-1 rounded-full uppercase">
+                                {user.banned && (
+                                    <span
+                                        className="bg-red-500/20 text-red-500/60 border border-red-500/60 text-xs px-2.5 py-1 rounded-full uppercase"
+                                        title={user.banReason ?? undefined}
+                                    >
                                         Banned
                                     </span>
                                 )}
@@ -147,15 +150,15 @@ export default function UserTab({
                                 </div>
                             </div>
                             <button
-                                onClick={() => handleBanToggle(user.username, user.isBanned || false)}
+                                onClick={() => handleBanToggle(user.id ?? user.username, user.username, user.banned)}
                                 disabled={processingUsers.has(user.username)}
                                 className={`rounded-full border px-3 py-1 text-xs font-semibold disabled:opacity-50 ${
-                                    user.isBanned
+                                    user.banned
                                         ? 'border-green-500/60 bg-green-500/10 text-green-500/60 hover:bg-green-500/20'
                                         : 'border-red-500/60 bg-red-500/10 text-red-500/60 hover:bg-red-500/20'
                                 }`}
                             >
-                                {user.isBanned ? 'Unban' : 'Ban'}
+                                {user.banned ? 'Unban' : 'Ban'}
                             </button>
                             <button
                                 onClick={() => handleDeleteUser(user.username)}
