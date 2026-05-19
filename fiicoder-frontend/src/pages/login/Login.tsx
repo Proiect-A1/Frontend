@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLanguage, translations } from '../../language/Language';
 import { useAuth } from '../../contexts/AuthContext';
 import { authService, AuthError } from './services/authService';
@@ -17,6 +17,16 @@ export default function Login() {
     const { lang } = useLanguage();
     const t = translations[lang];
     const { login } = useAuth();
+    const [searchParams] = useSearchParams();
+
+    useEffect(() => {
+        if (searchParams.get('banned') === 'true') {
+            const msg = lang === 'RO'
+                ? 'Contul tău a fost suspendat. Contactează un administrator.'
+                : 'Your account has been suspended. Contact an administrator.';
+            setError(msg);
+        }
+    }, []);
 
     // Form state
     const [loginEmail, setLoginEmail] = useState('');

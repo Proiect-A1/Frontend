@@ -36,11 +36,17 @@ async function request<TResponse>(
   });
 
   if (!response.ok) {
+    const errorBody = await response.json().catch(() => null);
+
     if (response.status === 401) {
       localStorage.removeItem(TOKEN_KEY);
     }
-    // extrag detaliile erorii
-    const errorBody = await response.json().catch(() => null);
+
+    if (response.status === 403 && errorBody?.message === 'Account is banned') {
+      localStorage.removeItem(TOKEN_KEY);
+      window.location.href = '/login?banned=true';
+    }
+
     throw { status: response.status, body: errorBody, message: response.statusText };
   }
 
