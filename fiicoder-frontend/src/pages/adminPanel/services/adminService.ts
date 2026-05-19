@@ -20,7 +20,7 @@ type AdminOverviewResponse = {
 };
 
 export interface AdminUser {
-    id?: string;
+    id: string;
     username: string;
     firstName: string;
     lastName: string;
@@ -75,12 +75,13 @@ export interface AuditLogEntry {
 }
 
 const mockUsers: AdminUser[] = [
-    { username: 'student1', firstName: 'Student', lastName: 'One', email: 'student1@fii.ro', role: 'USER', creationDate: '2026-04-20', banned: false },
-    { username: 'hacker_boi', firstName: 'Hacker', lastName: 'Boi', email: 'hacker@test.ro', role: 'USER', creationDate: '2026-04-21', banned: true, banReason: 'Comportament inadecvat' },
-    { username: 'profesor_info', firstName: 'Prof', lastName: 'Info', email: 'prof@fii.ro', role: 'ADMIN', creationDate: '2026-04-22', banned: false },
+    { id: '', username: 'student1', firstName: 'Student', lastName: 'One', email: 'student1@fii.ro', role: 'USER', creationDate: '2026-04-20', banned: false },
+    { id: '', username: 'hacker_boi', firstName: 'Hacker', lastName: 'Boi', email: 'hacker@test.ro', role: 'USER', creationDate: '2026-04-21', banned: true, banReason: 'Comportament inadecvat' },
+    { id: '', username: 'profesor_info', firstName: 'Prof', lastName: 'Info', email: 'prof@fii.ro', role: 'ADMIN', creationDate: '2026-04-22', banned: false },
     ...Array.from({ length: 37 }, (_, index) => {
         const userNumber = index + 4;
         return {
+            id: '',
             username: `student_${userNumber}`,
             firstName: `Student`,
             lastName: `${userNumber}`,
@@ -132,12 +133,12 @@ function normalizeOverview(payload: AdminOverviewResponse): AdminOverview {
 export interface AcceptedProblem {
     title: string;
     description: string;
-    memoryLimit: number;
-    timeLimit: number;
+    memory_limit: number;
+    time_limit: number;
     difficulty: string;
     tags: string[];
-    visibility: 'PUBLIC' | 'PRIVATE';
-    status: string;
+    problemVisibility: 'PUBLIC' | 'PRIVATE';
+    problemStatus: string;
 }
 
 export const adminService = {

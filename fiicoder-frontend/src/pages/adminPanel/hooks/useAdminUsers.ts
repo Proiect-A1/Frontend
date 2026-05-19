@@ -20,7 +20,7 @@ export function useAdminUsers(isAdmin: boolean, activeTab: string) {
         staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
-    const handleBanToggle = async (userId: string, username: string, banned: boolean) => {
+    const handleBanToggle = async (id: string, username: string, banned: boolean) => {
         let reason: string | undefined;
         if (!banned) {
             const input = window.prompt(
@@ -35,7 +35,7 @@ export function useAdminUsers(isAdmin: boolean, activeTab: string) {
         }
 
         try {
-            await adminService.toggleBan(userId, banned, reason);
+            await adminService.toggleBan(id, banned, reason);
             toast.success(
                 banned
                     ? lang === 'RO'

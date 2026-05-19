@@ -39,7 +39,7 @@ type Props = {
     setUserPage: (page: (p: number) => number) => void;
     processingUsers: Set<string>;
     handleRoleChange: (username: string, role: 'USER' | 'ADMIN' | 'PROFESSOR') => void;
-    handleBanToggle: (userId: string, username: string, banned: boolean) => void;
+    handleBanToggle: (id: string, username: string, banned: boolean) => void;
     handleDeleteUser: (username: string) => void;
 };
 
@@ -150,7 +150,7 @@ export default function UserTab({
                                 </div>
                             </div>
                             <button
-                                onClick={() => handleBanToggle(user.id ?? user.username, user.username, user.banned)}
+                                onClick={() => handleBanToggle(user.id, user.username, user.banned)}
                                 disabled={processingUsers.has(user.username)}
                                 className={`rounded-full border px-3 py-1 text-xs font-semibold disabled:opacity-50 ${
                                     user.banned

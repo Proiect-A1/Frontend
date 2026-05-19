@@ -84,7 +84,7 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
             );
             queryClient.setQueryData(['admin', 'accepted-problems'],
                 acceptedProblems.map((p: AcceptedProblem) =>
-                    p.title === title ? { ...p, visibility: newVisibility } : p
+                    p.title === title ? { ...p, problemVisibility: newVisibility } : p
                 ));
         } catch (error) {
             const message = extractErrorMessage(

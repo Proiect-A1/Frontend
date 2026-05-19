@@ -285,11 +285,11 @@ export default function ProposalsTab({
                                 <div className="flex items-center gap-2 flex-wrap mb-1">
                                     <h3 className="text-base font-bold text-(--text-h) truncate">{problem.title}</h3>
                                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border ${
-                                        problem.visibility === 'PUBLIC'
+                                        problem.problemVisibility === 'PUBLIC'
                                             ? 'border-green-500/40 bg-green-500/15 text-green-400'
                                             : 'border-(--accent)/40 bg-(--accent)/10 text-(--text-muted)'
                                     }`}>
-                                        {problem.visibility === 'PUBLIC'
+                                        {problem.problemVisibility === 'PUBLIC'
                                             ? (lang === 'RO' ? 'Public' : 'Public')
                                             : (lang === 'RO' ? 'Privat' : 'Private')}
                                     </span>
@@ -313,11 +313,11 @@ export default function ProposalsTab({
                                 <button
                                     onClick={() => handleChangeVisibility(
                                         problem.title,
-                                        problem.visibility === 'PUBLIC' ? 'PRIVATE' : 'PUBLIC'
+                                        problem.problemVisibility === 'PUBLIC' ? 'PRIVATE' : 'PUBLIC'
                                     )}
                                     className="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-(--accent)/50 bg-(--accent)/10 text-(--text-h) hover:bg-(--accent)/20 transition-all active:scale-95"
                                 >
-                                    {problem.visibility === 'PUBLIC'
+                                    {problem.problemVisibility === 'PUBLIC'
                                         ? (lang === 'RO' ? 'Fă privat' : 'Make private')
                                         : (lang === 'RO' ? 'Fă public' : 'Make public')}
                                 </button>
