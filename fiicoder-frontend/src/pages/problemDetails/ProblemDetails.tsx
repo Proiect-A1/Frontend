@@ -34,6 +34,7 @@ export default function ProblemDetails() {
         evalError,
         processedDescription,
         model,
+        handleCodeChange,
         handleEditorMount,
         handleSubmit,
     } = useProblemDetails();
@@ -83,6 +84,7 @@ export default function ProblemDetails() {
                         setIsOpen={setIsOpen}
                         availableLanguages={availableLanguages}
                         setSelectedLanguageId={setSelectedLanguageId}
+                        handleCodeChange={handleCodeChange}
                         handleEditorMount={handleEditorMount}
                         handleSubmit={handleSubmit}
                     />
@@ -149,6 +151,7 @@ export default function ProblemDetails() {
                         setIsOpen={setIsOpen}
                         availableLanguages={availableLanguages}
                         setSelectedLanguageId={setSelectedLanguageId}
+                        handleCodeChange={handleCodeChange}
                         handleEditorMount={handleEditorMount}
                         handleSubmit={handleSubmit}
                         showClipboardButtons

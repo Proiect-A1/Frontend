@@ -32,7 +32,7 @@ export function useProblemDetails() {
     const [isOpen, setIsOpen] = useState(false);
     const [status, setStatus] = useState<null | 'pending' | 'valid' | 'invalid'>(null);
     const monacoRef = useRef<any>(null);
-    const editorRef = useRef<any>(null);
+    const codeRef = useRef('');
 
     const [availableLanguages, setAvailableLanguages] = useState<LanguageDTO[]>([]);
     const [selectedLanguageId, setSelectedLanguageId] = useState<string>('');
@@ -136,9 +136,12 @@ export function useProblemDetails() {
         return FlexLayout.Model.fromJson(json);
     });
 
+    const handleCodeChange = useCallback((val: string | undefined) => {
+        codeRef.current = val ?? '';
+    }, []);
+
     const handleEditorMount: OnMount = useCallback(
         (_editor, monaco) => {
-            editorRef.current = _editor;
             monacoRef.current = monaco;
             applyMonacoTheme(monaco, theme, { customColors });
             setTimeout(() => _editor.layout(), 100);
@@ -229,7 +232,7 @@ export function useProblemDetails() {
     const handleSubmit = useCallback(
         async (e: React.FormEvent) => {
             e.preventDefault();
-            const code = editorRef.current?.getValue() ?? '';
+            const code = codeRef.current;
             if (!problem || !code.trim() || !selectedLanguageId) return;
 
             if (wsCleanupRef.current) {
@@ -327,6 +330,7 @@ export function useProblemDetails() {
         evalError,
         processedDescription,
         model,
+        handleCodeChange,
         handleEditorMount,
         handleSubmit,
         problemTitle,

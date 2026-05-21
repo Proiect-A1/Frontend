@@ -12,6 +12,7 @@ type Props = {
     setIsOpen: (b: boolean) => void;
     availableLanguages: any[];
     setSelectedLanguageId: (id: string) => void;
+    handleCodeChange: (val: string | undefined) => void;
     handleEditorMount: any;
     handleSubmit: (e: React.FormEvent) => void;
     showClipboardButtons?: boolean;
@@ -26,6 +27,7 @@ export default function EditorPanel({
     setIsOpen,
     availableLanguages,
     setSelectedLanguageId,
+    handleCodeChange,
     handleEditorMount,
     handleSubmit,
     showClipboardButtons = false,
@@ -156,6 +158,7 @@ export default function EditorPanel({
                             height="100%"
                             language={getMonacoLanguageId(language)}
                             theme="vs-dark"
+                            onChange={handleCodeChange}
                             onMount={onEditorMount}
                             loading={
                                 <div className="animate-spin w-8 h-8 border border-(--accent)/50 border-t-(--accent) rounded-full" />
