@@ -28,11 +28,11 @@ export function useProblemDetails() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const [code, setCode] = useState('');
     const [language, setLanguage] = useState('C++');
     const [isOpen, setIsOpen] = useState(false);
     const [status, setStatus] = useState<null | 'pending' | 'valid' | 'invalid'>(null);
     const monacoRef = useRef<any>(null);
+    const editorRef = useRef<any>(null);
 
     const [availableLanguages, setAvailableLanguages] = useState<LanguageDTO[]>([]);
     const [selectedLanguageId, setSelectedLanguageId] = useState<string>('');
@@ -138,6 +138,7 @@ export function useProblemDetails() {
 
     const handleEditorMount: OnMount = useCallback(
         (_editor, monaco) => {
+            editorRef.current = _editor;
             monacoRef.current = monaco;
             applyMonacoTheme(monaco, theme, { customColors });
             setTimeout(() => _editor.layout(), 100);
@@ -228,6 +229,7 @@ export function useProblemDetails() {
     const handleSubmit = useCallback(
         async (e: React.FormEvent) => {
             e.preventDefault();
+            const code = editorRef.current?.getValue() ?? '';
             if (!problem || !code.trim() || !selectedLanguageId) return;
 
             if (wsCleanupRef.current) {
@@ -295,7 +297,7 @@ export function useProblemDetails() {
                 console.error('Eroare la trimiterea submisiei:', err);
             }
         },
-        [code, isAuthenticated, lang, problem, problemTitle, selectedLanguageId],
+        [isAuthenticated, lang, problem, problemTitle, selectedLanguageId],
     );
 
     return {
@@ -305,8 +307,6 @@ export function useProblemDetails() {
         problem,
         loading,
         error,
-        code,
-        setCode,
         language,
         setLanguage,
         isOpen,

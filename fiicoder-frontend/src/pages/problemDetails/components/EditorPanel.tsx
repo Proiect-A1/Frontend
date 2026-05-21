@@ -1,13 +1,11 @@
 import Editor from '@monaco-editor/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { getMonacoLanguageId } from '../../../utils/monacoTheme';
 
 type Props = {
     isAuthenticated: boolean;
     t: any;
-    code: string;
-    setCode: (s: string) => void;
     language: string;
     setLanguage: (s: string) => void;
     isOpen: boolean;
@@ -22,8 +20,6 @@ type Props = {
 export default function EditorPanel({
     isAuthenticated,
     t,
-    code,
-    setCode,
     language,
     setLanguage,
     isOpen,
@@ -35,6 +31,23 @@ export default function EditorPanel({
     showClipboardButtons = false,
 }: Props) {
     const editorInstanceRef = useRef<any>(null);
+
+    const editorOptions = useMemo(() => ({
+        fontSize: 14,
+        fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+        fontLigatures: true,
+        minimap: { enabled: false },
+        scrollBeyondLastLine: false,
+        padding: { top: 16, bottom: 16 },
+        lineNumbersMinChars: 3,
+        renderLineHighlight: 'gutter' as const,
+        smoothScrolling: false,
+        cursorBlinking: 'blink' as const,
+        cursorSmoothCaretAnimation: 'off' as const,
+        bracketPairColorization: { enabled: true },
+        automaticLayout: true,
+        wordWrap: 'on' as const,
+    }), []);
 
     const onEditorMount = (editor: any, monaco: any) => {
         editorInstanceRef.current = editor;
@@ -142,29 +155,12 @@ export default function EditorPanel({
                         <Editor
                             height="100%"
                             language={getMonacoLanguageId(language)}
-                            value={code}
-                            onChange={(val) => setCode(val || '')}
                             theme="vs-dark"
                             onMount={onEditorMount}
                             loading={
                                 <div className="animate-spin w-8 h-8 border border-(--accent)/50 border-t-(--accent) rounded-full" />
                             }
-                            options={{
-                                fontSize: 14,
-                                fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
-                                fontLigatures: true,
-                                minimap: { enabled: false },
-                                scrollBeyondLastLine: false,
-                                padding: { top: 16, bottom: 16 },
-                                lineNumbersMinChars: 3,
-                                renderLineHighlight: 'gutter',
-                                smoothScrolling: true,
-                                cursorBlinking: 'smooth',
-                                cursorSmoothCaretAnimation: 'on',
-                                bracketPairColorization: { enabled: true },
-                                automaticLayout: true,
-                                wordWrap: 'on',
-                            }}
+                            options={editorOptions}
                         />
                     </div>
                 </form>

@@ -17,8 +17,6 @@ export default function ProblemDetails() {
         problem,
         loading,
         error,
-        code,
-        setCode,
         language,
         setLanguage,
         isOpen,
@@ -79,8 +77,6 @@ export default function ProblemDetails() {
                     <EditorPanel
                         isAuthenticated={isAuthenticated}
                         t={t}
-                        code={code}
-                        setCode={setCode}
                         language={language}
                         setLanguage={setLanguage}
                         isOpen={isOpen}
@@ -147,8 +143,6 @@ export default function ProblemDetails() {
                     <EditorPanel
                         isAuthenticated={isAuthenticated}
                         t={t}
-                        code={code}
-                        setCode={setCode}
                         language={language}
                         setLanguage={setLanguage}
                         isOpen={isOpen}

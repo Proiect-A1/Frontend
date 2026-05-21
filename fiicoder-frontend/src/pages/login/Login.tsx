@@ -21,9 +21,10 @@ export default function Login() {
 
     useEffect(() => {
         if (searchParams.get('banned') === 'true') {
+            const reason = searchParams.get('reason');
             const msg = lang === 'RO'
-                ? 'Contul tău a fost suspendat. Contactează un administrator.'
-                : 'Your account has been suspended. Contact an administrator.';
+                ? `Contul tău a fost suspendat.${reason ? ` Motiv: ${reason}` : ''} Contactează un administrator.`
+                : `Your account has been suspended.${reason ? ` Reason: ${reason}` : ''} Contact an administrator.`;
             setError(msg);
         }
     }, []);
