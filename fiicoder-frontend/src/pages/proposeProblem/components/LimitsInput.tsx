@@ -32,8 +32,8 @@ export default function LimitsInput() {
                         <input
                             {...field}
                             type="number"
-                            min="32"
-                            max="512"
+                            min="16"
+                            max="1024"
                             step="1"
                             className="w-full rounded-2xl border border-(--accent)/25 bg-(--surface-input) px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
                         />
