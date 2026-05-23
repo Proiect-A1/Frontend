@@ -37,10 +37,14 @@ export async function createProblemZip(formData: ProposeProblemForm): Promise<Bl
         const diffStr = formData.difficulty.toUpperCase();
         const diffNum = DIFFICULTY_NUM[formData.difficulty.toLowerCase()] ?? 2;
 
-        // Includes both backend (snake_case, string values) and sandbox (camelCase, number values) fields.
-        // Memory is in bytes; time is in seconds for both consumers.
+        const timeLimitMs = Math.round(formData.timeLimit * 1000);
+
+        // Includes both backend (snake_case) and sandbox (camelCase) fields.
+        // time_limit: seconds (snake_case used for re-import via unzipHelper)
+        // timeLimit: milliseconds (what the sandbox worker expects)
+        // memory_limit / memoryLimit: bytes for both
         const metadataJson = {
-            // backend fields
+            // backend / re-import fields
             title: formData.title,
             time_limit: String(formData.timeLimit),
             memory_limit: String(memoryBytes),
@@ -48,7 +52,7 @@ export async function createProblemZip(formData: ProposeProblemForm): Promise<Bl
             tags: formData.tags,
             // sandbox fields
             problemId: formData.title,
-            timeLimit: formData.timeLimit,
+            timeLimit: timeLimitMs,
             memoryLimit: memoryBytes,
             difficultyLevel: diffNum,
             revId: 0,

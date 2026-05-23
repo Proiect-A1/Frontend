@@ -133,16 +133,16 @@ export default function ZipFormatModal() {
                             </p>
                             <pre className="text-xs font-mono bg-(--surface-muted) rounded-xl p-4 text-(--text-h) leading-relaxed overflow-x-auto">
 {`{
-  "title":        "Suma Maximă",      ← backend: titlul problemei
+  "title":        "Suma Maximă",      ← titlul problemei (re-import)
   "problemId":    "Suma Maximă",      ← sandbox: același titlu
 
-  "time_limit":   "1.0",              ← backend: string, în secunde
-  "timeLimit":    1.0,                ← sandbox: număr, în secunde
+  "time_limit":   "1.0",              ← re-import: string, în SECUNDE
+  "timeLimit":    1000,               ← sandbox: număr, în MILISECUNDE (1s = 1000ms)
 
-  "memory_limit": "268435456",        ← backend: string, în BYTES (256 MB)
-  "memoryLimit":  268435456,          ← sandbox: număr, în BYTES (256 MB)
+  "memory_limit": "268435456",        ← re-import: string, în BYTES
+  "memoryLimit":  268435456,          ← sandbox: număr, în BYTES (256 MB = 268435456)
 
-  "difficulty":   "MEDIUM",           ← backend: string ("EASY"/"MEDIUM"/"HARD"/"CONTEST")
+  "difficulty":   "MEDIUM",           ← string ("EASY"/"MEDIUM"/"HARD"/"CONTEST")
   "difficultyLevel": 2,               ← sandbox: număr (1=EASY, 2=MEDIUM, 3=HARD, 4=CONTEST)
 
   "tags":         ["Programare dinamică"],
@@ -166,8 +166,11 @@ export default function ZipFormatModal() {
                                     name="time_limit / timeLimit"
                                     type="string / number"
                                     desc={ro
-                                        ? 'Limita de timp per test, în SECUNDE. Backend-ul îl citește ca string ("1.0"), sandbox-ul ca număr (1.0). Acceptă valori zecimale. Exemple: 1.0, 1.5, 2.0.'
-                                        : 'Time limit per test, in SECONDS. Backend reads it as string ("1.0"), sandbox as number (1.0). Accepts decimal values. Examples: 1.0, 1.5, 2.0.'}
+                                        ? 'Două reprezentări ale aceleiași limite. "time_limit" e string în SECUNDE (ex: "1.5") — folosit la re-import. "timeLimit" e număr în MILISECUNDE (ex: 1500) — citit de sandbox la evaluare. Exportul automat face conversia corect.'
+                                        : 'Two representations of the same limit. "time_limit" is a string in SECONDS (e.g. "1.5") — used on re-import. "timeLimit" is a number in MILLISECONDS (e.g. 1500) — read by the sandbox during evaluation. The auto-export converts correctly.'}
+                                    warn={ro
+                                        ? 'Atenție: "timeLimit" e în milisecunde, NU secunde. 1 secundă = 1000. Dacă pui 1.0 în loc de 1000, submission-ul tău va TLE pe orice test.'
+                                        : 'Warning: "timeLimit" is in milliseconds, NOT seconds. 1 second = 1000. If you put 1.0 instead of 1000, your submission will TLE on every test.'}
                                 />
                                 <Field
                                     name="memory_limit / memoryLimit"
