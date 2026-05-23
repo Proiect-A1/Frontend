@@ -21,8 +21,8 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
                             className="p-3 rounded-2xl border-2 border-(--accent)/20 bg-(--accent)/5 flex items-center justify-between gap-3"
                         >
                             <div className="min-w-0">
-                                <p className="text-xs font-bold text-(--text-h)">{new Date(sub.submissionDate).toLocaleDateString()}</p>
-                                <p className="text-[10px] text-(--text-muted) font-mono">Score: {sub.score}</p>
+                                <p className="text-xs font-bold text-(--text-h)">{new Date(sub.submissiondate).toLocaleDateString()}</p>
+                                <p className="text-[10px] text-(--text-muted) font-mono">Score: {sub.Score}</p>
                             </div>
                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border-2 ${sub.status === 'OK' ? 'border-green-500/40 bg-green-500/10 text-green-300' : 'border-red-500/40 bg-red-500/10 text-red-300'}`}>
                                 {sub.status}
