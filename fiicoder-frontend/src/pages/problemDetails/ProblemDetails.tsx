@@ -119,7 +119,13 @@ export default function ProblemDetails() {
         <div className="w-full flex flex-col gap-6 h-[calc(100svh-5rem)]">
             {/* Desktop Workspace: FlexLayout */}
             <div className="hidden xl:block relative flex-1 min-h-0 overflow-hidden">
-                <FlexLayout.Layout model={model} factory={factory} />
+                <FlexLayout.Layout
+                    model={model}
+                    factory={factory}
+                    onAction={(action) =>
+                        action.type === 'FlexLayout_RenameTab' ? undefined : action
+                    }
+                />
             </div>
 
             {/* Workspace Toolbar (Status Bar) - Only on Desktop for now */}
