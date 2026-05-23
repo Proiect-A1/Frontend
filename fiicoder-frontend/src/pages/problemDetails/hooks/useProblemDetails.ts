@@ -52,6 +52,9 @@ export function useProblemDetails() {
         return unindent(unpackedDescription.replace(/\\\\/g, '\\'));
     }, [problem?.description, lang]);
 
+    const langRef = useRef(lang);
+    useEffect(() => { langRef.current = lang; }, [lang]);
+
     const [model] = useState(() => {
         const json = {
             global: {
@@ -199,13 +202,13 @@ export function useProblemDetails() {
                 if (isMounted) {
                     if (err?.status === 403) {
                         setError(
-                            lang === 'RO'
+                            langRef.current === 'RO'
                                 ? 'Nu aveți permisiunea de a vizualiza această problemă.'
                                 : 'You do not have permission to view this problem.',
                         );
                     } else {
                         setError(
-                            lang === 'RO'
+                            langRef.current === 'RO'
                                 ? 'Eroare la încărcarea problemei.'
                                 : 'Error loading problem.',
                         );
@@ -221,7 +224,7 @@ export function useProblemDetails() {
         return () => {
             isMounted = false;
         };
-    }, [problemTitle, isAuthenticated, lang]);
+    }, [problemTitle, isAuthenticated]);
 
     useEffect(() => {
         return () => {
