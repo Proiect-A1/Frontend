@@ -198,7 +198,7 @@ export default function ProposeProblem() {
                             </div>
                         </div>
 
-                        <div className="px-6 py-4 md:px-8 rounded-b-2xl flex gap-3 justify-end flex-wrap z-10">
+                        <div className="px-6 py-4 md:px-8 rounded-b-2xl flex items-center gap-3 justify-end flex-wrap z-10">
                             <input
                                 ref={importInputRef}
                                 type="file"

@@ -71,9 +71,15 @@ export async function extractProblemZipFromBlob(blob: Blob): Promise<ProposeProb
     if (metadataEntry) {
         try {
             const meta = JSON.parse(await metadataEntry.async('string'));
-            title = meta.title || '';
-            timeLimit = meta.time_limit || 1;
-            memoryLimit = meta.memory_limit || 256;
+            // title: backend uses "title", sandbox uses "problemId"
+            title = meta.title || meta.problemId || '';
+            // time: backend stores as string seconds, sandbox as number seconds
+            const rawTime = meta.time_limit ?? meta.timeLimit;
+            timeLimit = rawTime != null ? parseFloat(String(rawTime)) || 1 : 1;
+            // memory: both store in bytes (backend as string, sandbox as number)
+            const rawMem = meta.memory_limit ?? meta.memoryLimit;
+            const memBytes = rawMem != null ? parseInt(String(rawMem)) || 0 : 0;
+            memoryLimit = memBytes > 0 ? Math.round(memBytes / (1024 * 1024)) : 256;
             difficulty = (meta.difficulty || 'MEDIUM').toLowerCase() as ProposeProblemForm['difficulty'];
             tags = meta.tags || [];
         } catch { /* malformed metadata — keep defaults */ }

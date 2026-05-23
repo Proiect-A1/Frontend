@@ -1,8 +1,12 @@
 import JSZip from 'jszip';
 import type { ProposeProblemForm } from '../types/proposeProblem';
 
+const DIFFICULTY_NUM: Record<string, number> = { easy: 1, medium: 2, hard: 3, contest: 4 };
+
 export async function createProblemZip(formData: ProposeProblemForm): Promise<Blob> {
     const zip = new JSZip();
+    const memoryBytes = formData.memoryLimit * 1024 * 1024;
+    const isInteractive = formData.isInteractive || formData.files.some(f => f.category === 'interactors');
 
     // 1. files/
     const filesFolder = zip.folder('files');
@@ -14,7 +18,6 @@ export async function createProblemZip(formData: ProposeProblemForm): Promise<Bl
             }
         });
 
-        // Add manual tests if any
         if (formData.tests && formData.tests.length > 0) {
             const testsFolder = filesFolder.folder('raw_tests');
             if (testsFolder) {
@@ -31,16 +34,31 @@ export async function createProblemZip(formData: ProposeProblemForm): Promise<Bl
     // 2. metadata/
     const metaFolder = zip.folder('metadata');
     if (metaFolder) {
+        const diffStr = formData.difficulty.toUpperCase();
+        const diffNum = DIFFICULTY_NUM[formData.difficulty.toLowerCase()] ?? 2;
+
+        // Includes both backend (snake_case, string values) and sandbox (camelCase, number values) fields.
+        // Memory is in bytes; time is in seconds for both consumers.
         const metadataJson = {
+            // backend fields
             title: formData.title,
-            time_limit: formData.timeLimit,
-            memory_limit: formData.memoryLimit,
-            difficulty: formData.difficulty.toUpperCase(),
-            tags: formData.tags
+            time_limit: String(formData.timeLimit),
+            memory_limit: String(memoryBytes),
+            difficulty: diffStr,
+            tags: formData.tags,
+            // sandbox fields
+            problemId: formData.title,
+            timeLimit: formData.timeLimit,
+            memoryLimit: memoryBytes,
+            difficultyLevel: diffNum,
+            revId: 0,
+            problemStyle: 'IOI',
+            problemType: isInteractive ? 'Interactive' : 'Batch',
+            inputFile: 'stdin',
+            outputFile: 'stdout',
+            authors: [] as string[],
         };
         metaFolder.file('metadata.json', JSON.stringify(metadataJson, null, 2));
-
-        // tests.gen
         metaFolder.file('tests.gen', formData.generatorScript || '');
     }
 
@@ -53,6 +71,5 @@ export async function createProblemZip(formData: ProposeProblemForm): Promise<Bl
         }
     }
 
-    // Generate the blob
     return await zip.generateAsync({ type: 'blob' });
 }

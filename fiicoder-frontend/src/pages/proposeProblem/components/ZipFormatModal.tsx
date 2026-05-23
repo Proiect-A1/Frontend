@@ -19,12 +19,12 @@ export default function ZipFormatModal() {
 
             {open && (
                 <div
-                    className="fixed inset-0 z-50 flex justify-center p-4 pt-20"
+                    className="fixed inset-0 z-50 flex justify-center p-6 pt-28"
                     style={{ backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'flex-start' }}
                     onClick={() => setOpen(false)}
                 >
                     <div
-                        className="relative w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) p-6 md:p-8 custom-scrollbar"
+                        className="relative w-full max-w-4xl max-h-[75vh] overflow-y-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) p-6 md:p-8 custom-scrollbar"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <button
@@ -73,7 +73,7 @@ export default function ZipFormatModal() {
                                     {[
                                         {
                                             path: 'metadata.json',
-                                            note: ro ? 'OBLIGATORIU. Conține titlul, limitele și dificultatea problemei.' : 'REQUIRED. Contains title, limits and difficulty.',
+                                            note: ro ? 'OBLIGATORIU. Conține titlul, limitele (timp în secunde, memorie în bytes) și dificultatea problemei.' : 'REQUIRED. Contains title, limits (time in seconds, memory in bytes) and difficulty.',
                                             accent: true,
                                         },
                                         {
@@ -128,74 +128,87 @@ export default function ZipFormatModal() {
                         <Section title="2. metadata.json">
                             <p className="text-sm text-(--text-muted) mb-3">
                                 {ro
-                                    ? 'Fișier JSON cu 5 câmpuri. Toate sunt obligatorii în afară de tags. Numele câmpurilor sunt cu underscore (snake_case), nu camelCase.'
-                                    : 'JSON file with 5 fields. All are required except tags. Field names use underscore (snake_case), not camelCase.'}
+                                    ? 'Fișierul conține câmpuri pentru ambii consumatori: backend-ul platformei (snake_case, string-uri) și sandbox-ul de evaluare (camelCase, numere). Exportul generat automat include toate câmpurile necesare.'
+                                    : 'The file contains fields for both consumers: the platform backend (snake_case, strings) and the evaluation sandbox (camelCase, numbers). The auto-generated export includes all required fields.'}
                             </p>
                             <pre className="text-xs font-mono bg-(--surface-muted) rounded-xl p-4 text-(--text-h) leading-relaxed overflow-x-auto">
 {`{
-  "title":        "Suma Maximă",
-  "time_limit":   1.0,
-  "memory_limit": 256,
-  "difficulty":   "MEDIUM",
-  "tags":         ["Programare dinamică", "Clasa a X-a"]
+  "title":        "Suma Maximă",      ← backend: titlul problemei
+  "problemId":    "Suma Maximă",      ← sandbox: același titlu
+
+  "time_limit":   "1.0",              ← backend: string, în secunde
+  "timeLimit":    1.0,                ← sandbox: număr, în secunde
+
+  "memory_limit": "268435456",        ← backend: string, în BYTES (256 MB)
+  "memoryLimit":  268435456,          ← sandbox: număr, în BYTES (256 MB)
+
+  "difficulty":   "MEDIUM",           ← backend: string ("EASY"/"MEDIUM"/"HARD"/"CONTEST")
+  "difficultyLevel": 2,               ← sandbox: număr (1=EASY, 2=MEDIUM, 3=HARD, 4=CONTEST)
+
+  "tags":         ["Programare dinamică"],
+  "revId":        0,
+  "problemStyle": "IOI",
+  "problemType":  "Batch",            ← "Interactive" dacă există fișiere în interactors/
+  "inputFile":    "stdin",
+  "outputFile":   "stdout",
+  "authors":      []
 }`}
                             </pre>
                             <div className="mt-4 space-y-4">
                                 <Field
-                                    name="title"
+                                    name="title / problemId"
                                     type="string"
                                     desc={ro
-                                        ? 'Titlul problemei, exact cum va apărea pe platformă. Trebuie să fie unic — dacă există deja o problemă cu același titlu, importul va eșua.'
-                                        : 'Problem title, exactly as it will appear on the platform. Must be unique — if a problem with the same title already exists, import will fail.'}
-                                    warn={ro
-                                        ? 'Câmpul se numește "title", nu "problemId", "name" sau altceva. Dacă lipsește, titlul va rămâne gol.'
-                                        : 'The field is called "title", not "problemId", "name" or anything else. If missing, the title will be left empty.'}
+                                        ? 'Titlul problemei — același string în ambele câmpuri. Trebuie să fie unic pe platformă. Dacă lipsește "title", se citește "problemId" ca fallback.'
+                                        : 'Problem title — same string in both fields. Must be unique on the platform. If "title" is missing, "problemId" is used as fallback.'}
                                 />
                                 <Field
-                                    name="time_limit"
-                                    type="number"
+                                    name="time_limit / timeLimit"
+                                    type="string / number"
                                     desc={ro
-                                        ? 'Limita de timp per test, în secunde. Acceptă valori zecimale. Interval valid: 0.1 până la 30.0. Exemple: 1.0, 1.5, 2.0.'
-                                        : 'Time limit per test, in seconds. Accepts decimal values. Valid range: 0.1 to 30.0. Examples: 1.0, 1.5, 2.0.'}
-                                    warn={ro
-                                        ? 'Unitatea este secunde, nu milisecunde. Câmpul se numește "time_limit" cu underscore, nu "timeLimit". Valoarea 69696 (milisecunde) nu este validă — ar trebui să fie 69.696, dar depășește limita de 30s.'
-                                        : 'Unit is seconds, not milliseconds. Field is called "time_limit" with underscore, not "timeLimit". Value 69696 (milliseconds) is invalid — it should be 69.696, but that exceeds the 30s limit.'}
+                                        ? 'Limita de timp per test, în SECUNDE. Backend-ul îl citește ca string ("1.0"), sandbox-ul ca număr (1.0). Acceptă valori zecimale. Exemple: 1.0, 1.5, 2.0.'
+                                        : 'Time limit per test, in SECONDS. Backend reads it as string ("1.0"), sandbox as number (1.0). Accepts decimal values. Examples: 1.0, 1.5, 2.0.'}
                                 />
                                 <Field
-                                    name="memory_limit"
-                                    type="number"
+                                    name="memory_limit / memoryLimit"
+                                    type="string / number"
                                     desc={ro
-                                        ? 'Limita de memorie per test, în megabytes (MB). Trebuie să fie număr întreg. Interval valid: 16 până la 1024. Exemple: 64, 256, 512.'
-                                        : 'Memory limit per test, in megabytes (MB). Must be an integer. Valid range: 16 to 1024. Examples: 64, 256, 512.'}
+                                        ? 'Limita de memorie per test, în BYTES. Backend-ul îl citește ca string, sandbox-ul ca număr. 256 MB = 268.435.456 bytes. 64 MB = 67.108.864 bytes.'
+                                        : 'Memory limit per test, in BYTES. Backend reads it as string, sandbox as number. 256 MB = 268,435,456 bytes. 64 MB = 67,108,864 bytes.'}
                                     warn={ro
-                                        ? 'Unitatea este MB, nu bytes. 256 MB = 268.435.456 bytes — nu pune valoarea în bytes. Câmpul se numește "memory_limit" cu underscore, nu "memoryLimit".'
-                                        : 'Unit is MB, not bytes. 256 MB = 268,435,456 bytes — do not put the value in bytes. Field is called "memory_limit" with underscore, not "memoryLimit".'}
+                                        ? 'Valoarea este în BYTES, nu MB. Nu pune 256 — pune 268435456. Exportul automat face conversia corect din valoarea în MB introdusă în formular.'
+                                        : 'Value is in BYTES, not MB. Do not put 256 — put 268435456. The auto-export converts correctly from the MB value entered in the form.'}
                                 />
                                 <div>
                                     <Field
-                                        name="difficulty"
-                                        type="string"
+                                        name="difficulty / difficultyLevel"
+                                        type="string / number"
                                         desc={ro
-                                            ? 'Dificultatea problemei. Trebuie să fie exact unul dintre cele trei string-uri de mai jos, cu majuscule:'
-                                            : 'Problem difficulty. Must be exactly one of the three strings below, uppercase:'}
+                                            ? 'Dificultatea problemei. Backend-ul citește string cu majuscule; sandbox-ul citește număr (1–4):'
+                                            : 'Problem difficulty. Backend reads uppercase string; sandbox reads number (1–4):'}
                                     />
-                                    <div className="ml-4 mt-2 flex gap-2 flex-wrap">
-                                        {['"EASY"', '"MEDIUM"', '"HARD"'].map(v => (
-                                            <code key={v} className="text-xs px-2 py-0.5 rounded-lg bg-(--surface-muted) border border-(--accent)/20 text-(--accent) font-mono">{v}</code>
+                                    <div className="ml-4 mt-2 flex gap-3 flex-wrap items-center text-xs">
+                                        {[{ s: '"EASY"', n: 1 }, { s: '"MEDIUM"', n: 2 }, { s: '"HARD"', n: 3 }, { s: '"CONTEST"', n: 4 }].map(({ s, n }) => (
+                                            <span key={s} className="flex items-center gap-1">
+                                                <code className="px-2 py-0.5 rounded-lg bg-(--surface-muted) border border-(--accent)/20 text-(--accent) font-mono">{s}</code>
+                                                <span className="text-(--text-subtle)">→ {n}</span>
+                                            </span>
                                         ))}
                                     </div>
-                                    <p className="ml-4 mt-1.5 text-xs text-amber-400">
-                                        {ro
-                                            ? '⚠ Nu număr (0, 1, 2 nu sunt valide). Nu lowercase ("easy" nu merge). Nu alte valori ("NORMAL", "MEDIUM-HARD" etc.).'
-                                            : '⚠ Not a number (0, 1, 2 are not valid). Not lowercase ("easy" doesn\'t work). No other values ("NORMAL", "MEDIUM-HARD" etc.).'}
-                                    </p>
                                 </div>
                                 <Field
                                     name="tags"
                                     type="string[]"
                                     desc={ro
-                                        ? 'Listă de etichete. Fiecare etichetă trebuie să existe deja pe platformă — dacă pui un tag inexistent, importul va eșua. Poate fi array gol [] dacă nu vrei etichete.'
-                                        : 'List of tags. Each tag must already exist on the platform — if you include a non-existent tag, import will fail. Can be empty [] if you don\'t want any tags.'}
+                                        ? 'Listă de etichete. Fiecare etichetă trebuie să existe deja pe platformă. Poate fi array gol [].'
+                                        : 'List of tags. Each tag must already exist on the platform. Can be empty [].'}
+                                />
+                                <Field
+                                    name="problemType"
+                                    type="string"
+                                    desc={ro
+                                        ? '"Batch" pentru probleme standard, "Interactive" pentru probleme interactive. Detectat automat la export dacă există fișiere în files/interactors/.'
+                                        : '"Batch" for standard problems, "Interactive" for interactive problems. Auto-detected on export if files exist in files/interactors/.'}
                                 />
                             </div>
                         </Section>
