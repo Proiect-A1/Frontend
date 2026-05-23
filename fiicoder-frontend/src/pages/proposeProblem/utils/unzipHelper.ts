@@ -1,5 +1,6 @@
 import JSZip from 'jszip';
 import type { ProblemFile, TestCase, FileCategory, ProposeProblemForm } from '../types/proposeProblem';
+import { packTranslation } from '../../../utils/translationPacker';
 
 async function parseZipContents(zip: JSZip): Promise<{ files: ProblemFile[]; tests: TestCase[]; generatorScript: string }> {
     const files: ProblemFile[] = [];
@@ -78,9 +79,20 @@ export async function extractProblemZipFromBlob(blob: Blob): Promise<ProposeProb
         } catch { /* malformed metadata — keep defaults */ }
     }
 
-    const statementEntry = zip.files['statements/ro/statement.tex'];
-    if (statementEntry) {
-        statement = await statementEntry.async('string');
+    const roPaths = ['statements/ro/statement.tex', 'statements/ro/statement.md'];
+    const enPaths = ['statements/en/statement.tex', 'statements/en/statement.md'];
+
+    const roEntry = roPaths.map(p => zip.files[p]).find(Boolean);
+    const enEntry = enPaths.map(p => zip.files[p]).find(Boolean);
+
+    const roText = roEntry ? await roEntry.async('string') : '';
+    const enText = enEntry ? await enEntry.async('string') : '';
+
+    // If roText is already a packed JSON from a platform export, use it as-is
+    if (roText.trimStart().startsWith('{')) {
+        statement = roText;
+    } else {
+        statement = packTranslation(roText, enText);
     }
 
     return {

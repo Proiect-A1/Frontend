@@ -19,12 +19,12 @@ export default function ZipFormatModal() {
 
             {open && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center p-4"
-                    style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
+                    className="fixed inset-0 z-50 flex justify-center p-4 pt-20"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'flex-start' }}
                     onClick={() => setOpen(false)}
                 >
                     <div
-                        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) p-6 md:p-8 custom-scrollbar"
+                        className="relative w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) p-6 md:p-8 custom-scrollbar"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <button
@@ -42,41 +42,95 @@ export default function ZipFormatModal() {
                         </h2>
                         <p className="text-sm text-(--text-muted) mb-6">
                             {ro
-                                ? 'Structura exactă pe care trebuie să o respecte arhiva pentru import corect. Exportul din platformă generează automat formatul corect.'
-                                : 'The exact structure your archive must follow for correct import. Exporting from the platform always generates the correct format.'}
+                                ? 'Structura exactă pe care trebuie să o respecte arhiva pentru import corect. Dacă nu ești sigur, folosește butonul Export ZIP după ce completezi formularul — arhiva generată automat este întotdeauna în formatul corect.'
+                                : 'The exact structure your archive must follow for correct import. If unsure, use the Export ZIP button after filling the form — the auto-generated archive is always in the correct format.'}
                         </p>
 
                         {/* 1. Folder structure */}
                         <Section title={ro ? '1. Structura folderelor' : '1. Folder structure'}>
-                            <pre className="text-xs font-mono bg-(--surface-muted) rounded-xl p-4 text-(--text-h) leading-relaxed overflow-x-auto">
+                            <div className="grid md:grid-cols-2 gap-3">
+                                <pre className="text-xs font-mono bg-(--surface-muted) rounded-xl p-4 text-(--text-h) leading-relaxed overflow-x-auto">
 {`archive.zip
 ├── metadata/
-│   ├── metadata.json        ← obligatoriu
-│   └── tests.gen            ← opțional
+│   ├── metadata.json
+│   └── tests.gen
 ├── statements/
 │   └── ro/
-│       └── statement.tex    ← obligatoriu pentru import enunț
+│       └── statement.tex
 └── files/
-    ├── sources/             ← soluție de referință
-    ├── validators/          ← validator de intrare
-    ├── generators/          ← generator de teste
-    ├── checkers/            ← checker de ieșire
-    ├── interactors/         ← interactor (marchează problema ca interactivă)
-    └── raw_tests/           ← teste manuale
+    ├── sources/
+    ├── validators/
+    ├── generators/
+    ├── checkers/
+    ├── interactors/
+    └── raw_tests/
         ├── 1.in
         ├── 1.ok
         ├── 2.in
         └── 2.ok`}
-                            </pre>
+                                </pre>
+                                <div className="space-y-2 text-xs text-(--text-muted)">
+                                    {[
+                                        {
+                                            path: 'metadata.json',
+                                            note: ro ? 'OBLIGATORIU. Conține titlul, limitele și dificultatea problemei.' : 'REQUIRED. Contains title, limits and difficulty.',
+                                            accent: true,
+                                        },
+                                        {
+                                            path: 'tests.gen',
+                                            note: ro ? 'Opțional. Script pentru generarea automată a testelor.' : 'Optional. Script for automatic test generation.',
+                                        },
+                                        {
+                                            path: 'statement.tex/.md',
+                                            note: ro ? 'Enunțul problemei. Acceptat în ro/ și/sau en/.' : 'Problem statement. Accepted in ro/ and/or en/.',
+                                            accent: true,
+                                        },
+                                        {
+                                            path: 'sources/',
+                                            note: ro ? 'Soluția de referință (ex: solution.cpp). Folosită pentru verificare internă.' : 'Reference solution (e.g. solution.cpp). Used for internal checking.',
+                                        },
+                                        {
+                                            path: 'validators/',
+                                            note: ro ? 'Validator de intrare — verifică că fișierele .in respectă formatul.' : 'Input validator — checks that .in files match the expected format.',
+                                        },
+                                        {
+                                            path: 'generators/',
+                                            note: ro ? 'Generator de teste. Apelat din tests.gen cu comanda < gen [argumente].' : 'Test generator. Called from tests.gen with < gen [arguments].',
+                                        },
+                                        {
+                                            path: 'checkers/',
+                                            note: ro ? 'Checker personalizat de ieșire. Necesar când răspunsul corect nu e unic.' : 'Custom output checker. Needed when the correct answer is not unique.',
+                                        },
+                                        {
+                                            path: 'interactors/',
+                                            note: ro ? 'Interactor pentru probleme interactive. Prezența unui fișier aici marchează automat problema ca interactivă.' : 'Interactor for interactive problems. Having any file here automatically marks the problem as interactive.',
+                                        },
+                                        {
+                                            path: 'raw_tests/',
+                                            note: ro ? 'Teste manuale. Fiecare test = un fișier .in + un fișier .ok cu același număr.' : 'Manual tests. Each test = one .in file + one .ok file with the same number.',
+                                        },
+                                    ].map(({ path, note, accent }) => (
+                                        <div key={path} className="flex items-start gap-2">
+                                            <code className={`font-mono shrink-0 leading-relaxed ${accent ? 'text-(--accent)' : 'text-(--text-subtle)'}`}>{path}</code>
+                                            <span className="leading-relaxed">{note}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                             <Warn>
                                 {ro
-                                    ? 'Fișierele puse direct în files/ (nu într-un subfolder) sunt ignorate complet. Orice sursă trebuie să fie în files/sources/, files/validators/ etc.'
-                                    : 'Files placed directly in files/ (not in a subfolder) are completely ignored. Every source must be inside files/sources/, files/validators/, etc.'}
+                                    ? 'Fișierele puse direct în files/ (nu într-un subfolder) sunt ignorate complet la import. Exemplu: files/solution.cpp nu va fi importat — trebuie să fie files/sources/solution.cpp.'
+                                    : 'Files placed directly in files/ (not in a subfolder) are completely ignored on import. Example: files/solution.cpp will not be imported — it must be files/sources/solution.cpp.'}
                             </Warn>
                         </Section>
 
                         {/* 2. metadata.json */}
                         <Section title="2. metadata.json">
+                            <p className="text-sm text-(--text-muted) mb-3">
+                                {ro
+                                    ? 'Fișier JSON cu 5 câmpuri. Toate sunt obligatorii în afară de tags. Numele câmpurilor sunt cu underscore (snake_case), nu camelCase.'
+                                    : 'JSON file with 5 fields. All are required except tags. Field names use underscore (snake_case), not camelCase.'}
+                            </p>
                             <pre className="text-xs font-mono bg-(--surface-muted) rounded-xl p-4 text-(--text-h) leading-relaxed overflow-x-auto">
 {`{
   "title":        "Suma Maximă",
@@ -86,65 +140,99 @@ export default function ZipFormatModal() {
   "tags":         ["Programare dinamică", "Clasa a X-a"]
 }`}
                             </pre>
-                            <div className="mt-3 space-y-2.5">
+                            <div className="mt-4 space-y-4">
                                 <Field
                                     name="title"
                                     type="string"
-                                    desc={ro ? 'Titlul problemei. Unic pe platformă.' : 'Problem title. Must be unique on the platform.'}
-                                    warn={ro ? 'Nu "problemId" sau "name".' : 'Not "problemId" or "name".'}
+                                    desc={ro
+                                        ? 'Titlul problemei, exact cum va apărea pe platformă. Trebuie să fie unic — dacă există deja o problemă cu același titlu, importul va eșua.'
+                                        : 'Problem title, exactly as it will appear on the platform. Must be unique — if a problem with the same title already exists, import will fail.'}
+                                    warn={ro
+                                        ? 'Câmpul se numește "title", nu "problemId", "name" sau altceva. Dacă lipsește, titlul va rămâne gol.'
+                                        : 'The field is called "title", not "problemId", "name" or anything else. If missing, the title will be left empty.'}
                                 />
                                 <Field
                                     name="time_limit"
                                     type="number"
-                                    desc={ro ? 'Limită de timp în secunde. Interval: 0.1 – 30.0. Poate fi zecimal (ex: 1.5).' : 'Time limit in seconds. Range: 0.1 – 30.0. Can be decimal (e.g. 1.5).'}
-                                    warn={ro ? 'Nu milisecunde. Nu "timeLimit" (camelCase). 69696 nu este valid.' : 'Not milliseconds. Not "timeLimit" (camelCase). 69696 is not valid.'}
+                                    desc={ro
+                                        ? 'Limita de timp per test, în secunde. Acceptă valori zecimale. Interval valid: 0.1 până la 30.0. Exemple: 1.0, 1.5, 2.0.'
+                                        : 'Time limit per test, in seconds. Accepts decimal values. Valid range: 0.1 to 30.0. Examples: 1.0, 1.5, 2.0.'}
+                                    warn={ro
+                                        ? 'Unitatea este secunde, nu milisecunde. Câmpul se numește "time_limit" cu underscore, nu "timeLimit". Valoarea 69696 (milisecunde) nu este validă — ar trebui să fie 69.696, dar depășește limita de 30s.'
+                                        : 'Unit is seconds, not milliseconds. Field is called "time_limit" with underscore, not "timeLimit". Value 69696 (milliseconds) is invalid — it should be 69.696, but that exceeds the 30s limit.'}
                                 />
                                 <Field
                                     name="memory_limit"
                                     type="number"
-                                    desc={ro ? 'Limită de memorie în MB. Interval: 16 – 1024. Număr întreg.' : 'Memory limit in MB. Range: 16 – 1024. Integer.'}
-                                    warn={ro ? 'Nu bytes. Nu "memoryLimit" (camelCase). 468435456 bytes ≠ 256 MB.' : 'Not bytes. Not "memoryLimit" (camelCase). 468435456 bytes ≠ 256 MB.'}
+                                    desc={ro
+                                        ? 'Limita de memorie per test, în megabytes (MB). Trebuie să fie număr întreg. Interval valid: 16 până la 1024. Exemple: 64, 256, 512.'
+                                        : 'Memory limit per test, in megabytes (MB). Must be an integer. Valid range: 16 to 1024. Examples: 64, 256, 512.'}
+                                    warn={ro
+                                        ? 'Unitatea este MB, nu bytes. 256 MB = 268.435.456 bytes — nu pune valoarea în bytes. Câmpul se numește "memory_limit" cu underscore, nu "memoryLimit".'
+                                        : 'Unit is MB, not bytes. 256 MB = 268,435,456 bytes — do not put the value in bytes. Field is called "memory_limit" with underscore, not "memoryLimit".'}
                                 />
-                                <Field
-                                    name="difficulty"
-                                    type="string"
-                                    desc={ro ? 'Unul dintre exact trei valori posibile (uppercase):' : 'One of exactly three possible values (uppercase):'}
-                                />
-                                <div className="ml-4 flex gap-2 flex-wrap">
-                                    {['"EASY"', '"MEDIUM"', '"HARD"'].map(v => (
-                                        <code key={v} className="text-xs px-2 py-0.5 rounded-lg bg-(--surface-muted) border border-(--accent)/20 text-(--accent) font-mono">{v}</code>
-                                    ))}
+                                <div>
+                                    <Field
+                                        name="difficulty"
+                                        type="string"
+                                        desc={ro
+                                            ? 'Dificultatea problemei. Trebuie să fie exact unul dintre cele trei string-uri de mai jos, cu majuscule:'
+                                            : 'Problem difficulty. Must be exactly one of the three strings below, uppercase:'}
+                                    />
+                                    <div className="ml-4 mt-2 flex gap-2 flex-wrap">
+                                        {['"EASY"', '"MEDIUM"', '"HARD"'].map(v => (
+                                            <code key={v} className="text-xs px-2 py-0.5 rounded-lg bg-(--surface-muted) border border-(--accent)/20 text-(--accent) font-mono">{v}</code>
+                                        ))}
+                                    </div>
+                                    <p className="ml-4 mt-1.5 text-xs text-amber-400">
+                                        {ro
+                                            ? '⚠ Nu număr (0, 1, 2 nu sunt valide). Nu lowercase ("easy" nu merge). Nu alte valori ("NORMAL", "MEDIUM-HARD" etc.).'
+                                            : '⚠ Not a number (0, 1, 2 are not valid). Not lowercase ("easy" doesn\'t work). No other values ("NORMAL", "MEDIUM-HARD" etc.).'}
+                                    </p>
                                 </div>
-                                <p className="ml-4 text-xs text-amber-400">{ro ? 'Nu număr (0, 1, 2). Nu lowercase ("easy"). Nu "NORMAL" sau altceva.' : 'Not a number (0, 1, 2). Not lowercase ("easy"). Not "NORMAL" or anything else.'}</p>
                                 <Field
                                     name="tags"
-                                    type="array"
-                                    desc={ro ? 'Listă de string-uri. Tagurile trebuie să existe deja pe platformă. Poate fi array gol [].' : 'Array of strings. Tags must already exist on the platform. Can be empty [].'}
+                                    type="string[]"
+                                    desc={ro
+                                        ? 'Listă de etichete. Fiecare etichetă trebuie să existe deja pe platformă — dacă pui un tag inexistent, importul va eșua. Poate fi array gol [] dacă nu vrei etichete.'
+                                        : 'List of tags. Each tag must already exist on the platform — if you include a non-existent tag, import will fail. Can be empty [] if you don\'t want any tags.'}
                                 />
                             </div>
                         </Section>
 
                         {/* 3. Statement */}
                         <Section title={ro ? '3. Enunț' : '3. Statement'}>
-                            <p className="text-sm text-(--text-muted) mb-2">
-                                {ro ? 'Calea exactă, obligatorie:' : 'Exact required path:'}
-                            </p>
-                            <pre className="text-xs font-mono bg-(--surface-muted) rounded-xl p-3 text-(--accent)">
-                                statements/ro/statement.tex
-                            </pre>
-                            <Warn>
+                            <p className="text-sm text-(--text-muted) mb-3">
                                 {ro
-                                    ? 'statements/en/ nu este importat. statement.md nu este importat. Doar .tex în ro/.'
-                                    : 'statements/en/ is not imported. statement.md is not imported. Only .tex inside ro/.'}
-                            </Warn>
+                                    ? 'Importul citește automat ambele limbi dacă există. Extensiile acceptate pentru fiecare: .tex (LaTeX) sau .md (Markdown).'
+                                    : 'Import automatically reads both languages if present. Accepted extensions for each: .tex (LaTeX) or .md (Markdown).'}
+                            </p>
+                            <div className="space-y-2 mb-3">
+                                {[
+                                    { path: 'statements/ro/statement.tex', label: ro ? 'enunț în română (LaTeX)' : 'Romanian statement (LaTeX)' },
+                                    { path: 'statements/ro/statement.md',  label: ro ? 'enunț în română (Markdown)' : 'Romanian statement (Markdown)' },
+                                    { path: 'statements/en/statement.tex', label: ro ? 'enunț în engleză (LaTeX)' : 'English statement (LaTeX)' },
+                                    { path: 'statements/en/statement.md',  label: ro ? 'enunț în engleză (Markdown)' : 'English statement (Markdown)' },
+                                ].map(({ path, label }) => (
+                                    <div key={path} className="flex items-center gap-3 text-xs">
+                                        <code className="font-mono text-(--accent) bg-(--surface-muted) px-2 py-1 rounded-lg shrink-0">{path}</code>
+                                        <span className="text-(--text-muted)">{label}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="text-xs text-(--text-muted)">
+                                {ro
+                                    ? 'Poți include una sau ambele limbi. Dacă lipsesc ambele, enunțul va fi gol. Utilizatorul va vedea varianta corespunzătoare limbii selectate în interfață.'
+                                    : 'You can include one or both languages. If both are missing, the statement will be empty. Users will see the version matching the language selected in the interface.'}
+                            </p>
                         </Section>
 
                         {/* 4. Raw tests */}
-                        <Section title={ro ? '4. Teste manuale (raw_tests/)' : '4. Manual tests (raw_tests/)'}>
+                        <Section title={ro ? '4. Teste manuale (files/raw_tests/)' : '4. Manual tests (files/raw_tests/)'}>
                             <p className="text-sm text-(--text-muted) mb-3">
                                 {ro
-                                    ? 'Fiecare test = un fișier .in și un fișier .ok (sau .out), cu același număr:'
-                                    : 'Each test = one .in file and one .ok (or .out) file, with the same number:'}
+                                    ? 'Fiecare test manual constă din exact două fișiere: un fișier de intrare (.in) și un fișier cu răspunsul așteptat (.ok sau .out). Cele două fișiere trebuie să aibă același număr în nume.'
+                                    : 'Each manual test consists of exactly two files: an input file (.in) and an expected output file (.ok or .out). Both files must share the same number in their name.'}
                             </p>
                             <div className="grid grid-cols-2 gap-3 mb-3">
                                 <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-3">
@@ -152,55 +240,95 @@ export default function ZipFormatModal() {
                                     <pre className="text-xs font-mono text-(--text-h) leading-relaxed">
 {`1.in  ↔  1.ok
 2.in  ↔  2.ok
+0.in  ↔  0.ok
 10.in ↔  10.ok`}
                                     </pre>
                                 </div>
                                 <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3">
-                                    <p className="text-xs font-bold text-red-400 mb-2">✗ {ro ? 'Greșit' : 'Wrong'}</p>
+                                    <p className="text-xs font-bold text-red-400 mb-2">✗ {ro ? 'Greșit — ignorat' : 'Wrong — ignored'}</p>
                                     <pre className="text-xs font-mono text-(--text-h) leading-relaxed">
 {`1-strength.in
 test_01.in
 01.input
-1.txt`}
+input1.txt`}
                                     </pre>
                                 </div>
                             </div>
                             <p className="text-xs text-(--text-muted)">
                                 {ro
-                                    ? 'Testele fără pereche (.in fără .ok sau invers) sunt ignorate. Numerotarea poate începe de la 0 sau 1.'
-                                    : 'Unpaired tests (.in without .ok or vice versa) are ignored. Numbering can start from 0 or 1.'}
+                                    ? 'Un fișier fără pereche (ex: există 3.in dar nu există 3.ok) este ignorat complet. Numerotarea poate începe de la 0 sau 1 și poate fi discontinuă (1, 2, 5, 6 funcționează).'
+                                    : 'An unpaired file (e.g. 3.in exists but 3.ok does not) is completely ignored. Numbering can start from 0 or 1 and can be non-consecutive (1, 2, 5, 6 works).'}
                             </p>
                         </Section>
 
                         {/* 5. tests.gen */}
-                        <Section title={ro ? '5. Script generator (tests.gen)' : '5. Generator script (tests.gen)'}>
+                        <Section title={ro ? '5. Script generator (metadata/tests.gen)' : '5. Generator script (metadata/tests.gen)'}>
                             <p className="text-sm text-(--text-muted) mb-3">
                                 {ro
-                                    ? 'Fișier opțional. Definește cum se generează testele automat. Sintaxă:'
-                                    : 'Optional file. Defines how tests are generated automatically. Syntax:'}
+                                    ? 'Fișier opțional care definește structura subtask-urilor și cum se generează testele automat. Fiecare linie este fie o directivă (începe cu #) fie o comandă de test (= sau <).'
+                                    : 'Optional file that defines the subtask structure and how tests are generated automatically. Each line is either a directive (starts with #) or a test command (= or <).'}
                             </p>
                             <pre className="text-xs font-mono bg-(--surface-muted) rounded-xl p-4 text-(--text-h) leading-relaxed overflow-x-auto">
-{`#MAIN solution       ← numele sursei principale (fără extensie)
-#DEFGRP 30 small     ← subtask "small" cu 30% din punctaj
-#DEFGRP 70 large     ← subtask "large" cu 70% din punctaj
-#VAL val             ← numele validatorului (fără extensie)
+{`#MAIN solution        ← numele fișierului sursă principal din files/sources/ (fără extensie)
+#DEFGRP 30 small      ← definește subtask-ul "small" cu 30% din punctaj
+#DEFGRP 70 large      ← definește subtask-ul "large" cu 70% din punctaj
+                         (toate procentele trebuie să sumeze 100)
+#VAL val              ← numele validatorului din files/validators/ (fără extensie)
 
-#IN small large      ← testele de aici aparțin grupurilor "small" și "large"
-= 1.in               ← include test manual din raw_tests/ (doar numele fișierului)
+#IN small large       ← testele care urmează aparțin subtask-urilor "small" ȘI "large"
+= 1.in                ← include testul manual files/raw_tests/1.in (doar numele, fără cale)
 
-#NOTIN small         ← testele de aici NU mai aparțin lui "small"
-#IN large
-< gen 100000 -10000 10000   ← generează test cu comanda: gen 100000 -10000 10000
-< gen 100000 0 10000`}
+#NOTIN small          ← de aici înainte, testele NU mai aparțin lui "small"
+#IN large             ← dar aparțin în continuare lui "large"
+< gen 100 -1000 1000  ← generează un test rulând: files/generators/gen 100 -1000 1000
+< gen 100000 0 9999   ← alt test generat cu alți parametri`}
                             </pre>
-                            <div className="mt-3 space-y-1.5">
-                                <Directive name="#MAIN" desc={ro ? 'Numele binarului soluție (fără extensie). Obligatoriu.' : 'Solution binary name (no extension). Required.'} />
-                                <Directive name="#DEFGRP" desc={ro ? '<procente> <nume> — definește un subtask. Procentele tuturor grupurilor trebuie să sumeze 100.' : '<percent> <name> — defines a subtask. All group percentages must sum to 100.'} />
-                                <Directive name="#VAL" desc={ro ? '<nume_validator> — validatorul din files/validators/ (fără extensie).' : '<validator_name> — validator from files/validators/ (no extension).'} />
-                                <Directive name="#IN" desc={ro ? '<grup1> [grup2...] — testele ce urmează aparțin acestor grupuri.' : '<group1> [group2...] — following tests belong to these groups.'} />
-                                <Directive name="#NOTIN" desc={ro ? '<grup> — testele ce urmează nu mai aparțin acestui grup.' : '<group> — following tests no longer belong to this group.'} />
-                                <Directive name="=" desc={ro ? '<fisier.in> — include un test manual din raw_tests/ (doar numele, nu calea completă).' : '<file.in> — include a manual test from raw_tests/ (filename only, not full path).'} warn={ro ? '"= 0-strength.in" nu funcționează dacă fișierul se numește "0-strength.in" — testul trebuie să se numească "0.in".' : '"= 0-strength.in" will not work if the file is named "0-strength.in" — the test file must be named "0.in".'} />
-                                <Directive name="<" desc={ro ? '<comanda> [argumente] — generează un test apelând generatorul cu argumentele date.' : '<command> [args] — generates a test by calling the generator with given arguments.'} />
+                            <div className="mt-4 space-y-3">
+                                <Directive
+                                    name="#MAIN"
+                                    desc={ro
+                                        ? 'Numele binarului soluție din files/sources/, fără extensie. Ex: dacă ai files/sources/solution.cpp, scrie #MAIN solution.'
+                                        : 'Binary name of the solution from files/sources/, without extension. E.g. if you have files/sources/solution.cpp, write #MAIN solution.'}
+                                />
+                                <Directive
+                                    name="#DEFGRP"
+                                    desc={ro
+                                        ? '<procente> <nume> — definește un subtask. Procentele tuturor subtask-urilor definite trebuie să sumeze exact 100.'
+                                        : '<percent> <name> — defines a subtask. The percentages of all defined subtasks must sum to exactly 100.'}
+                                />
+                                <Directive
+                                    name="#VAL"
+                                    desc={ro
+                                        ? '<nume> — validatorul din files/validators/, fără extensie. Ex: dacă ai files/validators/val.cpp, scrie #VAL val.'
+                                        : '<name> — validator from files/validators/, without extension. E.g. if you have files/validators/val.cpp, write #VAL val.'}
+                                />
+                                <Directive
+                                    name="#IN"
+                                    desc={ro
+                                        ? '<grup1> [grup2...] — toate testele de după această linie (până la următorul #IN sau #NOTIN) aparțin subtask-urilor specificate.'
+                                        : '<group1> [group2...] — all tests after this line (until the next #IN or #NOTIN) belong to the specified subtasks.'}
+                                />
+                                <Directive
+                                    name="#NOTIN"
+                                    desc={ro
+                                        ? '<grup> — testele de după această linie nu mai aparțin subtask-ului specificat, chiar dacă aparțineau înainte.'
+                                        : '<group> — tests after this line no longer belong to the specified subtask, even if they did before.'}
+                                />
+                                <Directive
+                                    name="="
+                                    desc={ro
+                                        ? '<fisier.in> — include un test manual existent din files/raw_tests/. Scrie doar numele fișierului, nu calea completă.'
+                                        : '<file.in> — includes an existing manual test from files/raw_tests/. Write only the filename, not the full path.'}
+                                    warn={ro
+                                        ? 'Dacă testul se numește files/raw_tests/1.in, scrie "= 1.in". Dacă se numește "0-strength.in", redenumește-l în "1.in" — altfel va fi ignorat.'
+                                        : 'If the test is files/raw_tests/1.in, write "= 1.in". If it\'s named "0-strength.in", rename it to "1.in" — otherwise it will be ignored.'}
+                                />
+                                <Directive
+                                    name="<"
+                                    desc={ro
+                                        ? '<comanda> [argumente] — generează un test nou rulând generatorul cu argumentele date. Generatorul trebuie să existe în files/generators/ și să fie declarat cu #MAIN sau apelat după numele binarului.'
+                                        : '<command> [arguments] — generates a new test by running the generator with the given arguments. The generator must exist in files/generators/.'}
+                                />
                             </div>
                         </Section>
 
@@ -208,10 +336,12 @@ test_01.in
                         <Section title={ro ? '6. Probleme interactive' : '6. Interactive problems'} last>
                             <p className="text-sm text-(--text-muted)">
                                 {ro
-                                    ? 'O problemă este marcată automat ca interactivă dacă arhiva conține cel puțin un fișier în '
-                                    : 'A problem is automatically marked as interactive if the archive contains at least one file in '}
+                                    ? 'Nu există un câmp în metadata.json pentru probleme interactive. O problemă este marcată automat ca interactivă dacă arhiva conține cel puțin un fișier în '
+                                    : 'There is no field in metadata.json for interactive problems. A problem is automatically marked as interactive if the archive contains at least one file in '}
                                 <code className="text-xs font-mono text-(--accent)">files/interactors/</code>
-                                {ro ? '. Nu există un flag separat în metadata.json.' : '. There is no separate flag in metadata.json.'}
+                                {ro
+                                    ? '. Dacă folderul interactors/ lipsește sau e gol, problema e tratată ca non-interactivă.'
+                                    : '. If the interactors/ folder is missing or empty, the problem is treated as non-interactive.'}
                             </p>
                         </Section>
                     </div>
@@ -239,7 +369,7 @@ function Field({ name, type, desc, warn }: { name: string; type: string; desc: s
             </div>
             <span className="text-(--text-muted)">
                 {desc}
-                {warn && <span className="text-amber-400 block mt-0.5">{warn}</span>}
+                {warn && <span className="text-amber-400 block mt-1">⚠ {warn}</span>}
             </span>
         </div>
     );
@@ -248,10 +378,10 @@ function Field({ name, type, desc, warn }: { name: string; type: string; desc: s
 function Directive({ name, desc, warn }: { name: string; desc: string; warn?: string }) {
     return (
         <div className="flex gap-2 text-xs items-start">
-            <code className="font-mono text-(--accent) shrink-0 pt-0.5 min-w-[64px]">{name}</code>
+            <code className="font-mono text-(--accent) shrink-0 pt-0.5 min-w-[72px]">{name}</code>
             <span className="text-(--text-muted)">
                 {desc}
-                {warn && <span className="text-amber-400 block mt-0.5">⚠ {warn}</span>}
+                {warn && <span className="text-amber-400 block mt-1">⚠ {warn}</span>}
             </span>
         </div>
     );
