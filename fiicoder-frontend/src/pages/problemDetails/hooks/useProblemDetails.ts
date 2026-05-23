@@ -60,6 +60,7 @@ export function useProblemDetails() {
             global: {
                 tabSetTabStripHeight: 36,
                 tabEnableClose: false,
+                tabEnableRename: false,
                 splitterSize: 8,
                 tabSetHeaderHeight: 36,
                 tabSetEnableTabStrip: true,
