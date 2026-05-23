@@ -50,6 +50,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem(THEME_STORAGE_KEY, theme);
 
+        // Resolve effective tone (light/dark) per theme — used to retarget
+        // low-contrast Tailwind palette utilities (text-amber-400, bg-red-500/15, etc.)
+        const STATIC_LIGHT_THEMES: Theme[] = ['cream', 'sage'];
+        let isLightTone = STATIC_LIGHT_THEMES.includes(theme);
+
         if (theme === 'custom') {
             document.documentElement.style.setProperty('--bg-color', customColors.bg);
             document.documentElement.style.setProperty('--accent', customColors.accent);
@@ -61,6 +66,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
             const brightnessScore = (redChannel * 299 + greenChannel * 587 + blueChannel * 114) / 1000;
             const isLightBackground = brightnessScore > 128;
+            isLightTone = isLightBackground;
 
             let textHex = '#e5e9f0';
             let textHHex = '#ffffff';
@@ -97,6 +103,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             document.documentElement.style.removeProperty('--cursor-pointer');
             document.documentElement.style.removeProperty('--cursor-text');
         }
+
+        document.documentElement.setAttribute('data-tone', isLightTone ? 'light' : 'dark');
 
         const existingFavicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
         const favicon = existingFavicon ?? document.createElement('link');
