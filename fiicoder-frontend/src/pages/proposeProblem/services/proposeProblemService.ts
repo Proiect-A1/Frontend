@@ -22,14 +22,14 @@ export const proposeProblemService = {
     const zipBlob = await createProblemZip(formData);
 
     // 3. Upload zip to the cloud URL
-    await fetch(zipProblemUploadURL, {
+    const uploadRes = await fetch(zipProblemUploadURL, {
       method: "PUT",
       body: zipBlob,
-      headers: {
-        // Must match the content type baked into the presigned PUT URL.
-        "Content-Type": "application/octet-stream",
-      },
+      headers: { "Content-Type": "application/octet-stream" },
     });
+    if (!uploadRes.ok) {
+      throw { status: uploadRes.status, body: null, message: 'ZIP_UPLOAD_FAILED' };
+    }
 
     // Return a mock response or refetch if necessary since the backend might not return the full ProposalResponse here
     return {
@@ -51,10 +51,16 @@ export const proposeProblemService = {
   getProblemFormDetails: async (title: string): Promise<ProposeProblemForm> => {
     // 1. Fetch metadata from backend
     const details = await apiClient.get<any>(`/problems/${encodeURIComponent(title)}/form/details`);
-    
+
     // 2. Fetch and extract the zip archive
     const { extractProblemZip } = await import("../utils/unzipHelper");
-    const { files, tests, generatorScript } = await extractProblemZip(details.zipDownloadLink);
+    let files, tests, generatorScript;
+    try {
+      ({ files, tests, generatorScript } = await extractProblemZip(details.zipDownloadLink));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Eroare la descărcarea arhivei ZIP.';
+      throw new Error(msg);
+    }
 
     // 3. Map to ProposeProblemForm
     return {
@@ -102,10 +108,9 @@ function buildPayload(formData: ProposeProblemForm) {
     title: formData.title,
     description: formData.statement,
     difficultyLevel: formData.difficulty.toUpperCase(),
-    timeLimit: formData.timeLimit,
-    memoryLimit: formData.memoryLimit,
+    timeLimit: Number(formData.timeLimit),
+    memoryLimit: Number(formData.memoryLimit),
     tagTitles: formData.tags,
-    visibility: formData.visibility.toUpperCase(),
   };
 }
 

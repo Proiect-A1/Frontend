@@ -9,7 +9,53 @@ import {
     clearDraft,
 } from '../services/proposeProblemService';
 import { createProblemZip } from '../utils/zipHelper';
+import { ZipImportError } from '../utils/unzipHelper';
 import type { ProposeProblemForm, ProblemProposalResponse } from '../types/proposeProblem';
+
+interface ApiError { status: number; body: { message?: string; violations?: { message: string }[] } | null; message: string; }
+
+function isApiError(e: unknown): e is ApiError {
+    return typeof e === 'object' && e !== null && 'status' in e;
+}
+
+const BACKEND_MSG_MAP: Record<string, string> = {
+    'Title is mandatory': 'Titlul este obligatoriu.',
+    'Title must not exceed 100 characters': 'Titlul nu poate depăși 100 de caractere.',
+    'Description is mandatory': 'Enunțul problemei este obligatoriu.',
+    'Difficulty level is mandatory': 'Dificultatea este obligatorie.',
+    'Time limit must be at least 0.1 seconds': 'Limita de timp trebuie să fie cel puțin 0.1 secunde.',
+    'Time limit must not exceed 30 seconds': 'Limita de timp nu poate depăși 30 de secunde.',
+    'Memory limit must be at least 16 MB': 'Limita de memorie trebuie să fie cel puțin 16 MB.',
+    'Memory limit must not exceed 1024 MB': 'Limita de memorie nu poate depăși 1024 MB.',
+    'Tag title cannot be blank': 'Etichetele nu pot fi goale.',
+};
+
+function parseSubmitError(err: unknown): string {
+    if (err instanceof TypeError) return 'Eroare de rețea. Verifică conexiunea și încearcă din nou.';
+    if (err instanceof Error) return `Eroare la generarea pachetului: ${err.message}`;
+    if (!isApiError(err)) return 'Eroare neașteptată. Încearcă din nou.';
+
+    if (err.message === 'ZIP_UPLOAD_FAILED') return 'Eroare la încărcarea arhivei ZIP pe server. URL-ul de upload a expirat sau serverul a refuzat fișierul — încearcă din nou.';
+
+    const backendMsg = err.body?.message ?? '';
+
+    if (err.status === 409) {
+        const titleMatch = backendMsg.match(/title\s+(.+?)\s+is already in use/i);
+        const title = titleMatch ? `„${titleMatch[1]}"` : 'acest titlu';
+        return `Există deja o problemă cu ${title}. Alege un alt titlu.`;
+    }
+    if (err.status === 400) {
+        const violations = err.body?.violations;
+        if (violations?.length) return BACKEND_MSG_MAP[violations[0].message] ?? violations[0].message;
+        return BACKEND_MSG_MAP[backendMsg] ?? backendMsg ?? 'Datele introduse nu sunt valide. Verifică toate câmpurile.';
+    }
+    if (err.status === 403) return 'Nu ai permisiunea să propui probleme. Necesită rol de Profesor.';
+    if (err.status === 401) return 'Sesiunea a expirat. Autentifică-te din nou.';
+    if (err.status === 404) return 'Una sau mai multe etichete selectate nu există pe platformă.';
+    if (err.status === 413) return 'Arhiva ZIP depășește limita de dimensiune a serverului.';
+    if (err.status === 0 || err.status === undefined) return 'Eroare de rețea. Verifică conexiunea și încearcă din nou.';
+    return backendMsg || `Eroare server (${err.status}). Încearcă din nou.`;
+}
 
 function triggerDownload(blob: Blob, filename: string) {
     const url = URL.createObjectURL(blob);
@@ -59,9 +105,9 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
             .catch((err) => {
                 if (!cancelled) {
                     setSubmitStatus('error');
-                    setErrorMessage(
-                        `Nu s-a putut încărca propunerea: ${err instanceof Error ? err.message : 'Eroare necunoscută'}`,
-                    );
+                    const detail = err instanceof Error ? err.message : parseSubmitError(err);
+                    setErrorMessage(`Nu s-a putut încărca propunerea: ${detail}`);
+                    toast.error(`Nu s-a putut încărca propunerea: ${detail}`, { duration: 8000 });
                 }
             })
             .finally(() => {
@@ -153,9 +199,9 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
                 setSubmitStatus('success');
             } catch (error) {
                 setSubmitStatus('error');
-                const message = error instanceof Error ? error.message : 'An error occurred';
+                const message = parseSubmitError(error);
                 setErrorMessage(message);
-                toast.error(message);
+                toast.error(message, { duration: 8000 });
             } finally {
                 setIsSubmitting(false);
             }
@@ -189,15 +235,38 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
     }, [methods]);
 
     const handleImport = useCallback(async (file: File) => {
+        if (!file.name.toLowerCase().endsWith('.zip')) {
+            toast.error('Fișierul selectat nu este o arhivă ZIP. Selectează un fișier .zip.');
+            return;
+        }
+        const MAX_ZIP_MB = 200;
+        if (file.size > MAX_ZIP_MB * 1024 * 1024) {
+            toast.error(`Arhiva depășește limita de ${MAX_ZIP_MB} MB.`);
+            return;
+        }
+
         setIsImporting(true);
         try {
-            const { extractProblemZipFromBlob } = await import('../utils/unzipHelper');
-            const formData = await extractProblemZipFromBlob(file);
-            methods.reset(formData);
-            toast.success('Zip importat cu succes.');
+            const [{ extractProblemZipFromBlob }, { tagService }] = await Promise.all([
+                import('../utils/unzipHelper'),
+                import('../../../services/tagService'),
+            ]);
+            const availableTags = await tagService.getAllTags().catch(() => null);
+            const availableTagTitles = availableTags?.map(t => t.title) ?? undefined;
+
+            const { form, warnings } = await extractProblemZipFromBlob(file, availableTagTitles);
+            methods.reset(form);
+            toast.success('ZIP importat cu succes.');
+            for (const w of warnings) {
+                toast.warning(w.message, { duration: 7000 });
+            }
         } catch (err) {
-            console.error('[handleImport] failed:', err);
-            toast.error('Eroare la parsarea zip-ului. Asigură-te că e un pachet valid.');
+            if (err instanceof ZipImportError) {
+                toast.error(err.message, { duration: 10000 });
+            } else {
+                console.error('[handleImport] failed:', err);
+                toast.error('Eroare neașteptată la parsarea ZIP-ului.');
+            }
         } finally {
             setIsImporting(false);
         }
