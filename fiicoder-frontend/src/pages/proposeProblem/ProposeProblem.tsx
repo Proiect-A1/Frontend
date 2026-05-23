@@ -137,11 +137,13 @@ export default function ProposeProblem() {
                                                     </p>
                                                 </div>
                                                 <div className="flex gap-2">
-                                                    <button type="button" onClick={handleRestoreDraft} style={{ borderColor: 'var(--status-warning)', color: 'var(--status-warning)' }} className="text-xs px-3 py-1 rounded-2xl border hover:bg-black/5 transition-colors font-semibold">
-                                                        ✓ Restaurează
+                                                    <button type="button" onClick={handleRestoreDraft} style={{ borderColor: 'var(--status-warning)', color: 'var(--status-warning)' }} className="inline-flex items-center gap-1 text-xs px-3 py-1 rounded-2xl border hover:bg-black/5 transition-colors font-semibold">
+                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                                                        Restaurează
                                                     </button>
-                                                    <button type="button" onClick={handleDiscardDraft} style={{ borderColor: 'var(--status-error)', color: 'var(--status-error)' }} className="text-xs px-3 py-1 rounded-2xl border hover:bg-black/5 transition-colors">
-                                                        ✗ Renunță
+                                                    <button type="button" onClick={handleDiscardDraft} style={{ borderColor: 'var(--status-error)', color: 'var(--status-error)' }} className="inline-flex items-center gap-1 text-xs px-3 py-1 rounded-2xl border hover:bg-black/5 transition-colors">
+                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                        Renunță
                                                     </button>
                                                 </div>
                                             </div>
@@ -173,8 +175,9 @@ export default function ProposeProblem() {
 
                                 {submitStatus === 'success' && (
                                     <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} style={{ borderColor: 'var(--status-success)', backgroundColor: 'var(--status-success-bg)' }} className="mb-6 p-4 rounded-2xl border">
-                                        <p className="text-sm font-semibold" style={{ color: 'var(--status-success)' }}>
-                                            ✓ {isEditMode ? 'Propunerea a fost actualizată cu succes!' : 'Propunerea ta a fost trimisă cu succes! Vei fi notificat când va fi revizuită.'}
+                                        <p className="text-sm font-semibold flex items-center gap-1.5" style={{ color: 'var(--status-success)' }}>
+                                            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
+                                            {isEditMode ? 'Propunerea a fost actualizată cu succes!' : 'Propunerea ta a fost trimisă cu succes! Vei fi notificat când va fi revizuită.'}
                                         </p>
                                     </motion.div>
                                 )}

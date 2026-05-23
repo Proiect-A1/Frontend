@@ -230,8 +230,9 @@ export default function GeneratorTab() {
                     className="rounded-2xl border border-red-500/30 bg-red-950/20 overflow-hidden"
                 >
                     <div className="px-4 py-2 bg-red-950/40 border-b border-red-500/20">
-                        <span className="text-red-400 font-semibold text-sm">
-                            ✗ {errors.length} {errors.length === 1 ? 'eroare' : 'erori'}
+                        <span className="text-red-400 font-semibold text-sm flex items-center gap-1.5">
+                            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            {errors.length} {errors.length === 1 ? 'eroare' : 'erori'}
                         </span>
                     </div>
                     <div className="max-h-40 overflow-y-auto custom-scrollbar">
@@ -259,8 +260,9 @@ export default function GeneratorTab() {
                     animate={{ opacity: 1, y: 0 }}
                     className="p-4 rounded-2xl border border-green-500/30 bg-green-950/20"
                 >
-                    <p className="text-sm text-green-400 font-semibold">
-                        ✓ Scriptul a fost validat cu succes! Mergi la „Fișiere → Surse" pentru a rula o sursă oficială.
+                    <p className="text-sm text-green-400 font-semibold flex items-center gap-1.5">
+                        <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
+                        Scriptul a fost validat cu succes! Mergi la „Fișiere → Surse" pentru a rula o sursă oficială.
                     </p>
                 </motion.div>
             )}

@@ -230,9 +230,9 @@ export default function AttachmentsTab() {
                                         <button
                                             type="button"
                                             onClick={() => fileManagement.removeFile(file.id)}
-                                            className="px-2 py-1 rounded-full text-xs text-(--text-muted) hover:text-red-400 transition-colors"
+                                            className="p-1 rounded-full text-(--text-muted) hover:text-red-400 transition-colors"
                                         >
-                                            ✕
+                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                                         </button>
                                     </div>
                                 </div>
@@ -336,9 +336,10 @@ export default function AttachmentsTab() {
                                                     <button
                                                         type="button"
                                                         onClick={() => fileManagement.setEditingFileId(null)}
-                                                        className="text-xs text-(--text-muted) hover:text-(--text-h) transition-colors"
+                                                        className="inline-flex items-center gap-1 text-xs text-(--text-muted) hover:text-(--text-h) transition-colors"
                                                     >
-                                                        ✕ Închide
+                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                        Închide
                                                     </button>
                                                 </div>
                                                 <div style={{ height: '300px' }}>

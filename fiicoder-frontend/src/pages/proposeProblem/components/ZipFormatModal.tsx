@@ -257,7 +257,7 @@ export default function ZipFormatModal() {
                             </p>
                             <div className="grid grid-cols-2 gap-3 mb-3">
                                 <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-3">
-                                    <p className="text-xs font-bold text-green-400 mb-2">✓ {ro ? 'Corect' : 'Correct'}</p>
+                                    <p className="text-xs font-bold text-green-400 mb-2 flex items-center gap-1"><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>{ro ? 'Corect' : 'Correct'}</p>
                                     <pre className="text-xs font-mono text-(--text-h) leading-relaxed">
 {`1.in  ↔  1.ok
 2.in  ↔  2.ok
@@ -266,7 +266,7 @@ export default function ZipFormatModal() {
                                     </pre>
                                 </div>
                                 <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3">
-                                    <p className="text-xs font-bold text-red-400 mb-2">✗ {ro ? 'Greșit — ignorat' : 'Wrong — ignored'}</p>
+                                    <p className="text-xs font-bold text-red-400 mb-2 flex items-center gap-1"><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>{ro ? 'Greșit — ignorat' : 'Wrong — ignored'}</p>
                                     <pre className="text-xs font-mono text-(--text-h) leading-relaxed">
 {`1-strength.in
 test_01.in
@@ -390,7 +390,7 @@ function Field({ name, type, desc, warn }: { name: string; type: string; desc: s
             </div>
             <span className="text-(--text-muted)">
                 {desc}
-                {warn && <span className="text-amber-400 block mt-1">⚠ {warn}</span>}
+                {warn && <span className="text-amber-400 flex items-start gap-1 mt-1"><svg className="w-3.5 h-3.5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>{warn}</span>}
             </span>
         </div>
     );
@@ -402,7 +402,7 @@ function Directive({ name, desc, warn }: { name: string; desc: string; warn?: st
             <code className="font-mono text-(--accent) shrink-0 pt-0.5 min-w-[72px]">{name}</code>
             <span className="text-(--text-muted)">
                 {desc}
-                {warn && <span className="text-amber-400 block mt-1">⚠ {warn}</span>}
+                {warn && <span className="text-amber-400 flex items-start gap-1 mt-1"><svg className="w-3.5 h-3.5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>{warn}</span>}
             </span>
         </div>
     );

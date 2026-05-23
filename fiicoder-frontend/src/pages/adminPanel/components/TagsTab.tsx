@@ -109,7 +109,7 @@ export default function TagsTab({
                         onClick={clearTagSearch}
                         className="rounded-2xl border border-(--accent)/40 px-4 py-2 text-(--text-muted) text-sm hover:bg-(--accent)/10 transition-all"
                     >
-                        ✕
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 )}
             </motion.form>

@@ -40,6 +40,8 @@ export default function ProposalsTab({
     const [subTab, setSubTab] = useState<'pending' | 'accepted'>('pending');
     const [showTests, setShowTests] = useState(false);
 
+    const selectedProposalMeta = proposals.find(p => p.id === selectedProposalId);
+
     const { data: testsData, isLoading: isTestsLoading } = useQuery({
         queryKey: ['admin', 'proposal', selectedProposalId, 'tests'],
         enabled: !!selectedProposalId && showTests,
@@ -109,11 +111,21 @@ export default function ProposalsTab({
                                     >
                                         <div className="flex items-start justify-between gap-3 mb-2">
                                             <h3 className="text-lg font-bold text-(--text-h) line-clamp-1">{proposal.title}</h3>
-                                            <span className="text-xs text-(--text-muted) font-semibold whitespace-nowrap">{proposal.createdAt}</span>
+                                            <span className="text-xs text-(--text-muted) font-semibold whitespace-nowrap">{formatDate(proposal.createdAt)}</span>
                                         </div>
-                                        <p className="text-sm text-(--text) line-clamp-2 mb-3">
-                                            {unpackTranslation(proposal.description, lang)}
-                                        </p>
+                                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                            {proposal.difficulty && (
+                                                <DifficultyBadge difficulty={proposal.difficulty} />
+                                            )}
+                                            {proposal.tags && proposal.tags.length > 0 && proposal.tags.slice(0, 3).map(tag => (
+                                                <span key={tag} className="rounded-full border border-(--accent)/20 bg-(--accent)/5 px-2 py-0.5 text-[10px] text-(--text-muted)">
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                            {proposal.tags && proposal.tags.length > 3 && (
+                                                <span className="text-[10px] text-(--text-muted)">+{proposal.tags.length - 3}</span>
+                                            )}
+                                        </div>
                                         <div className="flex items-center justify-between text-xs text-(--text-muted) font-semibold">
                                             <span>
                                                 {lang === 'RO' ? 'Propus de' : 'By'}:{' '}
@@ -145,17 +157,31 @@ export default function ProposalsTab({
                         )}
                         {selectedProposal && (
                             <div className="space-y-4">
-                                <div className="flex items-start justify-between gap-3">
-                                    <div>
+                                <div className="space-y-2">
+                                    <div className="flex items-start justify-between gap-3">
                                         <h3 className="text-2xl font-bold text-(--text-h)">{selectedProposal.title}</h3>
-                                        <p className="text-sm text-(--text-muted) mt-1">
-                                            {lang === 'RO' ? 'Propus de' : 'Author'}{' '}
-                                            <span className="text-(--text-h) font-bold">{selectedProposal.authorUsername}</span>
-                                        </p>
+                                        <span className="rounded-full border border-amber-400/40 bg-amber-400/20 px-3 py-1 text-xs font-bold text-amber-500 whitespace-nowrap">
+                                            {selectedProposal.status}
+                                        </span>
                                     </div>
-                                    <span className="rounded-full border border-amber-400/40 bg-amber-400/20 px-3 py-1 text-xs font-bold text-amber-500 whitespace-nowrap">
-                                        {selectedProposal.status}
-                                    </span>
+                                    <div className="flex flex-wrap items-center gap-2 text-xs text-(--text-muted)">
+                                        <span>
+                                            {lang === 'RO' ? 'Propus de' : 'By'}{' '}
+                                            <span className="text-(--text-h) font-bold">{selectedProposal.authorUsername}</span>
+                                        </span>
+                                        {selectedProposalMeta?.createdAt && (
+                                            <>
+                                                <span className="opacity-40">·</span>
+                                                <span>{formatDate(selectedProposalMeta.createdAt)}</span>
+                                            </>
+                                        )}
+                                        {selectedProposalMeta?.difficulty && (
+                                            <>
+                                                <span className="opacity-40">·</span>
+                                                <DifficultyBadge difficulty={selectedProposalMeta.difficulty} />
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="flex gap-2 border-b border-(--accent)/20 pb-2">
@@ -204,10 +230,16 @@ export default function ProposalsTab({
                                         {(selectedProposal.timeLimit != null || selectedProposal.memoryLimit != null) && (
                                             <div className="flex gap-3 text-xs text-(--text-muted) font-semibold">
                                                 {selectedProposal.timeLimit != null && (
-                                                    <span>⏱ {selectedProposal.timeLimit}s</span>
+                                                    <span className="flex items-center gap-1">
+                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                        {selectedProposal.timeLimit}s
+                                                    </span>
                                                 )}
                                                 {selectedProposal.memoryLimit != null && (
-                                                    <span>💾 {selectedProposal.memoryLimit} MB</span>
+                                                    <span className="flex items-center gap-1">
+                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" /></svg>
+                                                        {selectedProposal.memoryLimit} MB
+                                                    </span>
                                                 )}
                                             </div>
                                         )}
@@ -236,6 +268,16 @@ export default function ProposalsTab({
                                     >
                                         {lang === 'RO' ? 'Șterge' : 'Delete'}
                                     </button>
+                                    {selectedProposal.zipDownloadLink && (
+                                        <a
+                                            href={selectedProposal.zipDownloadLink}
+                                            download
+                                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border-2 border-(--accent)/40 bg-(--accent)/10 text-(--text-h) text-xs font-bold hover:bg-(--accent)/20 transition-all active:scale-95"
+                                        >
+                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                            ZIP
+                                        </a>
+                                    )}
                                     <button
                                         onClick={() => handleReviewProposal(selectedProposal.id, 'reject')}
                                         className="px-4 py-2 rounded-full border-2 border-red-500/40 bg-red-500/10 text-red-500 text-xs font-bold hover:bg-red-500/20 transition-all active:scale-95"
@@ -336,4 +378,29 @@ export default function ProposalsTab({
             )}
         </motion.div>
     );
+}
+
+const DIFFICULTY_STYLES: Record<string, string> = {
+    EASY:    'border-green-500/40 bg-green-500/15 text-green-400',
+    MEDIUM:  'border-amber-400/40 bg-amber-400/15 text-amber-400',
+    HARD:    'border-red-500/40 bg-red-500/15 text-red-400',
+    CONTEST: 'border-purple-500/40 bg-purple-500/15 text-purple-400',
+};
+
+function DifficultyBadge({ difficulty }: { difficulty: string }) {
+    const key = difficulty.toUpperCase();
+    const cls = DIFFICULTY_STYLES[key] ?? 'border-(--accent)/30 bg-(--accent)/10 text-(--text-muted)';
+    return (
+        <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase ${cls}`}>
+            {difficulty}
+        </span>
+    );
+}
+
+function formatDate(iso: string): string {
+    try {
+        return new Date(iso).toLocaleDateString('ro-RO', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch {
+        return iso;
+    }
 }

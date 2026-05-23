@@ -36,6 +36,7 @@ export interface ProblemProposal {
     title: string;
     authorUsername: string;
     description: string;
+    difficulty?: string;
     status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
     createdAt: string;
     tags?: string[];
@@ -188,10 +189,11 @@ export const adminService = {
         try {
             const data = await apiClient.get<any[]>('/problems/pending');
             return data.map(p => ({
-                id: p.title, 
+                id: p.title,
                 title: p.title,
                 authorUsername: p.proposedBy || 'unknown',
-                description: p.difficulty || '',
+                description: '',
+                difficulty: p.difficulty || '',
                 status: 'PENDING',
                 createdAt: p.submittedAt || new Date().toISOString(),
                 tags: Array.from(p.tags || [])

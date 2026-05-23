@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
@@ -21,7 +22,7 @@ const containerVariants = {
 
 interface AnnouncementWithPriority extends Announcement {
     priority: 'high' | 'medium' | 'low';
-    icon: string;
+    icon: ReactNode;
 }
 
 function getPriorityFromTitle(title: string): 'high' | 'medium' | 'low' {
@@ -39,17 +40,15 @@ function getPriorityFromTitle(title: string): 'high' | 'medium' | 'low' {
     return 'low';
 }
 
-function getIconForAnnouncement(title: string): string {
+function getIconForAnnouncement(title: string): ReactNode {
     const titleLower = title.toLowerCase();
-    if (titleLower.includes('concurs') || titleLower.includes('contest')) return '🚀';
-    if (titleLower.includes('problemă') || titleLower.includes('problem')) return '📈';
-    if (
-        titleLower.includes('tutorial') ||
-        titleLower.includes('curs') ||
-        titleLower.includes('course')
-    )
-        return '🎓';
-    return '📢';
+    if (titleLower.includes('concurs') || titleLower.includes('contest'))
+        return <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>;
+    if (titleLower.includes('problemă') || titleLower.includes('problem'))
+        return <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>;
+    if (titleLower.includes('tutorial') || titleLower.includes('curs') || titleLower.includes('course'))
+        return <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 14l9-5-9-5-9 5 9 5z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /></svg>;
+    return <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>;
 }
 
 interface AnnouncementModalProps {
@@ -97,7 +96,7 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                             }`}
                         >
                             <div className="flex items-start justify-between gap-4 mb-4">
-                                <div className="text-4xl shrink-0">{announcement.icon}</div>
+                                <div className="w-9 h-9 shrink-0 text-(--accent)">{announcement.icon}</div>
                                 {isHighPriority && (
                                     <span className="shrink-0 px-3 py-1 rounded-full bg-(--accent) text-(--text-h) text-xs font-bold border border-(--accent)/60">
                                         URGENT
@@ -189,22 +188,25 @@ export default function Landing() {
     // Memoize the features and stats list to avoid recreation on every render
     const features = useMemo(() => [
         {
-            icon: '📚',
+            icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>,
             title: t.newProblems,
             desc: t.newProblemsDesc,
-            color: 'bg-emerald-500/10'
+            color: 'bg-emerald-500/10',
+            iconColor: 'text-emerald-400',
         },
         {
-            icon: '🏆',
+            icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>,
             title: t.dailyContests,
             desc: t.dailyContestsDesc,
-            color: 'bg-amber-500/10'
+            color: 'bg-amber-500/10',
+            iconColor: 'text-amber-400',
         },
         {
-            icon: '💻',
+            icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>,
             title: t.advancedEditor,
             desc: t.advancedEditorDesc,
-            color: 'bg-blue-500/10'
+            color: 'bg-blue-500/10',
+            iconColor: 'text-blue-400',
         },
     ], [t]);
 
@@ -382,7 +384,7 @@ export default function Landing() {
                                         }`}
                                     >
                                         <div className="flex items-start gap-3">
-                                            <div className="text-2xl shrink-0 group-hover:rotate-12 transition-transform duration-300">
+                                            <div className="w-6 h-6 shrink-0 text-(--accent) group-hover:rotate-12 transition-transform duration-300">
                                                 {ann.icon}
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -438,7 +440,7 @@ export default function Landing() {
                                 variants={itemVariants}
                                 className={`p-4 rounded-2xl border-2 border-(--accent)/20 bg-(--surface-card) transition-colors duration-300 group hover:border-(--accent)`}
                             >
-                                <div className={`w-10 h-10 rounded-xl ${feature.color} flex items-center justify-center text-2xl mb-3 group-hover:scale-105 transition-transform duration-300`}>
+                                <div className={`w-10 h-10 rounded-xl ${feature.color} flex items-center justify-center mb-3 group-hover:scale-105 transition-transform duration-300 ${feature.iconColor}`}>
                                     {feature.icon}
                                 </div>
                                 <h3 className="text-base font-black text-(--text-h) mb-1 tracking-tight">

@@ -36,7 +36,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
             {evalStatus === 'error' && (
                 <div className="h-full flex flex-col items-center justify-center text-center gap-3">
                     <div className="w-12 h-12 rounded-full bg-red-500/10 border-2 border-red-500/30 flex items-center justify-center">
-                        <span className="text-xl text-red-400">✕</span>
+                        <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </div>
                     <p className="text-xs text-red-400 font-bold">{evalError}</p>
                 </div>
