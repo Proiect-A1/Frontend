@@ -241,6 +241,11 @@ export default function ZipFormatModal() {
                                     ? 'Poți include una sau ambele limbi. Dacă lipsesc ambele, enunțul va fi gol. Utilizatorul va vedea varianta corespunzătoare limbii selectate în interfață.'
                                     : 'You can include one or both languages. If both are missing, the statement will be empty. Users will see the version matching the language selected in the interface.'}
                             </p>
+                            <Warn>
+                                {ro
+                                    ? 'Imaginile (PNG, JPG, SVG etc.) nu sunt suportate în enunț. Nu include fișiere imagine în arhivă și nu folosi sintaxa ![](imagine.png) în Markdown — imaginea nu va fi afișată.'
+                                    : 'Images (PNG, JPG, SVG, etc.) are not supported in statements. Do not include image files in the archive and do not use ![](image.png) Markdown syntax — the image will not be displayed.'}
+                            </Warn>
                         </Section>
 
                         {/* 4. Raw tests */}

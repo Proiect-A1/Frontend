@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import remarkGfm from 'remark-gfm';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 import { containerVariants, itemVariants } from '../../../utils/motionConfig';
 import { useLanguage } from '../../../language/Language';
 import { adminService, type ProblemProposal, type ProblemProposalDetail, type AcceptedProblem } from '../services/adminService';
@@ -196,27 +201,24 @@ export default function ProposalsTab({
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
-                                        <p className="text-sm text-(--text) leading-relaxed">
-                                            {unpackTranslation(selectedProposal.statement ?? selectedProposal.description, lang)}
-                                        </p>
-                                        <div className="grid gap-3 sm:grid-cols-2">
-                                            <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
-                                                <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">Input</p>
-                                                <p className="text-sm text-(--text) whitespace-pre-wrap">{selectedProposal.inputDescription ?? '-'}</p>
-                                            </div>
-                                            <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
-                                                <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">Output</p>
-                                                <p className="text-sm text-(--text) whitespace-pre-wrap">{selectedProposal.outputDescription ?? '-'}</p>
-                                            </div>
-                                        </div>
-                                        {selectedProposal.constraints && selectedProposal.constraints.length > 0 && (
-                                            <div className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
-                                                <p className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mb-2">{lang === 'RO' ? 'Restricții' : 'Constraints'}</p>
-                                                <ul className="space-y-1 text-sm text-(--text)">
-                                                    {selectedProposal.constraints.map((c) => <li key={c}>• {c}</li>)}
-                                                </ul>
+                                        {(selectedProposal.timeLimit != null || selectedProposal.memoryLimit != null) && (
+                                            <div className="flex gap-3 text-xs text-(--text-muted) font-semibold">
+                                                {selectedProposal.timeLimit != null && (
+                                                    <span>⏱ {selectedProposal.timeLimit}s</span>
+                                                )}
+                                                {selectedProposal.memoryLimit != null && (
+                                                    <span>💾 {selectedProposal.memoryLimit} MB</span>
+                                                )}
                                             </div>
                                         )}
+                                        <div className="max-h-96 overflow-y-auto custom-scrollbar text-sm text-(--text) leading-relaxed prose-sm">
+                                            <ReactMarkdown
+                                                remarkPlugins={[remarkMath, remarkGfm]}
+                                                rehypePlugins={[rehypeKatex]}
+                                            >
+                                                {unpackTranslation(selectedProposal.statement ?? selectedProposal.description, lang)}
+                                            </ReactMarkdown>
+                                        </div>
                                         {selectedProposal.tags && selectedProposal.tags.length > 0 && (
                                             <div className="flex flex-wrap gap-2">
                                                 {selectedProposal.tags.map((tag) => (
