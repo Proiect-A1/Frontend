@@ -11,10 +11,12 @@ export default function ZipFormatModal() {
             <button
                 type="button"
                 onClick={() => setOpen(true)}
-                title={ro ? 'Format arhivă ZIP' : 'ZIP archive format'}
-                className="inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors text-(--text-muted) hover:text-(--text-h)"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full font-semibold border-2 border-amber-400/60 bg-amber-400/10 hover:bg-amber-400/20 transition-colors text-amber-400"
             >
-                ?
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                {ro ? 'Format ZIP' : 'ZIP Format'}
             </button>
 
             {open && (
@@ -42,8 +44,8 @@ export default function ZipFormatModal() {
                         </h2>
                         <p className="text-sm text-(--text-muted) mb-6">
                             {ro
-                                ? 'Structura exactă pe care trebuie să o respecte arhiva pentru import corect. Dacă nu ești sigur, folosește butonul Export ZIP după ce completezi formularul — arhiva generată automat este întotdeauna în formatul corect.'
-                                : 'The exact structure your archive must follow for correct import. If unsure, use the Export ZIP button after filling the form — the auto-generated archive is always in the correct format.'}
+                                ? 'Structura exactă pe care trebuie să o respecte arhiva pentru import corect. Dacă nu ești sigur, folosește butonul Export ZIP după ce completezi formularul - arhiva generată automat este întotdeauna în formatul corect.'
+                                : 'The exact structure your archive must follow for correct import. If unsure, use the Export ZIP button after filling the form - the auto-generated archive is always in the correct format.'}
                         </p>
 
                         {/* 1. Folder structure */}
@@ -91,7 +93,7 @@ export default function ZipFormatModal() {
                                         },
                                         {
                                             path: 'validators/',
-                                            note: ro ? 'Validator de intrare — verifică că fișierele .in respectă formatul.' : 'Input validator — checks that .in files match the expected format.',
+                                            note: ro ? 'Validator de intrare - verifică că fișierele .in respectă formatul.' : 'Input validator - checks that .in files match the expected format.',
                                         },
                                         {
                                             path: 'generators/',
@@ -119,13 +121,13 @@ export default function ZipFormatModal() {
                             </div>
                             <Warn>
                                 {ro
-                                    ? 'Fișierele puse direct în files/ (nu într-un subfolder) sunt ignorate complet la import. Exemplu: files/solution.cpp nu va fi importat — trebuie să fie files/sources/solution.cpp.'
-                                    : 'Files placed directly in files/ (not in a subfolder) are completely ignored on import. Example: files/solution.cpp will not be imported — it must be files/sources/solution.cpp.'}
+                                    ? 'Fișierele puse direct în files/ (nu într-un subfolder) sunt ignorate complet la import. Exemplu: files/solution.cpp nu va fi importat - trebuie să fie files/sources/solution.cpp.'
+                                    : 'Files placed directly in files/ (not in a subfolder) are completely ignored on import. Example: files/solution.cpp will not be imported - it must be files/sources/solution.cpp.'}
                             </Warn>
                             <Warn>
                                 {ro
-                                    ? 'Arhiva nu trebuie să conțină un folder wrapper cu același nume. Dacă creezi ZIP-ul prin right-click pe un folder, ajungi cu o structură de tipul archive.zip/archive/files/... în loc de archive.zip/files/... — sandbox-ul va eșua silențios. Conținutul trebuie să fie direct la rădăcina arhivei.'
-                                    : 'The archive must not contain a wrapper folder with the same name. If you create the ZIP by right-clicking a folder, you end up with a structure like archive.zip/archive/files/... instead of archive.zip/files/... — the sandbox will fail silently. The contents must be directly at the archive root.'}
+                                    ? 'Arhiva nu trebuie să conțină un folder wrapper cu același nume. Dacă creezi ZIP-ul prin right-click pe un folder, ajungi cu o structură de tipul archive.zip/archive/files/... în loc de archive.zip/files/... - sandbox-ul va eșua silențios. Conținutul trebuie să fie direct la rădăcina arhivei.'
+                                    : 'The archive must not contain a wrapper folder with the same name. If you create the ZIP by right-clicking a folder, you end up with a structure like archive.zip/archive/files/... instead of archive.zip/files/... - the sandbox will fail silently. The contents must be directly at the archive root.'}
                             </Warn>
                         </Section>
 
@@ -164,15 +166,15 @@ export default function ZipFormatModal() {
                                     name="title / problemId"
                                     type="string"
                                     desc={ro
-                                        ? 'Titlul problemei — același string în ambele câmpuri. Trebuie să fie unic pe platformă. Dacă lipsește "title", se citește "problemId" ca fallback.'
-                                        : 'Problem title — same string in both fields. Must be unique on the platform. If "title" is missing, "problemId" is used as fallback.'}
+                                        ? 'Titlul problemei - același string în ambele câmpuri. Trebuie să fie unic pe platformă. Dacă lipsește "title", se citește "problemId" ca fallback.'
+                                        : 'Problem title - same string in both fields. Must be unique on the platform. If "title" is missing, "problemId" is used as fallback.'}
                                 />
                                 <Field
                                     name="time_limit / timeLimit"
                                     type="string / number"
                                     desc={ro
-                                        ? 'Două reprezentări ale aceleiași limite. "time_limit" e string în SECUNDE (ex: "1.5") — folosit la re-import. "timeLimit" e număr în MILISECUNDE (ex: 1500) — citit de sandbox la evaluare. Exportul automat face conversia corect.'
-                                        : 'Two representations of the same limit. "time_limit" is a string in SECONDS (e.g. "1.5") — used on re-import. "timeLimit" is a number in MILLISECONDS (e.g. 1500) — read by the sandbox during evaluation. The auto-export converts correctly.'}
+                                        ? 'Două reprezentări ale aceleiași limite. "time_limit" e string în SECUNDE (ex: "1.5") - folosit la re-import. "timeLimit" e număr în MILISECUNDE (ex: 1500) - citit de sandbox la evaluare. Exportul automat face conversia corect.'
+                                        : 'Two representations of the same limit. "time_limit" is a string in SECONDS (e.g. "1.5") - used on re-import. "timeLimit" is a number in MILLISECONDS (e.g. 1500) - read by the sandbox during evaluation. The auto-export converts correctly.'}
                                     warn={ro
                                         ? 'Atenție: "timeLimit" e în milisecunde, NU secunde. 1 secundă = 1000. Dacă pui 1.0 în loc de 1000, submission-ul tău va TLE pe orice test.'
                                         : 'Warning: "timeLimit" is in milliseconds, NOT seconds. 1 second = 1000. If you put 1.0 instead of 1000, your submission will TLE on every test.'}
@@ -184,8 +186,8 @@ export default function ZipFormatModal() {
                                         ? 'Limita de memorie per test, în BYTES. Backend-ul îl citește ca string, sandbox-ul ca număr. 256 MB = 268.435.456 bytes. 64 MB = 67.108.864 bytes.'
                                         : 'Memory limit per test, in BYTES. Backend reads it as string, sandbox as number. 256 MB = 268,435,456 bytes. 64 MB = 67,108,864 bytes.'}
                                     warn={ro
-                                        ? 'Valoarea este în BYTES, nu MB. Nu pune 256 — pune 268435456. Exportul automat face conversia corect din valoarea în MB introdusă în formular.'
-                                        : 'Value is in BYTES, not MB. Do not put 256 — put 268435456. The auto-export converts correctly from the MB value entered in the form.'}
+                                        ? 'Valoarea este în BYTES, nu MB. Nu pune 256 - pune 268435456. Exportul automat face conversia corect din valoarea în MB introdusă în formular.'
+                                        : 'Value is in BYTES, not MB. Do not put 256 - put 268435456. The auto-export converts correctly from the MB value entered in the form.'}
                                 />
                                 <div>
                                     <Field
@@ -248,8 +250,8 @@ export default function ZipFormatModal() {
                             </p>
                             <Warn>
                                 {ro
-                                    ? 'Imaginile (PNG, JPG, SVG etc.) nu sunt suportate în enunț. Nu include fișiere imagine în arhivă și nu folosi sintaxa ![](imagine.png) în Markdown — imaginea nu va fi afișată.'
-                                    : 'Images (PNG, JPG, SVG, etc.) are not supported in statements. Do not include image files in the archive and do not use ![](image.png) Markdown syntax — the image will not be displayed.'}
+                                    ? 'Imaginile (PNG, JPG, SVG etc.) nu sunt suportate în enunț. Nu include fișiere imagine în arhivă și nu folosi sintaxa ![](imagine.png) în Markdown - imaginea nu va fi afișată.'
+                                    : 'Images (PNG, JPG, SVG, etc.) are not supported in statements. Do not include image files in the archive and do not use ![](image.png) Markdown syntax - the image will not be displayed.'}
                             </Warn>
                         </Section>
 
@@ -271,7 +273,7 @@ export default function ZipFormatModal() {
                                     </pre>
                                 </div>
                                 <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3">
-                                    <p className="text-xs font-bold text-red-400 mb-2 flex items-center gap-1"><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>{ro ? 'Greșit — ignorat' : 'Wrong — ignored'}</p>
+                                    <p className="text-xs font-bold text-red-400 mb-2 flex items-center gap-1"><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>{ro ? 'Greșit - ignorat' : 'Wrong - ignored'}</p>
                                     <pre className="text-xs font-mono text-(--text-h) leading-relaxed">
 {`1-strength.in
 test_01.in
@@ -319,41 +321,41 @@ input1.txt`}
                                 <Directive
                                     name="#DEFGRP"
                                     desc={ro
-                                        ? '<procente> <nume> — definește un subtask. Procentele tuturor subtask-urilor definite trebuie să sumeze exact 100.'
-                                        : '<percent> <name> — defines a subtask. The percentages of all defined subtasks must sum to exactly 100.'}
+                                        ? '<procente> <nume> - definește un subtask. Procentele tuturor subtask-urilor definite trebuie să sumeze exact 100.'
+                                        : '<percent> <name> - defines a subtask. The percentages of all defined subtasks must sum to exactly 100.'}
                                 />
                                 <Directive
                                     name="#VAL"
                                     desc={ro
-                                        ? '<nume> — validatorul din files/validators/, fără extensie. Ex: dacă ai files/validators/val.cpp, scrie #VAL val.'
-                                        : '<name> — validator from files/validators/, without extension. E.g. if you have files/validators/val.cpp, write #VAL val.'}
+                                        ? '<nume> - validatorul din files/validators/, fără extensie. Ex: dacă ai files/validators/val.cpp, scrie #VAL val.'
+                                        : '<name> - validator from files/validators/, without extension. E.g. if you have files/validators/val.cpp, write #VAL val.'}
                                 />
                                 <Directive
                                     name="#IN"
                                     desc={ro
-                                        ? '<grup1> [grup2...] — toate testele de după această linie (până la următorul #IN sau #NOTIN) aparțin subtask-urilor specificate.'
-                                        : '<group1> [group2...] — all tests after this line (until the next #IN or #NOTIN) belong to the specified subtasks.'}
+                                        ? '<grup1> [grup2...] - toate testele de după această linie (până la următorul #IN sau #NOTIN) aparțin subtask-urilor specificate.'
+                                        : '<group1> [group2...] - all tests after this line (until the next #IN or #NOTIN) belong to the specified subtasks.'}
                                 />
                                 <Directive
                                     name="#NOTIN"
                                     desc={ro
-                                        ? '<grup> — testele de după această linie nu mai aparțin subtask-ului specificat, chiar dacă aparțineau înainte.'
-                                        : '<group> — tests after this line no longer belong to the specified subtask, even if they did before.'}
+                                        ? '<grup> - testele de după această linie nu mai aparțin subtask-ului specificat, chiar dacă aparțineau înainte.'
+                                        : '<group> - tests after this line no longer belong to the specified subtask, even if they did before.'}
                                 />
                                 <Directive
                                     name="="
                                     desc={ro
-                                        ? '<fisier.in> — include un test manual existent din files/raw_tests/. Scrie doar numele fișierului, nu calea completă.'
-                                        : '<file.in> — includes an existing manual test from files/raw_tests/. Write only the filename, not the full path.'}
+                                        ? '<fisier.in> - include un test manual existent din files/raw_tests/. Scrie doar numele fișierului, nu calea completă.'
+                                        : '<file.in> - includes an existing manual test from files/raw_tests/. Write only the filename, not the full path.'}
                                     warn={ro
-                                        ? 'Dacă testul se numește files/raw_tests/1.in, scrie "= 1.in". Dacă se numește "0-strength.in", redenumește-l în "1.in" — altfel va fi ignorat.'
-                                        : 'If the test is files/raw_tests/1.in, write "= 1.in". If it\'s named "0-strength.in", rename it to "1.in" — otherwise it will be ignored.'}
+                                        ? 'Dacă testul se numește files/raw_tests/1.in, scrie "= 1.in". Dacă se numește "0-strength.in", redenumește-l în "1.in" - altfel va fi ignorat.'
+                                        : 'If the test is files/raw_tests/1.in, write "= 1.in". If it\'s named "0-strength.in", rename it to "1.in" - otherwise it will be ignored.'}
                                 />
                                 <Directive
                                     name="<"
                                     desc={ro
-                                        ? '<comanda> [argumente] — generează un test nou rulând generatorul cu argumentele date. Generatorul trebuie să existe în files/generators/ și să fie declarat cu #MAIN sau apelat după numele binarului.'
-                                        : '<command> [arguments] — generates a new test by running the generator with the given arguments. The generator must exist in files/generators/.'}
+                                        ? '<comanda> [argumente] - generează un test nou rulând generatorul cu argumentele date. Generatorul trebuie să existe în files/generators/ și să fie declarat cu #MAIN sau apelat după numele binarului.'
+                                        : '<command> [arguments] - generates a new test by running the generator with the given arguments. The generator must exist in files/generators/.'}
                                 />
                             </div>
                         </Section>

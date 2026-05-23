@@ -13,9 +13,9 @@
  *   #ADDIN <group names...>
  *   #NOTIN <group names...>
  *   #TEST <points: float> <generator args...>
- *   = <filename>          — copy raw test file
- *   < <generator> <args>  — use specific generator
- *   <args...>             — append args to current #GEN
+ *   = <filename>          - copy raw test file
+ *   < <generator> <args>  - use specific generator
+ *   <args...>             - append args to current #GEN
  *   // comment
  */
 

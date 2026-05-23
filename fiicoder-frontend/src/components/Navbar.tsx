@@ -220,7 +220,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* desktop navigation — collapses at 1400 px to avoid logo overlap */}
+          {/* desktop navigation - collapses at 1400 px to avoid logo overlap */}
           <div className="hidden xl:flex gap-3 items-center flex-nowrap whitespace-nowrap">
             <Link to="/problems" className={getNavLinkClass("/problems")}>
               {t.archiveBtn}
@@ -303,7 +303,7 @@ export default function Navbar() {
 
             <div className="page-line-vertical"></div>
 
-            {/* theme toggle — trigger only; the panel is rendered
+            {/* theme toggle - trigger only; the panel is rendered
                             as a sibling of the pill below to avoid clipping */}
             <div ref={themeButtonRef}>
               <button

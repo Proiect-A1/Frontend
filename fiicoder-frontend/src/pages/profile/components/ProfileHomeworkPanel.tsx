@@ -110,7 +110,7 @@ function HomeworkRow({ hw, lang }: { hw: HomeworkResponseDTO; lang: 'RO' | 'EN' 
                                                 {pProgress.bestScore.toFixed(0)} pts
                                             </span>
                                         ) : (
-                                            <span className="text-(--text-muted)">—</span>
+                                            <span className="text-(--text-muted)">-</span>
                                         )}
                                     </div>
                                 );

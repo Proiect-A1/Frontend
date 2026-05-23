@@ -91,7 +91,7 @@ export interface ProposeProblemForm {
   // Files (categorized)
   files: ProblemFile[];
 
-  // Legacy — kept for compatibility but no longer used directly
+  // Legacy - kept for compatibility but no longer used directly
   attachments: File[];
 
   // Access

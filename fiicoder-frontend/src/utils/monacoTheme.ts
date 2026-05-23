@@ -170,11 +170,11 @@ export function applyMonacoTheme(
     base: isLight ? 'vs' : 'vs-dark',
     inherit: true,
     rules: [
-      // Comments — all languages
+      // Comments - all languages
       { token: 'comment',     foreground: m, fontStyle: 'italic' },
       { token: 'comment.doc', foreground: m, fontStyle: 'italic' }, // C++/Java javadoc
 
-      // Keywords — base covers Python; subtypes cover C++/Java ($0 expansion), Rust, JS
+      // Keywords - base covers Python; subtypes cover C++/Java ($0 expansion), Rust, JS
       { token: 'keyword',                   foreground: a },
       { token: 'keyword.control',           foreground: a },
       { token: 'keyword.operator',          foreground: a },
@@ -187,14 +187,14 @@ export function applyMonacoTheme(
       { token: 'type',            foreground: s },
       { token: 'type.identifier', foreground: s }, // JS/TS class names
 
-      // Strings — all variants across languages
+      // Strings - all variants across languages
       { token: 'string',          foreground: s },
       { token: 'string.escape',   foreground: s },
       { token: 'string.raw',      foreground: s }, // C++ R"(...)"
       { token: 'string.byteliteral', foreground: s }, // Rust b"..."
       { token: 'string.quote',    foreground: s }, // Rust char literals
 
-      // Numbers — all variants
+      // Numbers - all variants
       { token: 'number',        foreground: a },
       { token: 'number.float',  foreground: a },
       { token: 'number.hex',    foreground: a },

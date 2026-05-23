@@ -13,7 +13,7 @@ function generateMockRunResult(fileName: string): SourceRunHistory {
     const subtasks: SubtaskRunResult[] = [
         {
             subtaskId: 'st_1',
-            name: 'Subtask 1 — Brute Force',
+            name: 'Subtask 1 - Brute Force',
             scored: 30,
             maxPoints: 30,
             tests: [
@@ -45,7 +45,7 @@ function generateMockRunResult(fileName: string): SourceRunHistory {
         },
         {
             subtaskId: 'st_2',
-            name: 'Subtask 2 — Optimizat',
+            name: 'Subtask 2 - Optimizat',
             scored: isMain ? 70 : 14,
             maxPoints: 70,
             tests: [

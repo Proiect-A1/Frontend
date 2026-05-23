@@ -9,8 +9,8 @@ interface VisibilitySelectProps {
 }
 
 const visibilityOptions: Array<{ value: Visibility; label: string }> = [
-    { value: 'private', label: 'Privată — Doar tu și moderatorii' },
-    { value: 'public', label: 'Publică — Vizibilă pentru toți' },
+    { value: 'private', label: 'Privată - Doar tu și moderatorii' },
+    { value: 'public', label: 'Publică - Vizibilă pentru toți' },
 ];
 
 function getVisibilityIcon(visibility: Visibility) {

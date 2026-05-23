@@ -947,7 +947,7 @@ export default function ClassDetails() {
                                             <p className="text-sm font-semibold text-(--text-h)">
                                                 {inv.invitedUser?.username ??
                                                     inv.invitedUser?.email ??
-                                                    '—'}
+                                                    '-'}
                                             </p>
                                             <p className="text-xs text-(--text-muted) mt-1">
                                                 {new Date(inv.sentAt).toLocaleDateString()}

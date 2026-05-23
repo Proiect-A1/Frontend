@@ -54,7 +54,7 @@ export function connectToEvaluation(
   }
 
   ws.onopen = () => {
-    // Connection established — waiting for events
+    // Connection established - waiting for events
   };
 
   ws.onmessage = (messageEvent) => {

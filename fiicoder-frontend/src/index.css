@@ -606,7 +606,7 @@ a:focus-visible {
     background-clip: padding-box;
 }
 
-/* Firefox only — ::-webkit-scrollbar nu există în Firefox */
+/* Firefox only - ::-webkit-scrollbar nu există în Firefox */
 @supports not selector(::-webkit-scrollbar) {
     html,
     .custom-scrollbar {

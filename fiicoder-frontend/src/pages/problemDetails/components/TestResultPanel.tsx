@@ -96,8 +96,8 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                     : partial
                                     ? 'border-amber-500/40 bg-amber-500/10 text-amber-300'
                                     : 'border-red-500/40 bg-red-500/10 text-red-300';
-                                const maxMemKB = st.max_memory ? (st.max_memory / 1024).toFixed(0) : '—';
-                                const maxTimeMs = st.max_time ? (st.max_time / 1_000_000).toFixed(0) : '—';
+                                const maxMemKB = st.max_memory ? (st.max_memory / 1024).toFixed(0) : '-';
+                                const maxTimeMs = st.max_time ? (st.max_time / 1_000_000).toFixed(0) : '-';
                                 return (
                                     <motion.div
                                         key={st.subtaskId}

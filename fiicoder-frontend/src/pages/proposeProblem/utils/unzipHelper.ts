@@ -84,7 +84,7 @@ export async function extractProblemZipFromBlob(blob: Blob): Promise<ProposeProb
             memoryLimit = memBytes > 0 ? Math.round(memBytes / (1024 * 1024)) : 256;
             difficulty = (meta.difficulty || 'MEDIUM').toLowerCase() as ProposeProblemForm['difficulty'];
             tags = meta.tags || [];
-        } catch { /* malformed metadata — keep defaults */ }
+        } catch { /* malformed metadata - keep defaults */ }
     }
 
     const roPaths = ['statements/ro/statement.tex', 'statements/ro/statement.md'];

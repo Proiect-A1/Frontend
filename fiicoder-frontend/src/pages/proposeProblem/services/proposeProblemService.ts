@@ -132,7 +132,7 @@ export function saveDraft(data: ProposeProblemForm): void {
   try {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
   } catch {
-    // localStorage full or unavailable — silently ignore
+    // localStorage full or unavailable - silently ignore
   }
 }
 
