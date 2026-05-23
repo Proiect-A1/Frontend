@@ -195,7 +195,8 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
             const formData = await extractProblemZipFromBlob(file);
             methods.reset(formData);
             toast.success('Zip importat cu succes.');
-        } catch {
+        } catch (err) {
+            console.error('[handleImport] failed:', err);
             toast.error('Eroare la parsarea zip-ului. Asigură-te că e un pachet valid.');
         } finally {
             setIsImporting(false);
