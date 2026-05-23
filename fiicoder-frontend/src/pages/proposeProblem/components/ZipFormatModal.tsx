@@ -122,6 +122,11 @@ export default function ZipFormatModal() {
                                     ? 'Fișierele puse direct în files/ (nu într-un subfolder) sunt ignorate complet la import. Exemplu: files/solution.cpp nu va fi importat — trebuie să fie files/sources/solution.cpp.'
                                     : 'Files placed directly in files/ (not in a subfolder) are completely ignored on import. Example: files/solution.cpp will not be imported — it must be files/sources/solution.cpp.'}
                             </Warn>
+                            <Warn>
+                                {ro
+                                    ? 'Arhiva nu trebuie să conțină un folder wrapper cu același nume. Dacă creezi ZIP-ul prin right-click pe un folder, ajungi cu o structură de tipul archive.zip/archive/files/... în loc de archive.zip/files/... — sandbox-ul va eșua silențios. Conținutul trebuie să fie direct la rădăcina arhivei.'
+                                    : 'The archive must not contain a wrapper folder with the same name. If you create the ZIP by right-clicking a folder, you end up with a structure like archive.zip/archive/files/... instead of archive.zip/files/... — the sandbox will fail silently. The contents must be directly at the archive root.'}
+                            </Warn>
                         </Section>
 
                         {/* 2. metadata.json */}

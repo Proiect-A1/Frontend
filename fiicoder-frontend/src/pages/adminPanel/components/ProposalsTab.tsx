@@ -268,7 +268,7 @@ export default function ProposalsTab({
                                     >
                                         {lang === 'RO' ? 'Șterge' : 'Delete'}
                                     </button>
-                                    {selectedProposal.zipDownloadLink && (
+                                    {selectedProposal.zipDownloadLink && selectedProposal.status === 'ACCEPTED' && (
                                         <a
                                             href={selectedProposal.zipDownloadLink}
                                             download
