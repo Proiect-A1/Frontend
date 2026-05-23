@@ -11,6 +11,7 @@ import GeneratorTab from './components/GeneratorTab';
 import { pageVariants } from '../../utils/motionConfig';
 import { useLanguage } from '../../language/Language';
 import { useProposeProblem } from './hooks/useProposeProblem';
+import ZipFormatModal from './components/ZipFormatModal';
 
 const defaultValues: ProposeProblemForm = {
     title: '',
@@ -210,6 +211,7 @@ export default function ProposeProblem() {
                                 }}
                             />
 
+                            <ZipFormatModal />
                             <button type="button" onClick={() => importInputRef.current?.click()} disabled={isImporting} className="inline-flex items-center gap-1.5 justify-center px-3 py-1.5 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors disabled:opacity-50">
                                 {isImporting
                                     ? <div className="w-4 h-4 border-2 border-(--text-h) border-t-transparent rounded-full animate-spin" />
