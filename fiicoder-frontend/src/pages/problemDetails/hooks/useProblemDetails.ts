@@ -3,13 +3,12 @@ import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../../contexts/AuthContext';
 import { submissionService, connectToEvaluation } from '../services/submissionService';
-import type { DoneTestEvent, DoneSubtaskEvent, DoneSubmissionEvent, LanguageDTO } from '../types/problemDetails';
+import type { DoneTestEvent, DoneSubtaskEvent, DoneSubmissionEvent, LanguageDTO, ProblemSubmissionDTO } from '../types/problemDetails';
 import { problemService } from '../../../services/problemService';
 import type { ProblemFindResponseDTO } from '../../../services/problemService';
 import { useLanguage, translations } from '../../../language/Language';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { languageService } from '../services/languageService';
-import { profileService, type RecentSubmissionDTO } from '../../../services/profileService';
 import type { OnMount } from '@monaco-editor/react';
 import * as FlexLayout from 'flexlayout-react';
 import { applyMonacoTheme } from '../../../utils/monacoTheme';
@@ -36,7 +35,7 @@ export function useProblemDetails() {
 
     const [availableLanguages, setAvailableLanguages] = useState<LanguageDTO[]>([]);
     const [selectedLanguageId, setSelectedLanguageId] = useState<string>('');
-    const [recentSubmissions, setRecentSubmissions] = useState<RecentSubmissionDTO[]>([]);
+    const [recentSubmissions, setRecentSubmissions] = useState<ProblemSubmissionDTO[]>([]);
     const [activeTab, setActiveTab] = useState<'testcase' | 'testresult' | 'submissions'>('testcase');
 
     const [evalTests, setEvalTests] = useState<DoneTestEvent[]>([]);
@@ -186,17 +185,10 @@ export function useProblemDetails() {
                     setLanguage(langs[0].name);
                 }
 
-                if (isAuthenticated) {
-                    profileService
-                        .getMyProfile(0, 50)
-                        .then((data) => {
-                            if (isMounted) {
-                                const filtered = data.recentSubmissions.content.filter(
-                                    (submission) => submission.problemTitle === problemTitle,
-                                );
-                                setRecentSubmissions(filtered);
-                            }
-                        })
+                if (isAuthenticated && problemTitle) {
+                    submissionService
+                        .getByProblem(problemTitle)
+                        .then((data) => { if (isMounted) setRecentSubmissions(data); })
                         .catch((err) => console.error('Error fetching submissions:', err));
                 }
             } catch (err: any) {
@@ -278,14 +270,9 @@ export function useProblemDetails() {
 
                         if (isAuthenticated && problemTitle) {
                             queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
-                            profileService
-                                .getMyProfile(0, 50)
-                                .then((data) => {
-                                    const filtered = data.recentSubmissions.content.filter(
-                                        (submission) => submission.problemTitle === problemTitle,
-                                    );
-                                    setRecentSubmissions(filtered);
-                                })
+                            submissionService
+                                .getByProblem(problemTitle)
+                                .then((data) => setRecentSubmissions(data))
                                 .catch(() => {});
                         }
                     },

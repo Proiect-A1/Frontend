@@ -1,8 +1,9 @@
 import { apiClient } from "../../../services/apiClient";
-import type { 
-    SubmissionRequest, 
-    SubmissionResponse, 
+import type {
+    SubmissionRequest,
+    SubmissionResponse,
     SubmissionStatus,
+    ProblemSubmissionDTO,
     EvaluationEvent,
     DoneTestEvent,
     DoneSubtaskEvent,
@@ -19,6 +20,10 @@ export const submissionService = {
   // GET /api/submissions/view/{id}
   getStatus: (id: string) =>
     apiClient.get<SubmissionStatus>(`/submissions/view/${id}`),
+
+  // GET /api/problems/{title}/submissions
+  getByProblem: (title: string) =>
+    apiClient.get<ProblemSubmissionDTO[]>(`/problems/${encodeURIComponent(title)}/submissions`),
 };
 
 // ── WebSocket evaluation stream ───────────────────────────────────

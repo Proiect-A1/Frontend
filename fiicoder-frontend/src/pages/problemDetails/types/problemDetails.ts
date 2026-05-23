@@ -59,6 +59,16 @@ export interface DoneSubmissionEvent {
 
 export type EvaluationEvent = DoneTestEvent | DoneSubtaskEvent | DoneSubmissionEvent;
 
+// ── Problem Submissions ───────────────────────────────────────────
+
+export interface ProblemSubmissionDTO {
+  code: string;
+  language: string;
+  score: number;
+  status: string;
+  submissionDate: string;
+}
+
 // ── Language Types ────────────────────────────────────────────────
 
 export interface LanguageDTO {
