@@ -31,24 +31,64 @@ const THEME_FAVICONS: Record<Theme, string> = {
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
+const CUSTOM_COLORS_KEY = "fiicoder_custom_colors";
+const DEFAULT_CUSTOM_COLORS = { bg: "#090812", accent: "#ff5eb6" };
+
 function isTheme(value: string | null): value is Theme {
   return value !== null && THEMES.includes(value as Theme);
 }
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-    return isTheme(storedTheme) ? storedTheme : DEFAULT_THEME;
-  });
+// In Safari/Firefox private mode, localStorage poate fi indisponibil sau
+// poate intoarce date corupte. Orice throw aici ar darama intregul tree
+// fara ErrorBoundary, deci defensiva.
+function safeReadTheme(): Theme {
+  try {
+    const stored = localStorage.getItem(THEME_STORAGE_KEY);
+    return isTheme(stored) ? stored : DEFAULT_THEME;
+  } catch {
+    return DEFAULT_THEME;
+  }
+}
 
-  const [customColors, setCustomColorsState] = useState(() => {
-    const stored = localStorage.getItem("fiicoder_custom_colors");
-    return stored ? JSON.parse(stored) : { bg: "#090812", accent: "#ff5eb6" };
-  });
+function safeReadCustomColors(): { bg: string; accent: string } {
+  try {
+    const stored = localStorage.getItem(CUSTOM_COLORS_KEY);
+    if (!stored) return DEFAULT_CUSTOM_COLORS;
+    const parsed = JSON.parse(stored) as Partial<{ bg: string; accent: string }>;
+    if (
+      parsed &&
+      typeof parsed.bg === "string" &&
+      typeof parsed.accent === "string"
+    ) {
+      return { bg: parsed.bg, accent: parsed.accent };
+    }
+    return DEFAULT_CUSTOM_COLORS;
+  } catch {
+    try {
+      localStorage.removeItem(CUSTOM_COLORS_KEY);
+    } catch {
+      // ignore
+    }
+    return DEFAULT_CUSTOM_COLORS;
+  }
+}
+
+function safeWrite(key: string, value: string) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // ignore quota errors and private-mode blocks
+  }
+}
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setThemeState] = useState<Theme>(safeReadTheme);
+
+  const [customColors, setCustomColorsState] = useState(safeReadCustomColors);
 
   useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem(THEME_STORAGE_KEY, theme);
+        safeWrite(THEME_STORAGE_KEY, theme);
 
         // Resolve effective tone (light/dark) per theme — used to retarget
         // low-contrast Tailwind palette utilities (text-amber-400, bg-red-500/15, etc.)
@@ -92,7 +132,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             document.documentElement.style.setProperty('--cursor-default', `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(cursorDefault)}")`);
             document.documentElement.style.setProperty('--cursor-pointer', `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(cursorPointer)}")`);
             document.documentElement.style.setProperty('--cursor-text', `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(cursorText)}")`);
-            localStorage.setItem('fiicoder_custom_colors', JSON.stringify(customColors));
+            safeWrite(CUSTOM_COLORS_KEY, JSON.stringify(customColors));
         } else {
             document.documentElement.style.removeProperty('--bg-color');
             document.documentElement.style.removeProperty('--accent');

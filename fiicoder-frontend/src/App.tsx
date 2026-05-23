@@ -1,20 +1,22 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
-import { Suspense, lazy } from "react";
+import { Suspense } from "react";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { pageVariants } from "./utils/motionConfig";
+import { lazyWithRetry } from "./utils/lazyWithRetry";
 
-// Lazy load pages - se vor încărca doar când e nevoie
-const Landing = lazy(() => import("./pages/landing/Landing"));
-const Login = lazy(() => import("./pages/login/Login"));
-const ProblemList = lazy(() => import("./pages/problemList/ProblemList"));
-const ProblemDetails = lazy(() => import("./pages/problemDetails/ProblemDetails"));
-const ClassesHub = lazy(() => import("./pages/classesHub/ClassesHub"));
-const ClassDetails = lazy(() => import("./pages/classDetails/ClassDetails"));
-const Profile = lazy(() => import("./pages/profile/Profile"));
-const AdminPanel = lazy(() => import("./pages/adminPanel/AdminPanel"));
-const ProposeProblem = lazy(() => import("./pages/proposeProblem/ProposeProblem"));
+// Lazy load pages - se vor încărca doar când e nevoie. Folosim lazyWithRetry
+// ca sa supravietuim la chunk-uri esuate dupa un deploy nou.
+const Landing = lazyWithRetry(() => import("./pages/landing/Landing"));
+const Login = lazyWithRetry(() => import("./pages/login/Login"));
+const ProblemList = lazyWithRetry(() => import("./pages/problemList/ProblemList"));
+const ProblemDetails = lazyWithRetry(() => import("./pages/problemDetails/ProblemDetails"));
+const ClassesHub = lazyWithRetry(() => import("./pages/classesHub/ClassesHub"));
+const ClassDetails = lazyWithRetry(() => import("./pages/classDetails/ClassDetails"));
+const Profile = lazyWithRetry(() => import("./pages/profile/Profile"));
+const AdminPanel = lazyWithRetry(() => import("./pages/adminPanel/AdminPanel"));
+const ProposeProblem = lazyWithRetry(() => import("./pages/proposeProblem/ProposeProblem"));
 
 // Loading component for Suspense fallback
 function PageLoader() {

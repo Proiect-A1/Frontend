@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
@@ -37,21 +38,21 @@ export default function Navbar() {
   const [isMobileThemeOpen, setIsMobileThemeOpen] = useState(false);
 
   const [navSearch, setNavSearch] = useState("");
-  const [navSuggestions, setNavSuggestions] = useState<string[]>([]);
 
-  useEffect(() => {
-    let mounted = true;
-    problemService
-      .getAllProblems(1, 200)
-      .then((data) => {
-        if (!mounted) return;
-        setNavSuggestions(data.map((d) => d.title));
-      })
-      .catch(() => {});
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  // Lista de probleme pentru autocomplete e shared cu paginile care o cer.
+  // staleTime mare = nu mai re-fetch-uim la fiecare montare a navbar-ului.
+  const navProblemsQuery = useQuery({
+    queryKey: ['nav-problems'],
+    queryFn: () => problemService.getAllProblems(1, 200),
+    staleTime: 10 * 60_000,
+    gcTime: 30 * 60_000,
+    retry: 0,
+  });
+
+  const navSuggestions = useMemo(
+    () => (navProblemsQuery.data ?? []).map((problem) => problem.title),
+    [navProblemsQuery.data],
+  );
 
   const handleNavSearchEnter = async () => {
     const trimmed = navSearch.trim();

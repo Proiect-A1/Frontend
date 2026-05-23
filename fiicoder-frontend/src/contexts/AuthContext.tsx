@@ -58,24 +58,49 @@ const USERNAME_KEY = 'fiicoder_username';
 const GRAVATAR_KEY = 'fiicoder_gravatar';
 const DICEBEAR_KEY = 'fiicoder_dicebear';
 
+// Wrappere defensive pentru Safari private mode / storage corupt.
+function safeGet(key: string): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function safeSet(key: string, value: string) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // ignore
+  }
+}
+
+function safeRemove(key: string) {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // ignore
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() => {
-    const stored = localStorage.getItem(TOKEN_KEY);
+    const stored = safeGet(TOKEN_KEY);
     if (stored && !isTokenExpired(stored)) return stored;
-    localStorage.removeItem(TOKEN_KEY);
+    safeRemove(TOKEN_KEY);
     return null;
   });
 
   const [storedUsername, setStoredUsername] = useState<string | null>(() => {
-    return localStorage.getItem(USERNAME_KEY);
+    return safeGet(USERNAME_KEY);
   });
 
   const [gravatarUrl, setGravatarUrl] = useState<string | null>(() => {
-    return localStorage.getItem(GRAVATAR_KEY);
+    return safeGet(GRAVATAR_KEY);
   });
 
   const [dicebearUrl, setDicebearUrl] = useState<string | null>(() => {
-    return localStorage.getItem(DICEBEAR_KEY);
+    return safeGet(DICEBEAR_KEY);
   });
 
   const payload = token ? decodeJwt(token) : null;
@@ -90,34 +115,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     profileService.getMyProfile()
       .then((profile) => {
         setStoredUsername(profile.username);
-        localStorage.setItem(USERNAME_KEY, profile.username);
+        safeSet(USERNAME_KEY, profile.username);
         const gravatar = getGravatarUrl(profile.email);
         const dicebear = getDiceBearUrl(profile.email);
         setGravatarUrl(gravatar);
         setDicebearUrl(dicebear);
-        localStorage.setItem(GRAVATAR_KEY, gravatar);
-        localStorage.setItem(DICEBEAR_KEY, dicebear);
+        safeSet(GRAVATAR_KEY, gravatar);
+        safeSet(DICEBEAR_KEY, dicebear);
       })
       .catch(() => {});
   }, [token]);
 
   const login = useCallback((newToken: string, username?: string) => {
-    localStorage.setItem(TOKEN_KEY, newToken);
-    localStorage.removeItem(GRAVATAR_KEY);
-    localStorage.removeItem(DICEBEAR_KEY);
-    localStorage.removeItem(USERNAME_KEY);
+    safeSet(TOKEN_KEY, newToken);
+    safeRemove(GRAVATAR_KEY);
+    safeRemove(DICEBEAR_KEY);
+    safeRemove(USERNAME_KEY);
     setGravatarUrl(null);
     setDicebearUrl(null);
     setStoredUsername(username ?? null);
-    if (username) localStorage.setItem(USERNAME_KEY, username);
+    if (username) safeSet(USERNAME_KEY, username);
     setToken(newToken);
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USERNAME_KEY);
-    localStorage.removeItem(GRAVATAR_KEY);
-    localStorage.removeItem(DICEBEAR_KEY);
+    safeRemove(TOKEN_KEY);
+    safeRemove(USERNAME_KEY);
+    safeRemove(GRAVATAR_KEY);
+    safeRemove(DICEBEAR_KEY);
     setStoredUsername(null);
     setGravatarUrl(null);
     setDicebearUrl(null);

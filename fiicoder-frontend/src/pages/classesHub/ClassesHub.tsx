@@ -24,9 +24,11 @@ interface RecentClass {
 const RECENT_CLASSES_KEY = 'fiicoder_recent_classes_';
 
 export default function ClassesHub() {
-    const { userId } = useAuth();
+    const { userId, isAdmin, isProfessor } = useAuth();
     const { lang } = useLanguage();
     const queryClient = useQueryClient();
+
+    const canCreateGroup = isAdmin || isProfessor;
 
     const [className, setClassName] = useState('');
     const [classDescription, setClassDescription] = useState('');
@@ -147,7 +149,19 @@ export default function ClassesHub() {
                 createdAt: data.createdAt,
             });
         } catch (err: any) {
-            setError(lang === 'RO' ? 'Clasa nu a fost găsită.' : 'Class not found.');
+            if (err?.status === 403) {
+                setError(
+                    lang === 'RO'
+                        ? 'Nu ai acces la această clasă. Cere o invitație de la creator.'
+                        : 'You do not have access to this class. Ask the creator for an invitation.',
+                );
+            } else if (err?.status === 404) {
+                setError(lang === 'RO' ? 'Clasa nu a fost găsită.' : 'Class not found.');
+            } else {
+                setError(
+                    lang === 'RO' ? 'Eroare la căutarea clasei.' : 'Error looking up class.',
+                );
+            }
         }
     };
 
@@ -342,38 +356,44 @@ export default function ClassesHub() {
                     </motion.div>
                 )}
 
-                <div className="grid gap-4 md:gap-6 xl:grid-cols-[1fr_1fr]">
-                    <motion.section
-                        variants={itemVariants}
-                        className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4 flex flex-col"
-                    >
-                        <h2 className="text-xl font-bold text-(--text-h) mb-4">
-                            {lang === 'RO' ? 'Creează o clasă' : 'Create a class'}
-                        </h2>
+                <div
+                    className={`grid gap-4 md:gap-6 ${canCreateGroup ? 'xl:grid-cols-[1fr_1fr]' : 'xl:grid-cols-1'}`}
+                >
+                    {canCreateGroup && (
+                        <motion.section
+                            variants={itemVariants}
+                            className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4 flex flex-col"
+                        >
+                            <h2 className="text-xl font-bold text-(--text-h) mb-4">
+                                {lang === 'RO' ? 'Creează o clasă' : 'Create a class'}
+                            </h2>
 
-                        <form onSubmit={handleCreateClass} className="space-y-3 flex flex-col">
-                            <input
-                                value={className}
-                                onChange={(event) => setClassName(event.target.value)}
-                                placeholder={lang === 'RO' ? 'Nume clasă' : 'Class name'}
-                                className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
-                            />
-                            <textarea
-                                value={classDescription}
-                                onChange={(event) => setClassDescription(event.target.value)}
-                                placeholder={
-                                    lang === 'RO' ? 'Descriere opțională' : 'Optional description'
-                                }
-                                className="min-h-24 w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
-                            />
-                            <button
-                                type="submit"
-                                className="w-full mt-auto inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
-                            >
-                                {lang === 'RO' ? 'Creează clasa' : 'Create class'}
-                            </button>
-                        </form>
-                    </motion.section>
+                            <form onSubmit={handleCreateClass} className="space-y-3 flex flex-col">
+                                <input
+                                    value={className}
+                                    onChange={(event) => setClassName(event.target.value)}
+                                    placeholder={lang === 'RO' ? 'Nume clasă' : 'Class name'}
+                                    className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
+                                />
+                                <textarea
+                                    value={classDescription}
+                                    onChange={(event) => setClassDescription(event.target.value)}
+                                    placeholder={
+                                        lang === 'RO'
+                                            ? 'Descriere opțională'
+                                            : 'Optional description'
+                                    }
+                                    className="min-h-24 w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
+                                />
+                                <button
+                                    type="submit"
+                                    className="w-full mt-auto inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
+                                >
+                                    {lang === 'RO' ? 'Creează clasa' : 'Create class'}
+                                </button>
+                            </form>
+                        </motion.section>
+                    )}
                     <motion.section
                         variants={itemVariants}
                         className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4 flex flex-col"

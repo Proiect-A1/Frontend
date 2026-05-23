@@ -26,7 +26,7 @@ export default function ZipFormatModal() {
                     onClick={() => setOpen(false)}
                 >
                     <div
-                        className="relative w-full max-w-4xl max-h-[75vh] overflow-y-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) p-6 md:p-8 custom-scrollbar"
+                        className="relative w-full max-w-4xl max-h-[75vh] overflow-y-auto rounded-3xl border-2 border-(--accent) bg-(--surface-modal) p-6 md:p-8 custom-scrollbar"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <button

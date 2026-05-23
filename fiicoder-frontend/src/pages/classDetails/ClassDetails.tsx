@@ -615,8 +615,20 @@ export default function ClassDetails() {
     );
     const homeworks = homeworksQuery.data ?? [];
     const loading = groupQuery.isPending || homeworksQuery.isPending;
+    const groupErrorStatus = (groupQuery.error as { status?: number } | null)?.status;
+    const accessDeniedMessage =
+        lang === 'RO'
+            ? 'Nu ai acces la această clasă. Trebuie să fii membru, creator sau admin.'
+            : 'You do not have access to this class. You must be a member, creator, or admin.';
+    const notFoundMessage =
+        lang === 'RO' ? 'Clasa nu a fost găsită.' : 'Class not found.';
     const error =
-        extractErrorMessage(groupQuery.error, '') || extractErrorMessage(homeworksQuery.error, '');
+        groupErrorStatus === 403
+            ? accessDeniedMessage
+            : groupErrorStatus === 404
+              ? notFoundMessage
+              : extractErrorMessage(groupQuery.error, '') ||
+                extractErrorMessage(homeworksQuery.error, '');
 
     const reloadHomeworks = useCallback(async () => {
         await homeworksQuery.refetch();
@@ -662,7 +674,25 @@ export default function ClassDetails() {
             toast.success(lang === 'RO' ? 'Invitația a fost trimisă.' : 'Invitation sent.');
             setInviteEmail('');
         } catch (err: any) {
-            const message = extractErrorMessage(err, 'Error');
+            const rawMessage = extractErrorMessage(err, 'Error');
+            const lowered = rawMessage.toLowerCase();
+            let message = rawMessage;
+            if (lowered.includes('admin') && lowered.includes('invited')) {
+                message =
+                    lang === 'RO'
+                        ? 'Conturile de admin nu pot fi invitate într-un grup.'
+                        : 'Admin accounts cannot be invited to groups.';
+            } else if (lowered.includes('already a member')) {
+                message =
+                    lang === 'RO'
+                        ? 'Utilizatorul este deja membru al grupului.'
+                        : 'User is already a member of the group.';
+            } else if (lowered.includes('pending invitation')) {
+                message =
+                    lang === 'RO'
+                        ? 'Există deja o invitație în așteptare pentru acest utilizator.'
+                        : 'A pending invitation for this user already exists.';
+            }
             setInviteFeedback({ msg: message, isError: true });
             toast.error(message);
         } finally {

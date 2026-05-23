@@ -113,11 +113,37 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
                 setSelectedProposalId(remainingProposals[0]?.id ?? null);
             }
         } catch (error) {
-            const message = extractErrorMessage(
-                error,
-                lang === 'RO' ? 'Eroare la procesarea propunerii.' : 'Failed to process proposal.',
+            const status = (error as { status?: number } | null)?.status;
+            const beMessage = extractErrorMessage(error, '');
+            if (status === 409) {
+                if (beMessage.toLowerCase().includes('same')) {
+                    toast.error(
+                        lang === 'RO'
+                            ? 'Problema este deja în acest status.'
+                            : 'Problem is already in this status.',
+                    );
+                } else if (beMessage.toLowerCase().includes('pending')) {
+                    toast.error(
+                        lang === 'RO'
+                            ? 'Nu poți seta statusul înapoi la PENDING.'
+                            : 'Cannot change status back to PENDING.',
+                    );
+                } else {
+                    toast.error(
+                        beMessage ||
+                            (lang === 'RO'
+                                ? 'Schimbarea statusului nu este permisă.'
+                                : 'Status change not allowed.'),
+                    );
+                }
+                return;
+            }
+            toast.error(
+                beMessage ||
+                    (lang === 'RO'
+                        ? 'Eroare la procesarea propunerii.'
+                        : 'Failed to process proposal.'),
             );
-            toast.error(message);
         }
     };
 
