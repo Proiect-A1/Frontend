@@ -258,37 +258,34 @@ export default function Navbar() {
                       transition={{ duration: 0.15 }}
                       className="absolute right-0 top-full mt-3 w-64 bg-(--surface-card) border-2 border-(--accent) rounded-3xl shadow-2xl p-5 z-50 flex flex-col items-center text-center gap-4"
                     >
-                      <div className="w-16 h-16 rounded-full border-2 border-(--accent) shadow-md overflow-hidden flex items-center justify-center bg-(--surface-muted)">
+                      <div className="w-20 h-20 rounded-full border-2 border-(--accent) shadow-md overflow-hidden flex items-center justify-center bg-(--surface-muted)">
                         {avatarSrc && !avatarFailed ? (
                           <img src={avatarSrc} alt="avatar" className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xl font-black text-white uppercase bg-(--accent)">
+                          <div className="w-full h-full flex items-center justify-center text-3xl font-black text-white uppercase bg-(--accent)">
                             {username?.charAt(0) || "?"}
                           </div>
                         )}
                       </div>
 
-                      <div className="flex flex-col min-w-0 w-full">
-                        <span className="text-base font-bold text-(--text-h) truncate">
+                      <div className="flex flex-col min-w-0 w-full -mt-1">
+                        <span className="text-sm font-bold text-(--text-h) truncate">
                           {lang === "RO" ? `Bună, ${username}!` : `Hello, ${username}!`}
                         </span>
-                        <span className="text-xs text-(--text-muted) font-mono truncate">@{username}</span>
+                        <span className="text-[11px] text-(--text-muted) font-mono truncate">@{username}</span>
                       </div>
-
-                      <div className="w-full h-0.5 bg-[color-mix(in_srgb,var(--accent)_20%,transparent)] rounded-full" />
-
                       <div className="w-full flex flex-col gap-2">
                         <Link
                           to="/profile"
                           onClick={closeMenu}
-                          className="w-full px-4 py-2 text-sm font-bold rounded-full border-2 border-(--accent)/40 bg-transparent text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5 transition-all duration-200 text-center"
+                          className="w-full px-4 py-2 text-xs font-bold rounded-full border-2 border-(--accent)/40 bg-transparent text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5 transition-all duration-200 text-center"
                         >
                           {lang === "RO" ? "Vezi profil" : "View profile"}
                         </Link>
                         <Link
                           to="/classes"
                           onClick={closeMenu}
-                          className="w-full px-4 py-2 text-sm font-bold rounded-full border-2 border-(--accent)/40 bg-transparent text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5 transition-all duration-200 text-center"
+                          className="w-full px-4 py-2 text-xs font-bold rounded-full border-2 border-(--accent)/40 bg-transparent text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5 transition-all duration-200 text-center"
                         >
                           {lang === "RO" ? "Clase" : "Classes"}
                         </Link>
@@ -303,7 +300,7 @@ export default function Navbar() {
                           color: "var(--status-error)",
                           backgroundColor: "color-mix(in srgb, var(--status-error) 10%, transparent)",
                         }}
-                        className="w-full px-4 py-2 rounded-full text-sm font-bold border-2 transition-all duration-200 hover:bg-black/5 hover:-translate-y-0.5 text-center cursor-pointer"
+                        className="w-full px-4 py-2 rounded-full text-xs font-bold border-2 transition-all duration-200 hover:bg-black/5 hover:-translate-y-0.5 text-center cursor-pointer"
                       >
                         {t.disconnectBtn}
                       </button>
