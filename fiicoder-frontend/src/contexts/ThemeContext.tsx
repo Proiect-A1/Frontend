@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 
-export const THEMES = ["fii", "fiicode", "rose", "nord", "cream", "sage", "olivia", "serika", "cyberpunk", "eighties", "superuser", "custom"] as const;
+export const THEMES = ["fii", "fiicode", "rose", "nord", "cream", "sage", "olivia", "serika", "eighties", "superuser", "custom", "mcdonalds"] as const;
 export type Theme = (typeof THEMES)[number];
 const DEFAULT_THEME: Theme = "fii";
 
@@ -27,13 +27,13 @@ const THEME_FAVICONS: Record<Theme, string> = {
   cream: "/logo_cream.svg",
   sage: "/logo_sage.svg",
   serika: "/logo_serika.svg",
-  cyberpunk: "/logo_cyberpunk.svg",
   eighties: "/logo_eighties.svg",
   "olivia": "/logo_olivia.svg",
   fiicode: "/logo_fiicode.svg",
   fii: "/logo_fii.svg",
   superuser: "/logo_superuser.svg",
   custom: "/logo.svg",
+  mcdonalds: "/logo.svg",
 };
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
@@ -99,7 +99,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
         // Resolve effective tone (light/dark) per theme — used to retarget
         // low-contrast Tailwind palette utilities (text-amber-400, bg-red-500/15, etc.)
-        const STATIC_LIGHT_THEMES: Theme[] = ['cream', 'sage', 'olivia', 'fii'];
+        const STATIC_LIGHT_THEMES: Theme[] = ['cream', 'sage', 'olivia', 'fii', 'mcdonalds'];
         let isLightTone = STATIC_LIGHT_THEMES.includes(theme);
 
         if (theme === 'custom') {

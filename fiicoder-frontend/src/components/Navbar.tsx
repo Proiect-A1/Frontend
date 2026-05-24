@@ -58,6 +58,12 @@ export default function Navbar() {
     const trimmed = navSearch.trim();
     if (!trimmed) return;
 
+    if (trimmed.toLowerCase() === 'angajatmc') {
+      setTheme('mcdonalds');
+      setNavSearch('');
+      return;
+    }
+
     const matchedSuggestion = navSuggestions.find((title) =>
       title.toLowerCase().includes(trimmed.toLowerCase()),
     );
@@ -86,6 +92,13 @@ export default function Navbar() {
     nord: "/logo_nord.svg",
     cream: "/logo_cream.svg",
     sage: "/logo_sage.svg",
+    serika: "/logo_serika.svg",
+    eighties: "/logo_eighties.svg",
+    "olivia": "/logo_olivia.svg",
+    fiicode: "/logo_fiicode.svg",
+    fii: "/logo_fii.svg",
+    superuser: "/logo_superuser.svg",
+    mcdonalds: "/logo.svg",
   };
   const logoSrc = themeLogo[theme] || "/logo.svg";
 
@@ -144,14 +157,28 @@ export default function Navbar() {
   return (
     <div className="sticky top-0 z-50 w-full px-4 md:px-6 pt-4">
       <nav className="w-full relative">
-        <div className="bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-full px-5 py-2.5 flex items-center justify-between">
+        <div className="bg-(--surface-card) backdrop-blur-sm border-2 border-(--accent) rounded-full card-glow px-5 py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <Link
               to="/"
               onClick={closeMenu}
               className="flex items-center gap-3 transition-transform duration-200 hover:scale-105"
             >
-              {theme === "custom" ? (
+              {theme === "mcdonalds" ? (
+                <svg
+                  className="theme-logo h-10 w-10 md:h-12 md:w-12"
+                  viewBox="0 0 120 100"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M 15 90 L 15 35 Q 15 12 37 12 Q 60 12 60 38 L 60 60 L 60 38 Q 60 12 83 12 Q 105 12 105 35 L 105 90 L 88 90 L 88 40 Q 88 26 76 26 Q 65 26 65 42 L 65 90 L 55 90 L 55 42 Q 55 26 44 26 Q 32 26 32 40 L 32 90 Z"
+                    fill="#FFC72C"
+                    stroke="#DA291C"
+                    strokeWidth="2.5"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              ) : theme === "custom" ? (
                 <svg
                   className="theme-logo h-10 w-10 md:h-12 md:w-12 theme-logo-glow"
                   viewBox="2.5229450154783466 65.87558809587485 252.37708872055313 121.06515820573098"
@@ -379,7 +406,7 @@ export default function Navbar() {
               transition={{ duration: 0.15 }}
               className="hidden xl:block absolute right-5 top-full mt-3 w-40 bg-(--surface-dropdown) border border-(--accent)/40 rounded-2xl shadow-xl overflow-hidden z-50"
             >
-              {themes.map((themeName) => (
+              {themes.filter(t => t !== 'mcdonalds').map((themeName) => (
                 <div key={themeName} className="flex flex-col border-b border-(--accent)/10 last:border-none">
                   <button
                     onClick={() => {

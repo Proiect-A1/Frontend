@@ -54,8 +54,8 @@ export function useProblemDetails() {
     const langRef = useRef(lang);
     useEffect(() => { langRef.current = lang; }, [lang]);
 
-    const [model] = useState(() => {
-        const json = {
+    const getDefaultLayout = () => {
+        return {
             global: {
                 tabSetTabStripHeight: 36,
                 tabEnableClose: false,
@@ -136,7 +136,18 @@ export function useProblemDetails() {
                 ],
             },
         };
-        return FlexLayout.Model.fromJson(json);
+    };
+
+    const [model] = useState(() => {
+        try {
+            const saved = localStorage.getItem('fiicoder_problemdetails_layout');
+            if (saved) {
+                return FlexLayout.Model.fromJson(JSON.parse(saved));
+            }
+        } catch {
+            // If loading fails, use default
+        }
+        return FlexLayout.Model.fromJson(getDefaultLayout());
     });
 
     const handleCodeChange = useCallback((val: string | undefined) => {
@@ -224,6 +235,17 @@ export function useProblemDetails() {
             if (wsCleanupRef.current) wsCleanupRef.current();
         };
     }, []);
+
+    const handleLayoutAction = useCallback((action: FlexLayout.Action) => {
+        if (action.type !== 'FlexLayout_RenameTab') {
+            try {
+                localStorage.setItem('fiicoder_problemdetails_layout', JSON.stringify(model.toJson()));
+            } catch {
+                // Silently fail if localStorage is unavailable
+            }
+        }
+        return action.type === 'FlexLayout_RenameTab' ? undefined : action;
+    }, [model]);
 
     const handleSubmit = useCallback(
         async (e: React.FormEvent) => {
@@ -324,6 +346,7 @@ export function useProblemDetails() {
         handleCodeChange,
         handleEditorMount,
         handleSubmit,
+        handleLayoutAction,
         problemTitle,
     };
 }
