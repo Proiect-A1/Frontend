@@ -84,6 +84,21 @@ export default function Profile() {
         }
     }, [activeTab, canViewProposals]);
 
+    if (!profile && loading) {
+        return (
+            <motion.div
+                className="w-full max-w-7xl mx-auto px-5 py-10 md:px-8 md:py-12"
+                variants={pageVariants}
+                initial="hidden"
+                animate="visible"
+            >
+                <div className="text-center text-(--text-muted) text-sm italic">
+                    {lang === 'RO' ? 'Se încarcă profilul...' : 'Loading profile...'}
+                </div>
+            </motion.div>
+        );
+    }
+
     if (!profile) {
         return (
             <motion.div
@@ -93,14 +108,10 @@ export default function Profile() {
                 animate="visible"
             >
                 <div className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-4 text-sm text-(--text-muted)">
-                    {loading
-                        ? lang === 'RO'
-                            ? 'Se încarcă profilul...'
-                            : 'Loading profile...'
-                        : (error ??
-                          (lang === 'RO'
-                              ? 'Profil indisponibil momentan.'
-                              : 'Profile is currently unavailable.'))}
+                    {error ??
+                        (lang === 'RO'
+                            ? 'Profil indisponibil momentan.'
+                            : 'Profile is currently unavailable.')}
                 </div>
             </motion.div>
         );
