@@ -64,7 +64,7 @@ export default function AdminSidebar({ overview, onClose }: Props) {
                         {overviewCards.map((stat) => (
                             <div
                                 key={stat.label}
-                                className={`rounded-3xl border p-5 flex items-center gap-4 transition-all ${
+                                className={`rounded-2xl border p-5 flex items-center gap-4 transition-all ${
                                     stat.highlight
                                         ? 'border-amber-400/50 bg-amber-400/10'
                                         : 'border-(--accent)/20 bg-(--accent)/5 hover:bg-(--accent)/10'

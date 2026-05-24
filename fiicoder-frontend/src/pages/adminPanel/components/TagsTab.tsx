@@ -48,7 +48,7 @@ export default function TagsTab({
             <motion.form
                 variants={itemVariants}
                 onSubmit={handleTagSubmit}
-                className="p-5 rounded-3xl border-2 border-(--accent)/30 bg-(--surface-muted) space-y-4"
+                className="p-5 rounded-2xl border border-(--accent)/30 bg-(--surface-muted) space-y-4"
             >
                 <div className="flex flex-col gap-2">
                     <label className="text-sm font-bold text-(--text-h) px-1 uppercase tracking-widest">
@@ -67,7 +67,7 @@ export default function TagsTab({
                         <button
                             type="submit"
                             disabled={isSavingTag}
-                            className="rounded-2xl bg-(--accent) px-6 py-2 text-white font-bold hover:opacity-90 disabled:opacity-50 transition-all"
+                            className="rounded-2xl bg-(--accent)/20 border border-(--accent)/40 px-6 py-2 text-(--text-h) font-bold hover:bg-(--accent)/30 disabled:opacity-50 transition-all"
                         >
                             {isSavingTag ? '...' : (editingTag ? (lang === 'RO' ? 'Salvează' : 'Save') : (lang === 'RO' ? 'Adaugă' : 'Add'))}
                         </button>
@@ -94,7 +94,7 @@ export default function TagsTab({
                     value={tagSearch}
                     onChange={(e) => setTagSearch(e.target.value)}
                     placeholder={lang === 'RO' ? 'Caută tag după titlu exact...' : 'Search tag by exact title...'}
-                    className="flex-1 bg-(--surface-card) border border-(--accent)/40 rounded-2xl px-4 py-2 text-(--text-h) outline-none focus:border-(--accent) transition-all text-sm"
+                    className="flex-1 bg-(--surface-card) border border-(--accent)/40 rounded-2xl px-4 py-2 text-(--text-h) outline-none transition-all text-sm"
                 />
                 <button
                     type="submit"
@@ -122,7 +122,7 @@ export default function TagsTab({
 
             <motion.div
                 variants={containerVariants}
-                className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+                className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
             >
                 {tags.map((tag) => (
                     <motion.div

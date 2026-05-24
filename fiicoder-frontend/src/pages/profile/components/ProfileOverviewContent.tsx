@@ -306,7 +306,7 @@ export default function ProfileOverviewContent({
                   />
                 </svg>
               </button>
-              <span className="text-[11px] font-bold text-(--text-h) capitalize min-w-[90px] text-center select-none">
+              <span className="text-[11px] font-bold text-(--text-h) capitalize min-w-22.5 text-center select-none">
                 {monthName}
               </span>
               <button
