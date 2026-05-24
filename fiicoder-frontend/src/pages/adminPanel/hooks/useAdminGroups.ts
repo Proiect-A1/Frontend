@@ -21,18 +21,25 @@ export function useAdminGroups(isAdmin: boolean, activeTab: string) {
     });
 
     const groups = groupsQuery.data ?? [];
+    const isSelectedInList = !!selectedGroupId && groups.some((g) => g.id === selectedGroupId);
 
     const selectedGroupQuery = useQuery({
         queryKey: ['admin', 'groups', selectedGroupId],
-        enabled: !!selectedGroupId && isAdmin && activeTab === 'groups',
+        enabled: !!selectedGroupId && isSelectedInList && isAdmin && activeTab === 'groups',
         queryFn: () => adminService.getGroup(selectedGroupId as string),
     });
 
-    const selectedGroup = selectedGroupQuery.data ?? groups.find((g) => g.id === selectedGroupId) ?? null;
+    const selectedGroup =
+        selectedGroupQuery.data ?? groups.find((g) => g.id === selectedGroupId) ?? null;
 
     const invitationsQuery = useQuery({
         queryKey: ['admin', 'groups', selectedGroupId, 'invitations'],
-        enabled: !!selectedGroupId && !!selectedGroup?.isCreator && isAdmin && activeTab === 'groups',
+        enabled:
+            !!selectedGroupId &&
+            isSelectedInList &&
+            !!selectedGroup?.isCreator &&
+            isAdmin &&
+            activeTab === 'groups',
         queryFn: () => adminService.getGroupInvitations(selectedGroupId as string),
     });
 
@@ -44,17 +51,23 @@ export function useAdminGroups(isAdmin: boolean, activeTab: string) {
         if (!window.confirm(confirmMsg)) return;
 
         try {
-            await adminService.deleteGroup(group.id);
-            toast.success(lang === 'RO' ? 'Grup sters.' : 'Group deleted.');
-            queryClient.setQueryData<GroupSummary[]>(['admin', 'groups', groupPage], (prev) =>
-                prev?.filter((g) => g.id !== group.id) ?? [],
-            );
             if (selectedGroupId === group.id) {
                 setSelectedGroupId(null);
             }
+            await adminService.deleteGroup(group.id);
+            toast.success(lang === 'RO' ? 'Grup sters.' : 'Group deleted.');
+            queryClient.setQueryData<GroupSummary[]>(
+                ['admin', 'groups', groupPage],
+                (prev) => prev?.filter((g) => g.id !== group.id) ?? [],
+            );
             await queryClient.invalidateQueries({ queryKey: ['admin', 'groups'] });
         } catch (error) {
-            toast.error(extractErrorMessage(error, lang === 'RO' ? 'Eroare la stergere.' : 'Failed to delete group.'));
+            toast.error(
+                extractErrorMessage(
+                    error,
+                    lang === 'RO' ? 'Eroare la stergere.' : 'Failed to delete group.',
+                ),
+            );
         }
     };
 
