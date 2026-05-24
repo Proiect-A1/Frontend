@@ -41,7 +41,7 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
                             onError={handleError}
                         />
                     ) : (
-                        <div className="w-24 h-24 rounded-full bg-linear-to-br from-(--accent) to-purple-500 flex items-center justify-center text-4xl font-bold text-white uppercase shadow-lg outline-4 outline-offset-4 outline-(--accent) shrink-0">
+                        <div className="w-24 h-24 rounded-full bg-linear-to-br from-(--accent) to-(--accent-secondary) flex items-center justify-center text-4xl font-bold text-white uppercase shadow-lg outline-4 outline-offset-4 outline-(--accent) shrink-0">
                             {(profile.username || username || profile.firstName).charAt(0).toUpperCase()}
                         </div>
                     )}

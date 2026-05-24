@@ -1,42 +1,37 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><_fiicoder></title>
     <script>
-      (() => {
-        const theme = localStorage.getItem("fiicoder_theme") || "rose";
-        document.documentElement.setAttribute("data-theme", theme);
+      (function () {
+        try {
+          const theme = localStorage.getItem('fiicoder_theme') || 'rose';
+          document.documentElement.setAttribute('data-theme', theme);
 
-        const themes = {
-          rose:  { bg: "#090812", start: "#2f1630", mid: "#171124", end: "#090812" },
-          nord:  { bg: "#2e3440", start: "#3b4252", mid: "#4c566a", end: "#2e3440" },
-          cream: { bg: "#f5efe3", start: "#e7d6bf", mid: "#f2e8da", end: "#f8f3e9" },
-          sage:  { bg: "#e8f1e8", start: "#d4e6d8", mid: "#e5f0e6", end: "#f2f8f2" },
-        };
-        const t = themes[theme] || themes.rose;
+          const faviconByTheme = {
+            rose: '/logo.svg',
+            nord: '/logo_nord.svg',
+            cream: '/logo_cream.svg',
+            sage: '/logo_sage.svg',
+            olivia: '/logo_olivia.svg',
+            serika: '/logo_serika.svg',
+            cyberpunk: '/logo_cyberpunk.svg',
+            eighties: '/logo_eighties.svg',
+            fiicode: '/logo_fiicode.svg',
+            fii: '/logo_fii.svg',
+            superuser: '/logo_superuser.svg',
+            custom: '/logo.svg'
+          };
 
-        document.documentElement.style.backgroundColor = t.bg;
-
-        const style = document.createElement("style");
-        style.textContent = `#root{background-color:${t.bg};background-image:radial-gradient(circle at 20% 0%,${t.start} 0%,${t.mid} 45%,${t.end} 100%);background-size:200% 200%;background-attachment:fixed;}`;
-        document.head.appendChild(style);
-
-        const faviconByTheme = {
-          rose: "/logo.svg",
-          nord: "/logo_nord.svg",
-          cream: "/logo_cream.svg",
-          sage: "/logo_sage.svg",
-        };
-        const link = document.querySelector('link[rel="icon"]') || document.createElement("link");
-        link.rel = "icon";
-        link.type = "image/svg+xml";
-        link.href = faviconByTheme[theme] || "/logo.svg";
-        if (!link.parentNode) document.head.appendChild(link);
+          const href = faviconByTheme[theme] || '/logo.svg';
+          let link = document.querySelector("link[rel~='icon']");
+          if (!link) {
+            link = document.createElement('link');
+            link.rel = 'icon';
+            link.type = 'image/svg+xml';
+            document.head.appendChild(link);
+          }
+          link.href = href;
+        } catch (e) {}
       })();
     </script>
+    
   </head>
   <body>
     <div id="root"></div>

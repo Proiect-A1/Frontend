@@ -86,6 +86,13 @@ export default function Navbar() {
     nord: "/logo_nord.svg",
     cream: "/logo_cream.svg",
     sage: "/logo_sage.svg",
+    serika: "/logo_serika.svg",
+    cyberpunk: "/logo_cyberpunk.svg",
+    eighties: "/logo_eighties.svg",
+    "olivia": "/logo_olivia.svg",
+    fiicode: "/logo_fiicode.svg",
+    fii: "/logo_fii.svg",
+    superuser: "/logo_superuser.svg",
   };
   const logoSrc = themeLogo[theme] || "/logo.svg";
 
@@ -345,7 +352,14 @@ export default function Navbar() {
                 onClick={() => setIsThemeOpen((prev) => !prev)}
                 className="flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold border-2 border-(--accent)/40 text-(--text-h) bg-(--accent)/10 transition-all duration-200 hover:bg-(--accent)/20 whitespace-nowrap"
               >
-                {lang === "RO" ? "Temă:" : "Theme:"} {formatThemeLabel(theme)}
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+                  <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+                  <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+                  <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+                  <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+                </svg>
+                {formatThemeLabel(theme)}
                 <motion.span animate={{ rotate: isThemeOpen ? 180 : 0 }}>
                   ▼
                 </motion.span>
@@ -503,7 +517,14 @@ export default function Navbar() {
                   onClick={() => setIsMobileThemeOpen(!isMobileThemeOpen)}
                   className="w-full flex items-center justify-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold border-2 border-(--accent)/40 text-(--text-h) bg-(--accent)/10 transition-all duration-200 hover:bg-(--accent)/20"
                 >
-                  {lang === "RO" ? "Temă:" : "Theme:"} {formatThemeLabel(theme)}
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+                    <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+                    <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+                    <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+                  </svg>
+                  {formatThemeLabel(theme)}
                   <motion.span animate={{ rotate: isMobileThemeOpen ? 180 : 0 }}>▼</motion.span>
                 </button>
 

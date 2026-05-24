@@ -169,7 +169,7 @@ export default function ProblemList() {
                         {problem.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="px-2 py-0.5 rounded-full text-[10px] font-semibold border border-(--accent)/20 bg-(--accent)/5 text-(--text-muted)"
+                            className="px-2 py-0.5 rounded-full text-[10px] font-semibold border border-(--accent-secondary)/25 bg-(--accent-secondary)/10 text-(--text-muted)"
                           >
                             {tag}
                           </span>
@@ -180,7 +180,7 @@ export default function ProblemList() {
 
                   {/* separator */}
                   {index < filteredProblems.length - 1 && (
-                    <div className="w-full h-0.5 my-3 rounded-full bg-[color-mix(in_srgb,var(--accent)_20%,transparent)] shadow-[0_0_5px_color-mix(in_srgb,var(--accent)_50%,transparent)]" />
+                    <div className="w-full h-0.5 my-3 rounded-full bg-[color-mix(in_srgb,var(--accent-secondary)_20%,transparent)] shadow-[0_0_5px_color-mix(in_srgb,var(--accent-secondary)_50%,transparent)]" />
                   )}
                 </motion.div>
               ))}

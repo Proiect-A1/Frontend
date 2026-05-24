@@ -93,7 +93,7 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                                 isHighPriority
                                     ? 'border-(--accent) bg-(--surface-card)'
                                     : isMediumPriority
-                                      ? 'border-(--accent)/50 bg-(--surface-card)'
+                                      ? 'border-(--accent-secondary)/60 bg-(--surface-card)'
                                       : 'border-(--accent)/40 bg-(--surface-card)'
                             }`}
                         >
@@ -105,7 +105,7 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                                     </span>
                                 )}
                                 {isMediumPriority && (
-                                    <span className="shrink-0 px-3 py-1 rounded-full bg-(--accent)/20 text-(--accent) text-xs font-bold border border-(--accent)/40">
+                                    <span className="shrink-0 px-3 py-1 rounded-full bg-(--accent-secondary)/20 text-(--accent-secondary) text-xs font-bold border border-(--accent-secondary)/40">
                                         {lang === 'RO' ? 'IMPORTANT' : 'IMPORTANT'}
                                     </span>
                                 )}
@@ -122,7 +122,7 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                             </div>
                             <div
                                 className={`flex items-center justify-between pt-4 border-t ${
-                                    isHighPriority ? 'border-(--accent)/30' : 'border-(--accent)/20'
+                                    isHighPriority ? 'border-(--accent)/30' : 'border-(--accent-secondary)/25'
                                 }`}
                             >
                                 <span className="text-xs uppercase tracking-widest text-(--text-subtle) font-bold">
@@ -133,7 +133,7 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                                     className={`px-4 py-2 rounded-full border text-xs font-bold transition-colors ${
                                         isHighPriority
                                             ? 'border-(--accent)/60 bg-(--accent)/20 text-(--accent) hover:bg-(--accent)/30'
-                                            : 'border-(--accent)/40 bg-(--accent)/10 text-(--text-h) hover:bg-(--accent)/20'
+                                            : 'border-(--accent-secondary)/50 bg-(--accent-secondary)/10 text-(--text-h) hover:bg-(--accent-secondary)/20'
                                     }`}
                                 >
                                     {lang === 'RO' ? 'Închide' : 'Close'}
@@ -160,6 +160,13 @@ export default function Landing() {
             nord: '/logo_nord.svg',
             cream: '/logo_cream.svg',
             sage: '/logo_sage.svg',
+            serika: '/logo_serika.svg',
+            cyberpunk: '/logo_cyberpunk.svg',
+            eighties: '/logo_eighties.svg',
+            'olivia': '/logo_olivia.svg',
+            fiicode: '/logo_fiicode.svg',
+            fii: '/logo_fii.svg',
+            superuser: '/logo_superuser.svg',
         };
         return themeLogo[theme] || '/logo.svg';
     }, [theme]);
@@ -314,7 +321,7 @@ export default function Landing() {
                         >
                             {stats.map((stat, idx) => (
                                 <div key={idx} className="flex flex-col items-center">
-                                    <div className="text-lg md:text-xl font-black text-(--accent)">
+                                    <div className={`text-lg md:text-xl font-black ${theme === 'cyberpunk' ? 'accent-text' : 'text-(--accent)'}`}>
                                         {stat.num}
                                     </div>
                                     <div className="text-[9px] uppercase tracking-widest text-(--text-muted) font-bold">{stat.label}</div>
@@ -328,7 +335,7 @@ export default function Landing() {
                         >
                             <Link
                                 to="/problems"
-                                className="px-6 py-2.5 rounded-xl bg-(--accent) border-2 border-(--accent) text-(--surface-card) font-black text-xs transition-all duration-200 hover:bg-transparent hover:text-(--accent) hover:-translate-y-1 active:translate-y-0"
+                                className={`px-6 py-2.5 rounded-xl font-black text-xs transition-all duration-200 ${theme === 'cyberpunk' ? 'btn-accent' : 'bg-(--accent) border-2 border-(--accent) text-(--surface-card) hover:bg-transparent hover:text-(--accent) hover:-translate-y-1 active:translate-y-0'}`}
                             >
                                 {t.viewProblems}
                             </Link>
@@ -336,7 +343,7 @@ export default function Landing() {
                             {!isAuthenticated && (
                                 <Link
                                     to="/login"
-                                    className="px-6 py-2.5 rounded-xl bg-transparent border-2 border-(--accent) text-(--accent) font-black text-xs transition-all duration-200 hover:bg-(--accent) hover:text-(--surface-card) hover:-translate-y-1 active:translate-y-0"
+                                    className={`px-6 py-2.5 rounded-xl font-black text-xs transition-all duration-200 ${theme === 'cyberpunk' ? 'border-(--accent-2)/30 text-(--accent-2) hover:bg-(--accent-2)/8' : 'bg-transparent border-2 border-(--accent) text-(--accent) hover:bg-(--accent) hover:text-(--surface-card) hover:-translate-y-1 active:translate-y-0'}`}
                                 >
                                     {t.authenticateBtn}
                                 </Link>
