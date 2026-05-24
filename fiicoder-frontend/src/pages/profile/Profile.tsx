@@ -51,11 +51,16 @@ export default function Profile() {
             await queryClient.invalidateQueries({ queryKey: ['profile', 'proposals'] });
             toast.success(lang === 'RO' ? 'Propunerea a fost ștearsă.' : 'Proposal deleted.');
         } catch {
-            toast.error(lang === 'RO' ? 'Eroare la ștergerea propunerii.' : 'Failed to delete proposal.');
+            toast.error(
+                lang === 'RO' ? 'Eroare la ștergerea propunerii.' : 'Failed to delete proposal.',
+            );
         }
     };
 
-    const handleToggleVisibility = async (title: string, currentVisibility: 'public' | 'private') => {
+    const handleToggleVisibility = async (
+        title: string,
+        currentVisibility: 'public' | 'private',
+    ) => {
         const newVisibility = currentVisibility === 'public' ? 'PRIVATE' : 'PUBLIC';
         setTogglingTitle(title);
         try {
@@ -63,7 +68,11 @@ export default function Profile() {
             await queryClient.invalidateQueries({ queryKey: ['profile', 'proposals'] });
             toast.success(lang === 'RO' ? 'Vizibilitate actualizată.' : 'Visibility updated.');
         } catch {
-            toast.error(lang === 'RO' ? 'Eroare la actualizarea vizibilității.' : 'Failed to update visibility.');
+            toast.error(
+                lang === 'RO'
+                    ? 'Eroare la actualizarea vizibilității.'
+                    : 'Failed to update visibility.',
+            );
         } finally {
             setTogglingTitle(null);
         }
@@ -83,17 +92,17 @@ export default function Profile() {
                 initial="hidden"
                 animate="visible"
             >
-                    <div className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-4 text-sm text-(--text-muted)">
-                        {loading
-                            ? lang === 'RO'
-                                ? 'Se încarcă profilul...'
-                                : 'Loading profile...'
-                            : (error ??
-                              (lang === 'RO'
-                                  ? 'Profil indisponibil momentan.'
-                                  : 'Profile is currently unavailable.'))}
-                    </div>
-                </motion.div>
+                <div className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-4 text-sm text-(--text-muted)">
+                    {loading
+                        ? lang === 'RO'
+                            ? 'Se încarcă profilul...'
+                            : 'Loading profile...'
+                        : (error ??
+                          (lang === 'RO'
+                              ? 'Profil indisponibil momentan.'
+                              : 'Profile is currently unavailable.'))}
+                </div>
+            </motion.div>
         );
     }
 
@@ -104,80 +113,79 @@ export default function Profile() {
             initial="hidden"
             animate="visible"
         >
-                <div className="min-w-0 space-y-6">
-                    {/* Header curat, doar cu titlul paginii */}
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                        <div className="flex items-center gap-3">
-                            <h1 className="text-3xl font-bold text-(--text-h) flex items-center gap-3">
-                                {lang === 'RO' ? 'Profil' : 'Profile'}
-                            </h1>
-                        </div>
-
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <button
-                                type="button"
-                                onClick={() => setActiveTab('overview')}
-                                className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'overview' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
-                            >
-                                {lang === 'RO' ? 'Prezentare' : 'Overview'}
-                            </button>
-                            {canViewProposals && (
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab('proposals')}
-                                    className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'proposals' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
-                                >
-                                    {lang === 'RO' ? 'Propunerile Mele' : 'My Proposals'}
-                                </button>
-                            )}
-                            <button
-                                type="button"
-                                onClick={() => setActiveTab('homework')}
-                                className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'homework' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
-                            >
-                                {lang === 'RO' ? 'Temele Mele' : 'My Homework'}
-                            </button>
-
-                            {isAdmin && (
-                                <Link
-                                    to="/admin"
-                                    className="px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 ml-4 bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5"
-                                >
-                                    {lang === 'RO' ? 'Panou Administrare' : 'Admin Dashboard'}
-                                </Link>
-                            )}
-                        </div>
+            <div className="min-w-0 space-y-6">
+                {/* Header curat, doar cu titlul paginii */}
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="flex items-center gap-3">
+                        <h1 className="text-3xl font-bold text-(--text-h) flex items-center gap-3">
+                            {lang === 'RO' ? 'Profil' : 'Profile'}
+                        </h1>
                     </div>
 
-                    <motion.div
-                        className="w-full grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-6"
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="visible"
-                    >
-                        <div className="flex flex-col gap-6 min-w-0">
-                            <ProfileSidebar profile={profile} username={username} lang={lang} />
-                        </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('overview')}
+                            className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'overview' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
+                        >
+                            {lang === 'RO' ? 'Prezentare' : 'Overview'}
+                        </button>
+                        {canViewProposals && (
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab('proposals')}
+                                className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'proposals' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
+                            >
+                                {lang === 'RO' ? 'Propunerile Mele' : 'My Proposals'}
+                            </button>
+                        )}
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('homework')}
+                            className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'homework' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
+                        >
+                            {lang === 'RO' ? 'Temele Mele' : 'My Homework'}
+                        </button>
 
-                        <div className="flex flex-col gap-6 min-w-0 w-full">
-
-                            {activeTab === 'overview' ? (
-                                <ProfileOverviewContent profile={profile} lang={lang} theme={theme} />
-                            ) : activeTab === 'proposals' ? (
-                                <ProfileProposalsPanel
-                                    proposals={proposals}
-                                    loading={loadingProposals}
-                                    lang={lang}
-                                    onToggleVisibility={handleToggleVisibility}
-                                    togglingTitle={togglingTitle}
-                                    onDelete={handleDeleteProposal}
-                                />
-                            ) : (
-                                <ProfileHomeworkPanel lang={lang} />
-                            )}
-                        </div>
-                    </motion.div>
+                        {isAdmin && (
+                            <Link
+                                to="/admin"
+                                className="px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)"
+                            >
+                                {lang === 'RO' ? 'Panou Administrare' : 'Admin Dashboard'}
+                            </Link>
+                        )}
+                    </div>
                 </div>
-            </motion.div>
+
+                <motion.div
+                    className="w-full grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-6"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                >
+                    <div className="flex flex-col gap-6 min-w-0">
+                        <ProfileSidebar profile={profile} username={username} lang={lang} />
+                    </div>
+
+                    <div className="flex flex-col gap-6 min-w-0 w-full">
+                        {activeTab === 'overview' ? (
+                            <ProfileOverviewContent profile={profile} lang={lang} theme={theme} />
+                        ) : activeTab === 'proposals' ? (
+                            <ProfileProposalsPanel
+                                proposals={proposals}
+                                loading={loadingProposals}
+                                lang={lang}
+                                onToggleVisibility={handleToggleVisibility}
+                                togglingTitle={togglingTitle}
+                                onDelete={handleDeleteProposal}
+                            />
+                        ) : (
+                            <ProfileHomeworkPanel lang={lang} />
+                        )}
+                    </div>
+                </motion.div>
+            </div>
+        </motion.div>
     );
 }
