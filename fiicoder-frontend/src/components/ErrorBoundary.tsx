@@ -74,82 +74,32 @@ export default class ErrorBoundary extends Component<Props, State> {
         const chunkProblem = isChunkLoadError(error);
 
         return (
-            <div
-                style={{
-                    minHeight: '100dvh',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '24px',
-                    background: 'var(--bg-color, #090812)',
-                    color: 'var(--text, #e5e9f0)',
-                    fontFamily: 'system-ui, -apple-system, sans-serif',
-                }}
-            >
-                <div
-                    style={{
-                        maxWidth: '540px',
-                        width: '100%',
-                        border: '2px solid var(--accent, #ff5eb6)',
-                        borderRadius: '24px',
-                        padding: '28px',
-                        background: 'rgba(0,0,0,0.25)',
-                        backdropFilter: 'blur(6px)',
-                    }}
-                >
-                    <h1 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '12px' }}>
+            <div className="min-h-dvh flex items-center justify-center p-6 bg-(--bg) text-(--text)">
+                <div className="w-full max-w-135 rounded-3xl border-2 border-(--accent) p-6 bg-(--surface-card)">
+                    <h1 className="text-2xl font-black mb-3 text-(--text-h)">
                         {chunkProblem ? 'Versiune nouă disponibilă' : 'Ceva a mers prost'}
                     </h1>
-                    <p style={{ marginBottom: '20px', opacity: 0.85 }}>
+                    <p className="mb-5 opacity-85">
                         {chunkProblem
                             ? 'Aplicația a primit un update. Reîncărcăm pagina ca să primești ultima versiune.'
                             : 'A apărut o eroare neașteptată. Poți reîncerca sau te poți întoarce la pagina principală.'}
                     </p>
-                    <details
-                        style={{
-                            marginBottom: '20px',
-                            fontSize: '12px',
-                            opacity: 0.6,
-                        }}
-                    >
-                        <summary style={{ cursor: 'pointer' }}>Detalii tehnice</summary>
-                        <pre
-                            style={{
-                                marginTop: '8px',
-                                whiteSpace: 'pre-wrap',
-                                wordBreak: 'break-word',
-                            }}
-                        >
+                    <details className="mb-5 text-xs opacity-60">
+                        <summary className="cursor-pointer">Detalii tehnice</summary>
+                        <pre className="mt-2 whitespace-pre-wrap wrap-break-words">
                             {error.name}: {error.message}
                         </pre>
                     </details>
-                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                    <div className="flex flex-wrap gap-3">
                         <button
                             onClick={this.handleReload}
-                            style={{
-                                padding: '10px 18px',
-                                borderRadius: '999px',
-                                border: '2px solid var(--accent, #ff5eb6)',
-                                background:
-                                    'color-mix(in srgb, var(--accent, #ff5eb6) 20%, transparent)',
-                                color: 'inherit',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                            }}
+                            className="px-4 py-2.5 rounded-full border-2 border-(--accent) bg-[color-mix(in_srgb,var(--accent,#ff5eb6)_20%,var(--surface-card,transparent))] text-(--text-h) font-bold"
                         >
                             Reîncarcă pagina
                         </button>
                         <button
                             onClick={this.handleReset}
-                            style={{
-                                padding: '10px 18px',
-                                borderRadius: '999px',
-                                border: '2px solid rgba(255,255,255,0.2)',
-                                background: 'transparent',
-                                color: 'inherit',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                            }}
+                            className="px-4 py-2.5 rounded-full border-2 border-[color-mix(in_srgb,var(--text,#e5e9f0)_20%,transparent)] bg-[color-mix(in_srgb,var(--surface-card,transparent)_40%,transparent)] text-(--text) font-bold"
                         >
                             Înapoi la pagina principală
                         </button>
