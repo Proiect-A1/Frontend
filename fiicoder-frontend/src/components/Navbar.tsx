@@ -14,8 +14,7 @@ export default function Navbar() {
 
   const { lang, setLang } = useLanguage();
   const t = translations[lang];
-  const { isAuthenticated, username, gravatarUrl, dicebearUrl, isAdmin, isProfessor, logout } = useAuth();
-  const [avatarSrc, setAvatarSrc] = useState<string | null>(gravatarUrl);
+  const { isAuthenticated, username, gravatarUrl, dicebearUrl, logout } = useAuth();  const [avatarSrc, setAvatarSrc] = useState<string | null>(gravatarUrl);
   const [avatarFailed, setAvatarFailed] = useState(false);
 
   useEffect(() => {
@@ -232,11 +231,6 @@ export default function Navbar() {
                 <Link to="/classes" className={getNavLinkClass("/classes")}>
                   {lang === "RO" ? "Clase" : "Classes"}
                 </Link>
-                {(isAdmin || isProfessor) && (
-                  <Link to="/propose" className={getNavLinkClass("/propose")}>
-                    {lang === "RO" ? "Propune" : "Propose"}
-                  </Link>
-                )}
               </>
             )}
 
@@ -447,16 +441,6 @@ export default function Navbar() {
                   className={getNavLinkClass("/classes") + " text-center"}
                 >
                   {lang === "RO" ? "Clase" : "Classes"}
-                </Link>
-              )}
-
-              {isAuthenticated && (isAdmin || isProfessor) && (
-                <Link
-                  to="/propose"
-                  onClick={closeMenu}
-                  className={getNavLinkClass("/propose") + " text-center"}
-                >
-                  {lang === "RO" ? "Propune o Problemă" : "Propose Problem"}
                 </Link>
               )}
 
