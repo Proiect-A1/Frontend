@@ -23,8 +23,9 @@ export async function createProblemZip(formData: ProposeProblemForm): Promise<Bl
             if (testsFolder) {
                 formData.tests.forEach((test, index) => {
                     if (test.source === 'manual') {
-                        testsFolder.file(`${index + 1}.in`, test.input);
-                        testsFolder.file(`${index + 1}.ok`, test.output);
+                        const stem = /^manual_\d+$/.test(test.id) ? String(index + 1) : test.id;
+                        testsFolder.file(`${stem}.in`, test.input);
+                        testsFolder.file(`${stem}.ok`, test.output);
                     }
                 });
             }

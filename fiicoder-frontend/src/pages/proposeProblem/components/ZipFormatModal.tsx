@@ -57,19 +57,26 @@ export default function ZipFormatModal() {
 │   ├── metadata.json
 │   └── tests.gen
 ├── statements/
-│   └── ro/
+│   ├── ro/
+│   │   └── statement.tex
+│   └── en/
 │       └── statement.tex
 └── files/
     ├── sources/
+    │   └── main.cpp
     ├── validators/
+    │   └── val.cpp
     ├── generators/
+    │   └── gen.cpp
     ├── checkers/
+    │   └── check.cpp
     ├── interactors/
+    │   └── inter.cpp
     └── raw_tests/
         ├── 1.in
         ├── 1.ok
-        ├── 2.in
-        └── 2.ok`}
+        ├── strength.1.in
+        └── strength.1.ok`}
                                 </pre>
                                 <div className="space-y-2 text-xs text-(--text-muted)">
                                     {[
@@ -89,7 +96,7 @@ export default function ZipFormatModal() {
                                         },
                                         {
                                             path: 'sources/',
-                                            note: ro ? 'Soluția de referință (ex: solution.cpp). Folosită pentru verificare internă.' : 'Reference solution (e.g. solution.cpp). Used for internal checking.',
+                                            note: ro ? 'Soluția de referință (ex: main.cpp). Folosită pentru verificare internă.' : 'Reference solution (e.g. main.cpp). Used for internal checking.',
                                         },
                                         {
                                             path: 'validators/',
@@ -121,8 +128,8 @@ export default function ZipFormatModal() {
                             </div>
                             <Warn>
                                 {ro
-                                    ? 'Fișierele puse direct în files/ (nu într-un subfolder) sunt ignorate complet la import. Exemplu: files/solution.cpp nu va fi importat - trebuie să fie files/sources/solution.cpp.'
-                                    : 'Files placed directly in files/ (not in a subfolder) are completely ignored on import. Example: files/solution.cpp will not be imported - it must be files/sources/solution.cpp.'}
+                                    ? 'Fișierele puse direct în files/ (nu într-un subfolder) sunt ignorate complet la import. Exemplu: files/main.cpp nu va fi importat - trebuie să fie files/sources/main.cpp.'
+                                    : 'Files placed directly in files/ (not in a subfolder) are completely ignored on import. Example: files/main.cpp will not be imported - it must be files/sources/main.cpp.'}
                             </Warn>
                             <Warn>
                                 {ro
@@ -259,33 +266,32 @@ export default function ZipFormatModal() {
                         <Section title={ro ? '4. Teste manuale (files/raw_tests/)' : '4. Manual tests (files/raw_tests/)'}>
                             <p className="text-sm text-(--text-muted) mb-3">
                                 {ro
-                                    ? 'Fiecare test manual constă din exact două fișiere: un fișier de intrare (.in) și un fișier cu răspunsul așteptat (.ok sau .out). Cele două fișiere trebuie să aibă același număr în nume.'
-                                    : 'Each manual test consists of exactly two files: an input file (.in) and an expected output file (.ok or .out). Both files must share the same number in their name.'}
+                                    ? 'Fiecare test manual constă din exact două fișiere: un fișier de intrare (.in) și un fișier cu răspunsul așteptat (.ok sau .out). Numele de bază (fără extensie) trebuie să fie identic pentru cele două fișiere — poți folosi orice nume (numeric sau text).'
+                                    : 'Each manual test consists of exactly two files: an input file (.in) and an expected output file (.ok or .out). The base name (without extension) must match between the two files — you can use any name (numeric or text).'}
                             </p>
                             <div className="grid grid-cols-2 gap-3 mb-3">
                                 <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-3">
                                     <p className="text-xs font-bold text-green-400 mb-2 flex items-center gap-1"><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>{ro ? 'Corect' : 'Correct'}</p>
                                     <pre className="text-xs font-mono text-(--text-h) leading-relaxed">
-{`1.in  ↔  1.ok
-2.in  ↔  2.ok
-0.in  ↔  0.ok
-10.in ↔  10.ok`}
+{`1.in           ↔  1.ok
+strength.1.in  ↔  strength.1.ok
+sample_a.in    ↔  sample_a.ok
+10.in          ↔  10.ok`}
                                     </pre>
                                 </div>
                                 <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3">
                                     <p className="text-xs font-bold text-red-400 mb-2 flex items-center gap-1"><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>{ro ? 'Greșit - ignorat' : 'Wrong - ignored'}</p>
                                     <pre className="text-xs font-mono text-(--text-h) leading-relaxed">
-{`1-strength.in
-test_01.in
-01.input
-input1.txt`}
+{`01.input       (extensie .input)
+input1.txt     (extensie .txt)
+1.in (fără 1.ok / 1.out perechea)`}
                                     </pre>
                                 </div>
                             </div>
                             <p className="text-xs text-(--text-muted)">
                                 {ro
-                                    ? 'Un fișier fără pereche (ex: există 3.in dar nu există 3.ok) este ignorat complet. Numerotarea poate începe de la 0 sau 1 și poate fi discontinuă (1, 2, 5, 6 funcționează).'
-                                    : 'An unpaired file (e.g. 3.in exists but 3.ok does not) is completely ignored. Numbering can start from 0 or 1 and can be non-consecutive (1, 2, 5, 6 works).'}
+                                    ? 'Un fișier fără pereche (ex: există 3.in dar nu există 3.ok / 3.out) este ignorat complet. Extensiile acceptate sunt .in pentru intrare și .ok sau .out pentru ieșirea așteptată.'
+                                    : 'An unpaired file (e.g. 3.in exists but 3.ok / 3.out does not) is completely ignored. Accepted extensions are .in for input and .ok or .out for the expected output.'}
                             </p>
                         </Section>
 
@@ -345,11 +351,8 @@ input1.txt`}
                                 <Directive
                                     name="="
                                     desc={ro
-                                        ? '<fisier.in> - include un test manual existent din files/raw_tests/. Scrie doar numele fișierului, nu calea completă.'
-                                        : '<file.in> - includes an existing manual test from files/raw_tests/. Write only the filename, not the full path.'}
-                                    warn={ro
-                                        ? 'Dacă testul se numește files/raw_tests/1.in, scrie "= 1.in". Dacă se numește "0-strength.in", redenumește-l în "1.in" - altfel va fi ignorat.'
-                                        : 'If the test is files/raw_tests/1.in, write "= 1.in". If it\'s named "0-strength.in", rename it to "1.in" - otherwise it will be ignored.'}
+                                        ? '<fisier.in> - include un test manual existent din files/raw_tests/. Scrie doar numele fișierului (cu extensia .in), nu calea completă. Numele trebuie să fie identic cu cel din raw_tests/ — ex: pentru files/raw_tests/strength.1.in scrie "= strength.1.in".'
+                                        : '<file.in> - includes an existing manual test from files/raw_tests/. Write only the filename (with .in extension), not the full path. The name must match exactly what is in raw_tests/ — e.g. for files/raw_tests/strength.1.in write "= strength.1.in".'}
                                 />
                                 <Directive
                                     name="<"

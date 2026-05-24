@@ -205,7 +205,6 @@ export default function ProposeProblem() {
                             <input
                                 ref={importInputRef}
                                 type="file"
-                                accept=".zip"
                                 className="hidden"
                                 onChange={(e) => {
                                     const file = e.target.files?.[0];

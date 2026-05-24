@@ -235,10 +235,6 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
     }, [methods]);
 
     const handleImport = useCallback(async (file: File) => {
-        if (!file.name.toLowerCase().endsWith('.zip')) {
-            toast.error('Fișierul selectat nu este o arhivă ZIP. Selectează un fișier .zip.');
-            return;
-        }
         const MAX_ZIP_MB = 200;
         if (file.size > MAX_ZIP_MB * 1024 * 1024) {
             toast.error(`Arhiva depășește limita de ${MAX_ZIP_MB} MB.`);
