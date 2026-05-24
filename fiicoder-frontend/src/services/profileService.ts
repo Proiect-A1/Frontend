@@ -1,24 +1,18 @@
 import { apiClient } from './apiClient';
 
-export type SubmissionStatus =
-    | 'OK'
-    | 'PA'
-    | 'TLE'
-    | 'MLE'
-    | 'WA'
-    | 'RTE'
-    | 'CPE'
-    | 'FAIL'
-    | 'SKIP'
-    | 'ILE'
-    | 'NONE'
-    | 'IDLE';
+export type SubmissionStatus = 'PENDING' | 'FINISHED';
 
 export interface RecentSubmissionDTO {
     problemTitle: string;
     score: number;
     status: SubmissionStatus;
     submissionDate: string;
+}
+
+export const ACCEPTED_SCORE = 100;
+
+export function isAcceptedSubmission(submission: Pick<RecentSubmissionDTO, 'status' | 'score'>) {
+    return submission.status === 'FINISHED' && submission.score >= ACCEPTED_SCORE;
 }
 
 export interface PagedRecentSubmissionsDTO {

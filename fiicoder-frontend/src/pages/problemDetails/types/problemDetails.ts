@@ -65,7 +65,7 @@ export interface ProblemSubmissionDTO {
   code: string;
   language: unknown;
   Score: number;
-  status: string;
+  status: 'PENDING' | 'FINISHED';
   submissiondate: string;
 }
 

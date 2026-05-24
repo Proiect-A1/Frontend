@@ -99,13 +99,13 @@ async function parseZipContents(zip: JSZip): Promise<ParseResult> {
             totalBytes += content.length;
 
             if (category === 'raw_tests') {
-                const testMatch = name.match(/^(\d+)\.(in|ok|out)$/);
+                const testMatch = name.match(/^(.+)\.(in|ok|out)$/);
                 if (testMatch) {
-                    const testIndexStr = testMatch[1];
+                    const stem = testMatch[1];
                     const extension = testMatch[2];
-                    let test = tests.find(t => t.id === testIndexStr);
+                    let test = tests.find(t => t.id === stem);
                     if (!test) {
-                        test = { id: testIndexStr, input: '', output: '', subtaskIds: [], source: 'manual' };
+                        test = { id: stem, input: '', output: '', subtaskIds: [], source: 'manual' };
                         tests.push(test);
                     }
                     if (extension === 'in') test.input = content;
@@ -130,7 +130,7 @@ async function parseZipContents(zip: JSZip): Promise<ParseResult> {
         }
     }
 
-    tests.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+    tests.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' }));
     return { files, tests, generatorScript, orphanTestFiles, rootFiles, totalBytes };
 }
 
@@ -356,7 +356,7 @@ export async function extractProblemZipFromBlob(
 
     if (orphanTestFiles.length > 0) {
         const preview = orphanTestFiles.slice(0, 5).join(', ') + (orphanTestFiles.length > 5 ? ` și încă ${orphanTestFiles.length - 5}` : '');
-        warnings.push({ code: 'ORPHAN_TEST_FILES', message: `${orphanTestFiles.length} fișier(e) din raw_tests/ au format necunoscut și au fost ignorate: ${preview}. Formatul acceptat este „1.in" / „1.ok".` });
+        warnings.push({ code: 'ORPHAN_TEST_FILES', message: `${orphanTestFiles.length} fișier(e) din raw_tests/ au format necunoscut și au fost ignorate: ${preview}. Fișierele trebuie să se termine în .in, .ok sau .out.` });
     }
 
     if (tests.length > 200) {

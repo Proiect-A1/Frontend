@@ -1,19 +1,17 @@
-import type { RecentSubmissionDTO } from '../../services/profileService';
+import { isAcceptedSubmission, type RecentSubmissionDTO } from '../../services/profileService';
 
-export const submissionStatusLabels: Record<RecentSubmissionDTO['status'], { ro: string; en: string }> = {
-    OK: { ro: 'Admis', en: 'Accepted' },
-    PA: { ro: 'Parțial', en: 'Partial' },
-    TLE: { ro: 'Depășire timp', en: 'Time limit' },
-    MLE: { ro: 'Memorie depășită', en: 'Memory limit' },
-    WA: { ro: 'Greșit', en: 'Wrong answer' },
-    RTE: { ro: 'Eroare rulare', en: 'Runtime error' },
-    CPE: { ro: 'Eroare compilare', en: 'Compile error' },
-    FAIL: { ro: 'Eșuat', en: 'Failed' },
-    SKIP: { ro: 'Sărit', en: 'Skipped' },
-    ILE: { ro: 'Limită internă', en: 'Internal limit' },
-    NONE: { ro: 'Nicio trimitere', en: 'No submission' },
-    IDLE: { ro: 'În așteptare', en: 'Queued' },
+type SubmissionVerdict = 'ACCEPTED' | 'REJECTED' | 'PENDING';
+
+export const submissionVerdictLabels: Record<SubmissionVerdict, { ro: string; en: string }> = {
+    ACCEPTED: { ro: 'Admis', en: 'Accepted' },
+    REJECTED: { ro: 'Respins', en: 'Rejected' },
+    PENDING: { ro: 'În așteptare', en: 'Queued' },
 };
+
+export function submissionVerdict(submission: Pick<RecentSubmissionDTO, 'status' | 'score'>): SubmissionVerdict {
+    if (submission.status === 'PENDING') return 'PENDING';
+    return isAcceptedSubmission(submission) ? 'ACCEPTED' : 'REJECTED';
+}
 
 export function generateHeatmapFromSubmissions(
     submissions: RecentSubmissionDTO[] | undefined,
@@ -38,7 +36,7 @@ export function generateHeatmapFromSubmissions(
 
         if (daysAgo >= 0 && daysAgo < 84) {
             const dateKey = submissionDate.toISOString().split('T')[0];
-            if (submission.status === 'OK') {
+            if (isAcceptedSubmission(submission)) {
                 submissionCounts[dateKey] = (submissionCounts[dateKey] || 0) + 1;
             }
         }

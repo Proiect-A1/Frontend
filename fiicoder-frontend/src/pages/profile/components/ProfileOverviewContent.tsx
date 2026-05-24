@@ -1,15 +1,17 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import type {
-  ProfileResponseDTO,
-  RecentSubmissionDTO,
+import {
+  isAcceptedSubmission,
+  type ProfileResponseDTO,
+  type RecentSubmissionDTO,
 } from "../../../services/profileService";
 import { containerVariants, itemVariants } from "../../../utils/motionConfig";
 import {
   formatPercent,
   getHeatmapStyle,
-  submissionStatusLabels,
+  submissionVerdict,
+  submissionVerdictLabels,
 } from "../profileUtils";
 
 type ProfileOverviewContentProps = {
@@ -24,7 +26,7 @@ const getSubmissionCounts = (
   if (!submissions || submissions.length === 0) return {};
   const counts: Record<string, number> = {};
   submissions.forEach((submission) => {
-    if (submission.status === "OK") {
+    if (isAcceptedSubmission(submission)) {
       const date = new Date(submission.submissionDate);
       const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
       counts[dateKey] = (counts[dateKey] || 0) + 1;
@@ -153,8 +155,8 @@ export default function ProfileOverviewContent({
     });
   };
 
-  const formatStatus = (status: RecentSubmissionDTO["status"]) => {
-    const label = submissionStatusLabels[status];
+  const formatStatus = (submission: RecentSubmissionDTO) => {
+    const label = submissionVerdictLabels[submissionVerdict(submission)];
     return lang === "RO" ? label.ro : label.en;
   };
 
@@ -402,14 +404,19 @@ export default function ProfileOverviewContent({
               className="flex flex-col gap-2 overflow-y-auto custom-scrollbar flex-1"
             >
               {profile.recentSubmissions.content.map((submission) => {
-                const isAccepted = submission.status === "OK";
-                const badgeClasses = isAccepted
-                  ? isLightTheme
-                    ? "bg-emerald-500/20 text-emerald-700 border-emerald-500/40"
-                    : "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
-                  : isLightTheme
-                    ? "bg-red-500/20 text-red-700 border-red-500/40"
-                    : "bg-red-500/10 text-red-300 border-red-500/30";
+                const verdict = submissionVerdict(submission);
+                const badgeClasses =
+                  verdict === "ACCEPTED"
+                    ? isLightTheme
+                      ? "bg-emerald-500/20 text-emerald-700 border-emerald-500/40"
+                      : "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
+                    : verdict === "PENDING"
+                      ? isLightTheme
+                        ? "bg-amber-500/20 text-amber-700 border-amber-500/40"
+                        : "bg-amber-500/10 text-amber-300 border-amber-500/30"
+                      : isLightTheme
+                        ? "bg-red-500/20 text-red-700 border-red-500/40"
+                        : "bg-red-500/10 text-red-300 border-red-500/30";
 
                 return (
                   <motion.div
@@ -435,7 +442,7 @@ export default function ProfileOverviewContent({
                       <span
                         className={`px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap border ${badgeClasses}`}
                       >
-                        {formatStatus(submission.status)}
+                        {formatStatus(submission)}
                       </span>
                     </div>
                   </motion.div>
