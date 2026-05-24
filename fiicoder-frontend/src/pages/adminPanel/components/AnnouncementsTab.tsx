@@ -79,11 +79,32 @@ export default function AnnouncementsTab({
                 </h2>
             </motion.div>
             
-            <motion.form variants={itemVariants} onSubmit={handleAnnouncementSubmit} className="p-5 rounded-3xl border-2 border-(--accent)/30 bg-(--surface-muted) space-y-4">
+            <motion.form variants={itemVariants} onSubmit={handleAnnouncementSubmit} className="p-5 rounded-2xl border border-(--accent)/30 bg-(--surface-muted) space-y-4">
                 <div className="flex justify-between items-center mb-2">
-                    <div className="flex bg-(--surface-card) rounded-full p-1 border border-(--accent)/20">
-                        <button type="button" onClick={() => setFormLang('ro')} className={`px-4 py-1.5 text-sm rounded-full font-bold transition-all ${formLang === 'ro' ? 'bg-(--accent) text-white' : 'text-(--text-muted) hover:text-(--text)'}`}>RO</button>
-                        <button type="button" onClick={() => setFormLang('en')} className={`px-4 py-1.5 text-sm rounded-full font-bold transition-all ${formLang === 'en' ? 'bg-(--accent) text-white' : 'text-(--text-muted) hover:text-(--text)'}`}>EN</button>
+                    <div className="relative flex items-center bg-(--surface-input) border-2 border-(--accent)/50 rounded-full p-1 h-9.5 w-24 overflow-hidden whitespace-nowrap">
+                        <div
+                            className={`absolute top-1 bottom-1 w-10 bg-(--accent)/40 border border-(--accent)/60 rounded-full transition-all duration-300 ease-out ${
+                                formLang === 'ro' ? 'left-1' : 'left-11.5'
+                            }`}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setFormLang('ro')}
+                            className={`relative z-10 flex-1 text-sm font-bold transition-colors duration-300 ${
+                                formLang === 'ro' ? 'text-(--text-h)' : 'text-(--text-muted)'
+                            }`}
+                        >
+                            RO
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setFormLang('en')}
+                            className={`relative z-10 flex-1 text-sm font-bold transition-colors duration-300 ${
+                                formLang === 'en' ? 'text-(--text-h)' : 'text-(--text-muted)'
+                            }`}
+                        >
+                            EN
+                        </button>
                     </div>
                     <button type="button" disabled={isTranslating || (!announcementForm.titleRo && !announcementForm.contentRo)} onClick={handleTranslate} className="inline-flex items-center text-xs font-bold border border-(--accent) bg-(--accent)/10 text-(--accent) px-3 py-1.5 rounded-full hover:bg-(--accent)/20 transition-all disabled:opacity-50">
                         {isTranslating ? '...' : 'Translate to EN'}
@@ -119,7 +140,7 @@ export default function AnnouncementsTab({
                             {lang === 'RO' ? 'Anulează' : 'Cancel'}
                         </button>
                     )}
-                    <button type="submit" disabled={isSavingAnnouncement} className="rounded-2xl bg-(--accent) px-8 py-2 text-white font-bold hover:opacity-90 disabled:opacity-50 transition-all">
+                    <button type="submit" disabled={isSavingAnnouncement} className="rounded-2xl bg-transparent border border-(--accent)/40 px-8 py-2 text-(--text-h) font-bold hover:bg-(--accent)/10 disabled:opacity-50 transition-all">
                         {isSavingAnnouncement ? '...' : (lang === 'RO' ? 'Salvează Anunțul' : 'Save Announcement')}
                     </button>
                 </div>
