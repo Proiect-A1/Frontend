@@ -107,6 +107,22 @@ export interface ProblemProgressDTO {
   timeSpentMinutes: number | null;
 }
 
+export interface ProblemProgressItemDTO {
+  problemId: string;
+  title: string;
+  solved: boolean;
+  bestScore: number | null;
+  lastStatus: string | null;
+}
+
+export interface HomeworkProgressDTO {
+  homeworkId: string;
+  totalProblems: number;
+  solvedProblems: number;
+  progressPercentage: number;
+  problems: ProblemProgressItemDTO[];
+}
+
 export interface StudentProgressSummaryDTO {
   userId: string;
   username: string;

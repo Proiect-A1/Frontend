@@ -68,46 +68,52 @@ function HomeworkRow({ hw, lang }: { hw: HomeworkResponseDTO; lang: 'RO' | 'EN' 
                         <p className="text-xs text-(--text-muted)">{lang === 'RO' ? 'Se încarcă...' : 'Loading...'}</p>
                     )}
 
-                    {progress && (
-                        <div className="flex flex-wrap gap-4 text-xs">
-                            <span className="text-(--text-muted)">
-                                {lang === 'RO' ? 'Progres:' : 'Progress:'}{' '}
-                                <span className="font-bold text-(--text-h)">
-                                    {progress.completedProblems}/{progress.totalProblems}
+                    {progress && (() => {
+                        const isCompleted = progress.totalProblems > 0 && progress.solvedProblems >= progress.totalProblems;
+                        const isOverdue = new Date(hw.deadline).getTime() < Date.now();
+                        return (
+                            <div className="flex flex-wrap gap-4 text-xs">
+                                <span className="text-(--text-muted)">
+                                    {lang === 'RO' ? 'Progres:' : 'Progress:'}{' '}
+                                    <span className="font-bold text-(--text-h)">
+                                        {progress.solvedProblems}/{progress.totalProblems}
+                                    </span>
                                 </span>
-                            </span>
-                            <span className="text-(--text-muted)">
-                                {lang === 'RO' ? 'Scor mediu:' : 'Avg score:'}{' '}
-                                <span className="font-bold text-(--text-h)">{progress.averageScore.toFixed(0)}%</span>
-                            </span>
-                            {progress.isCompleted && (
-                                <span className="text-emerald-400 font-bold">
-                                    {lang === 'RO' ? 'Finalizat' : 'Completed'}
+                                <span className="text-(--text-muted)">
+                                    {lang === 'RO' ? 'Procent:' : 'Percent:'}{' '}
+                                    <span className="font-bold text-(--text-h)">{progress.progressPercentage.toFixed(0)}%</span>
                                 </span>
-                            )}
-                            {progress.isOverdue && !progress.isCompleted && (
-                                <span className="text-red-400 font-bold">
-                                    {lang === 'RO' ? 'Depășit' : 'Overdue'}
-                                </span>
-                            )}
-                        </div>
-                    )}
+                                {isCompleted && (
+                                    <span className="text-emerald-400 font-bold">
+                                        {lang === 'RO' ? 'Finalizat' : 'Completed'}
+                                    </span>
+                                )}
+                                {isOverdue && !isCompleted && (
+                                    <span className="text-red-400 font-bold">
+                                        {lang === 'RO' ? 'Depășit' : 'Overdue'}
+                                    </span>
+                                )}
+                            </div>
+                        );
+                    })()}
 
                     {details && details.problems.length > 0 && (
                         <div className="flex flex-col gap-1.5">
                             {details.problems.map((p) => {
-                                const pProgress = progress?.problems.find(pp => pp.problemTitle === (p.problemTitle ?? p.title));
+                                const pTitle = p.problemTitle ?? p.title;
+                                const pProgress = progress?.problems.find(pp => pp.title === pTitle);
+                                const hasScore = pProgress?.bestScore != null;
                                 return (
                                     <div key={p.id} className="flex items-center justify-between text-xs px-1">
                                         <Link
-                                            to={`/problems/${encodeURIComponent(p.problemTitle ?? p.title ?? p.id)}`}
+                                            to={`/problems/${encodeURIComponent(pTitle ?? p.id)}`}
                                             className="text-(--accent) hover:underline truncate max-w-[60%]"
                                         >
-                                            {p.problemTitle ?? p.title ?? p.id}
+                                            {pTitle ?? p.id}
                                         </Link>
-                                        {pProgress ? (
-                                            <span className={`font-mono font-bold ${pProgress.bestScore >= 100 ? 'text-emerald-400' : 'text-(--text-muted)'}`}>
-                                                {pProgress.bestScore.toFixed(0)} pts
+                                        {hasScore ? (
+                                            <span className={`font-mono font-bold ${pProgress!.bestScore! >= 100 ? 'text-emerald-400' : 'text-(--text-muted)'}`}>
+                                                {pProgress!.bestScore!.toFixed(0)} pts
                                             </span>
                                         ) : (
                                             <span className="text-(--text-muted)">-</span>
