@@ -1,3 +1,14 @@
+/**
+ * Format a score value, stripping floating-point noise (e.g. -1.76e-15 → 0)
+ * and trimming trailing decimal zeros (e.g. 100.00 → 100, 33.50 → 33.5).
+ */
+export function formatScore(value: number | null | undefined): string {
+    if (value == null || !Number.isFinite(value)) return '0';
+    if (Math.abs(value) < 1e-9) return '0';
+    const rounded = Math.round(value * 100) / 100;
+    return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2).replace(/\.?0+$/, '');
+}
+
 export function unindent(str: string): string {
     if (!str) return '';
     const lines = str.split('\n');

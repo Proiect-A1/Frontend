@@ -112,6 +112,15 @@ const monacoThemes: Record<string, MonacoThemePalette> = {
     editorBg: "#060D06",
     codeBg: "#0A0A0A",
   },
+  mcdonalds: {
+    accent: "#DA291C",
+    accentSecondary: "#FF8C2C",
+    text: "#3C1A0E",
+    textMuted: "#8A5A40",
+    textSubtle: "#A88060",
+    editorBg: "#FFF8DC",
+    codeBg: "#FFE680",
+  },
 };
 
 function hexBrightness(hex: string): number {

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import type { DoneSubtaskEvent } from '../types/problemDetails';
+import { formatScore } from '../utils/textUtils';
 
 type Props = {
     evalStatus: string;
@@ -57,7 +58,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                             ? 'text-green-400'
                                             : 'text-amber-400'
                                     }`}>
-                                        {evalSummary.score}/{evalSummary.maxScore}
+                                        {formatScore(evalSummary.score)}/{formatScore(evalSummary.maxScore)}
                                     </span>
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted)">
                                         {lang === 'RO' ? 'puncte' : 'points'}
@@ -110,7 +111,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                             Subtask #{st.subtaskId}
                                         </span>
                                         <span className="text-[10px] font-black ml-auto shrink-0">
-                                            {st.score}/{st.maxScore}
+                                            {formatScore(st.score)}/{formatScore(st.maxScore)}
                                         </span>
                                         <span className="text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">
                                             {maxTimeMs}ms
@@ -152,7 +153,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                     >
                                         <span className="text-[10px] font-mono font-bold text-(--text-subtle) w-6 text-center shrink-0">#{t.testId}</span>
                                         <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase border ${color} shrink-0`}>{t.verdict}</span>
-                                        <span className="text-[10px] font-bold text-(--text-muted) ml-auto shrink-0">{t.score}/{t.maxScore}</span>
+                                        <span className="text-[10px] font-bold text-(--text-muted) ml-auto shrink-0">{formatScore(t.score)}/{formatScore(t.maxScore)}</span>
                                         <span className="text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">{timeMs}ms</span>
                                         <span className="text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">{memKB}KB</span>
                                     </motion.div>

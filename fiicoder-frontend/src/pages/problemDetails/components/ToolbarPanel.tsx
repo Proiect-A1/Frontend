@@ -1,4 +1,5 @@
 // framer-motion not required here
+import { formatScore } from '../utils/textUtils';
 
 type Props = {
     evalStatus: string;
@@ -53,7 +54,7 @@ export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang,
                                   ? `Test ${evalTests.length}...`
                                   : `Test ${evalTests.length}...`
                               : evalStatus === 'done' && evalSummary
-                                ? `${evalSummary.score}/${evalSummary.maxScore}`
+                                ? `${formatScore(evalSummary.score)}/${formatScore(evalSummary.maxScore)}`
                                 : evalStatus === 'error'
                                   ? 'Error'
                                   : lang === 'RO' ? 'Sistem Activ' : 'System Ready'}

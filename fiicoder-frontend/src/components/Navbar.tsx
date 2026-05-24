@@ -58,7 +58,7 @@ export default function Navbar() {
     const trimmed = navSearch.trim();
     if (!trimmed) return;
 
-    if (trimmed.toLowerCase() === 'angajatmc') {
+    if (trimmed.toLowerCase() === 'casierlamec') {
       setTheme('mcdonalds');
       setNavSearch('');
       return;
