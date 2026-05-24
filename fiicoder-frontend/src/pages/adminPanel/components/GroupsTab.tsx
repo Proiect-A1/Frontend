@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from '../../../utils/motionConfig';
 import { useLanguage } from '../../../language/Language';
 import type { GroupInvitation, GroupSummary } from '../services/adminService';
+import { formatDateTime } from '../../../utils/dateTime';
 
 type Props = {
     groups: GroupSummary[];
@@ -23,6 +24,7 @@ function formatInviteLabel(invite: GroupInvitation) {
     const status = invite.status || invite.state;
     return { target, createdAt, status };
 }
+
 
 export default function GroupsTab({
     groups,
@@ -105,7 +107,7 @@ export default function GroupsTab({
                                             {group.name}
                                         </h3>
                                         <span className="text-xs text-(--text-muted) font-semibold whitespace-nowrap">
-                                            {group.createdAt}
+                                            {formatDateTime(group.createdAt, lang)}
                                         </span>
                                     </div>
                                     {group.description && (
@@ -153,7 +155,7 @@ export default function GroupsTab({
                                         {lang === 'RO' ? 'Creator' : 'Creator'}:{' '}
                                         <span className="text-(--text-h) font-bold">{selectedGroup.creatorUsername}</span>
                                     </span>
-                                    <span className="opacity-40">·</span>
+                                        {formatDateTime(selectedGroup.createdAt, lang)}
                                     <span>{selectedGroup.createdAt}</span>
                                 </div>
                             </div>
@@ -218,7 +220,7 @@ export default function GroupsTab({
                                                 >
                                                     <div className="text-xs font-semibold text-(--text-h)">{target}</div>
                                                     <div className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold">
-                                                        {createdAt || '-'}
+                                                        {formatDateTime(createdAt, lang)}
                                                         {status ? ` · ${status}` : ''}
                                                     </div>
                                                 </div>

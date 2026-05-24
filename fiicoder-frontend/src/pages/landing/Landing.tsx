@@ -11,6 +11,7 @@ import { itemVariants, staggerConfig } from '../../utils/motionConfig';
 import { useTheme } from '../../contexts/ThemeContext';
 import { createPortal } from 'react-dom';
 import { unpackTranslation } from '../../utils/translationPacker';
+import { formatDateTime } from '../../utils/dateTime';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -50,6 +51,7 @@ function getIconForAnnouncement(title: string): ReactNode {
         return <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 14l9-5-9-5-9 5 9 5z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /></svg>;
     return <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>;
 }
+
 
 interface AnnouncementModalProps {
     announcement: AnnouncementWithPriority | null;
@@ -124,7 +126,7 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                                 }`}
                             >
                                 <span className="text-xs uppercase tracking-widest text-(--text-subtle) font-bold">
-                                    {announcement.createdAt}
+                                    {formatDateTime(announcement.createdAt, lang)}
                                 </span>
                                 <button
                                     onClick={onClose}
@@ -408,7 +410,7 @@ export default function Landing() {
                                                     {unpackTranslation(ann.content, lang)}
                                                 </p>
                                                 <div className="text-[9px] text-(--text-subtle) font-bold uppercase tracking-wider">
-                                                    {ann.createdAt}
+                                                    {formatDateTime(ann.createdAt, lang)}
                                                 </div>
                                             </div>
                                         </div>
