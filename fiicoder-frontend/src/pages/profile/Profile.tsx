@@ -117,6 +117,12 @@ export default function Profile() {
         );
     }
 
+    const navButtonBase =
+        'px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center cursor-pointer outline-none';
+    const navButtonActive = 'bg-(--accent)/25 border-(--accent) text-(--text-h)';
+    const navButtonIdle =
+        'bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5';
+
     return (
         <motion.div
             className="w-full max-w-7xl mx-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) backdrop-blur-sm px-5 py-6 md:px-8 md:py-8 h-auto overflow-visible xl:h-full xl:overflow-y-auto custom-scrollbar xl:flex-1 xl:min-h-0"
@@ -137,7 +143,7 @@ export default function Profile() {
                         <button
                             type="button"
                             onClick={() => setActiveTab('overview')}
-                            className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'overview' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
+                            className={`${navButtonBase} ${activeTab === 'overview' ? navButtonActive : navButtonIdle}`}
                         >
                             {lang === 'RO' ? 'Prezentare' : 'Overview'}
                         </button>
@@ -145,7 +151,7 @@ export default function Profile() {
                             <button
                                 type="button"
                                 onClick={() => setActiveTab('proposals')}
-                                className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'proposals' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
+                                className={`${navButtonBase} ${activeTab === 'proposals' ? navButtonActive : navButtonIdle}`}
                             >
                                 {lang === 'RO' ? 'Propunerile Mele' : 'My Proposals'}
                             </button>
@@ -153,7 +159,7 @@ export default function Profile() {
                         <button
                             type="button"
                             onClick={() => setActiveTab('homework')}
-                            className={`px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer ${activeTab === 'homework' ? 'bg-(--accent)/15 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)'}`}
+                            className={`${navButtonBase} ${activeTab === 'homework' ? navButtonActive : navButtonIdle}`}
                         >
                             {lang === 'RO' ? 'Temele Mele' : 'My Homework'}
                         </button>
@@ -161,7 +167,7 @@ export default function Profile() {
                         {isAdmin && (
                             <Link
                                 to="/admin"
-                                className="px-3 py-1.5 rounded-full text-sm font-bold border-2 transition-all duration-150 cursor-pointer bg-transparent border-(--accent)/30 text-(--text-muted) hover:text-(--text-h)"
+                                className={`${navButtonBase} ${navButtonIdle}`}
                             >
                                 {lang === 'RO' ? 'Panou Administrare' : 'Admin Dashboard'}
                             </Link>
