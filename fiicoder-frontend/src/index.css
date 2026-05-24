@@ -760,11 +760,6 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme='serika'] .rounded-md,
 [data-theme='serika'] .rounded            { border-radius: 3px !important; }
 
-[data-theme='serika'] .card-glow {
-    box-shadow: 4px 4px 0 color-mix(in srgb, #000 60%, transparent),
-                -1px -1px 0 color-mix(in srgb, var(--accent) 20%, transparent);
-}
-
 /* FlexLayout square styling for square themes */
 [data-theme='serika'] .flexlayout__tabset,
 [data-theme='eighties'] .flexlayout__tabset,
@@ -789,11 +784,6 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme='eighties'] .rounded-2xl      { border-radius: 4px !important; }
 [data-theme='eighties'] .rounded-xl       { border-radius: 3px !important; }
 [data-theme='eighties'] .rounded-full     { border-radius: 6px !important; }
-
-[data-theme='eighties'] .card-glow {
-    box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 55%, transparent),
-                0 0 55px color-mix(in srgb, var(--accent-secondary) 22%, transparent);
-}
 
 [data-theme='eighties'] body::before {
     content: '';
@@ -822,11 +812,6 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme='superuser'] .rounded         { border-radius: 2px !important; }
 [data-theme='superuser'] .rounded-full    { border-radius: 2px !important; }
 
-[data-theme='superuser'] .card-glow {
-    box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 50%, transparent),
-                inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent);
-}
-
 [data-theme='superuser'] body::before {
     content: '';
     position: fixed;
@@ -849,12 +834,6 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme='mcdonalds'] .rounded-lg      { border-radius: 14px !important; }
 [data-theme='mcdonalds'] .rounded-md      { border-radius: 10px !important; }
 [data-theme='mcdonalds'] .rounded-full    { border-radius: 9999px !important; }
-
-[data-theme='mcdonalds'] .card-glow {
-    box-shadow:
-        0 6px 0 0 color-mix(in srgb, var(--accent) 22%, transparent),
-        0 14px 28px -8px color-mix(in srgb, var(--accent) 18%, transparent);
-}
 
 [data-theme='mcdonalds'] body {
     font-family: system-ui, 'Comic Sans MS', 'Segoe UI', sans-serif !important;
@@ -991,12 +970,6 @@ h1, h2, h3, h4, h5, h6 {
 .theme-logo {
     filter: var(--logo-filter)
         drop-shadow(0 0 24px color-mix(in srgb, var(--accent) 40%, transparent));
-}
-
-.card-glow {
-    box-shadow:
-        0 0 20px color-mix(in srgb, var(--accent-secondary) 12%, transparent),
-        0 0 60px color-mix(in srgb, var(--accent) 5%, transparent);
 }
 
 .page-line-vertical {
