@@ -19,12 +19,16 @@ type Props = {
 };
 
 function formatInviteLabel(invite: GroupInvitation) {
-    const target = invite.inviteeUsername || invite.inviteeEmail || invite.email || invite.username || invite.id;
+    const target =
+        invite.inviteeUsername ||
+        invite.inviteeEmail ||
+        invite.email ||
+        invite.username ||
+        invite.id;
     const createdAt = invite.createdAt || invite.invitedAt || invite.sentAt;
     const status = invite.status || invite.state;
     return { target, createdAt, status };
 }
-
 
 export default function GroupsTab({
     groups,
@@ -71,7 +75,10 @@ export default function GroupsTab({
                 className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]"
             >
                 <motion.div variants={containerVariants} className="space-y-3">
-                    <motion.div variants={itemVariants} className="flex items-center justify-between text-sm text-(--text-muted) font-semibold">
+                    <motion.div
+                        variants={itemVariants}
+                        className="flex items-center justify-between text-sm text-(--text-muted) font-semibold"
+                    >
                         <span>{lang === 'RO' ? 'Grupe disponibile' : 'Available groups'}</span>
                         <span>{groups.length}</span>
                     </motion.div>
@@ -84,7 +91,10 @@ export default function GroupsTab({
 
                     <motion.div variants={containerVariants} className="grid gap-3">
                         {!isLoading && groups.length === 0 && (
-                            <motion.p variants={itemVariants} className="text-(--text-muted) text-sm">
+                            <motion.p
+                                variants={itemVariants}
+                                className="text-(--text-muted) text-sm"
+                            >
                                 {lang === 'RO' ? 'Nu exista grupe.' : 'No groups found.'}
                             </motion.p>
                         )}
@@ -117,7 +127,9 @@ export default function GroupsTab({
                                     )}
                                     <div className="mt-2 text-xs text-(--text-muted) font-semibold">
                                         {lang === 'RO' ? 'Creator' : 'Creator'}:{' '}
-                                        <span className="text-(--text)">{group.creatorUsername}</span>
+                                        <span className="text-(--text)">
+                                            {group.creatorUsername}
+                                        </span>
                                     </div>
                                 </motion.button>
                             );
@@ -139,48 +151,50 @@ export default function GroupsTab({
 
                     {!selectedGroup && selectedGroupId && (
                         <p className="text-(--text-muted) text-sm">
-                            {lang === 'RO' ? 'Se incarca detaliile grupei...' : 'Loading group details...'}
+                            {lang === 'RO'
+                                ? 'Se incarca detaliile grupei...'
+                                : 'Loading group details...'}
                         </p>
                     )}
 
                     {selectedGroup && (
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <h3 className="text-2xl font-bold text-(--text-h)">{selectedGroup.name}</h3>
+                                <h3 className="text-2xl font-bold text-(--text-h)">
+                                    {selectedGroup.name}
+                                </h3>
                                 {selectedGroup.description && (
-                                    <p className="text-sm text-(--text-muted)">{selectedGroup.description}</p>
+                                    <p className="text-sm text-(--text-muted)">
+                                        {selectedGroup.description}
+                                    </p>
                                 )}
                                 <div className="flex flex-wrap items-center gap-2 text-xs text-(--text-muted)">
                                     <span>
                                         {lang === 'RO' ? 'Creator' : 'Creator'}:{' '}
-                                        <span className="text-(--text-h) font-bold">{selectedGroup.creatorUsername}</span>
+                                        <span className="text-(--text-h) font-bold">
+                                            {selectedGroup.creatorUsername}
+                                        </span>
                                     </span>
-                                        {formatDateTime(selectedGroup.createdAt, lang)}
-                                    <span>{selectedGroup.createdAt}</span>
+                                    <span>{formatDateTime(selectedGroup.createdAt, lang)}</span>
                                 </div>
                             </div>
 
                             <div className="flex flex-wrap gap-2">
-                                {selectedGroup.isCreator && (
-                                    <button
-                                        type="button"
-                                        onClick={() => handleDeleteGroup(selectedGroup)}
-                                        className="rounded-full border border-red-500/60 bg-red-500/10 px-3 py-1 text-xs font-bold text-red-500 hover:bg-red-500/20 transition-all"
-                                    >
-                                        {lang === 'RO' ? 'Sterge' : 'Delete'}
-                                    </button>
-                                )}
-                                {!selectedGroup.isCreator && (
-                                    <span className="text-xs text-(--text-muted)">
-                                        {lang === 'RO' ? 'Doar creatorul poate sterge.' : 'Only the creator can delete.'}
-                                    </span>
-                                )}
+                                <button
+                                    type="button"
+                                    onClick={() => handleDeleteGroup(selectedGroup)}
+                                    className="rounded-full border border-red-500/60 bg-red-500/10 px-3 py-1 text-xs font-bold text-red-500 hover:bg-red-500/20 transition-all"
+                                >
+                                    {lang === 'RO' ? 'Sterge' : 'Delete'}
+                                </button>
                             </div>
 
                             <div className="border-t border-(--accent)/20 pt-4 space-y-3">
                                 <div className="flex items-center justify-between">
                                     <h4 className="text-sm font-bold text-(--text-h)">
-                                        {lang === 'RO' ? 'Invitatii pending' : 'Pending invitations'}
+                                        {lang === 'RO'
+                                            ? 'Invitatii pending'
+                                            : 'Pending invitations'}
                                     </h4>
                                     {selectedGroup.isCreator && (
                                         <span className="text-xs text-(--text-muted)">
@@ -199,26 +213,35 @@ export default function GroupsTab({
 
                                 {selectedGroup.isCreator && isInvitationsLoading && (
                                     <p className="text-xs text-(--text-muted)">
-                                        {lang === 'RO' ? 'Se incarca invitatiile...' : 'Loading invitations...'}
+                                        {lang === 'RO'
+                                            ? 'Se incarca invitatiile...'
+                                            : 'Loading invitations...'}
                                     </p>
                                 )}
 
-                                {selectedGroup.isCreator && !isInvitationsLoading && invitations.length === 0 && (
-                                    <p className="text-xs text-(--text-muted)">
-                                        {lang === 'RO' ? 'Nu exista invitatii pending.' : 'No pending invitations.'}
-                                    </p>
-                                )}
+                                {selectedGroup.isCreator &&
+                                    !isInvitationsLoading &&
+                                    invitations.length === 0 && (
+                                        <p className="text-xs text-(--text-muted)">
+                                            {lang === 'RO'
+                                                ? 'Nu exista invitatii pending.'
+                                                : 'No pending invitations.'}
+                                        </p>
+                                    )}
 
                                 {selectedGroup.isCreator && invitations.length > 0 && (
                                     <div className="space-y-2">
                                         {invitations.map((invite) => {
-                                            const { target, createdAt, status } = formatInviteLabel(invite);
+                                            const { target, createdAt, status } =
+                                                formatInviteLabel(invite);
                                             return (
                                                 <div
                                                     key={invite.id}
                                                     className="rounded-2xl border border-(--accent)/20 bg-(--accent)/5 px-3 py-2"
                                                 >
-                                                    <div className="text-xs font-semibold text-(--text-h)">{target}</div>
+                                                    <div className="text-xs font-semibold text-(--text-h)">
+                                                        {target}
+                                                    </div>
                                                     <div className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold">
                                                         {formatDateTime(createdAt, lang)}
                                                         {status ? ` · ${status}` : ''}
@@ -232,7 +255,9 @@ export default function GroupsTab({
 
                             {isSelectedLoading && (
                                 <p className="text-xs text-(--text-muted)">
-                                    {lang === 'RO' ? 'Se actualizeaza detaliile...' : 'Refreshing details...'}
+                                    {lang === 'RO'
+                                        ? 'Se actualizeaza detaliile...'
+                                        : 'Refreshing details...'}
                                 </p>
                             )}
                         </div>
