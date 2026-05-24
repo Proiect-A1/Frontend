@@ -86,13 +86,6 @@ export default function Navbar() {
     nord: "/logo_nord.svg",
     cream: "/logo_cream.svg",
     sage: "/logo_sage.svg",
-    serika: "/logo_serika.svg",
-    cyberpunk: "/logo_cyberpunk.svg",
-    eighties: "/logo_eighties.svg",
-    "olivia": "/logo_olivia.svg",
-    fiicode: "/logo_fiicode.svg",
-    fii: "/logo_fii.svg",
-    superuser: "/logo_superuser.svg",
   };
   const logoSrc = themeLogo[theme] || "/logo.svg";
 
@@ -191,12 +184,6 @@ export default function Navbar() {
                     style={{
                       fill: "color-mix(in srgb, var(--accent) 30%, black 70%)",
                     }}
-                    d="m242.42 171.6c-1.86 0.91-4.46 1.31-8 0.21-2.3-0.71-4.86-1.96-8.1-3.53-5.71-2.78-13.55-6.59-24.08-9.35-17.37-4.55-31.1-3.37-37.7-2.8-7.43 0.64-11.97 1.55-20.51 3.34-6.73 1.42-11.05 2.63-11.03 3.99 0.02 0.72 1.28 0.99 5.77 3.34 3.16 1.64 4.74 2.45 5.76 3.32 0.24 0.2 5.21 4.6 4.28 9.03-0.95 4.6-7.59 6.82-10.67 7.25-3.52 0.5-8.25 0.65-14.06 0.46-10.94-0.38-24.61-1.93-37.52-4.27-14.84-2.7-28.85-5.23-45.21-13.49-16.73-8.45-35.69-18.02-38.49-36.23-3.42-22.21 19.84-40.26 28.61-47.05 18.5-14.37 37.62-17.42 44.82-18.57 21.35-3.41 40.52 0.16 52.85 3.76 1.61 0.48 3.02 1.59 3.81 3.21 1.51 3.07 0.24 6.77-2.82 8.28-1.45 0.7-3.04 0.8-4.47 0.38-11.1-3.24-28.35-6.47-47.43-3.43-6.34 1.01-23.19 3.7-39.19 16.12-3.74 2.9-10.7 8.3-16.21 14.99-6.1 7.41-8.71 14.28-7.77 20.43 1.84 11.93 17.1 19.63 31.86 27.08 14.01 7.05 29.13 10.95 44.58 11.51-25.27-3.49-17.18-1.53-2.73 0.86 15.13 2.49 38.34 5.73 38.65 4.13 0.07-0.32-0.86-0.51-2.28-1.58-3.59-2.71-5.76-7.45-5.55-10.35 0.61-8.39 10.99-12.27 18.76-14.43 10.54-2.96 21.91-4.1 25.14-4.37 7.28-0.64 22.44-1.94 41.9 3.15 11.28 2.96 19.55 6.9 25.67 9.86-3.32-6.12-7.5-14.71-8.06-25.45-0.81-15.89 6.72-29.16 12.79-38.26l-3.71 1.85c-4.54 2.26-10.2 5.08-17.2 8.49-13.18 6.41-17.49 8.46-20.55 8.97-13.49 2.26-22.5-4.04-32.93-11.34-2.73-1.91-5.55-3.88-8.68-5.88-0.91-0.57-1.7-1.42-2.22-2.49-1.51-3.06-0.24-6.76 2.82-8.26 2-0.98 4.27-0.79 6.02 0.32 3.38 2.16 6.44 4.3 9.14 6.19 10.33 7.22 15.66 10.63 23.78 9.28 1.74-0.38 8.91-3.87 17.21-7.91 6.95-3.37 12.58-6.18 17.1-8.43 7.11-3.55 11.4-5.69 14.49-6.93 2.32-0.93 7.76-3.12 11.66 0.91 1.53 1.57 3.65 5.09 0.7 10.88-1.07 2.1-2.71 4.48-4.63 7.23-5.64 8.14-14.17 20.44-13.44 34.74 0.47 9.17 4.47 16.39 7.68 22.2 1.43 2.58 2.66 4.81 3.4 6.93 1.88 5.39-0.27 8.64-1.73 10.09-0.6 0.61-1.36 1.17-2.23 1.59q-0.02 0.02-0.05 0.03z"
-                  />
-                  <path
-                    style={{
-                      fill: "color-mix(in srgb, var(--accent) 30%, black 70%)",
-                    }}
                     d="m145.08 88q0 0 0 0c-1.74 0.85-3.68 0.82-5.31 0.06l-0.49-0.22c-1.25-0.57-2.33-1.56-2.99-2.9-1.5-3.07-0.23-6.77 2.83-8.27 1.72-0.84 3.65-0.81 5.27-0.08l0.57 0.26c1.23 0.57 2.3 1.56 2.95 2.88 1.5 3.07 0.24 6.77-2.83 8.27z"
                   />
                   <path
@@ -235,12 +222,43 @@ export default function Navbar() {
             </div>
           </div>
 
+          {/* desktop navigation - collapses at 1400 px to avoid logo overlap */}
           <div className="hidden xl:flex gap-3 items-center flex-nowrap whitespace-nowrap">
             <Link to="/problems" className={getNavLinkClass("/problems")}>
               {t.archiveBtn}
             </Link>
 
-            {isAuthenticated ? (
+            {!isAuthenticated && (
+              <Link to="/login" className={getNavLinkClass("/login")}>
+                {t.loginBtn}
+              </Link>
+            )}
+
+            <div className="relative flex items-center bg-(--surface-input) border-2 border-(--accent)/50 rounded-full p-1 h-9.5 w-24 overflow-hidden whitespace-nowrap">
+              <div
+                className={`absolute top-1 bottom-1 w-10 bg-(--accent)/40 border border-(--accent)/60 rounded-full transition-all duration-300 ease-out ${
+                  lang === "RO" ? "left-1" : "left-11.5"
+                }`}
+              />
+              <button
+                onClick={() => setLang("RO")}
+                className={`relative z-10 flex-1 text-sm font-bold transition-colors duration-300 ${
+                  lang === "RO" ? "text-(--text-h)" : "text-(--text-muted)"
+                }`}
+              >
+                RO
+              </button>
+              <button
+                onClick={() => setLang("EN")}
+                className={`relative z-10 flex-1 text-sm font-bold transition-colors duration-300 ${
+                  lang === "EN" ? "text-(--text-h)" : "text-(--text-muted)"
+                }`}
+              >
+                EN
+              </button>
+            </div>
+
+            {isAuthenticated && (
               <div className="relative" ref={profileButtonRef}>
                 <button
                   onClick={() => setIsProfileOpen((prev) => !prev)}
@@ -281,6 +299,7 @@ export default function Navbar() {
                         </span>
                         <span className="text-[11px] text-(--text-muted) font-mono truncate">@{username}</span>
                       </div>
+
                       <div className="w-full flex flex-col gap-2">
                         <Link
                           to="/profile"
@@ -315,35 +334,7 @@ export default function Navbar() {
                   )}
                 </AnimatePresence>
               </div>
-            ) : (
-              <Link to="/login" className={getNavLinkClass("/login")}>
-                {t.loginBtn}
-              </Link>
             )}
-
-            <div className="relative flex items-center bg-(--surface-input) border-2 border-(--accent)/50 rounded-full p-1 h-9.5 w-24 overflow-hidden whitespace-nowrap">
-              <div
-                className={`absolute top-1 bottom-1 w-10 bg-(--accent)/40 border border-(--accent)/60 rounded-full transition-all duration-300 ease-out ${
-                  lang === "RO" ? "left-1" : "left-11.5"
-                }`}
-              />
-              <button
-                onClick={() => setLang("RO")}
-                className={`relative z-10 flex-1 text-sm font-bold transition-colors duration-300 ${
-                  lang === "RO" ? "text-(--text-h)" : "text-(--text-muted)"
-                }`}
-              >
-                RO
-              </button>
-              <button
-                onClick={() => setLang("EN")}
-                className={`relative z-10 flex-1 text-sm font-bold transition-colors duration-300 ${
-                  lang === "EN" ? "text-(--text-h)" : "text-(--text-muted)"
-                }`}
-              >
-                EN
-              </button>
-            </div>
 
             <div className="page-line-vertical"></div>
 
@@ -352,14 +343,7 @@ export default function Navbar() {
                 onClick={() => setIsThemeOpen((prev) => !prev)}
                 className="flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold border-2 border-(--accent)/40 text-(--text-h) bg-(--accent)/10 transition-all duration-200 hover:bg-(--accent)/20 whitespace-nowrap"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
-                  <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
-                  <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
-                  <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
-                  <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
-                </svg>
-                {formatThemeLabel(theme)}
+                {lang === "RO" ? "Temă:" : "Theme:"} {formatThemeLabel(theme)}
                 <motion.span animate={{ rotate: isThemeOpen ? 180 : 0 }}>
                   ▼
                 </motion.span>
@@ -367,6 +351,7 @@ export default function Navbar() {
             </div>
           </div>
 
+          {/* mobile hamburger */}
           <button
             className="xl:hidden p-2 text-(--text) hover:text-(--text-h) focus:outline-none"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
@@ -383,6 +368,7 @@ export default function Navbar() {
           </button>
         </div>
 
+        {/* Desktop theme dropdown */}
         <AnimatePresence>
           {isThemeOpen && (
             <motion.div
@@ -439,6 +425,7 @@ export default function Navbar() {
           )}
         </AnimatePresence>
 
+        {/* Mobile dropdown menu */}
         <AnimatePresence>
           {isMobileOpen && (
             <motion.div
@@ -517,14 +504,7 @@ export default function Navbar() {
                   onClick={() => setIsMobileThemeOpen(!isMobileThemeOpen)}
                   className="w-full flex items-center justify-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold border-2 border-(--accent)/40 text-(--text-h) bg-(--accent)/10 transition-all duration-200 hover:bg-(--accent)/20"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
-                    <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
-                    <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
-                    <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
-                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
-                  </svg>
-                  {formatThemeLabel(theme)}
+                  {lang === "RO" ? "Temă:" : "Theme:"} {formatThemeLabel(theme)}
                   <motion.span animate={{ rotate: isMobileThemeOpen ? 180 : 0 }}>▼</motion.span>
                 </button>
 
