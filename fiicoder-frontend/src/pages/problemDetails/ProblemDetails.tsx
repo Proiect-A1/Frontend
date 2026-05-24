@@ -4,7 +4,6 @@ import DescriptionPanel from './components/DescriptionPanel';
 import EditorPanel from './components/EditorPanel';
 import TestResultPanel from './components/TestResultPanel';
 import SubmissionsPanel from './components/SubmissionsPanel';
-import TestcasePanel from './components/TestcasePanel';
 import ToolbarPanel from './components/ToolbarPanel';
 import 'flexlayout-react/style/dark.css';
 import { useProblemDetails } from './hooks/useProblemDetails';
@@ -90,8 +89,6 @@ export default function ProblemDetails() {
                         handleSubmit={handleSubmit}
                     />
                 );
-            case 'testcase':
-                return <TestcasePanel />;
             case 'testresult':
                 return (
                     <TestResultPanel
@@ -165,26 +162,19 @@ export default function ProblemDetails() {
                 <div className="bg-(--surface-card) border-2 border-(--accent) rounded-3xl mb-4 flex flex-col overflow-hidden">
                     <div className="flex items-center gap-4 px-6 pt-6 pb-2 mb-2 bg-(--surface-card) overflow-x-auto border-b border-(--accent)/10">
                         <button
-                            onClick={() => setActiveTab('testcase')}
-                            className={`text-xs font-bold pb-1 border-b-2 whitespace-nowrap ${activeTab === 'testcase' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
-                        >
-                            Testcase
-                        </button>
-                        <button
                             onClick={() => setActiveTab('testresult')}
                             className={`text-xs font-bold pb-1 border-b-2 whitespace-nowrap ${activeTab === 'testresult' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
                         >
-                            Result
+                            {lang === 'RO' ? 'Rezultat' : 'Result'}
                         </button>
                         <button
                             onClick={() => setActiveTab('submissions')}
                             className={`text-xs font-bold pb-1 border-b-2 whitespace-nowrap ${activeTab === 'submissions' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
                         >
-                            Submissions
+                            {lang === 'RO' ? 'Submisii' : 'Submissions'}
                         </button>
                     </div>
                     <div className="flex-1">
-                        {activeTab === 'testcase' && <TestcasePanel />}
                         {activeTab === 'testresult' && (
                             <TestResultPanel
                                 evalStatus={evalStatus}

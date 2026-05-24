@@ -1,16 +1,19 @@
-import { isAcceptedSubmission, type RecentSubmissionDTO } from '../../services/profileService';
+import { ACCEPTED_SCORE, isAcceptedSubmission, type RecentSubmissionDTO } from '../../services/profileService';
 
-type SubmissionVerdict = 'ACCEPTED' | 'REJECTED' | 'PENDING';
+export type SubmissionVerdict = 'ACCEPTED' | 'PARTIAL' | 'REJECTED' | 'PENDING';
 
 export const submissionVerdictLabels: Record<SubmissionVerdict, { ro: string; en: string }> = {
     ACCEPTED: { ro: 'Admis', en: 'Accepted' },
+    PARTIAL: { ro: 'Parțial', en: 'Partial' },
     REJECTED: { ro: 'Respins', en: 'Rejected' },
     PENDING: { ro: 'În așteptare', en: 'Queued' },
 };
 
 export function submissionVerdict(submission: Pick<RecentSubmissionDTO, 'status' | 'score'>): SubmissionVerdict {
     if (submission.status === 'PENDING') return 'PENDING';
-    return isAcceptedSubmission(submission) ? 'ACCEPTED' : 'REJECTED';
+    if (isAcceptedSubmission(submission)) return 'ACCEPTED';
+    if (submission.score > 0 && submission.score < ACCEPTED_SCORE) return 'PARTIAL';
+    return 'REJECTED';
 }
 
 export function generateHeatmapFromSubmissions(

@@ -1,5 +1,10 @@
-import { ACCEPTED_SCORE } from '../../../services/profileService';
 import type { ProblemSubmissionDTO } from '../types/problemDetails';
+import {
+    submissionVerdict,
+    submissionVerdictLabels,
+    type SubmissionVerdict,
+} from '../../profile/profileUtils';
+import { formatScore } from '../utils/textUtils';
 
 type Props = {
     isAuthenticated: boolean;
@@ -7,22 +12,21 @@ type Props = {
     lang: string;
 };
 
-function verdictFor(sub: ProblemSubmissionDTO): 'ACCEPTED' | 'REJECTED' | 'PENDING' {
-    if (sub.status === 'PENDING') return 'PENDING';
-    return sub.Score >= ACCEPTED_SCORE ? 'ACCEPTED' : 'REJECTED';
+function verdictFor(sub: ProblemSubmissionDTO): SubmissionVerdict {
+    return submissionVerdict({ status: sub.status, score: sub.Score });
 }
 
-function verdictLabel(verdict: 'ACCEPTED' | 'REJECTED' | 'PENDING', lang: string) {
-    if (verdict === 'ACCEPTED') return lang === 'RO' ? 'Admis' : 'Accepted';
-    if (verdict === 'PENDING') return lang === 'RO' ? 'În așteptare' : 'Pending';
-    return lang === 'RO' ? 'Respins' : 'Rejected';
+function verdictLabel(verdict: SubmissionVerdict, lang: string) {
+    const label = submissionVerdictLabels[verdict];
+    return lang === 'RO' ? label.ro : label.en;
 }
 
-function verdictClasses(verdict: 'ACCEPTED' | 'REJECTED' | 'PENDING') {
-    if (verdict === 'ACCEPTED') return 'border-green-500/40 bg-green-500/10 text-green-300';
-    if (verdict === 'PENDING') return 'border-amber-500/40 bg-amber-500/10 text-amber-300';
-    return 'border-red-500/40 bg-red-500/10 text-red-300';
-}
+const verdictClasses: Record<SubmissionVerdict, string> = {
+    ACCEPTED: 'border-green-500/40 bg-green-500/10 text-green-300',
+    PARTIAL: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
+    PENDING: 'border-sky-500/40 bg-sky-500/10 text-sky-300',
+    REJECTED: 'border-red-500/40 bg-red-500/10 text-red-300',
+};
 
 export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, lang }: Props) {
     return (
@@ -42,9 +46,9 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
                             >
                                 <div className="min-w-0">
                                     <p className="text-xs font-bold text-(--text-h)">{new Date(sub.submissiondate).toLocaleDateString()}</p>
-                                    <p className="text-[10px] text-(--text-muted) font-mono">Score: {sub.Score}</p>
+                                    <p className="text-[10px] text-(--text-muted) font-mono">Score: {formatScore(sub.Score)}</p>
                                 </div>
-                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border-2 ${verdictClasses(verdict)}`}>
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border-2 ${verdictClasses[verdict]}`}>
                                     {verdictLabel(verdict, lang)}
                                 </span>
                             </div>

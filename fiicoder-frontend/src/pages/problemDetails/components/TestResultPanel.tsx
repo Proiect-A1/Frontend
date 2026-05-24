@@ -1,6 +1,39 @@
 import { motion } from 'framer-motion';
 import type { DoneSubtaskEvent } from '../types/problemDetails';
 import { formatScore } from '../utils/textUtils';
+import {
+    submissionVerdict,
+    submissionVerdictLabels,
+    type SubmissionVerdict,
+} from '../../profile/profileUtils';
+
+const summaryBorderClasses: Record<SubmissionVerdict, string> = {
+    ACCEPTED: 'border-green-500/40 bg-green-500/10',
+    PARTIAL: 'border-amber-500/40 bg-amber-500/10',
+    REJECTED: 'border-red-500/40 bg-red-500/10',
+    PENDING: 'border-sky-500/40 bg-sky-500/10',
+};
+
+const summaryScoreTextClasses: Record<SubmissionVerdict, string> = {
+    ACCEPTED: 'text-green-400',
+    PARTIAL: 'text-amber-400',
+    REJECTED: 'text-red-400',
+    PENDING: 'text-sky-400',
+};
+
+const summaryBadgeClasses: Record<SubmissionVerdict, string> = {
+    ACCEPTED: 'border-green-500/50 bg-green-500/20 text-green-300',
+    PARTIAL: 'border-amber-500/50 bg-amber-500/20 text-amber-300',
+    REJECTED: 'border-red-500/50 bg-red-500/20 text-red-300',
+    PENDING: 'border-sky-500/50 bg-sky-500/20 text-sky-300',
+};
+
+const subtaskTextColor: Record<SubmissionVerdict, string> = {
+    ACCEPTED: 'text-green-300',
+    PARTIAL: 'text-amber-300',
+    REJECTED: 'text-red-300',
+    PENDING: 'text-sky-300',
+};
 
 type Props = {
     evalStatus: string;
@@ -46,33 +79,30 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
             {(evalStatus === 'evaluating' || evalStatus === 'done') && (
                 <div className="space-y-4">
                     {evalSummary ? (
-                        <div className={`p-4 rounded-2xl border-2 ${
-                            evalSummary.score >= evalSummary.maxScore
-                                ? 'border-green-500/40 bg-green-500/10'
-                                : 'border-amber-500/40 bg-amber-500/10'
-                        }`}>
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <span className={`text-2xl font-black ${
-                                        evalSummary.score >= evalSummary.maxScore
-                                            ? 'text-green-400'
-                                            : 'text-amber-400'
-                                    }`}>
-                                        {formatScore(evalSummary.score)}/{formatScore(evalSummary.maxScore)}
-                                    </span>
-                                    <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted)">
-                                        {lang === 'RO' ? 'puncte' : 'points'}
-                                    </span>
+                        (() => {
+                            const summaryVerdict = submissionVerdict({
+                                status: 'FINISHED',
+                                score: evalSummary.score,
+                            });
+                            const verdictLabel = submissionVerdictLabels[summaryVerdict][lang === 'RO' ? 'ro' : 'en'];
+                            return (
+                                <div className={`p-4 rounded-2xl border-2 ${summaryBorderClasses[summaryVerdict]}`}>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <span className={`text-2xl font-black ${summaryScoreTextClasses[summaryVerdict]}`}>
+                                                {formatScore(evalSummary.score)}/{formatScore(evalSummary.maxScore)}
+                                            </span>
+                                            <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted)">
+                                                {lang === 'RO' ? 'puncte' : 'points'}
+                                            </span>
+                                        </div>
+                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border-2 ${summaryBadgeClasses[summaryVerdict]}`}>
+                                            {verdictLabel}
+                                        </span>
+                                    </div>
                                 </div>
-                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border-2 ${
-                                    evalSummary.score >= evalSummary.maxScore
-                                        ? 'border-green-500/50 bg-green-500/20 text-green-300'
-                                        : 'border-amber-500/50 bg-amber-500/20 text-amber-300'
-                                }`}>
-                                    {evalSummary.score >= evalSummary.maxScore ? 'Accepted' : 'Partial'}
-                                </span>
-                            </div>
-                        </div>
+                            );
+                        })()
                     ) : (
                         <div className="p-3 rounded-2xl border-2 border-(--accent)/20 bg-(--accent)/5 flex items-center gap-3">
                             <div className="animate-spin w-4 h-4 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
@@ -92,11 +122,14 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                             {evalSubtasks.map((st) => {
                                 const full = st.score >= st.maxScore;
                                 const partial = st.score > 0 && !full;
-                                const color = full
-                                    ? 'border-green-500/40 bg-green-500/10 text-green-300'
+                                const subtaskVerdict: SubmissionVerdict = full
+                                    ? 'ACCEPTED'
                                     : partial
-                                    ? 'border-amber-500/40 bg-amber-500/10 text-amber-300'
-                                    : 'border-red-500/40 bg-red-500/10 text-red-300';
+                                    ? 'PARTIAL'
+                                    : 'REJECTED';
+                                const color = `${summaryBorderClasses[subtaskVerdict]} ${subtaskTextColor[subtaskVerdict]}`;
+                                const badgeClasses = summaryBadgeClasses[subtaskVerdict];
+                                const verdictLabel = submissionVerdictLabels[subtaskVerdict][lang === 'RO' ? 'ro' : 'en'];
                                 const maxMemKB = st.max_memory ? (st.max_memory / 1024).toFixed(0) : '-';
                                 const maxTimeMs = st.max_time ? (st.max_time / 1_000_000).toFixed(0) : '-';
                                 return (
@@ -109,6 +142,9 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                     >
                                         <span className="text-[10px] font-mono font-bold w-16 shrink-0">
                                             Subtask #{st.subtaskId}
+                                        </span>
+                                        <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border ${badgeClasses} shrink-0`}>
+                                            {verdictLabel}
                                         </span>
                                         <span className="text-[10px] font-black ml-auto shrink-0">
                                             {formatScore(st.score)}/{formatScore(st.maxScore)}

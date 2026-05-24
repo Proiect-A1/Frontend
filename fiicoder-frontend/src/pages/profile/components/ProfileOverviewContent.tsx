@@ -387,18 +387,20 @@ export default function ProfileOverviewContent({
             >
               {profile.recentSubmissions.content.map((submission) => {
                 const verdict = submissionVerdict(submission);
-                const badgeClasses =
-                  verdict === "ACCEPTED"
-                    ? isLightTheme
-                      ? "bg-emerald-500/20 text-emerald-700 border-emerald-500/40"
-                      : "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
-                    : verdict === "PENDING"
-                      ? isLightTheme
-                        ? "bg-amber-500/20 text-amber-700 border-amber-500/40"
-                        : "bg-amber-500/10 text-amber-300 border-amber-500/30"
-                      : isLightTheme
-                        ? "bg-red-500/20 text-red-700 border-red-500/40"
-                        : "bg-red-500/10 text-red-300 border-red-500/30";
+                const verdictBadgeClasses: Record<typeof verdict, string> = isLightTheme
+                  ? {
+                      ACCEPTED: "bg-emerald-500/20 text-emerald-700 border-emerald-500/40",
+                      PARTIAL: "bg-amber-500/20 text-amber-700 border-amber-500/40",
+                      PENDING: "bg-sky-500/20 text-sky-700 border-sky-500/40",
+                      REJECTED: "bg-red-500/20 text-red-700 border-red-500/40",
+                    }
+                  : {
+                      ACCEPTED: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
+                      PARTIAL: "bg-amber-500/10 text-amber-300 border-amber-500/30",
+                      PENDING: "bg-sky-500/10 text-sky-300 border-sky-500/30",
+                      REJECTED: "bg-red-500/10 text-red-300 border-red-500/30",
+                    };
+                const badgeClasses = verdictBadgeClasses[verdict];
 
                 return (
                   <motion.div

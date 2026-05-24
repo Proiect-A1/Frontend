@@ -36,7 +36,7 @@ export function useProblemDetails() {
     const [availableLanguages, setAvailableLanguages] = useState<LanguageDTO[]>([]);
     const [selectedLanguageId, setSelectedLanguageId] = useState<string>('');
     const [recentSubmissions, setRecentSubmissions] = useState<ProblemSubmissionDTO[]>([]);
-    const [activeTab, setActiveTab] = useState<'testcase' | 'testresult' | 'submissions'>('testcase');
+    const [activeTab, setActiveTab] = useState<'testresult' | 'submissions'>('testresult');
 
     const [evalTests, setEvalTests] = useState<DoneTestEvent[]>([]);
     const [evalSubtasks, setEvalSubtasks] = useState<DoneSubtaskEvent[]>([]);
@@ -108,8 +108,8 @@ export function useProblemDetails() {
                                         children: [
                                             {
                                                 type: 'tab',
-                                                name: lang === 'RO' ? 'Date Test' : 'Testcase',
-                                                component: 'testcase',
+                                                name: lang === 'RO' ? 'Rezultat' : 'Result',
+                                                component: 'testresult',
                                             },
                                         ],
                                     },
@@ -117,11 +117,6 @@ export function useProblemDetails() {
                                         type: 'tabset',
                                         weight: 50,
                                         children: [
-                                            {
-                                                type: 'tab',
-                                                name: lang === 'RO' ? 'Rezultat' : 'Result',
-                                                component: 'testresult',
-                                            },
                                             {
                                                 type: 'tab',
                                                 name: lang === 'RO' ? 'Submisii' : 'Submissions',
@@ -140,7 +135,7 @@ export function useProblemDetails() {
 
     const [model] = useState(() => {
         try {
-            const saved = localStorage.getItem('fiicoder_problemdetails_layout');
+            const saved = localStorage.getItem('fiicoder_problemdetails_layout_v2');
             if (saved) {
                 return FlexLayout.Model.fromJson(JSON.parse(saved));
             }
@@ -239,7 +234,7 @@ export function useProblemDetails() {
     const handleLayoutAction = useCallback((action: FlexLayout.Action) => {
         if (action.type !== 'FlexLayout_RenameTab') {
             try {
-                localStorage.setItem('fiicoder_problemdetails_layout', JSON.stringify(model.toJson()));
+                localStorage.setItem('fiicoder_problemdetails_layout_v2', JSON.stringify(model.toJson()));
             } catch {
                 // Silently fail if localStorage is unavailable
             }
