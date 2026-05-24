@@ -140,7 +140,7 @@ export default function AnnouncementsTab({
                             {lang === 'RO' ? 'Anulează' : 'Cancel'}
                         </button>
                     )}
-                    <button type="submit" disabled={isSavingAnnouncement} className="rounded-2xl bg-transparent border border-(--accent)/40 px-8 py-2 text-(--text-h) font-bold hover:bg-(--accent)/10 disabled:opacity-50 transition-all">
+                    <button type="submit" disabled={isSavingAnnouncement} className="rounded-2xl bg-(--accent)/20 border border-(--accent)/40 px-6 py-2 text-(--text-h) font-bold hover:bg-(--accent)/30 disabled:opacity-50 transition-all">
                         {isSavingAnnouncement ? '...' : (lang === 'RO' ? 'Salvează Anunțul' : 'Save Announcement')}
                     </button>
                 </div>
