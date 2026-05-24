@@ -315,7 +315,7 @@ export default function Landing() {
 
     return (
             <motion.div
-                className="w-full max-w-7xl mx-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) card-glow h-full overflow-hidden xl:h-full relative flex flex-col"
+                className="w-full max-w-7xl mx-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) h-full overflow-hidden xl:h-full relative flex flex-col"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -532,7 +532,7 @@ export default function Landing() {
                             <motion.div
                                 key={index}
                                 variants={itemVariants}
-                                className={`p-4 rounded-2xl border-2 border-(--accent)/20 bg-(--surface-card) card-glow transition-colors duration-300 group hover:border-(--accent)`}
+                                className={`p-4 rounded-2xl border-2 border-(--accent)/20 bg-(--surface-card) transition-colors duration-300 group hover:border-(--accent)`}
                             >
                                 <div className={`w-10 h-10 rounded-xl ${feature.color} flex items-center justify-center mb-3 group-hover:scale-105 transition-transform duration-300 ${feature.iconColor}`}>
                                     {feature.icon}
