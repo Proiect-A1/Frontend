@@ -308,7 +308,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -8 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-full mt-3 w-64 bg-(--surface-card) border-2 border-(--accent) rounded-3xl shadow-2xl p-5 z-50 flex flex-col items-center text-center gap-4"
+                      className="absolute right-0 top-full mt-3 w-64 bg-(--surface-dropdown) border-2 border-(--accent) rounded-3xl shadow-2xl p-5 z-50 flex flex-col items-center text-center gap-4"
                     >
                       <div className="w-20 h-20 rounded-full border-2 border-(--accent) shadow-md overflow-hidden flex items-center justify-center bg-(--surface-muted)">
                         {avatarSrc && !avatarFailed ? (
