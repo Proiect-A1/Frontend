@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { containerVariants, itemVariants } from '../../../utils/motionConfig';
 import { useLanguage } from '../../../language/Language';
 import type { GroupInvitation, GroupSummary } from '../services/adminService';
@@ -180,6 +181,12 @@ export default function GroupsTab({
                             </div>
 
                             <div className="flex flex-wrap gap-2">
+                                <Link
+                                    to={`/classes/${selectedGroup.id}`}
+                                    className="rounded-full border border-(--accent)/40 bg-(--accent)/10 px-3 py-1 text-xs font-bold text-(--text-h) hover:bg-(--accent)/20 transition-all"
+                                >
+                                    {lang === 'RO' ? 'Deschide clasa' : 'Open class'}
+                                </Link>
                                 <button
                                     type="button"
                                     onClick={() => handleDeleteGroup(selectedGroup)}
