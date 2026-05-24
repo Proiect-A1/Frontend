@@ -93,32 +93,33 @@ export default function ProblemList() {
 
       <section className="h-auto xl:h-[calc(100svh-8.5rem)] overflow-visible xl:overflow-y-auto p-5 bg-(--surface-card) border-2 border-(--accent) rounded-3xl xl:col-start-2 custom-scrollbar">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <h1 className="text-3xl font-bold text-(--text)">
-              {t.problemsTitle}
-            </h1>
+                    <h1 className="text-3xl font-bold text-(--text) shrink-0">
+            {t.problemsTitle}
+          </h1>
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto md:flex-1 md:justify-end">
             {canPropose && (
               <Link
                 to="/propose"
-                className="px-4 py-2 rounded-full border-2 border-(--accent) bg-(--accent)/15 text-sm font-bold text-(--text-h) hover:bg-(--accent)/25 transition-all duration-200 text-center whitespace-nowrap"
+                className="px-4 py-1.5 rounded-full border-2 border-(--accent)/50 bg-transparent text-sm font-bold text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5 transition-all duration-200 text-center whitespace-nowrap shrink-0"
               >
                 {lang === "RO" ? "Propune problemă" : "Propose problem"}
               </Link>
             )}
+
+            <div className="relative group w-full max-w-sm">
+              <SearchInput
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder={
+                  lang === "RO" ? "Caută problemă..." : "Search problem..."
+                }
+                suggestions={suggestions}
+                onSelectSuggestion={(s) => setSearchTerm(s)}
+                showIcon
+              />
+            </div>
           </div>
 
-          <div className="relative group flex-1 max-w-sm">
-            <SearchInput
-              value={searchTerm}
-              onChange={setSearchTerm}
-              placeholder={
-                lang === "RO" ? "Caută problemă..." : "Search problem..."
-              }
-              suggestions={suggestions}
-              onSelectSuggestion={(s) => setSearchTerm(s)}
-              showIcon
-            />
-          </div>
         </div>
         <div className="page-line-horizontal mb-6" />
 
