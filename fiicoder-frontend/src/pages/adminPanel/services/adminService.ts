@@ -11,12 +11,12 @@ export interface AdminOverview {
 }
 
 type AdminOverviewResponse = {
-    users: number;
-    problems: number;
-    submissions: number;
-    classes: number;
-    assignments: number;
-    draftProposals: number;
+    totalUsers: number;
+    totalProblems: number;
+    totalSubmissions: number;
+    totalGroups: number;
+    totalHomeworks: number;
+    pendingProblems: number;
 };
 
 export interface AdminUser {
@@ -50,8 +50,8 @@ export interface ProblemProposalDetail extends ProblemProposal {
     sampleInput?: string;
     sampleOutput?: string;
     zipDownloadLink?: string;
-    timeLimit?: number;
-    memoryLimit?: number;
+    time_limit?: number;
+    memory_limit?: number;
 }
 
 export interface ProblemTestDetails {
@@ -87,15 +87,16 @@ export interface GroupSummary {
 
 export interface GroupInvitation {
     id: string;
-    inviteeUsername?: string;
-    inviteeEmail?: string;
-    email?: string;
-    username?: string;
-    createdAt?: string;
-    invitedAt?: string;
-    sentAt?: string;
-    status?: string;
-    state?: string;
+    status: 'PENDING' | 'ACCEPTED' | 'DECLINED';
+    sentAt: string;
+    resolvedAt: string | null;
+    groupId: string;
+    groupName: string;
+    invitedUserId: string;
+    invitedUserUsername: string;
+    invitedUserFirstName: string;
+    inviterFirstName: string;
+    inviterUsername: string;
 }
 
 const mockUsers: AdminUser[] = [
@@ -145,12 +146,12 @@ const mockAuditLog: AuditLogEntry[] = [
 
 function normalizeOverview(payload: AdminOverviewResponse): AdminOverview {
     return {
-        users: payload.users,
-        problems: payload.problems,
-        submissions: payload.submissions,
-        classes: payload.classes,
-        assignments: payload.assignments,
-        pendingProposals: payload.draftProposals,
+        users: payload.totalUsers,
+        problems: payload.totalProblems,
+        submissions: payload.totalSubmissions,
+        classes: payload.totalGroups,
+        assignments: payload.totalHomeworks,
+        pendingProposals: payload.pendingProblems,
     };
 }
 
@@ -240,8 +241,8 @@ export const adminService = {
                 statement: p.description,
                 tags: Array.from(p.tagTitles || []),
                 zipDownloadLink: p.zipDownloadLink,
-                timeLimit: p.timeLimit,
-                memoryLimit: p.memoryLimit
+                time_limit: p.time_limit,
+                memory_limit: p.memory_limit
             };
         } catch {
             return mockProposalDetails[0];

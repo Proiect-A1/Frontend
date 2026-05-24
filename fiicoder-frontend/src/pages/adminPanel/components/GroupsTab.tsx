@@ -20,15 +20,11 @@ type Props = {
 };
 
 function formatInviteLabel(invite: GroupInvitation) {
-    const target =
-        invite.inviteeUsername ||
-        invite.inviteeEmail ||
-        invite.email ||
-        invite.username ||
-        invite.id;
-    const createdAt = invite.createdAt || invite.invitedAt || invite.sentAt;
-    const status = invite.status || invite.state;
-    return { target, createdAt, status };
+    return {
+        target: invite.invitedUserUsername,
+        createdAt: invite.sentAt,
+        status: invite.status,
+    };
 }
 
 export default function GroupsTab({
@@ -203,22 +199,12 @@ export default function GroupsTab({
                                             ? 'Invitatii pending'
                                             : 'Pending invitations'}
                                     </h4>
-                                    {selectedGroup.isCreator && (
-                                        <span className="text-xs text-(--text-muted)">
-                                            {isInvitationsLoading ? '...' : invitations.length}
-                                        </span>
-                                    )}
+                                    <span className="text-xs text-(--text-muted)">
+                                        {isInvitationsLoading ? '...' : invitations.length}
+                                    </span>
                                 </div>
 
-                                {!selectedGroup.isCreator && (
-                                    <p className="text-xs text-(--text-muted)">
-                                        {lang === 'RO'
-                                            ? 'Doar creatorul poate vedea invitatiile.'
-                                            : 'Only the creator can view invitations.'}
-                                    </p>
-                                )}
-
-                                {selectedGroup.isCreator && isInvitationsLoading && (
+                                {isInvitationsLoading && (
                                     <p className="text-xs text-(--text-muted)">
                                         {lang === 'RO'
                                             ? 'Se incarca invitatiile...'
@@ -226,17 +212,15 @@ export default function GroupsTab({
                                     </p>
                                 )}
 
-                                {selectedGroup.isCreator &&
-                                    !isInvitationsLoading &&
-                                    invitations.length === 0 && (
-                                        <p className="text-xs text-(--text-muted)">
-                                            {lang === 'RO'
-                                                ? 'Nu exista invitatii pending.'
-                                                : 'No pending invitations.'}
-                                        </p>
-                                    )}
+                                {!isInvitationsLoading && invitations.length === 0 && (
+                                    <p className="text-xs text-(--text-muted)">
+                                        {lang === 'RO'
+                                            ? 'Nu exista invitatii pending.'
+                                            : 'No pending invitations.'}
+                                    </p>
+                                )}
 
-                                {selectedGroup.isCreator && invitations.length > 0 && (
+                                {invitations.length > 0 && (
                                     <div className="space-y-2">
                                         {invitations.map((invite) => {
                                             const { target, createdAt, status } =
