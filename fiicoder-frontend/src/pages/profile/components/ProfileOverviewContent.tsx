@@ -40,7 +40,7 @@ export default function ProfileOverviewContent({
   lang,
   theme,
 }: ProfileOverviewContentProps) {
-  const isLightTheme = theme === "cream" || theme === "sage";
+  const isLightTheme = theme === "cream" || theme === "sage" || theme === "olivia" || theme === "fii";
 
   const [calendarDate, setCalendarDate] = useState(new Date());
 
@@ -112,19 +112,12 @@ export default function ProfileOverviewContent({
           bg: "bg-red-500/10",
           bar: "bg-red-400",
         },
-    purple: isLightTheme
-      ? {
-          label: "text-purple-700",
-          value: "text-purple-600",
-          bg: "bg-purple-500/10",
-          bar: "bg-purple-400",
-        }
-      : {
-          label: "text-purple-400",
-          value: "text-purple-300",
-          bg: "bg-purple-500/10",
-          bar: "bg-purple-400",
-        },
+    purple: {
+      label: "text-(--accent-secondary)",
+      value: "text-(--accent-secondary)",
+      bg: "bg-(--accent-secondary)/10",
+      bar: "bg-(--accent-secondary)",
+    },
   };
 
   const statsCards = [

@@ -34,12 +34,7 @@ export function useAdminGroups(isAdmin: boolean, activeTab: string) {
 
     const invitationsQuery = useQuery({
         queryKey: ['admin', 'groups', selectedGroupId, 'invitations'],
-        enabled:
-            !!selectedGroupId &&
-            isSelectedInList &&
-            !!selectedGroup?.isCreator &&
-            isAdmin &&
-            activeTab === 'groups',
+        enabled: !!selectedGroupId && isSelectedInList && isAdmin && activeTab === 'groups',
         queryFn: () => adminService.getGroupInvitations(selectedGroupId as string),
     });
 

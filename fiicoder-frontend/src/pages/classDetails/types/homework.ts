@@ -5,6 +5,7 @@ export interface HomeworkResponseDTO {
   status: "ACTIVE" | "CLOSED" | "DRAFT";
   deadline: string;
   createdAt: string;
+  groupName: string;
 }
 
 export interface HomeworkRequestDTO {
@@ -45,7 +46,7 @@ export interface HomeworkUserSummaryDTO {
 }
 
 export interface HomeworkSubmissionSummaryDTO {
-  id?: string;
+  submissionId?: string;
   status?: string;
   score?: number;
   submittedAt?: string;
@@ -60,6 +61,7 @@ export interface HomeworkDetailDTO {
   status: "ACTIVE" | "CLOSED" | "DRAFT";
   deadline: string;
   createdAt: string;
+  groupName: string;
   problems: HomeworkProblemSummaryDTO[];
   assignedUsers: HomeworkUserSummaryDTO[];
   submissions: HomeworkSubmissionSummaryDTO[];
@@ -105,6 +107,22 @@ export interface ProblemProgressDTO {
   lastSubmissionTime: string | null;
   isCompleted: boolean;
   timeSpentMinutes: number | null;
+}
+
+export interface ProblemProgressItemDTO {
+  problemId: string;
+  title: string;
+  solved: boolean;
+  bestScore: number | null;
+  lastStatus: string | null;
+}
+
+export interface HomeworkProgressDTO {
+  homeworkId: string;
+  totalProblems: number;
+  solvedProblems: number;
+  progressPercentage: number;
+  problems: ProblemProgressItemDTO[];
 }
 
 export interface StudentProgressSummaryDTO {

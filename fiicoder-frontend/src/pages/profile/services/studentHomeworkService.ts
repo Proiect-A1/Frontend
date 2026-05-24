@@ -1,5 +1,5 @@
 import { apiClient } from "../../../services/apiClient";
-import type { HomeworkResponseDTO, HomeworkDetailDTO, StudentProgressSummaryDTO } from "../../classDetails/types/homework";
+import type { HomeworkResponseDTO, HomeworkDetailDTO, HomeworkProgressDTO } from "../../classDetails/types/homework";
 
 export const studentHomeworkService = {
   getMyHomeworks() {
@@ -11,6 +11,6 @@ export const studentHomeworkService = {
   },
 
   getMyProgress(homeworkId: string) {
-    return apiClient.get<StudentProgressSummaryDTO>(`/homeworks/${homeworkId}/progress`);
+    return apiClient.get<HomeworkProgressDTO>(`/homeworks/${homeworkId}/progress`);
   },
 };

@@ -58,7 +58,7 @@ export const translations = {
         // Landing
         welcomeTitle: 'Bine ai venit la',
         welcomeDesc:
-            'Platforma de concursuri de programare pentru studenți. Rezolvă probleme, participă la concursuri și devino maestru în coding.',
+            'Platforma competitivă de programare pentru studenți. Înscrie-te într-o clasă, rezolvă probleme și devino maestru în coding.',
         viewProblems: 'Vezi Problemele',
         authenticateBtn: 'Autentificare',
         startBtn: 'Să Începem!',
@@ -69,7 +69,7 @@ export const translations = {
         classesMentors: 'Clase si profesori',
         classesMentorsDesc: 'Creeaza clase, colaboreaza cu profesori si gestioneaza teme',
         advancedEditor: 'Editor Avansat',
-        advancedEditorDesc: 'Monaco Editor cu syntax highlighting pentru C++, Python, Java...',
+        advancedEditorDesc: 'Monaco Editor cu syntax highlighting pentru C++, Python, Go...',
         activeStudents: 'Studenți Activi',
         problemsCount: 'Probleme',
         contestsCount: 'Concursuri',
@@ -137,7 +137,7 @@ export const translations = {
         // Landing
         welcomeTitle: 'Welcome to',
         welcomeDesc:
-            'A competitive programming platform for students. Solve problems, join contests, and become a coding master.',
+            'A competitive programming platform for students. Join a class, solve problems, and become a coding master.',
         viewProblems: 'View Problems',
         authenticateBtn: 'Login / Sign Up',
         startBtn: "Let's Begin!",
@@ -148,7 +148,7 @@ export const translations = {
         classesMentors: 'Classes and Teachers',
         classesMentorsDesc: 'Create classes, work with teachers, and manage homework',
         advancedEditor: 'Advanced Editor',
-        advancedEditorDesc: 'Monaco Editor with syntax highlighting for C++, Python, Java...',
+        advancedEditorDesc: 'Monaco Editor with syntax highlighting for C++, Python, Go...',
         activeStudents: 'Active Students',
         problemsCount: 'Problems',
         contestsCount: 'Contests',
