@@ -67,15 +67,6 @@ const monacoThemes: Record<string, MonacoThemePalette> = {
     editorBg: "#1e2029",
     codeBg: "#232530",
   },
-  cyberpunk: {
-    accent: "#F5E642",
-    accentSecondary: "#00E5FF",
-    text: "#E0E8F4",
-    textMuted: "#8899AA",
-    textSubtle: "#667788",
-    editorBg: "#0D0E14",
-    codeBg: "#131420",
-  },
   eighties: {
     accent: "#E91E8C",
     accentSecondary: "#00E5FF",

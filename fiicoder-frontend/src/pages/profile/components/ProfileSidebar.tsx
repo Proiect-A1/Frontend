@@ -30,7 +30,7 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
         <>
             <motion.div
                 variants={itemVariants}
-                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm flex flex-col items-center lg:items-start text-center lg:text-left"
+                className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow flex flex-col items-center lg:items-start text-center lg:text-left"
             >
                 <div className="relative group mb-4">
                     {!failed ? (

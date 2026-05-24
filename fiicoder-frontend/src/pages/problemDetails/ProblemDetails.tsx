@@ -37,6 +37,7 @@ export default function ProblemDetails() {
         handleCodeChange,
         handleEditorMount,
         handleSubmit,
+        handleLayoutAction,
     } = useProblemDetails();
 
     if (loading) {
@@ -122,9 +123,7 @@ export default function ProblemDetails() {
                 <FlexLayout.Layout
                     model={model}
                     factory={factory}
-                    onAction={(action) =>
-                        action.type === 'FlexLayout_RenameTab' ? undefined : action
-                    }
+                    onAction={handleLayoutAction}
                 />
             </div>
 

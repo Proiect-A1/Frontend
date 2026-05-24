@@ -179,40 +179,6 @@
     color-scheme: dark;
 }
 
-[data-theme='cyberpunk'] {
-    --bg-color: #0D0E14;
-
-    --surface-page: color-mix(in srgb, var(--bg-color) 84%, #131420 16%);
-    --surface-card: color-mix(in srgb, #131420 80%, transparent);
-    --surface-modal: #131420;
-    --surface-muted: color-mix(in srgb, #0A0B10 80%, transparent);
-    --surface-input: color-mix(in srgb, #0A0B10 90%, #000 10%);
-    --surface-editor: color-mix(in srgb, #080810 88%, #000 12%);
-    --surface-dropdown: #181928;
-    --surface-hover: color-mix(in srgb, var(--accent) 10%, transparent);
-
-    --accent: #F5E642;
-    --text: #E0E8F4;
-    --text-h: #FFFFFF;
-    --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
-    --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
-
-    --bg: var(--surface-page);
-    --code-bg: color-mix(in srgb, var(--bg-color) 70%, #131420 30%);
-    --hero-start: #080810;
-    --hero-mid: #0D0E14;
-    --hero-end: #131420;
-    --line-color: color-mix(in srgb, var(--accent) 88%, white 12%);
-    --accent-secondary: color-mix(in srgb, var(--accent) 50%, #00E5FF 50%);
-    --accent-2: #00E5FF;
-    --logo-filter: none;
-    --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%23FFFFFF' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%23F5E642'/%3E%3C/svg%3E");
-    --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%23F5E642' stroke='%230D0E14' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
-    --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%23F5E642' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%23FFFFFF'/%3E%3C/svg%3E");
-
-    color-scheme: dark;
-}
-
 [data-theme='eighties'] {
     --bg-color: #1A1A2E;
 
@@ -376,6 +342,39 @@
     --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%2339D353' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%23E0FFE0'/%3E%3C/svg%3E");
 
     color-scheme: dark;
+}
+
+[data-theme='mcdonalds'] {
+    --bg-color: #FFC72C;
+
+    --surface-page: color-mix(in srgb, var(--bg-color) 92%, #FFD954 8%);
+    --surface-card: color-mix(in srgb, #FFFFFF 92%, var(--bg-color) 8%);
+    --surface-modal: #FFFFFF;
+    --surface-muted: color-mix(in srgb, #FFF1B8 88%, transparent);
+    --surface-input: color-mix(in srgb, #FFFFFF 85%, var(--bg-color) 15%);
+    --surface-editor: color-mix(in srgb, #FFF8DC 90%, var(--bg-color) 10%);
+    --surface-dropdown: color-mix(in srgb, #FFFFFF 95%, transparent);
+    --surface-hover: color-mix(in srgb, var(--accent) 14%, transparent);
+
+    --accent: #DA291C;
+    --text: #3C1A0E;
+    --text-h: #1A0805;
+    --text-muted: color-mix(in srgb, var(--text) 72%, transparent);
+    --text-subtle: color-mix(in srgb, var(--text) 55%, transparent);
+
+    --bg: var(--surface-page);
+    --code-bg: color-mix(in srgb, #FFF8DC 65%, var(--bg-color) 35%);
+    --hero-start: #FFC72C;
+    --hero-mid: #FFD954;
+    --hero-end: #FFE680;
+    --line-color: color-mix(in srgb, var(--accent) 75%, #3C1A0E 25%);
+    --accent-secondary: #FF8C2C;
+    --logo-filter: none;
+    --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%231A0805' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%23DA291C'/%3E%3C/svg%3E");
+    --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%23DA291C' stroke='%23FFC72C' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
+    --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%23DA291C' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%231A0805'/%3E%3C/svg%3E");
+
+    color-scheme: light;
 }
 
 [data-theme='custom'] {
@@ -737,9 +736,6 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme='serika'] {
     --heading: 'JetBrains Mono', ui-monospace, monospace;
 }
-[data-theme='cyberpunk'] {
-    --heading: 'Orbitron', sans-serif;
-}
 [data-theme='eighties'] {
     --heading: 'VT323', monospace;
 }
@@ -769,65 +765,23 @@ h1, h2, h3, h4, h5, h6 {
                 -1px -1px 0 color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
-/* ── CYBERPUNK: Zero colțuri, neon agresiv, scanlines ── */
-[data-theme='cyberpunk'] .rounded-3xl,
-[data-theme='cyberpunk'] .rounded-2xl,
-[data-theme='cyberpunk'] .rounded-xl,
-[data-theme='cyberpunk'] .rounded-lg,
-[data-theme='cyberpunk'] .rounded-md,
-[data-theme='cyberpunk'] .rounded         { border-radius: 0 !important; }
-[data-theme='cyberpunk'] .rounded-full    { border-radius: 3px !important; }
-
-[data-theme='cyberpunk'] .card-glow {
-    box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 55%, transparent),
-                0 0 30px color-mix(in srgb, var(--accent) 18%, transparent),
-                inset 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent);
+/* FlexLayout square styling for square themes */
+[data-theme='serika'] .flexlayout__tabset,
+[data-theme='eighties'] .flexlayout__tabset,
+[data-theme='superuser'] .flexlayout__tabset {
+    border-radius: 0 !important;
 }
 
-[data-theme='cyberpunk'] body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 9998;
-    background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0, 0, 0, 0.05) 2px,
-        rgba(0, 0, 0, 0.05) 4px
-    );
+[data-theme='serika'] .flexlayout__tab,
+[data-theme='eighties'] .flexlayout__tab,
+[data-theme='superuser'] .flexlayout__tab {
+    border-radius: 0 !important;
 }
 
-[data-theme='cyberpunk'] .accent-text {
-    color: var(--accent-2);
-    text-shadow:
-        0 0 8px color-mix(in srgb, var(--accent-2) 70%, transparent),
-        0 0 18px color-mix(in srgb, var(--accent) 32%, transparent);
-}
-
-[data-theme='cyberpunk'] .btn-accent {
-    color: #05060a !important;
-    background: linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--accent) 84%, white 16%),
-        var(--accent-2)
-    );
-    border: 1px solid color-mix(in srgb, var(--accent-2) 65%, white 35%);
-    box-shadow:
-        0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent),
-        0 0 18px color-mix(in srgb, var(--accent-2) 42%, transparent),
-        0 0 42px color-mix(in srgb, var(--accent) 16%, transparent);
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-}
-
-[data-theme='cyberpunk'] .btn-accent:hover {
-    transform: translateY(-1px);
-    box-shadow:
-        0 0 0 1px color-mix(in srgb, var(--accent-2) 72%, white 28%),
-        0 0 22px color-mix(in srgb, var(--accent-2) 52%, transparent),
-        0 0 54px color-mix(in srgb, var(--accent) 20%, transparent);
+[data-theme='serika'] .flexlayout__outline_rect,
+[data-theme='eighties'] .flexlayout__outline_rect,
+[data-theme='superuser'] .flexlayout__outline_rect {
+    border-radius: 0 !important;
 }
 
 /* ── EIGHTIES: Blocky, neon glow, grilă retrowave ── */
@@ -888,21 +842,41 @@ h1, h2, h3, h4, h5, h6 {
     );
 }
 
+/* ── MCDONALD'S: Goofy fast-food vibe — chunky, bubbly, playful ── */
+[data-theme='mcdonalds'] .rounded-3xl     { border-radius: 28px !important; }
+[data-theme='mcdonalds'] .rounded-2xl     { border-radius: 20px !important; }
+[data-theme='mcdonalds'] .rounded-xl      { border-radius: 16px !important; }
+[data-theme='mcdonalds'] .rounded-lg      { border-radius: 14px !important; }
+[data-theme='mcdonalds'] .rounded-md      { border-radius: 10px !important; }
+[data-theme='mcdonalds'] .rounded-full    { border-radius: 9999px !important; }
+
+[data-theme='mcdonalds'] .card-glow {
+    box-shadow:
+        0 6px 0 0 color-mix(in srgb, var(--accent) 22%, transparent),
+        0 14px 28px -8px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+[data-theme='mcdonalds'] body {
+    font-family: system-ui, 'Comic Sans MS', 'Segoe UI', sans-serif !important;
+}
+
+[data-theme='mcdonalds'] h1,
+[data-theme='mcdonalds'] h2,
+[data-theme='mcdonalds'] h3 {
+    font-family: system-ui, 'Comic Sans MS', sans-serif !important;
+    font-weight: 900 !important;
+}
+
 /* ── SELECTION HIGHLIGHTS ── */
 [data-theme='serika'] ::selection    { background: color-mix(in srgb, var(--accent) 35%, transparent); color: #F5F5F0; }
-[data-theme='cyberpunk'] ::selection { background: color-mix(in srgb, var(--accent) 42%, transparent); color: #FFFFFF; }
 [data-theme='eighties'] ::selection  { background: color-mix(in srgb, var(--accent) 38%, transparent); color: #FFFFFF; }
 [data-theme='olivia'] ::selection    { background: color-mix(in srgb, var(--accent) 50%, transparent); color: var(--text-h); }
 [data-theme='superuser'] ::selection { background: color-mix(in srgb, var(--accent) 38%, transparent); color: var(--text-h); }
+[data-theme='mcdonalds'] ::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); color: var(--text-h); }
 [data-theme='fiicode'] ::selection   { background: color-mix(in srgb, var(--accent) 42%, transparent); color: #FFFFFF; }
 [data-theme='fii'] ::selection       { background: color-mix(in srgb, var(--accent) 32%, transparent); color: var(--text-h); }
 
 /* ── LETTER-SPACING PER THEME ── */
-[data-theme='cyberpunk'] h1,
-[data-theme='cyberpunk'] h2,
-[data-theme='cyberpunk'] h3,
-[data-theme='cyberpunk'] h4 { letter-spacing: 0.08em; }
-
 [data-theme='eighties'] h1,
 [data-theme='eighties'] h2,
 [data-theme='eighties'] h3 { letter-spacing: 0.06em; }
@@ -924,13 +898,6 @@ h1, h2, h3, h4, h5, h6 {
     transition-duration: 80ms !important;
     transition-timing-function: linear !important;
 }
-[data-theme='cyberpunk'] .transition-all,
-[data-theme='cyberpunk'] .transition,
-[data-theme='cyberpunk'] .transition-colors,
-[data-theme='cyberpunk'] .transition-transform {
-    transition-duration: 60ms !important;
-    transition-timing-function: linear !important;
-}
 [data-theme='superuser'] .transition-all,
 [data-theme='superuser'] .transition,
 [data-theme='superuser'] .transition-colors,
@@ -947,12 +914,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ── FOCUS RINGS ── */
-[data-theme='cyberpunk'] *:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-    border-radius: 0;
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent);
-}
 [data-theme='superuser'] *:focus-visible {
     outline: 1px solid var(--accent);
     outline-offset: 1px;
@@ -964,11 +925,6 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme='superuser'] textarea::placeholder {
     color: color-mix(in srgb, var(--accent) 45%, transparent);
     font-family: var(--mono);
-}
-[data-theme='cyberpunk'] input::placeholder,
-[data-theme='cyberpunk'] textarea::placeholder {
-    color: color-mix(in srgb, var(--accent) 40%, transparent);
-    letter-spacing: 0.04em;
 }
 [data-theme='eighties'] input::placeholder,
 [data-theme='eighties'] textarea::placeholder {
@@ -1041,14 +997,6 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow:
         0 0 20px color-mix(in srgb, var(--accent-secondary) 12%, transparent),
         0 0 60px color-mix(in srgb, var(--accent) 5%, transparent);
-}
-
-[data-theme='cyberpunk'] .card-glow {
-    box-shadow:
-        0 0 12px color-mix(in srgb, var(--accent-2) 58%, transparent),
-        0 0 32px color-mix(in srgb, var(--accent) 24%, transparent),
-        0 0 72px color-mix(in srgb, var(--accent) 10%, transparent),
-        inset 0 0 0 1px color-mix(in srgb, var(--accent-2) 32%, transparent);
 }
 
 .page-line-vertical {

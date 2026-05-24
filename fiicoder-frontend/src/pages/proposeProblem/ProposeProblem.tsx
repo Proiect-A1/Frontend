@@ -94,7 +94,7 @@ export default function ProposeProblem() {
     return (
         <FormProvider {...methods}>
             <motion.div
-                className="w-full max-w-7xl mx-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) xl:flex-1 xl:min-h-0 h-full flex overflow-hidden relative"
+                className="w-full max-w-7xl mx-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) card-glow xl:flex-1 xl:min-h-0 h-full flex overflow-hidden relative"
                 initial="hidden"
                 animate="visible"
                 variants={pageVariants}

@@ -35,16 +35,11 @@ function getPriorityFromTitle(title: string): 'high' | 'medium' | 'low' {
     ) {
         return 'high';
     }
-    if (titleLower.includes('concurs') || titleLower.includes('contest')) {
-        return 'medium';
-    }
     return 'low';
 }
 
 function getIconForAnnouncement(title: string): ReactNode {
     const titleLower = title.toLowerCase();
-    if (titleLower.includes('concurs') || titleLower.includes('contest'))
-        return <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>;
     if (titleLower.includes('problemă') || titleLower.includes('problem'))
         return <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>;
     if (titleLower.includes('tutorial') || titleLower.includes('curs') || titleLower.includes('course'))
@@ -161,12 +156,12 @@ export default function Landing() {
             cream: '/logo_cream.svg',
             sage: '/logo_sage.svg',
             serika: '/logo_serika.svg',
-            cyberpunk: '/logo_cyberpunk.svg',
             eighties: '/logo_eighties.svg',
             'olivia': '/logo_olivia.svg',
             fiicode: '/logo_fiicode.svg',
             fii: '/logo_fii.svg',
             superuser: '/logo_superuser.svg',
+            mcdonalds: '/logo.svg',
         };
         return themeLogo[theme] || '/logo.svg';
     }, [theme]);
@@ -249,7 +244,7 @@ export default function Landing() {
 
     return (
             <motion.div
-                className="w-full max-w-7xl mx-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) h-full overflow-hidden xl:h-full relative flex flex-col"
+                className="w-full max-w-7xl mx-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) card-glow h-full overflow-hidden xl:h-full relative flex flex-col"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -258,7 +253,21 @@ export default function Landing() {
                     {/* Hero Section */}
                     <div className="text-center mt-4 mb-8 md:mb-10 relative">
                         <motion.div variants={itemVariants} className="mb-3">
-                            {theme === 'custom' ? (
+                            {theme === 'mcdonalds' ? (
+                                <svg
+                                    className="theme-logo h-16 w-16 md:h-20 md:w-20 mx-auto"
+                                    viewBox="0 0 120 100"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M 15 90 L 15 35 Q 15 12 37 12 Q 60 12 60 38 L 60 60 L 60 38 Q 60 12 83 12 Q 105 12 105 35 L 105 90 L 88 90 L 88 40 Q 88 26 76 26 Q 65 26 65 42 L 65 90 L 55 90 L 55 42 Q 55 26 44 26 Q 32 26 32 40 L 32 90 Z"
+                                        fill="#FFC72C"
+                                        stroke="#DA291C"
+                                        strokeWidth="2.5"
+                                        strokeLinejoin="round"
+                                    />
+                                </svg>
+                            ) : theme === 'custom' ? (
                                 <svg
                                     className="theme-logo h-16 w-16 md:h-20 md:w-20 mx-auto theme-logo-glow"
                                     viewBox="2.5229450154783466 65.87558809587485 252.37708872055313 121.06515820573098"
@@ -321,7 +330,7 @@ export default function Landing() {
                         >
                             {stats.map((stat, idx) => (
                                 <div key={idx} className="flex flex-col items-center">
-                                    <div className={`text-lg md:text-xl font-black ${theme === 'cyberpunk' ? 'accent-text' : 'text-(--accent)'}`}>
+                                    <div className="text-lg md:text-xl font-black text-(--accent)">
                                         {stat.num}
                                     </div>
                                     <div className="text-[9px] uppercase tracking-widest text-(--text-muted) font-bold">{stat.label}</div>
@@ -335,7 +344,7 @@ export default function Landing() {
                         >
                             <Link
                                 to="/problems"
-                                className={`px-6 py-2.5 rounded-xl font-black text-xs transition-all duration-200 ${theme === 'cyberpunk' ? 'btn-accent' : 'bg-(--accent) border-2 border-(--accent) text-(--surface-card) hover:bg-transparent hover:text-(--accent) hover:-translate-y-1 active:translate-y-0'}`}
+                                className="px-6 py-2.5 rounded-xl font-black text-xs transition-all duration-200 bg-(--accent) border-2 border-(--accent) text-(--surface-card) hover:bg-transparent hover:text-(--accent) hover:-translate-y-1 active:translate-y-0"
                             >
                                 {t.viewProblems}
                             </Link>
@@ -343,7 +352,7 @@ export default function Landing() {
                             {!isAuthenticated && (
                                 <Link
                                     to="/login"
-                                    className={`px-6 py-2.5 rounded-xl font-black text-xs transition-all duration-200 ${theme === 'cyberpunk' ? 'border-(--accent-2)/30 text-(--accent-2) hover:bg-(--accent-2)/8' : 'bg-transparent border-2 border-(--accent) text-(--accent) hover:bg-(--accent) hover:text-(--surface-card) hover:-translate-y-1 active:translate-y-0'}`}
+                                    className="px-6 py-2.5 rounded-xl font-black text-xs transition-all duration-200 bg-transparent border-2 border-(--accent) text-(--accent) hover:bg-(--accent) hover:text-(--surface-card) hover:-translate-y-1 active:translate-y-0"
                                 >
                                     {t.authenticateBtn}
                                 </Link>
@@ -447,7 +456,7 @@ export default function Landing() {
                             <motion.div
                                 key={index}
                                 variants={itemVariants}
-                                className={`p-4 rounded-2xl border-2 border-(--accent)/20 bg-(--surface-card) transition-colors duration-300 group hover:border-(--accent)`}
+                                className={`p-4 rounded-2xl border-2 border-(--accent)/20 bg-(--surface-card) card-glow transition-colors duration-300 group hover:border-(--accent)`}
                             >
                                 <div className={`w-10 h-10 rounded-xl ${feature.color} flex items-center justify-center mb-3 group-hover:scale-105 transition-transform duration-300 ${feature.iconColor}`}>
                                     {feature.icon}

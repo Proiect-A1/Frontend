@@ -60,11 +60,6 @@ export default function ProfileOverviewContent({
       value: profile.rankHard,
       cls: "red",
     },
-    {
-      label: lang === "RO" ? "Concurs" : "Contest",
-      value: profile.rankContest,
-      cls: "purple",
-    },
   ] as const;
 
   type PerformanceKey = (typeof performanceItems)[number]["cls"];
@@ -112,12 +107,6 @@ export default function ProfileOverviewContent({
           bg: "bg-red-500/10",
           bar: "bg-red-400",
         },
-    purple: {
-      label: "text-(--accent-secondary)",
-      value: "text-(--accent-secondary)",
-      bg: "bg-(--accent-secondary)/10",
-      bar: "bg-(--accent-secondary)",
-    },
   };
 
   const statsCards = [
@@ -256,7 +245,7 @@ export default function ProfileOverviewContent({
           <motion.div
             key={item.label}
             variants={itemVariants}
-            className="p-3 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) text-center"
+            className="p-3 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) card-glow text-center"
           >
             <div className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold">
               {item.label}
