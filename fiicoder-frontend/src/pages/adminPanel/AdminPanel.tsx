@@ -12,6 +12,7 @@ import { useAdminProposals } from './hooks/useAdminProposals';
 import { useAdminAnnouncements } from './hooks/useAdminAnnouncements';
 import { useAdminTags } from './hooks/useAdminTags';
 import { useAdminAudit } from './hooks/useAdminAudit';
+import { useAdminGroups } from './hooks/useAdminGroups';
 
 // Components
 import UserTab from './components/UserTab';
@@ -19,6 +20,7 @@ import ProposalsTab from './components/ProposalsTab';
 import TagsTab from './components/TagsTab';
 import AnnouncementsTab from './components/AnnouncementsTab';
 import AuditLogTab from './components/AuditLogTab';
+import GroupsTab from './components/GroupsTab';
 import AdminSidebar from './components/AdminSidebar';
 
 const tabs = [
@@ -26,6 +28,7 @@ const tabs = [
     { id: 'problems', labelRO: 'Probleme', labelEN: 'Problems' },
     { id: 'tags', labelRO: 'Tag-uri', labelEN: 'Tags' },
     { id: 'announcements', labelRO: 'Anunțuri', labelEN: 'Announcements' },
+    { id: 'groups', labelRO: 'Grupe', labelEN: 'Groups' },
     { id: 'audit', labelRO: 'Audit', labelEN: 'Audit Log' },
 ] as const;
 
@@ -44,6 +47,7 @@ export default function AdminPanel() {
     const announcementsState = useAdminAnnouncements(isAdmin, activeTab);
     const tagsState = useAdminTags(isAdmin, activeTab);
     const auditState = useAdminAudit(isAdmin, activeTab);
+    const groupsState = useAdminGroups(isAdmin, activeTab);
 
     if (!isAdmin) return <Navigate to="/" replace />;
 
@@ -104,6 +108,7 @@ export default function AdminPanel() {
                                     {activeTab === 'problems' && <ProposalsTab {...proposalsState} />}
                                     {activeTab === 'tags' && <TagsTab {...tagsState} />}
                                     {activeTab === 'announcements' && <AnnouncementsTab {...announcementsState} />}
+                                    {activeTab === 'groups' && <GroupsTab {...groupsState} />}
                                     {activeTab === 'audit' && <AuditLogTab {...auditState} />}
                                 </motion.div>
                             </AnimatePresence>

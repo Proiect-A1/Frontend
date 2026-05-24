@@ -75,6 +75,29 @@ export interface AuditLogEntry {
     createdAt: string;
 }
 
+export interface GroupSummary {
+    id: string;
+    name: string;
+    description: string;
+    creatorId: string;
+    creatorUsername: string;
+    createdAt: string;
+    isCreator: boolean;
+}
+
+export interface GroupInvitation {
+    id: string;
+    inviteeUsername?: string;
+    inviteeEmail?: string;
+    email?: string;
+    username?: string;
+    createdAt?: string;
+    invitedAt?: string;
+    sentAt?: string;
+    status?: string;
+    state?: string;
+}
+
 const mockUsers: AdminUser[] = [
     { id: '', username: 'student1', firstName: 'Student', lastName: 'One', email: 'student1@fii.ro', role: 'USER', creationDate: '2026-04-20', banned: false },
     { id: '', username: 'hacker_boi', firstName: 'Hacker', lastName: 'Boi', email: 'hacker@test.ro', role: 'USER', creationDate: '2026-04-21', banned: true, banReason: 'Comportament inadecvat' },
@@ -269,5 +292,25 @@ export const adminService = {
         } catch {
             return mockAuditLog;
         }
+    },
+
+    async getGroups(page: number = 1, pageSize: number = 20): Promise<GroupSummary[]> {
+        return await apiClient.get(`/group?page=${page}&size=${pageSize}`);
+    },
+
+    async getGroup(groupId: string): Promise<GroupSummary> {
+        return await apiClient.get(`/group/${groupId}`);
+    },
+
+    async getGroupInvitations(groupId: string): Promise<GroupInvitation[]> {
+        return await apiClient.get(`/group/${groupId}/invitations`);
+    },
+
+    async deleteGroup(groupId: string): Promise<void> {
+        await apiClient.delete(`/group/${groupId}`);
+    },
+
+    async updateGroup(groupId: string, payload: { name?: string; description?: string }): Promise<GroupSummary> {
+        return await apiClient.patch(`/group/${groupId}`, payload);
     },
 };
