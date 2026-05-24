@@ -227,18 +227,18 @@ export default function ProposalsTab({
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
-                                        {(selectedProposal.timeLimit != null || selectedProposal.memoryLimit != null) && (
+                                        {(selectedProposal.time_limit != null || selectedProposal.memory_limit != null) && (
                                             <div className="flex gap-3 text-xs text-(--text-muted) font-semibold">
-                                                {selectedProposal.timeLimit != null && (
+                                                {selectedProposal.time_limit != null && (
                                                     <span className="flex items-center gap-1">
                                                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                                        {selectedProposal.timeLimit}s
+                                                        {selectedProposal.time_limit}s
                                                     </span>
                                                 )}
-                                                {selectedProposal.memoryLimit != null && (
+                                                {selectedProposal.memory_limit != null && (
                                                     <span className="flex items-center gap-1">
                                                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" /></svg>
-                                                        {selectedProposal.memoryLimit} MB
+                                                        {selectedProposal.memory_limit} MB
                                                     </span>
                                                 )}
                                             </div>
