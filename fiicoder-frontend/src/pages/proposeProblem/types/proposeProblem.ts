@@ -94,10 +94,9 @@ export interface ProposeProblemForm {
   // Legacy - kept for compatibility but no longer used directly
   attachments: File[];
 
-  // Access
+  // Access — proposals are always submitted as PRIVATE; visibility is
+  // promoted to PUBLIC later from the profile, after admin approval.
   visibility: 'private' | 'public';
-  allowedUsers?: string[];
-  allowedGroups?: string[];
 }
 
 export interface ProblemProposalResponse {

@@ -27,8 +27,6 @@ const defaultValues: ProposeProblemForm = {
     files: [],
     attachments: [],
     visibility: 'private',
-    allowedUsers: [],
-    allowedGroups: [],
 };
 
 const tabs = [

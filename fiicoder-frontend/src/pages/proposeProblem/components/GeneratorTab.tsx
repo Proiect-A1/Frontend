@@ -262,7 +262,10 @@ export default function GeneratorTab() {
                 >
                     <p className="text-sm text-green-400 font-semibold flex items-center gap-1.5">
                         <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
-                        Scriptul a fost validat cu succes! Mergi la „Fișiere → Surse" pentru a rula o sursă oficială.
+                        Sintaxă și referințe OK!
+                    </p>
+                    <p className="mt-1 text-xs text-green-400/80">
+                        Verificarea de rulare (compilarea generatorului, output valid) se face automat la trimitere prin sandbox.
                     </p>
                 </motion.div>
             )}

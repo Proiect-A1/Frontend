@@ -1,41 +1,34 @@
 import { useState, useCallback, useEffect } from 'react';
-import type { GeneratorValidationError } from '../types/proposeProblem';
+import { useFormContext } from 'react-hook-form';
+import type { GeneratorValidationError, ProposeProblemForm } from '../types/proposeProblem';
+import { validateGeneratorScript } from '../utils/generatorValidator';
 
 export type ValidationStatus = 'idle' | 'validating' | 'success' | 'error';
 
 export function useGeneratorValidation(script: string) {
+    const { getValues } = useFormContext<ProposeProblemForm>();
     const [status, setStatus] = useState<ValidationStatus>('idle');
     const [errors, setErrors] = useState<GeneratorValidationError[]>([]);
 
-    const handleSave = useCallback(async () => {
+    const handleSave = useCallback(() => {
         setStatus('validating');
         setErrors([]);
 
-        try {
-            // Mock API call
-            await new Promise((resolve) => setTimeout(resolve, 1200));
-
-            if (script.trim().length === 0) {
-                setStatus('error');
-                setErrors([{ line: 1, col: 1, message: 'Scriptul de generare este gol.' }]);
-                return;
-            }
-
-            const mockSuccess = script.length > 10;
-            if (mockSuccess) {
+        // Small delay so the spinner is visible — the check itself is sync.
+        const handle = setTimeout(() => {
+            const files = getValues('files') ?? [];
+            const result = validateGeneratorScript(script, files);
+            if (result.valid) {
                 setStatus('success');
                 setErrors([]);
             } else {
                 setStatus('error');
-                setErrors([
-                    { line: 1, col: 1, message: 'Scriptul este prea scurt. Adaugă comenzi de generare.' },
-                ]);
+                setErrors(result.errors);
             }
-        } catch {
-            setStatus('error');
-            setErrors([{ line: 0, col: 0, message: 'Eroare de conexiune la server.' }]);
-        }
-    }, [script]);
+        }, 150);
+
+        return () => clearTimeout(handle);
+    }, [script, getValues]);
 
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
@@ -50,4 +43,3 @@ export function useGeneratorValidation(script: string) {
 
     return { status, errors, handleSave };
 }
-

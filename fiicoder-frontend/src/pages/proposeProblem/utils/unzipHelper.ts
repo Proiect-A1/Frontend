@@ -391,8 +391,6 @@ export async function extractProblemZipFromBlob(
             subtasks: [],
             files,
             attachments: [],
-            allowedUsers: [],
-            allowedGroups: [],
         },
         warnings,
     };
