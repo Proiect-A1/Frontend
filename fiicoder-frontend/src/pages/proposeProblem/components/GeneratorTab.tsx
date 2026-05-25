@@ -9,6 +9,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { registerGeneratorLanguage, LANGUAGE_ID } from '../utils/generatorLanguage';
 import { applyMonacoTheme, getEffectivePalette } from '../../../utils/monacoTheme';
 import { useGeneratorValidation } from '../hooks/useGeneratorValidation';
+import ScriptDocumentation from './ScriptDocumentation';
 
 const EXAMPLE_SCRIPT = `#MAIN main
 #DEFGRP 10 exemple
@@ -40,7 +41,7 @@ export default function GeneratorTab() {
     const generatorScript = watch('generatorScript') || '';
 
     const { status, errors, handleSave } = useGeneratorValidation(generatorScript);
-    const [showDocsTooltip, setShowDocsTooltip] = useState(false);
+    const [showDocsPanel, setShowDocsPanel] = useState(false);
 
     const buildGeneratorRules = () => {
         const palette = getEffectivePalette(theme, customColors);
@@ -115,41 +116,19 @@ export default function GeneratorTab() {
                 <div className="flex items-center gap-3">
                     <h2 className="text-lg font-bold text-(--text-h)">Script Generator</h2>
 
-                    {/* Info icon */}
-                    <div className="relative">
-                        <button
-                            type="button"
-                            onMouseEnter={() => setShowDocsTooltip(true)}
-                            onMouseLeave={() => setShowDocsTooltip(false)}
-                            className="w-7 h-7 flex items-center justify-center rounded-full border-2 border-(--accent)/40 text-(--accent) hover:bg-(--accent)/20 transition-all hover:scale-110"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        </button>
-                        {showDocsTooltip && (
-                            <div className="absolute left-10 top-0 z-50 w-80 p-4 bg-(--surface-dropdown) border-2 border-(--accent)/30 rounded-2xl shadow-2xl text-xs text-(--text) backdrop-blur-md">
-                                <p className="font-bold text-lg text-(--accent) mb-2">Sintaxă Generator</p>
-                                <div className="space-y-2">
-                                    <p className="text-(--text-muted) leading-relaxed">
-                                        Folosește directivele de mai jos pentru a configura procesul de generare a testelor.
-                                    </p>
-                                    <pre className="p-3 bg-black/30 rounded-xl text-(--text-muted) whitespace-pre-wrap font-mono text-[11px] leading-relaxed border border-(--accent)/10">
-{`#MAIN <sursă>      // Soluția principală
-#DEFGRP <puncte> <nume> // Definește subtask
-#GEN <gen> <args...> // Rulează generator
-#VAL <val> <args...> // Rulează validator
-#CHECK <chk> <args...> // Rulează checker
-
-#IN <grupuri...>    // Include în grupuri
-#NOTIN <grupuri...> // Exclude din grupuri
-#TEST <pct> <args...> // Test individual
-
-= <fișier>    // Copiază test existent
-< <gen> <args> // Generator specific test`}
-                                    </pre>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                    {/* Info icon -> toggle full documentation */}
+                    <button
+                        type="button"
+                        onClick={() => setShowDocsPanel(!showDocsPanel)}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full font-semibold border transition-all ${
+                            showDocsPanel 
+                                ? 'border-(--accent) bg-(--accent) text-(--surface-card)' 
+                                : 'border-(--accent)/40 bg-(--accent)/10 text-(--text-h) hover:bg-(--accent)/20'
+                        }`}
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                        {showDocsPanel ? 'Ascunde Documentație' : 'Documentație'}
+                    </button>
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap">
@@ -196,6 +175,13 @@ export default function GeneratorTab() {
                     </button>
                 </div>
             </motion.div>
+
+            {/* Documentation Panel */}
+            {showDocsPanel && (
+                <motion.div variants={itemVariants}>
+                    <ScriptDocumentation />
+                </motion.div>
+            )}
 
             {/* Monaco Editor with custom language */}
             <motion.div variants={itemVariants}>

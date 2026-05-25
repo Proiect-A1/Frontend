@@ -174,8 +174,10 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                     FAIL: 'border-red-500/40 bg-red-500/10 text-red-300',
                                     SKIP: 'border-gray-500/40 bg-gray-500/10 text-gray-300',
                                     ILE: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
+                                    PENDING: 'border-sky-500/40 bg-sky-500/10 text-sky-300',
                                 };
                                 const color = verdictColors[t.verdict] || 'border-(--accent)/30 bg-(--accent)/10 text-(--text-muted)';
+                                const isPending = t.verdict === 'PENDING';
                                 const timeMs = (t.time / 1_000_000).toFixed(0);
                                 const memKB = (t.memory / 1024).toFixed(0);
 
@@ -188,7 +190,14 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                         className="flex items-center gap-3 p-2.5 rounded-xl border border-(--accent)/10 bg-(--accent)/5 hover:bg-(--accent)/10 transition-colors"
                                     >
                                         <span className="text-[10px] font-mono font-bold text-(--text-subtle) w-6 text-center shrink-0">#{t.testId}</span>
-                                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase border ${color} shrink-0`}>{t.verdict}</span>
+                                        {isPending ? (
+                                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase border ${color} shrink-0 flex items-center gap-1.5`}>
+                                                <div className="w-2.5 h-2.5 rounded-full bg-sky-400/50 animate-ping" />
+                                                {t.verdict}
+                                            </span>
+                                        ) : (
+                                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase border ${color} shrink-0`}>{t.verdict}</span>
+                                        )}
                                         <span className="text-[10px] font-bold text-(--text-muted) ml-auto shrink-0">{formatScore(t.score)}/{formatScore(t.maxScore)}</span>
                                         <span className="text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">{timeMs}ms</span>
                                         <span className="text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">{memKB}KB</span>

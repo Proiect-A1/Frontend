@@ -62,11 +62,29 @@ export type EvaluationEvent = DoneTestEvent | DoneSubtaskEvent | DoneSubmissionE
 // ── Problem Submissions ───────────────────────────────────────────
 
 export interface ProblemSubmissionDTO {
+  id?: string;
   code: string;
   language: unknown;
   Score: number;
   status: 'PENDING' | 'FINISHED';
   submissiondate: string;
+}
+
+// ── Tests Structure ───────────────────────────────────────────────
+
+export interface ProblemSingleTestDTO {
+  testIndex: number;
+  score: number;
+}
+
+export interface ProblemSingleSubtaskDTO {
+  index: number;
+  total_score: number;
+  tests: ProblemSingleTestDTO[];
+}
+
+export interface ProblemTestDetailsDTO {
+  subtasks: ProblemSingleSubtaskDTO[];
 }
 
 // ── Language Types ────────────────────────────────────────────────

@@ -7,7 +7,8 @@ import type {
     EvaluationEvent,
     DoneTestEvent,
     DoneSubtaskEvent,
-    DoneSubmissionEvent
+    DoneSubmissionEvent,
+    ProblemTestDetailsDTO
 } from "../types/problemDetails";
 
 // ── API wrappers ──────────────────────────────────────────────────
@@ -24,6 +25,10 @@ export const submissionService = {
   // GET /api/problems/{title}/submissions
   getByProblem: (title: string) =>
     apiClient.get<ProblemSubmissionDTO[]>(`/problems/${encodeURIComponent(title)}/submissions`),
+
+  // GET /api/problems/{title}/tests
+  getTests: (title: string) =>
+    apiClient.get<ProblemTestDetailsDTO>(`/problems/${encodeURIComponent(title)}/tests`),
 };
 
 // ── WebSocket evaluation stream ───────────────────────────────────

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../../contexts/AuthContext';
 import { submissionService, connectToEvaluation } from '../services/submissionService';
-import type { DoneTestEvent, DoneSubtaskEvent, DoneSubmissionEvent, LanguageDTO, ProblemSubmissionDTO } from '../types/problemDetails';
+import type { DoneTestEvent, DoneSubtaskEvent, DoneSubmissionEvent, LanguageDTO, ProblemSubmissionDTO, ProblemTestDetailsDTO } from '../types/problemDetails';
 import { problemService } from '../../../services/problemService';
 import type { ProblemFindResponseDTO } from '../../../services/problemService';
 import { useLanguage, translations } from '../../../language/Language';
@@ -43,6 +43,7 @@ export function useProblemDetails() {
     const [evalSummary, setEvalSummary] = useState<DoneSubmissionEvent | null>(null);
     const [evalStatus, setEvalStatus] = useState<'idle' | 'connecting' | 'evaluating' | 'done' | 'error'>('idle');
     const [evalError, setEvalError] = useState<string | null>(null);
+    const [problemTests, setProblemTests] = useState<ProblemTestDetailsDTO | null>(null);
     const wsCleanupRef = useRef<(() => void) | null>(null);
 
     const processedDescription = useMemo(() => {
@@ -177,15 +178,17 @@ export function useProblemDetails() {
             }
 
             try {
-                const [problemDto, langs] = await Promise.all([
+                const [problemDto, langs, testDetails] = await Promise.all([
                     problemService.getProblemByTitle(problemTitle),
                     languageService.getAll().catch(() => []),
+                    submissionService.getTests(problemTitle).catch(() => null)
                 ]);
 
                 if (!isMounted) return;
 
                 setProblem(problemDto);
                 setAvailableLanguages(langs);
+                setProblemTests(testDetails);
                 if (langs.length > 0) {
                     setSelectedLanguageId(langs[0].id);
                     setLanguage(langs[0].name);
@@ -253,8 +256,44 @@ export function useProblemDetails() {
                 wsCleanupRef.current = null;
             }
 
-            setEvalTests([]);
-            setEvalSubtasks([]);
+            // Pre-populate tests and subtasks based on problemTests structure
+            let initialTests: DoneTestEvent[] = [];
+            let initialSubtasks: DoneSubtaskEvent[] = [];
+            if (problemTests && problemTests.subtasks) {
+                problemTests.subtasks.forEach(subtask => {
+                    initialSubtasks.push({
+                        request: "doneSubtask",
+                        submissionId: "",
+                        subtaskId: subtask.index,
+                        score: 0,
+                        maxScore: subtask.total_score,
+                        "score%": 0,
+                        max_memory: 0,
+                        max_time: 0
+                    });
+                    
+                    subtask.tests.forEach(test => {
+                        initialTests.push({
+                            request: "doneTest",
+                            submissionId: "",
+                            testId: test.testIndex,
+                            verdict: "PENDING",
+                            message: "",
+                            score: 0,
+                            maxScore: test.score,
+                            "score%": 0,
+                            memory: 0,
+                            time: 0
+                        });
+                    });
+                });
+                // Sort them by index
+                initialTests.sort((a, b) => a.testId - b.testId);
+                initialSubtasks.sort((a, b) => a.subtaskId - b.subtaskId);
+            }
+
+            setEvalTests(initialTests);
+            setEvalSubtasks(initialSubtasks);
             setEvalSummary(null);
             setEvalError(null);
             setEvalStatus('connecting');
@@ -274,9 +313,26 @@ export function useProblemDetails() {
                     response.ticket,
                     (event: any) => {
                         if (event.request === 'doneTest') {
-                            setEvalTests((prev) => [...prev, event as DoneTestEvent]);
+                            setEvalTests((prev) => {
+                                // If test already exists, update it, else append
+                                const existingIndex = prev.findIndex(t => t.testId === event.testId);
+                                if (existingIndex >= 0) {
+                                    const next = [...prev];
+                                    next[existingIndex] = event as DoneTestEvent;
+                                    return next;
+                                }
+                                return [...prev, event as DoneTestEvent];
+                            });
                         } else if (event.request === 'doneSubtask') {
-                            setEvalSubtasks((prev) => [...prev, event as DoneSubtaskEvent]);
+                            setEvalSubtasks((prev) => {
+                                const existingIndex = prev.findIndex(s => s.subtaskId === event.subtaskId);
+                                if (existingIndex >= 0) {
+                                    const next = [...prev];
+                                    next[existingIndex] = event as DoneSubtaskEvent;
+                                    return next;
+                                }
+                                return [...prev, event as DoneSubtaskEvent];
+                            });
                         }
                     },
                     (summary: any) => {

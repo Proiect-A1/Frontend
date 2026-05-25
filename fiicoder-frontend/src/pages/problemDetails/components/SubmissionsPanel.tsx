@@ -5,6 +5,8 @@ import {
     type SubmissionVerdict,
 } from '../../profile/profileUtils';
 import { formatScore } from '../utils/textUtils';
+import { useState } from 'react';
+import SubmissionDetailModal from './SubmissionDetailModal';
 
 type Props = {
     isAuthenticated: boolean;
@@ -29,6 +31,8 @@ const verdictClasses: Record<SubmissionVerdict, string> = {
 };
 
 export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, lang }: Props) {
+    const [selectedSubmission, setSelectedSubmission] = useState<ProblemSubmissionDTO | null>(null);
+
     return (
         <div className="h-full p-6 bg-(--surface-card) overflow-y-auto custom-scrollbar">
             <div className="space-y-3">
@@ -42,10 +46,19 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
                         return (
                             <div
                                 key={idx}
-                                className="p-3 rounded-2xl border-2 border-(--accent)/20 bg-(--accent)/5 flex items-center justify-between gap-3"
+                                onClick={() => setSelectedSubmission(sub)}
+                                className="p-3 rounded-2xl border-2 border-(--accent)/20 bg-(--accent)/5 flex items-center justify-between gap-3 cursor-pointer hover:bg-(--accent)/10 transition-colors"
                             >
                                 <div className="min-w-0">
-                                    <p className="text-xs font-bold text-(--text-h)">{new Date(sub.submissiondate).toLocaleDateString()}</p>
+                                    <p className="text-xs font-bold text-(--text-h)">
+                                        {new Date(sub.submissiondate).toLocaleString(lang === 'RO' ? 'ro-RO' : 'en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </p>
                                     <p className="text-[10px] text-(--text-muted) font-mono">Score: {formatScore(sub.Score)}</p>
                                 </div>
                                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border-2 ${verdictClasses[verdict]}`}>
@@ -58,6 +71,13 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
                     <p className="text-sm text-(--text-muted) italic">{lang === 'RO' ? 'Nu ai încă submisii.' : 'No submissions yet.'}</p>
                 )}
             </div>
+
+            <SubmissionDetailModal
+                isOpen={!!selectedSubmission}
+                onClose={() => setSelectedSubmission(null)}
+                submission={selectedSubmission}
+                lang={lang}
+            />
         </div>
     );
 }

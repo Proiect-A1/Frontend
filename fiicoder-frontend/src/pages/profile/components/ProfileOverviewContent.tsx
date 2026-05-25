@@ -128,12 +128,13 @@ export default function ProfileOverviewContent({
     },
   ];
 
-  const formatSubmissionDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(lang === "RO" ? "ro-RO" : "en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
+  const formatSubmissionDate = (isoString: string) => {
+    return new Date(isoString).toLocaleString(lang === 'RO' ? 'ro-RO' : 'en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
     });
   };
 
@@ -420,7 +421,7 @@ export default function ProfileOverviewContent({
                       </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
-                      <span className="text-[11px] font-mono text-(--text-subtle) hidden sm:inline-block">
+                      <span className="text-[11px] font-mono text-(--text-subtle)">
                         Score: {submission.score}
                       </span>
                       <span
