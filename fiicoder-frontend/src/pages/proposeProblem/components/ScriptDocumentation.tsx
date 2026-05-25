@@ -43,6 +43,7 @@ export default function ScriptDocumentation() {
             <div className="flex overflow-x-auto border-b border-(--accent)/20 bg-(--surface-muted) custom-scrollbar">
                 {docs.map((doc, idx) => (
                     <button
+                        type="button"
                         key={idx}
                         onClick={() => setActiveTab(idx)}
                         className={`px-4 py-3 text-sm font-semibold whitespace-nowrap transition-colors ${
