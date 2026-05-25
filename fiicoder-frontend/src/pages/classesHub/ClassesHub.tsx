@@ -433,6 +433,12 @@ export default function ClassesHub() {
                                         {lang === 'RO' ? 'Creată de' : 'Created by'}:{' '}
                                         {foundClass.creatorUsername}
                                     </div>
+                                    {typeof foundClass.memberCount === 'number' && (
+                                        <div>
+                                            {lang === 'RO' ? 'Membri' : 'Members'}:{' '}
+                                            {foundClass.memberCount}
+                                        </div>
+                                    )}
                                     <div className="font-mono break-all">{foundClass.id}</div>
                                 </div>
                                 <Link
@@ -509,6 +515,12 @@ export default function ClassesHub() {
                                             {group.isCreator && (
                                                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border border-(--accent)/40 bg-(--accent)/15 text-(--text-h)">
                                                     {lang === 'RO' ? 'Creator' : 'Creator'}
+                                                </span>
+                                            )}
+                                            {typeof group.memberCount === 'number' && (
+                                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border border-(--accent)/30 bg-(--surface-card) text-(--text-h)">
+                                                    {group.memberCount}{' '}
+                                                    {lang === 'RO' ? 'membri' : 'members'}
                                                 </span>
                                             )}
                                         </div>

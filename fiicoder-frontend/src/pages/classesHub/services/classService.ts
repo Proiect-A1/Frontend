@@ -4,9 +4,11 @@ export interface GroupFindResponseDTO {
   id: string;
   name: string;
   description: string | null;
+  memberCount?: number;
   creatorId: string;
   creatorUsername: string;
   createdAt: string;
+  isCreator?: boolean | null;
 }
 
 export interface GroupCreateRequestDTO {
@@ -58,10 +60,56 @@ export interface GroupMembershipDTO {
   id: string;
   name: string;
   description: string | null;
+  memberCount?: number;
   creatorId: string;
   creatorUsername: string;
   createdAt: string;
   isCreator: boolean;
+}
+
+export interface GroupMemberDTO {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  role: 'USER' | 'ADMIN' | 'PROFESSOR';
+  email: string;
+}
+
+export interface GroupMembersResponseDTO {
+  groupId: string;
+  canManage: boolean;
+  teacher: GroupMemberDTO;
+  students: GroupMemberDTO[];
+}
+
+// Spring Page<T> shape returned by the paginated /group endpoint.
+export interface SpringPage<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
+export interface GroupSearchCriteria {
+  search?: string;
+  creatorId?: string;
+  creatorUsername?: string;
+  createdAfter?: string;
+  createdBefore?: string;
+}
+
+function appendCriteria(params: URLSearchParams, criteria?: GroupSearchCriteria) {
+  if (!criteria) return;
+  if (criteria.search) params.append('search', criteria.search);
+  if (criteria.creatorId) params.append('creatorId', criteria.creatorId);
+  if (criteria.creatorUsername) params.append('creatorUsername', criteria.creatorUsername);
+  if (criteria.createdAfter) params.append('createdAfter', criteria.createdAfter);
+  if (criteria.createdBefore) params.append('createdBefore', criteria.createdBefore);
 }
 
 export const classService = {
@@ -89,7 +137,7 @@ export const classService = {
   getMyInvitations() {
     return apiClient.get<GroupInvitationResponseDTO[]>("/group/invitations/me");
   },
-  
+
   acceptInvitation(invitationId: string) {
     return apiClient.post<void>(`/group/invitations/${invitationId}/accept`);
   },
@@ -104,5 +152,31 @@ export const classService = {
 
   getGroupInvitations(groupId: string) {
     return apiClient.get<GroupInvitationResponseDTO[]>(`/group/${groupId}/invitations`);
+  },
+
+  getGroupStudents(groupId: string) {
+    return apiClient.get<GroupMembersResponseDTO>(`/group/${groupId}/students`);
+  },
+
+  removeGroupStudent(groupId: string, studentId: string) {
+    return apiClient.delete<void>(`/group/${groupId}/students/${studentId}`);
+  },
+
+  searchGroups(
+    criteria: GroupSearchCriteria,
+    page: number = 1,
+    size: number = 20,
+    sort?: string,
+  ) {
+    const params = new URLSearchParams();
+    params.append('page', String(page));
+    params.append('size', String(size));
+    if (sort) params.append('sort', sort);
+    appendCriteria(params, criteria);
+    return apiClient.get<SpringPage<GroupFindResponseDTO>>(`/group?${params.toString()}`);
+  },
+
+  removeGroupMemberAsAdmin(groupId: string, userId: string) {
+    return apiClient.delete<void>(`/group/${groupId}/members/${userId}`);
   },
 };

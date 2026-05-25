@@ -15,10 +15,10 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
         enabled: isAdmin && activeTab === 'problems',
         queryFn: async () => {
             const data = await adminService.getProposals();
-            return data.filter(
-                (proposal) =>
-                    proposal.status === 'PENDING' || (proposal.status as string) === 'pending',
-            );
+            return data.filter((proposal) => {
+                const s = (proposal.status as string).toUpperCase();
+                return s === 'PENDING' || s === 'CHECKED';
+            });
         },
         staleTime: 1000 * 60 * 5,
     });

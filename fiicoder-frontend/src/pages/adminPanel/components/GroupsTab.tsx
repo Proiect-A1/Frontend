@@ -1,8 +1,14 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { containerVariants, itemVariants } from '../../../utils/motionConfig';
 import { useLanguage } from '../../../language/Language';
-import type { GroupInvitation, GroupSummary } from '../services/adminService';
+import type {
+    GroupInvitation,
+    GroupSummary,
+    GroupsSearchCriteria,
+    GroupMembersResponse,
+} from '../services/adminService';
 import { formatDateTime } from '../../../utils/dateTime';
 
 type Props = {
@@ -10,11 +16,20 @@ type Props = {
     isLoading: boolean;
     groupPage: number;
     setGroupPage: (page: (p: number) => number) => void;
+    totalPages: number;
+    totalElements: number;
+    criteria: GroupsSearchCriteria;
+    setCriteria: (next: GroupsSearchCriteria) => void;
+    sort: string;
+    setSort: (next: string) => void;
     selectedGroup: GroupSummary | null;
     selectedGroupId: string | null;
     setSelectedGroupId: (id: string | null) => void;
     invitations: GroupInvitation[];
     isInvitationsLoading: boolean;
+    members: GroupMembersResponse | null;
+    isMembersLoading: boolean;
+    handleRemoveMember: (userId: string, username: string) => void;
     isSelectedLoading: boolean;
     handleDeleteGroup: (group: GroupSummary) => void;
 };
@@ -32,19 +47,55 @@ export default function GroupsTab({
     isLoading,
     groupPage,
     setGroupPage,
+    totalPages,
+    totalElements,
+    criteria,
+    setCriteria,
+    sort,
+    setSort,
     selectedGroup,
     selectedGroupId,
     setSelectedGroupId,
     invitations,
     isInvitationsLoading,
+    members,
+    isMembersLoading,
+    handleRemoveMember,
     isSelectedLoading,
     handleDeleteGroup,
 }: Props) {
     const { lang } = useLanguage();
+    const [searchInput, setSearchInput] = useState(criteria.search ?? '');
+    const [creatorInput, setCreatorInput] = useState(criteria.creatorUsername ?? '');
+    const [createdAfter, setCreatedAfter] = useState(criteria.createdAfter ?? '');
+    const [createdBefore, setCreatedBefore] = useState(criteria.createdBefore ?? '');
+
+    useEffect(() => {
+        const handle = setTimeout(() => {
+            const trimmedSearch = searchInput.trim();
+            const trimmedCreator = creatorInput.trim();
+            const next: GroupsSearchCriteria = {
+                search: trimmedSearch || undefined,
+                creatorUsername: trimmedCreator || undefined,
+                createdAfter: createdAfter ? new Date(createdAfter).toISOString() : undefined,
+                createdBefore: createdBefore ? new Date(createdBefore).toISOString() : undefined,
+            };
+            if (
+                next.search === criteria.search &&
+                next.creatorUsername === criteria.creatorUsername &&
+                next.createdAfter === criteria.createdAfter &&
+                next.createdBefore === criteria.createdBefore
+            ) return;
+            setCriteria(next);
+        }, 350);
+        return () => clearTimeout(handle);
+    }, [searchInput, creatorInput, createdAfter, createdBefore]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const hasNextPage = groupPage < totalPages;
 
     return (
         <motion.div variants={containerVariants} className="space-y-6">
-            <motion.div variants={itemVariants} className="flex items-center justify-between gap-4">
+            <motion.div variants={itemVariants} className="flex items-center justify-between gap-4 flex-wrap">
                 <h2 className="text-2xl font-bold text-(--text-h)">
                     {lang === 'RO' ? 'Gestionare Grupe' : 'Group Management'}
                 </h2>
@@ -56,14 +107,85 @@ export default function GroupsTab({
                     >
                         ←
                     </button>
-                    <span className="text-sm font-black text-(--text-h)">{groupPage}</span>
+                    <span className="text-sm font-black text-(--text-h)">
+                        {groupPage}
+                        {totalPages > 0 && (
+                            <span className="text-(--text-muted) font-bold"> / {totalPages}</span>
+                        )}
+                    </span>
                     <button
                         onClick={() => setGroupPage((currentPage) => currentPage + 1)}
-                        disabled={groups.length < 20}
+                        disabled={!hasNextPage}
                         className="w-10 h-10 rounded-full border border-(--accent)/30 bg-(--accent)/5 flex items-center justify-center text-(--text-muted) hover:bg-(--accent)/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                     >
                         →
                     </button>
+                </div>
+            </motion.div>
+
+            <motion.div
+                variants={itemVariants}
+                className="grid gap-3 md:grid-cols-2 xl:grid-cols-4 p-4 rounded-2xl border border-(--accent)/20 bg-(--surface-muted)"
+            >
+                <input
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    placeholder={lang === 'RO' ? 'Caută după nume...' : 'Search by name...'}
+                    className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
+                />
+                <input
+                    value={creatorInput}
+                    onChange={(e) => setCreatorInput(e.target.value)}
+                    placeholder={lang === 'RO' ? 'Creator (username)' : 'Creator (username)'}
+                    className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
+                />
+                <input
+                    type="date"
+                    value={createdAfter}
+                    onChange={(e) => setCreatedAfter(e.target.value)}
+                    title={lang === 'RO' ? 'Creată după' : 'Created after'}
+                    className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition"
+                />
+                <input
+                    type="date"
+                    value={createdBefore}
+                    onChange={(e) => setCreatedBefore(e.target.value)}
+                    title={lang === 'RO' ? 'Creată înainte de' : 'Created before'}
+                    className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition"
+                />
+                <div className="md:col-span-2 xl:col-span-4 flex items-center justify-between flex-wrap gap-3">
+                    <div className="text-xs text-(--text-muted) font-semibold">
+                        {lang === 'RO' ? 'Total' : 'Total'}: {totalElements}
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <label className="text-xs text-(--text-muted) font-bold uppercase tracking-widest">
+                            {lang === 'RO' ? 'Sortează' : 'Sort'}
+                        </label>
+                        <select
+                            value={sort}
+                            onChange={(e) => setSort(e.target.value)}
+                            className="rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-1.5 text-xs text-(--text-h) outline-none"
+                        >
+                            <option value="createdAt,desc">{lang === 'RO' ? 'Cele mai noi' : 'Newest first'}</option>
+                            <option value="createdAt,asc">{lang === 'RO' ? 'Cele mai vechi' : 'Oldest first'}</option>
+                            <option value="name,asc">{lang === 'RO' ? 'Nume A–Z' : 'Name A–Z'}</option>
+                            <option value="name,desc">{lang === 'RO' ? 'Nume Z–A' : 'Name Z–A'}</option>
+                        </select>
+                        {(searchInput || creatorInput || createdAfter || createdBefore) && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setSearchInput('');
+                                    setCreatorInput('');
+                                    setCreatedAfter('');
+                                    setCreatedBefore('');
+                                }}
+                                className="rounded-full border border-(--accent)/35 px-3 py-1 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
+                            >
+                                {lang === 'RO' ? 'Resetează filtrele' : 'Reset filters'}
+                            </button>
+                        )}
+                    </div>
                 </div>
             </motion.div>
 
@@ -122,11 +244,19 @@ export default function GroupsTab({
                                             {group.description}
                                         </p>
                                     )}
-                                    <div className="mt-2 text-xs text-(--text-muted) font-semibold">
-                                        {lang === 'RO' ? 'Creator' : 'Creator'}:{' '}
-                                        <span className="text-(--text)">
-                                            {group.creatorUsername}
+                                    <div className="mt-2 flex items-center justify-between gap-2 flex-wrap text-xs text-(--text-muted) font-semibold">
+                                        <span>
+                                            {lang === 'RO' ? 'Creator' : 'Creator'}:{' '}
+                                            <span className="text-(--text)">
+                                                {group.creatorUsername}
+                                            </span>
                                         </span>
+                                        {typeof group.memberCount === 'number' && (
+                                            <span className="px-2 py-0.5 rounded-full border border-(--accent)/30 bg-(--accent)/5 text-(--text-h)">
+                                                {group.memberCount}{' '}
+                                                {lang === 'RO' ? 'membri' : 'members'}
+                                            </span>
+                                        )}
                                     </div>
                                 </motion.button>
                             );
@@ -136,7 +266,7 @@ export default function GroupsTab({
 
                 <motion.div
                     variants={itemVariants}
-                    className="p-5 rounded-2xl border border-(--accent)/20 bg-(--surface-muted) h-fit xl:sticky xl:top-0"
+                    className="p-5 rounded-2xl border border-(--accent)/20 bg-(--surface-muted) h-fit xl:sticky xl:top-0 space-y-4"
                 >
                     {!selectedGroup && !selectedGroupId && (
                         <p className="text-(--text-muted) text-sm text-center py-8">
@@ -173,6 +303,12 @@ export default function GroupsTab({
                                         </span>
                                     </span>
                                     <span>{formatDateTime(selectedGroup.createdAt, lang)}</span>
+                                    {typeof selectedGroup.memberCount === 'number' && (
+                                        <span className="px-2 py-0.5 rounded-full border border-(--accent)/30 bg-(--accent)/10 text-(--text-h)">
+                                            {selectedGroup.memberCount}{' '}
+                                            {lang === 'RO' ? 'membri' : 'members'}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
 
@@ -190,6 +326,84 @@ export default function GroupsTab({
                                 >
                                     {lang === 'RO' ? 'Sterge' : 'Delete'}
                                 </button>
+                            </div>
+
+                            <div className="border-t border-(--accent)/20 pt-4 space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <h4 className="text-sm font-bold text-(--text-h)">
+                                        {lang === 'RO' ? 'Membri' : 'Members'}
+                                    </h4>
+                                    <span className="text-xs text-(--text-muted)">
+                                        {isMembersLoading
+                                            ? '...'
+                                            : members
+                                              ? members.students.length + 1
+                                              : 0}
+                                    </span>
+                                </div>
+
+                                {isMembersLoading && (
+                                    <p className="text-xs text-(--text-muted)">
+                                        {lang === 'RO'
+                                            ? 'Se incarca membrii...'
+                                            : 'Loading members...'}
+                                    </p>
+                                )}
+
+                                {!isMembersLoading && members && (
+                                    <div className="space-y-2">
+                                        <div className="rounded-2xl border border-(--accent)/30 bg-(--accent)/10 px-3 py-2 flex items-center justify-between gap-2">
+                                            <div className="min-w-0">
+                                                <p className="text-xs font-bold text-(--text-h) truncate">
+                                                    {members.teacher.username}{' '}
+                                                    <span className="text-[10px] uppercase tracking-widest text-(--text-muted) ml-1">
+                                                        {lang === 'RO' ? 'Profesor' : 'Teacher'}
+                                                    </span>
+                                                </p>
+                                                <p className="text-[10px] text-(--text-muted) truncate">
+                                                    {members.teacher.firstName}{' '}
+                                                    {members.teacher.lastName} ·{' '}
+                                                    {members.teacher.email}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        {members.students.length === 0 && (
+                                            <p className="text-xs text-(--text-muted)">
+                                                {lang === 'RO'
+                                                    ? 'Niciun student.'
+                                                    : 'No students.'}
+                                            </p>
+                                        )}
+                                        {members.students.map((student) => (
+                                            <div
+                                                key={student.id}
+                                                className="rounded-2xl border border-(--accent)/20 bg-(--accent)/5 px-3 py-2 flex items-center justify-between gap-2"
+                                            >
+                                                <div className="min-w-0">
+                                                    <p className="text-xs font-semibold text-(--text-h) truncate">
+                                                        {student.username}
+                                                    </p>
+                                                    <p className="text-[10px] text-(--text-muted) truncate">
+                                                        {student.firstName} {student.lastName} ·{' '}
+                                                        {student.email}
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleRemoveMember(
+                                                            student.id,
+                                                            student.username,
+                                                        )
+                                                    }
+                                                    className="shrink-0 rounded-full border border-red-500/40 bg-red-500/10 text-red-400 px-2 py-0.5 text-[10px] font-bold hover:bg-red-500/20"
+                                                >
+                                                    {lang === 'RO' ? 'Elimină' : 'Remove'}
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                             <div className="border-t border-(--accent)/20 pt-4 space-y-3">

@@ -21,9 +21,33 @@ export default function ProfileProposalsPanel({ proposals, loading, lang, onTogg
             variants={itemVariants}
             className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) card-glow min-w-0"
         >
-            <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
+            <h2 className="text-sm font-bold text-(--text-h) mb-2 uppercase tracking-wider">
                 {lang === 'RO' ? 'Propunerile Mele' : 'My Proposals'}
             </h2>
+            <div className="mb-4 rounded-2xl border border-(--accent)/30 bg-(--accent)/5 p-3 text-[11px] leading-relaxed text-(--text-muted) space-y-1">
+                <p>
+                    {lang === 'RO' ? (
+                        <>
+                            <span className="font-bold text-(--text-h)">Cum funcționează:</span>{' '}
+                            <span className="font-bold text-(--text-h)">„Propune"</span> trimite o
+                            versiune nouă. <span className="font-bold text-(--text-h)">„Editează"</span>{' '}
+                            propuneri existente este momentan indisponibil.
+                        </>
+                    ) : (
+                        <>
+                            <span className="font-bold text-(--text-h)">How it works:</span>{' '}
+                            <span className="font-bold text-(--text-h)">"Propose"</span> submits a
+                            new version. <span className="font-bold text-(--text-h)">"Edit"</span> for
+                            existing proposals is currently unavailable.
+                        </>
+                    )}
+                </p>
+                <p>
+                    {lang === 'RO'
+                        ? 'La trimitere se face o verificare automată. Dacă fișierele sunt aranjate greșit, propunerea va fi respinsă automat. După verificare, este nevoie de aprobarea unui admin.'
+                        : 'Submission triggers an automated check. If files are arranged incorrectly the proposal is auto-rejected. After the check, an admin still needs to approve it.'}
+                </p>
+            </div>
             {loading ? (
                 <div className="flex justify-center p-8">
                     <div className="w-8 h-8 border-4 border-(--accent) border-t-transparent rounded-full animate-spin" />
@@ -91,11 +115,18 @@ export default function ProfileProposalsPanel({ proposals, loading, lang, onTogg
                                     </Link>
                                     <Link
                                         to={`/propose/${proposal.id}`}
-                                        className="px-3 py-1.5 rounded-full border-2 border-(--accent) bg-(--accent)/15 text-xs font-bold text-(--text-h) hover:bg-(--accent)/25 transition-colors"
+                                        title={
+                                            lang === 'RO'
+                                                ? 'Editarea propunerilor existente este momentan indisponibilă. Folosește „Propune" pentru o versiune nouă.'
+                                                : 'Editing existing proposals is currently unavailable. Use "Propose" to submit a new version.'
+                                        }
+                                        className="px-3 py-1.5 rounded-full border-2 border-(--accent)/40 bg-(--accent)/5 text-xs font-bold text-(--text-muted) hover:bg-(--accent)/15 transition-colors opacity-60 cursor-not-allowed"
+                                        onClick={(e) => e.preventDefault()}
+                                        aria-disabled
                                     >
                                         {editLabel}
                                     </Link>
-                                    {proposal.status !== 'approved' && onDelete && (
+                                    {onDelete && (
                                         <button
                                             onClick={() => onDelete(proposal.title)}
                                             className="px-3 py-1.5 rounded-full border-2 border-red-500/40 bg-red-500/10 text-xs font-bold text-red-500 hover:bg-red-500/20 transition-colors"

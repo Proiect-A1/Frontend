@@ -151,6 +151,41 @@ export default function ProposeProblem() {
                                     )}
                                 </AnimatePresence>
 
+                                <div
+                                    style={{
+                                        borderColor: 'var(--status-warning)',
+                                        backgroundColor: 'var(--status-warning-bg)',
+                                    }}
+                                    className="mb-4 p-3 rounded-2xl border text-xs leading-relaxed"
+                                >
+                                    <p style={{ color: 'var(--status-warning)' }}>
+                                        {lang === 'RO' ? (
+                                            <>
+                                                <span className="font-bold">Notă:</span> la trimitere
+                                                se face o verificare automată. Dacă fișierele nu sunt
+                                                aranjate corect (vezi formatul ZIP), propunerea va fi
+                                                <span className="font-bold"> respinsă automat</span>.
+                                                După verificare, problema mai are nevoie de
+                                                <span className="font-bold"> aprobarea unui admin</span>.
+                                                Editarea unei propuneri existente nu funcționează
+                                                momentan — folosește acest formular pentru a trimite o
+                                                versiune nouă.
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className="font-bold">Note:</span> submission
+                                                triggers an automated check. If files are not arranged
+                                                correctly (see the ZIP format), the proposal is
+                                                <span className="font-bold"> auto-rejected</span>.
+                                                After the check, the problem still needs
+                                                <span className="font-bold"> admin approval</span>.
+                                                Editing an existing proposal is not working right now —
+                                                use this form to submit a new version.
+                                            </>
+                                        )}
+                                    </p>
+                                </div>
+
                                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
                                     <h1 className="text-3xl font-bold text-(--text-h)">{isEditMode ? 'Editează Propunerea' : 'Propune o Problemă'}</h1>
                                     <div className="flex flex-wrap gap-2 lg:justify-end">

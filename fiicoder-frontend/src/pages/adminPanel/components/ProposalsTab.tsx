@@ -42,6 +42,35 @@ export default function ProposalsTab({
 
     const selectedProposalMeta = proposals.find(p => p.id === selectedProposalId);
 
+    const statusBadge = (status: string) => {
+        const upper = (status || '').toUpperCase();
+        if (upper === 'CHECKED') {
+            return {
+                className: 'border-sky-400/60 bg-sky-400/20 text-sky-400',
+                label: lang === 'RO' ? 'VERIFICAT' : 'CHECKED',
+                title:
+                    lang === 'RO'
+                        ? 'Verificat automat de backend. Așteaptă review-ul tău.'
+                        : 'Auto-checked by backend. Awaiting your review.',
+            };
+        }
+        if (upper === 'PENDING') {
+            return {
+                className: 'border-amber-400/60 bg-amber-400/20 text-amber-500',
+                label: lang === 'RO' ? 'ÎN AȘTEPTARE' : 'PENDING',
+                title:
+                    lang === 'RO'
+                        ? 'Încă neverificată automat de backend.'
+                        : 'Not yet auto-checked by backend.',
+            };
+        }
+        return {
+            className: 'border-(--accent)/40 bg-(--accent)/15 text-(--text-h)',
+            label: upper,
+            title: upper,
+        };
+    };
+
     const { data: testsData, isLoading: isTestsLoading } = useQuery({
         queryKey: ['admin', 'proposal', selectedProposalId, 'tests'],
         enabled: !!selectedProposalId && showTests,
@@ -83,10 +112,28 @@ export default function ProposalsTab({
                     <motion.div variants={containerVariants} className="space-y-3">
                         <motion.div
                             variants={itemVariants}
-                            className="flex items-center justify-between text-sm text-(--text-muted) font-semibold"
+                            className="flex items-center justify-between text-sm text-(--text-muted) font-semibold gap-3"
                         >
                             <span>{lang === 'RO' ? 'Propuneri în așteptare' : 'Pending proposals'}</span>
-                            <span>{proposals.length}</span>
+                            <span className="flex items-center gap-2">
+                                <span>{proposals.length}</span>
+                                {(() => {
+                                    const checkedCount = proposals.filter(
+                                        (p) => (p.status as string).toUpperCase() === 'CHECKED',
+                                    ).length;
+                                    const pendingCount = proposals.length - checkedCount;
+                                    return (
+                                        <span className="text-[10px] uppercase tracking-widest font-bold flex items-center gap-1">
+                                            <span className="px-1.5 py-0.5 rounded-full border border-amber-400/60 bg-amber-400/15 text-amber-500">
+                                                {pendingCount} {lang === 'RO' ? 'pending' : 'pending'}
+                                            </span>
+                                            <span className="px-1.5 py-0.5 rounded-full border border-sky-400/60 bg-sky-400/15 text-sky-400">
+                                                {checkedCount} {lang === 'RO' ? 'verif.' : 'checked'}
+                                            </span>
+                                        </span>
+                                    );
+                                })()}
+                            </span>
                         </motion.div>
 
                         <motion.div variants={containerVariants} className="grid gap-3">
@@ -131,9 +178,17 @@ export default function ProposalsTab({
                                                 {lang === 'RO' ? 'Propus de' : 'By'}:{' '}
                                                 <span className="text-(--text)">{proposal.authorUsername}</span>
                                             </span>
-                                            <span className="rounded-full border border-amber-400/60 bg-amber-400/20 px-2.5 py-1 text-amber-500 font-bold">
-                                                {proposal.status}
-                                            </span>
+                                            {(() => {
+                                                const badge = statusBadge(proposal.status);
+                                                return (
+                                                    <span
+                                                        title={badge.title}
+                                                        className={`rounded-full border px-2.5 py-1 font-bold ${badge.className}`}
+                                                    >
+                                                        {badge.label}
+                                                    </span>
+                                                );
+                                            })()}
                                         </div>
                                     </motion.button>
                                 );
@@ -160,9 +215,18 @@ export default function ProposalsTab({
                                 <div className="space-y-2">
                                     <div className="flex items-start justify-between gap-3">
                                         <h3 className="text-2xl font-bold text-(--text-h)">{selectedProposal.title}</h3>
-                                        <span className="rounded-full border border-amber-400/40 bg-amber-400/20 px-3 py-1 text-xs font-bold text-amber-500 whitespace-nowrap">
-                                            {selectedProposal.status}
-                                        </span>
+                                        {(() => {
+                                            const liveStatus = selectedProposalMeta?.status ?? selectedProposal.status;
+                                            const badge = statusBadge(liveStatus);
+                                            return (
+                                                <span
+                                                    title={badge.title}
+                                                    className={`rounded-full border px-3 py-1 text-xs font-bold whitespace-nowrap ${badge.className}`}
+                                                >
+                                                    {badge.label}
+                                                </span>
+                                            );
+                                        })()}
                                     </div>
                                     <div className="flex flex-wrap items-center gap-2 text-xs text-(--text-muted)">
                                         <span>

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
 import { classService } from '../classesHub/services/classService';
 import { homeworkService } from './services/homeworkService';
@@ -573,6 +573,7 @@ export default function ClassDetails() {
     const navigate = useNavigate();
     const { lang } = useLanguage();
     const { userId, isAdmin } = useAuth();
+    const queryClient = useQueryClient();
     const [inviteEmail, setInviteEmail] = useState('');
     const [inviteFeedback, setInviteFeedback] = useState<{ msg: string; isError: boolean } | null>(
         null,
@@ -610,6 +611,36 @@ export default function ClassDetails() {
         enabled: !!groupId && (isAdmin || isCreator),
         queryFn: () => classService.getGroupInvitations(groupId as string),
     });
+
+    const membersQuery = useQuery({
+        queryKey: ['class-members', groupId],
+        enabled: !!groupId,
+        queryFn: () => classService.getGroupStudents(groupId as string),
+    });
+    const members = membersQuery.data ?? null;
+    const canManageMembers = !!(members?.canManage || isAdmin || isCreator);
+
+    const handleRemoveStudent = async (studentId: string, username: string) => {
+        if (!groupId) return;
+        const confirmMsg =
+            lang === 'RO'
+                ? `Elimini studentul "${username}" din clasă?`
+                : `Remove student "${username}" from this class?`;
+        if (!window.confirm(confirmMsg)) return;
+        try {
+            await classService.removeGroupStudent(groupId, studentId);
+            toast.success(lang === 'RO' ? 'Student eliminat.' : 'Student removed.');
+            await queryClient.invalidateQueries({ queryKey: ['class-members', groupId] });
+            await queryClient.invalidateQueries({ queryKey: ['my-groups'] });
+        } catch (err: any) {
+            toast.error(
+                extractErrorMessage(
+                    err,
+                    lang === 'RO' ? 'Eroare la eliminare.' : 'Failed to remove student.',
+                ),
+            );
+        }
+    };
     const pendingInvitations = (invitationsQuery.data ?? []).filter(
         (inv) => inv.status === 'PENDING',
     );
@@ -828,6 +859,16 @@ export default function ClassDetails() {
                                         {group.creatorUsername}
                                     </p>
                                 </div>
+                                {typeof group.memberCount === 'number' && (
+                                    <div className="rounded-xl border border-(--accent)/20 bg-(--surface-card) p-3">
+                                        <p className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-1">
+                                            {lang === 'RO' ? 'Membri' : 'Members'}
+                                        </p>
+                                        <p className="text-sm font-semibold text-(--text-h)">
+                                            {group.memberCount}
+                                        </p>
+                                    </div>
+                                )}
                                 <div className="rounded-xl border border-(--accent)/20 bg-(--surface-card) p-3">
                                     <p className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-1">
                                         ID
@@ -955,6 +996,86 @@ export default function ClassDetails() {
                                     {lang === 'RO' ? 'Creează' : 'Create'}
                                 </button>
                             </form>
+                        </motion.section>
+
+                        {/* Members Section */}
+                        <motion.section
+                            variants={itemVariants}
+                            className="xl:col-span-2 rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4"
+                        >
+                            <div className="flex items-center justify-between gap-3 mb-4">
+                                <h2 className="text-xl font-bold text-(--text-h)">
+                                    {lang === 'RO' ? 'Membrii clasei' : 'Class members'}
+                                </h2>
+                                {members && (
+                                    <span className="text-xs text-(--text-muted)">
+                                        {members.students.length + 1}{' '}
+                                        {lang === 'RO' ? 'total' : 'total'}
+                                    </span>
+                                )}
+                            </div>
+                            {membersQuery.isPending && (
+                                <p className="text-sm text-(--text-muted)">
+                                    {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
+                                </p>
+                            )}
+                            {members && (
+                                <div className="grid gap-3 md:grid-cols-2">
+                                    <div className="rounded-xl border border-(--accent)/30 bg-(--accent)/10 p-3">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-bold text-(--text-h) truncate">
+                                                    {members.teacher.firstName}{' '}
+                                                    {members.teacher.lastName}
+                                                </p>
+                                                <p className="text-xs text-(--text-muted) truncate">
+                                                    @{members.teacher.username} ·{' '}
+                                                    {members.teacher.email}
+                                                </p>
+                                            </div>
+                                            <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border border-(--accent)/40 bg-(--accent)/15 text-(--text-h)">
+                                                {lang === 'RO' ? 'Profesor' : 'Teacher'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {members.students.length === 0 && (
+                                        <p className="text-xs text-(--text-muted) self-center">
+                                            {lang === 'RO'
+                                                ? 'Niciun student în clasă încă.'
+                                                : 'No students in this class yet.'}
+                                        </p>
+                                    )}
+                                    {members.students.map((student) => (
+                                        <div
+                                            key={student.id}
+                                            className="rounded-xl border border-(--accent)/20 bg-(--surface-card) p-3 flex items-center justify-between gap-2"
+                                        >
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-semibold text-(--text-h) truncate">
+                                                    {student.firstName} {student.lastName}
+                                                </p>
+                                                <p className="text-xs text-(--text-muted) truncate">
+                                                    @{student.username} · {student.email}
+                                                </p>
+                                            </div>
+                                            {canManageMembers && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleRemoveStudent(
+                                                            student.id,
+                                                            student.username,
+                                                        )
+                                                    }
+                                                    className="shrink-0 rounded-full border border-red-500/40 bg-red-500/10 text-red-400 px-3 py-1 text-[11px] font-bold hover:bg-red-500/20"
+                                                >
+                                                    {lang === 'RO' ? 'Elimină' : 'Kick'}
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </motion.section>
 
                         {/* Pending Invitations - if any */}

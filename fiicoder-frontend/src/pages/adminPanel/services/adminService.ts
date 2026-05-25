@@ -37,7 +37,7 @@ export interface ProblemProposal {
     authorUsername: string;
     description: string;
     difficulty?: string;
-    status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+    status: 'PENDING' | 'CHECKED' | 'ACCEPTED' | 'REJECTED';
     createdAt: string;
     tags?: string[];
 }
@@ -52,6 +52,37 @@ export interface ProblemProposalDetail extends ProblemProposal {
     zipDownloadLink?: string;
     time_limit?: number;
     memory_limit?: number;
+}
+
+export interface GroupMemberSummary {
+    id: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    role: 'USER' | 'ADMIN' | 'PROFESSOR';
+    email: string;
+}
+
+export interface GroupMembersResponse {
+    groupId: string;
+    canManage: boolean;
+    teacher: GroupMemberSummary;
+    students: GroupMemberSummary[];
+}
+
+export interface GroupsSearchCriteria {
+    search?: string;
+    creatorUsername?: string;
+    createdAfter?: string;
+    createdBefore?: string;
+}
+
+export interface GroupsPage {
+    content: GroupSummary[];
+    totalElements: number;
+    totalPages: number;
+    number: number;
+    size: number;
 }
 
 export interface ProblemTestDetails {
@@ -79,6 +110,7 @@ export interface GroupSummary {
     id: string;
     name: string;
     description: string;
+    memberCount?: number;
     creatorId: string;
     creatorUsername: string;
     createdAt: string;
@@ -212,16 +244,24 @@ export const adminService = {
     async getProposals(): Promise<ProblemProposal[]> {
         try {
             const data = await apiClient.get<any[]>('/problems/pending');
-            return data.map(p => ({
-                id: p.title,
-                title: p.title,
-                authorUsername: p.proposedBy || 'unknown',
-                description: '',
-                difficulty: p.difficulty || '',
-                status: 'PENDING',
-                createdAt: p.submittedAt || new Date().toISOString(),
-                tags: Array.from(p.tags || [])
-            }));
+            return data.map(p => {
+                const rawStatus = (p.problemStatus || p.status || 'PENDING').toString().toUpperCase();
+                const normalizedStatus: ProblemProposal['status'] =
+                    rawStatus === 'CHECKED' ? 'CHECKED'
+                        : rawStatus === 'ACCEPTED' ? 'ACCEPTED'
+                            : rawStatus === 'REJECTED' ? 'REJECTED'
+                                : 'PENDING';
+                return {
+                    id: p.title,
+                    title: p.title,
+                    authorUsername: p.proposedBy || p.authorUsername || 'unknown',
+                    description: p.description || '',
+                    difficulty: p.difficulty || '',
+                    status: normalizedStatus,
+                    createdAt: p.submittedAt || p.createdAt || new Date().toISOString(),
+                    tags: Array.from(p.tags || []),
+                };
+            });
         } catch {
             return mockProposalDetails;
         }
@@ -295,8 +335,21 @@ export const adminService = {
         }
     },
 
-    async getGroups(page: number = 1, pageSize: number = 20): Promise<GroupSummary[]> {
-        return await apiClient.get(`/group?page=${page}&size=${pageSize}`);
+    async getGroups(
+        page: number = 1,
+        pageSize: number = 20,
+        criteria?: GroupsSearchCriteria,
+        sort?: string,
+    ): Promise<GroupsPage> {
+        const params = new URLSearchParams();
+        params.append('page', String(page));
+        params.append('size', String(pageSize));
+        if (sort) params.append('sort', sort);
+        if (criteria?.search) params.append('search', criteria.search);
+        if (criteria?.creatorUsername) params.append('creatorUsername', criteria.creatorUsername);
+        if (criteria?.createdAfter) params.append('createdAfter', criteria.createdAfter);
+        if (criteria?.createdBefore) params.append('createdBefore', criteria.createdBefore);
+        return await apiClient.get<GroupsPage>(`/group?${params.toString()}`);
     },
 
     async getGroup(groupId: string): Promise<GroupSummary> {
@@ -305,6 +358,18 @@ export const adminService = {
 
     async getGroupInvitations(groupId: string): Promise<GroupInvitation[]> {
         return await apiClient.get(`/group/${groupId}/invitations`);
+    },
+
+    async getGroupMembers(groupId: string): Promise<GroupMembersResponse> {
+        return await apiClient.get(`/group/${groupId}/students`);
+    },
+
+    async removeGroupStudent(groupId: string, studentId: string): Promise<void> {
+        await apiClient.delete(`/group/${groupId}/students/${studentId}`);
+    },
+
+    async removeGroupMember(groupId: string, userId: string): Promise<void> {
+        await apiClient.delete(`/group/${groupId}/members/${userId}`);
     },
 
     async deleteGroup(groupId: string): Promise<void> {
