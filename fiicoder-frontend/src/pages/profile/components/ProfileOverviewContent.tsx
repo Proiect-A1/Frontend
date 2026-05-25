@@ -386,7 +386,10 @@ export default function ProfileOverviewContent({
               animate="visible"
               className="flex flex-col gap-2 overflow-y-auto custom-scrollbar flex-1"
             >
-              {profile.recentSubmissions.content.map((submission) => {
+              {profile.recentSubmissions.content
+                .slice()
+                .sort((a, b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime())
+                .map((submission) => {
                 const verdict = submissionVerdict(submission);
                 const verdictBadgeClasses: Record<typeof verdict, string> = isLightTheme
                   ? {

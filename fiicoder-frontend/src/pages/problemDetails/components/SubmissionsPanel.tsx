@@ -41,7 +41,10 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
                         {lang === 'RO' ? 'Autentifică-te pentru istoricul tău.' : 'Log in to see history.'}
                     </p>
                 ) : recentSubmissions.length > 0 ? (
-                    recentSubmissions.map((sub, idx) => {
+                    recentSubmissions
+                    .slice()
+                    .sort((a, b) => new Date(b.submissiondate).getTime() - new Date(a.submissiondate).getTime())
+                    .map((sub, idx) => {
                         const verdict = verdictFor(sub);
                         return (
                             <div
