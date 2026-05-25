@@ -31,6 +31,20 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
         ? submission.language 
         : (submission.language as any)?.name || 'Unknown';
 
+    let editorLang = 'plaintext';
+    const langLower = languageName.toLowerCase();
+    if (langLower.includes('c++') || langLower.includes('cpp') || langLower.includes('c')) {
+        editorLang = 'cpp';
+    } else if (langLower.includes('py')) {
+        editorLang = 'python';
+    } else if (langLower.includes('java')) {
+        editorLang = 'java';
+    } else if (langLower.includes('js') || langLower.includes('node') || langLower.includes('javascript')) {
+        editorLang = 'javascript';
+    } else if (langLower.includes('ts') || langLower.includes('typescript')) {
+        editorLang = 'typescript';
+    }
+
     const handleCopy = () => {
         navigator.clipboard.writeText(submission.code);
     };
@@ -85,7 +99,7 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
                         <div className="flex-1 min-h-0 relative bg-(--surface-card)">
                             <Editor
                                 height="100%"
-                                language={languageName.toLowerCase() === 'c++' ? 'cpp' : languageName.toLowerCase() === 'python' ? 'python' : 'java'}
+                                language={editorLang}
                                 value={submission.code}
                                 onMount={(_editor, monaco) => {
                                     applyMonacoTheme(monaco, theme, { customColors });

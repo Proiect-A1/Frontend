@@ -22,10 +22,8 @@
 // errors, unknown directives, dangling references and most arithmetic mistakes.
 
 import type {
-    FileCategory,
     GeneratorValidationError,
     GeneratorValidationResult,
-    ProblemFile,
 } from '../types/proposeProblem';
 
 const KNOWN_DIRECTIVES: Record<string, string> = {
@@ -49,14 +47,7 @@ const KNOWN_DIRECTIVES: Record<string, string> = {
     '#TEST': '#TEST',
 };
 
-// Directive → category of file the first argument must reference.
-const DIRECTIVE_FILE_CATEGORY: Partial<Record<string, FileCategory>> = {
-    '#MAIN': 'sources',
-    '#GEN': 'generators',
-    '#VAL': 'validators',
-    '#CHECK': 'checkers',
-    '#INT': 'interactors',
-};
+
 
 interface TokenizedLine {
     lineNumber: number;
@@ -80,24 +71,12 @@ function isFloat(token: string): boolean {
     return /^[+-]?(\d+(\.\d+)?|\.\d+)$/.test(token);
 }
 
-function fileNameWithoutExt(name: string): string {
-    const dot = name.lastIndexOf('.');
-    return dot > 0 ? name.slice(0, dot) : name;
-}
 
-function findFileMatch(reference: string, files: ProblemFile[], category: FileCategory): ProblemFile | undefined {
-    // Match either by exact name (with extension) or by basename — generator
-    // scripts conventionally use the basename, but we tolerate both.
-    return files.find(
-        (f) =>
-            f.category === category &&
-            (f.name === reference || fileNameWithoutExt(f.name) === reference),
-    );
-}
+
+
 
 export function validateGeneratorScript(
     script: string,
-    files: ProblemFile[] = [],
 ): GeneratorValidationResult {
     const errors: GeneratorValidationError[] = [];
 
@@ -143,15 +122,7 @@ export function validateGeneratorScript(
                 });
                 continue;
             }
-            const genName = line.tokens[1];
-            const match = findFileMatch(genName, files, 'generators');
-            if (files.length > 0 && !match) {
-                errors.push({
-                    line: line.lineNumber,
-                    col: line.raw.indexOf(genName) + 1,
-                    message: `Generator necunoscut „${genName}" — adaugă fișierul în Fișiere → Generatoare.`,
-                });
-            }
+
             hasAnyGenerator = true;
             continue;
         }
@@ -187,14 +158,6 @@ export function validateGeneratorScript(
                         });
                     }
                     mainDeclared = true;
-                    const name = line.tokens[1];
-                    if (files.length > 0 && !findFileMatch(name, files, 'sources')) {
-                        errors.push({
-                            line: line.lineNumber,
-                            col: line.raw.indexOf(name) + 1,
-                            message: `Soluție necunoscută „${name}" — adaugă fișierul în Fișiere → Surse.`,
-                        });
-                    }
                     break;
                 }
 
@@ -209,22 +172,6 @@ export function validateGeneratorScript(
                             message: `${first} trebuie urmat de numele fișierului și opțional argumente.`,
                         });
                         break;
-                    }
-                    const refName = line.tokens[1];
-                    const cat = DIRECTIVE_FILE_CATEGORY[canonical];
-                    if (cat && files.length > 0 && !findFileMatch(refName, files, cat)) {
-                        const catLabel: Record<FileCategory, string> = {
-                            sources: 'Surse',
-                            generators: 'Generatoare',
-                            validators: 'Validatoare',
-                            checkers: 'Checkere',
-                            interactors: 'Interactoare',
-                        };
-                        errors.push({
-                            line: line.lineNumber,
-                            col: line.raw.indexOf(refName) + 1,
-                            message: `Referință necunoscută „${refName}" — adaugă fișierul în Fișiere → ${catLabel[cat]}.`,
-                        });
                     }
                     if (canonical === '#GEN') hasAnyGenerator = true;
                     break;

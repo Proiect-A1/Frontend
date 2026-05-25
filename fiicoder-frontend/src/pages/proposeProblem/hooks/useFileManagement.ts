@@ -63,6 +63,29 @@ export function useFileManagement({ files, onFilesChange, activeCategory }: UseF
         [files, onFilesChange],
     );
 
+    const createNewFile = useCallback(
+        (filename: string) => {
+            const ext = filename.split('.').pop()?.toLowerCase();
+            let content = '';
+            if (ext === 'cpp' || ext === 'c') {
+                content = '#include <iostream>\n\nusing namespace std;\n\nint main() {\n    \n    return 0;\n}\n';
+            }
+            
+            const newFile: ProblemFile = {
+                id: `file_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+                name: filename,
+                size: content.length,
+                category: activeCategory,
+                content,
+                language: detectLanguage(filename),
+            };
+            
+            onFilesChange([...files, newFile]);
+            setEditingFileId(newFile.id);
+        },
+        [files, onFilesChange, activeCategory],
+    );
+
     const handleDrag = useCallback((e: React.DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -95,6 +118,7 @@ export function useFileManagement({ files, onFilesChange, activeCategory }: UseF
         fileInputRef,
         removeFile,
         updateFileContent,
+        createNewFile,
         handleDrag,
         handleDrop,
         handleFileInput,

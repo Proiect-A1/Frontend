@@ -16,8 +16,7 @@ export function useGeneratorValidation(script: string) {
 
         // Small delay so the spinner is visible — the check itself is sync.
         const handle = setTimeout(() => {
-            const files = getValues('files') ?? [];
-            const result = validateGeneratorScript(script, files);
+            const result = validateGeneratorScript(script);
             if (result.valid) {
                 setStatus('success');
                 setErrors([]);

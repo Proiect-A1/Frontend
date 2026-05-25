@@ -45,6 +45,8 @@ export default function AttachmentsTab() {
     const categories = isInteractive ? allCategories : allCategories.filter((c) => c.id !== 'interactors');
 
     const [activeCategory, setActiveCategory] = useState<FileCategory>('generators');
+    const [isCreatingFile, setIsCreatingFile] = useState(false);
+    const [newFilename, setNewFilename] = useState('');
     const monacoRef = useRef<any>(null);
 
     // Extract file management state to hook
@@ -81,35 +83,105 @@ export default function AttachmentsTab() {
             className="space-y-4"
         >
             {/* Category Sub-tabs */}
-            <motion.div variants={itemVariants} className="flex flex-wrap gap-2">
-                {categories.map((cat) => {
-                    const count = files.filter((f) => f.category === cat.id).length;
-                    const isActive = activeCategory === cat.id;
-                    return (
-                        <button
-                            key={cat.id}
-                            type="button"
-                            onClick={() => {
-                                setActiveCategory(cat.id);
-                                fileManagement.setEditingFileId(null);
-                            }}
-                            className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center gap-1.5 cursor-pointer outline-none ${
-                                isActive
-                                    ? 'bg-(--accent)/25 border-(--accent) text-(--text-h)'
-                                    : 'bg-(--accent)/10 border-(--accent)/40 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h)'
-                            }`}
-                        >
-                            <span>{cat.icon}</span>
-                            {cat.label}
-                            {count > 0 && (
-                                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-(--accent)/20 text-xs">
-                                    {count}
-                                </span>
-                            )}
-                        </button>
-                    );
-                })}
+            <motion.div variants={itemVariants} className="flex flex-wrap gap-2 items-center justify-between">
+                <div className="flex flex-wrap gap-2">
+                    {categories.map((cat) => {
+                        const count = files.filter((f) => f.category === cat.id).length;
+                        const isActive = activeCategory === cat.id;
+                        return (
+                            <button
+                                key={cat.id}
+                                type="button"
+                                onClick={() => {
+                                    setActiveCategory(cat.id);
+                                    fileManagement.setEditingFileId(null);
+                                    setIsCreatingFile(false);
+                                }}
+                                className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center gap-1.5 cursor-pointer outline-none ${
+                                    isActive
+                                        ? 'bg-(--accent)/25 border-(--accent) text-(--text-h)'
+                                        : 'bg-(--accent)/10 border-(--accent)/40 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h)'
+                                }`}
+                            >
+                                <span>{cat.icon}</span>
+                                {cat.label}
+                                {count > 0 && (
+                                    <span className="ml-1 px-1.5 py-0.5 rounded-full bg-(--accent)/20 text-xs">
+                                        {count}
+                                    </span>
+                                )}
+                            </button>
+                        );
+                    })}
+                </div>
+                
+                <button
+                    type="button"
+                    onClick={() => setIsCreatingFile(true)}
+                    className="px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center gap-1.5 bg-(--accent)/10 border-(--accent)/40 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h)"
+                >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
+                    Fișier Nou
+                </button>
             </motion.div>
+
+            <AnimatePresence>
+                {isCreatingFile && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                    >
+                        <div className="p-4 bg-(--surface-muted) rounded-2xl border border-(--accent)/20 flex items-center gap-3">
+                            <input
+                                type="text"
+                                value={newFilename}
+                                onChange={(e) => setNewFilename(e.target.value)}
+                                placeholder="Nume fișier (ex: main.cpp)"
+                                className="flex-1 px-3 py-1.5 bg-(--surface-card) border border-(--accent)/20 rounded-xl text-sm focus:outline-none focus:border-(--accent) text-(--text-h) transition-colors"
+                                autoFocus
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && newFilename.trim()) {
+                                        e.preventDefault();
+                                        fileManagement.createNewFile(newFilename.trim());
+                                        setIsCreatingFile(false);
+                                        setNewFilename('');
+                                    }
+                                    if (e.key === 'Escape') {
+                                        setIsCreatingFile(false);
+                                        setNewFilename('');
+                                    }
+                                }}
+                            />
+                            <button
+                                type="button"
+                                disabled={!newFilename.trim()}
+                                onClick={() => {
+                                    if (newFilename.trim()) {
+                                        fileManagement.createNewFile(newFilename.trim());
+                                        setIsCreatingFile(false);
+                                        setNewFilename('');
+                                    }
+                                }}
+                                className="px-4 py-1.5 rounded-xl text-sm font-bold bg-(--accent) text-(--surface-card) disabled:opacity-50 transition-colors"
+                            >
+                                Crează
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsCreatingFile(false);
+                                    setNewFilename('');
+                                }}
+                                className="px-4 py-1.5 rounded-xl text-sm font-bold border border-(--accent)/20 text-(--text) hover:text-(--text-h) hover:bg-(--surface-card) transition-colors"
+                            >
+                                Anulează
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Category Description */}
             <motion.div variants={itemVariants} className="p-3 bg-(--surface-muted) rounded-2xl border border-(--accent)/20">
