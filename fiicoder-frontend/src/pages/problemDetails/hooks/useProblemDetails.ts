@@ -405,6 +405,7 @@ export function useProblemDetails() {
         handleSubmit,
         handleLayoutAction,
         problemTitle,
+        problemTests,
     };
 }
 

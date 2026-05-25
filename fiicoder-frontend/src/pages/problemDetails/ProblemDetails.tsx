@@ -37,6 +37,7 @@ export default function ProblemDetails() {
         handleEditorMount,
         handleSubmit,
         handleLayoutAction,
+        problemTests,
     } = useProblemDetails();
 
     if (loading) {
@@ -98,6 +99,7 @@ export default function ProblemDetails() {
                         evalTests={evalTests}
                         evalSubtasks={evalSubtasks}
                         lang={lang}
+                        problemTests={problemTests}
                     />
                 );
             case 'submissions':
@@ -183,6 +185,7 @@ export default function ProblemDetails() {
                                 evalTests={evalTests}
                                 evalSubtasks={evalSubtasks}
                                 lang={lang}
+                                problemTests={problemTests}
                             />
                         )}
                         {activeTab === 'submissions' && (
