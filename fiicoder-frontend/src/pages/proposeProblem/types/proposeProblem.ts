@@ -103,7 +103,7 @@ export interface ProposeProblemForm {
 export interface ProblemProposalResponse {
   id: string;
   title: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'checked' | 'approved' | 'rejected';
   visibility: 'private' | 'public';
   hasPendingUpdate: boolean;
   submittedAt: string;

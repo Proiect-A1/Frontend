@@ -79,8 +79,9 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
     const [activeTab, setActiveTab] = useState('general');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error' | 'pending-review' | 'checked'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
+    const [submitPhase, setSubmitPhase] = useState<'idle' | 'uploading' | 'verifying'>('idle');
     const [hasDraft, setHasDraft] = useState(false);
     const [showDraftBanner, setShowDraftBanner] = useState(false);
     const [proposals, setProposals] = useState<ProblemProposalResponse[] | null>(null);
@@ -186,17 +187,35 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
         async (data: ProposeProblemForm) => {
             setIsSubmitting(true);
             setSubmitStatus('idle');
+            setSubmitPhase('uploading');
 
             try {
                 if (isEditMode && proposalId) {
                     await proposeProblemService.updateProposal(proposalId, data);
                     toast.success('Propunerea a fost actualizată cu succes.');
+                    setSubmitStatus('success');
                 } else {
-                    await proposeProblemService.submitProposal(data);
+                    setSubmitPhase('verifying');
+                    const result = await proposeProblemService.submitProposal(data);
                     clearDraft();
-                    toast.success('Propunerea a fost trimisă cu succes.');
+
+                    if (result.status === 'rejected') {
+                        setSubmitStatus('error');
+                        const msg = 'Propunerea a fost respinsă automat la verificare. Verifică structura fișierelor din ZIP și încearcă din nou.';
+                        setErrorMessage(msg);
+                        toast.error(msg, { duration: 10000 });
+                    } else if (result.status === 'checked' || result.status === 'approved') {
+                        setSubmitStatus('checked');
+                        toast.success('Propunere verificată automat! Așteaptă aprobarea unui admin.', { duration: 8000 });
+                    } else {
+                        // still 'pending' after polling timed out
+                        setSubmitStatus('pending-review');
+                        toast.info(
+                            'Propunerea a fost trimisă. Verificarea automată e încă în curs — vezi „Propunerile mele" peste câteva momente.',
+                            { duration: 9000 },
+                        );
+                    }
                 }
-                setSubmitStatus('success');
             } catch (error) {
                 setSubmitStatus('error');
                 const message = parseSubmitError(error);
@@ -204,6 +223,7 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
                 toast.error(message, { duration: 8000 });
             } finally {
                 setIsSubmitting(false);
+                setSubmitPhase('idle');
             }
         },
         [isEditMode, proposalId],
@@ -275,6 +295,7 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
         isSubmitting,
         isLoading,
         submitStatus,
+        submitPhase,
         errorMessage,
         hasDraft,
         showDraftBanner,

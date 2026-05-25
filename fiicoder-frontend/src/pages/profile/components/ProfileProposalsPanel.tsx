@@ -83,16 +83,36 @@ export default function ProfileProposalsPanel({ proposals, loading, lang, onTogg
                             </div>
 
                             <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-                                <span
-                                    style={{
-                                        borderColor: `color-mix(in srgb, var(--status-${proposal.status === 'approved' ? 'success' : proposal.status === 'rejected' ? 'error' : 'warning'}) 40%, transparent)`,
-                                        color: `var(--status-${proposal.status === 'approved' ? 'success' : proposal.status === 'rejected' ? 'error' : 'warning'})`,
-                                        backgroundColor: `color-mix(in srgb, var(--status-${proposal.status === 'approved' ? 'success' : proposal.status === 'rejected' ? 'error' : 'warning'}) 5%, transparent)`
-                                    }}
-                                    className="text-[10px] px-2 py-0.5 rounded-full border uppercase tracking-wider font-bold self-start sm:self-center"
-                                >
-                                    {proposal.status}
-                                </span>
+                                {(() => {
+                                    const statusToken =
+                                        proposal.status === 'approved' ? 'success'
+                                            : proposal.status === 'rejected' ? 'error'
+                                                : proposal.status === 'checked' ? 'info'
+                                                    : 'warning';
+                                    const label =
+                                        proposal.status === 'checked'
+                                            ? lang === 'RO' ? 'verificată' : 'checked'
+                                            : proposal.status;
+                                    const title =
+                                        proposal.status === 'checked'
+                                            ? lang === 'RO'
+                                                ? 'Verificată automat de backend. Așteaptă aprobarea unui admin.'
+                                                : 'Auto-checked by backend. Awaiting admin approval.'
+                                            : proposal.status;
+                                    return (
+                                        <span
+                                            title={title}
+                                            style={{
+                                                borderColor: `color-mix(in srgb, var(--status-${statusToken}) 40%, transparent)`,
+                                                color: `var(--status-${statusToken})`,
+                                                backgroundColor: `color-mix(in srgb, var(--status-${statusToken}) 5%, transparent)`,
+                                            }}
+                                            className="text-[10px] px-2 py-0.5 rounded-full border uppercase tracking-wider font-bold self-start sm:self-center"
+                                        >
+                                            {label}
+                                        </span>
+                                    );
+                                })()}
                                 <div className="flex flex-wrap gap-2">
                                     {proposal.status === 'approved' && onToggleVisibility && (
                                         <button

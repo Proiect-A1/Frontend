@@ -8,6 +8,62 @@ type BackendProblemProposal = {
   problemStatus?: string;
 };
 
+// Backend auto-verification happens async after the ZIP upload triggers the R2
+// webhook. We poll the single-problem endpoint until the status leaves PENDING
+// (becomes CHECKED / REJECTED) so the UI can surface the real outcome.
+const POLL_INTERVAL_MS = 1500;
+const POLL_MAX_ATTEMPTS = 12; // ~18s total
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function pollProposalState(
+  title: string,
+  fallbackVisibility: ProblemProposalResponse["visibility"],
+): Promise<ProblemProposalResponse> {
+  let lastSeen: ProblemProposalResponse | null = null;
+
+  for (let attempt = 0; attempt < POLL_MAX_ATTEMPTS; attempt++) {
+    await sleep(POLL_INTERVAL_MS);
+    try {
+      const dto = await apiClient.get<{
+        title: string;
+        problemStatus?: string;
+        problemVisibility?: string;
+      }>(`/problems/${encodeURIComponent(title)}`);
+
+      const response: ProblemProposalResponse = {
+        id: dto.title,
+        title: dto.title,
+        status: mapProblemStatus(dto.problemStatus),
+        visibility: mapProblemVisibility(dto.problemVisibility) || fallbackVisibility,
+        hasPendingUpdate: false,
+        submittedAt: new Date().toISOString(),
+      };
+      lastSeen = response;
+      if (response.status !== "pending") {
+        return response;
+      }
+    } catch {
+      // 403/404 transiently while the webhook updates rows — keep polling.
+    }
+  }
+
+  // Timed out — verification is still in progress. Surface a pending response
+  // so the UI can tell the user to check back later in "My Proposals".
+  return (
+    lastSeen ?? {
+      id: title,
+      title,
+      status: "pending",
+      visibility: fallbackVisibility,
+      hasPendingUpdate: false,
+      submittedAt: new Date().toISOString(),
+    }
+  );
+}
+
 export const proposeProblemService = {
   // Submit a new problem proposal
   submitProposal: async (formData: ProposeProblemForm): Promise<ProblemProposalResponse> => {
@@ -31,15 +87,9 @@ export const proposeProblemService = {
       throw { status: uploadRes.status, body: null, message: 'ZIP_UPLOAD_FAILED' };
     }
 
-    // Return a mock response or refetch if necessary since the backend might not return the full ProposalResponse here
-    return {
-      id: formData.title,
-      title: formData.title,
-      status: 'pending',
-      visibility: formData.visibility,
-      hasPendingUpdate: false,
-      submittedAt: new Date().toISOString(),
-    };
+    // 4. Poll the backend until automated verification finishes (CHECKED /
+    //    REJECTED) or we time out and surface a still-pending response.
+    return await pollProposalState(formData.title, formData.visibility);
   },
 
   // Update an existing proposal (new version) -> The backend handles update with the same POST
@@ -120,6 +170,8 @@ function mapProblemStatus(status?: string): ProblemProposalResponse["status"] {
       return "approved";
     case "REJECTED":
       return "rejected";
+    case "CHECKED":
+      return "checked";
     default:
       return "pending";
   }

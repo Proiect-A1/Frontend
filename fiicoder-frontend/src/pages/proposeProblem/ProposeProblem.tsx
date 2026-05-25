@@ -58,6 +58,7 @@ export default function ProposeProblem() {
         isSubmitting,
         isLoading,
         submitStatus,
+        submitPhase,
         errorMessage,
         hasDraft,
         showDraftBanner,
@@ -208,11 +209,24 @@ export default function ProposeProblem() {
 
                                 <div className="page-line-horizontal mb-6" />
 
-                                {submitStatus === 'success' && (
+                                {(submitStatus === 'success' || submitStatus === 'checked') && (
                                     <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} style={{ borderColor: 'var(--status-success)', backgroundColor: 'var(--status-success-bg)' }} className="mb-6 p-4 rounded-2xl border">
                                         <p className="text-sm font-semibold flex items-center gap-1.5" style={{ color: 'var(--status-success)' }}>
                                             <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
-                                            {isEditMode ? 'Propunerea a fost actualizată cu succes!' : 'Propunerea ta a fost trimisă cu succes! Vei fi notificat când va fi revizuită.'}
+                                            {isEditMode
+                                                ? 'Propunerea a fost actualizată cu succes!'
+                                                : submitStatus === 'checked'
+                                                  ? 'Propunere verificată automat! Așteaptă aprobarea unui admin.'
+                                                  : 'Propunerea ta a fost trimisă cu succes! Vei fi notificat când va fi revizuită.'}
+                                        </p>
+                                    </motion.div>
+                                )}
+
+                                {submitStatus === 'pending-review' && (
+                                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} style={{ borderColor: 'var(--status-info)', backgroundColor: 'var(--status-info-bg)' }} className="mb-6 p-4 rounded-2xl border">
+                                        <p className="text-sm font-semibold flex items-center gap-1.5" style={{ color: 'var(--status-info)' }}>
+                                            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                            Trimisă. Verificarea automată e încă în curs — vezi „Propunerile mele" peste câteva momente.
                                         </p>
                                     </motion.div>
                                 )}
@@ -222,6 +236,15 @@ export default function ProposeProblem() {
                                         <p className="text-sm font-semibold flex items-center gap-2" style={{ color: 'var(--status-error)' }}>
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                             {errorMessage}
+                                        </p>
+                                    </motion.div>
+                                )}
+
+                                {isSubmitting && submitPhase === 'verifying' && (
+                                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} style={{ borderColor: 'var(--status-info)', backgroundColor: 'var(--status-info-bg)' }} className="mb-6 p-4 rounded-2xl border">
+                                        <p className="text-sm font-semibold flex items-center gap-2" style={{ color: 'var(--status-info)' }}>
+                                            <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                                            ZIP încărcat. Se rulează verificarea automată... (max ~20s)
                                         </p>
                                     </motion.div>
                                 )}

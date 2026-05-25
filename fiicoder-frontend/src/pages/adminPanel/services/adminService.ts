@@ -131,25 +131,6 @@ export interface GroupInvitation {
     inviterUsername: string;
 }
 
-const mockUsers: AdminUser[] = [
-    { id: '', username: 'student1', firstName: 'Student', lastName: 'One', email: 'student1@fii.ro', role: 'USER', creationDate: '2026-04-20', banned: false },
-    { id: '', username: 'hacker_boi', firstName: 'Hacker', lastName: 'Boi', email: 'hacker@test.ro', role: 'USER', creationDate: '2026-04-21', banned: true, banReason: 'Comportament inadecvat' },
-    { id: '', username: 'profesor_info', firstName: 'Prof', lastName: 'Info', email: 'prof@fii.ro', role: 'ADMIN', creationDate: '2026-04-22', banned: false },
-    ...Array.from({ length: 37 }, (_, index) => {
-        const userNumber = index + 4;
-        return {
-            id: '',
-            username: `student_${userNumber}`,
-            firstName: `Student`,
-            lastName: `${userNumber}`,
-            email: `student_${userNumber}@fii.ro`,
-            role: userNumber % 11 === 0 ? 'ADMIN' : (userNumber % 5 === 0 ? 'PROFESSOR' : 'USER'),
-            creationDate: '2026-04-23',
-            banned: userNumber % 7 === 0,
-        } satisfies AdminUser;
-    }),
-];
-
 const mockProposalDetails: ProblemProposalDetail[] = [
     {
         id: 'p1',
@@ -166,10 +147,6 @@ const mockProposalDetails: ProblemProposalDetail[] = [
         sampleOutput: '12',
         tags: ['trees', 'data-structures', 'range-query'],
     },
-];
-
-const mockAnnouncements: Announcement[] = [
-    { id: 'a1', title: 'Mentenanță platformă', content: 'Platforma va fi oprită sâmbătă la ora 02:00 pentru update.', createdAt: '2026-04-26' },
 ];
 
 const mockAuditLog: AuditLogEntry[] = [
@@ -217,12 +194,7 @@ export const adminService = {
     },
 
     async getUsers(page: number = 1, pageSize: number = 20): Promise<AdminUser[]> {
-        try {
-            return await apiClient.get(`/users/all?page=${page}&size=${pageSize}`);
-        } catch {
-            const startIndex = (page - 1) * pageSize;
-            return mockUsers.slice(startIndex, startIndex + pageSize);
-        }
+        return await apiClient.get(`/users/all?page=${page}&size=${pageSize}`);
     },
 
     async toggleBan(userId: string, banned: boolean, reason?: string): Promise<void> {
@@ -304,11 +276,7 @@ export const adminService = {
     },
 
     async getAnnouncements(): Promise<Announcement[]> {
-        try {
-            return await apiClient.get('/announcements');
-        } catch {
-            return mockAnnouncements;
-        }
+        return await apiClient.get('/announcements');
     },
 
     async createAnnouncement(input: AnnouncementInput): Promise<Announcement> {
