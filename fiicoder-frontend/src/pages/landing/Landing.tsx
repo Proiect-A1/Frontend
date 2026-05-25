@@ -484,7 +484,7 @@ export default function Landing() {
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-start justify-between gap-2 mb-0.5">
                                                     <h3
-                                                        className={`font-bold text-xs line-clamp-1 ${
+                                                        className={`font-bold text-sm line-clamp-1 ${
                                                             ann.priority === 'high'
                                                                 ? 'text-(--accent)'
                                                                 : 'text-(--text-h)'
@@ -493,15 +493,15 @@ export default function Landing() {
                                                         {unpackTranslation(ann.title, lang)}
                                                     </h3>
                                                     {ann.priority === 'high' && (
-                                                        <span className="shrink-0 px-1 py-0 rounded-md bg-(--accent) text-(--surface-card) text-[7px] font-black uppercase">
+                                                        <span className="shrink-0 px-1.5 py-0.5 rounded-md bg-(--accent) text-(--surface-card) text-[10px] font-black uppercase">
                                                             !
                                                         </span>
                                                     )}
                                                 </div>
-                                                <p className="text-[11px] text-(--text-muted) mb-1.5 line-clamp-2 leading-tight">
+                                                <p className="text-sm text-(--text-muted) mb-1.5 line-clamp-2 leading-snug">
                                                     {unpackTranslation(ann.content, lang)}
                                                 </p>
-                                                <div className="text-[9px] text-(--text-subtle) font-bold uppercase tracking-wider">
+                                                <div className="text-xs text-(--text-subtle) font-bold uppercase tracking-wider">
                                                     {formatDateTime(ann.createdAt, lang)}
                                                 </div>
                                             </div>

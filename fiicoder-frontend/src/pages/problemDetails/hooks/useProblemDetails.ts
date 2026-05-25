@@ -190,8 +190,14 @@ export function useProblemDetails() {
                 setAvailableLanguages(langs);
                 setProblemTests(testDetails);
                 if (langs.length > 0) {
-                    setSelectedLanguageId(langs[0].id);
-                    setLanguage(langs[0].name);
+                    const cppLang = langs.find(l =>
+                        l.name === 'C++' ||
+                        l.name?.toLowerCase() === 'cpp' ||
+                        l.name?.toLowerCase().includes('c++'),
+                    );
+                    const defaultLang = cppLang ?? langs[0];
+                    setSelectedLanguageId(defaultLang.id);
+                    setLanguage(defaultLang.name);
                 }
 
                 if (isAuthenticated && problemTitle) {

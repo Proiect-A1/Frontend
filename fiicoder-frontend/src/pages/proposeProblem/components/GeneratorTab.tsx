@@ -213,26 +213,28 @@ export default function GeneratorTab() {
             {errors.length > 0 && (
                 <motion.div
                     variants={itemVariants}
-                    className="rounded-2xl border border-red-500/30 bg-red-950/20 overflow-hidden"
+                    className="rounded-2xl border-2 border-red-500/50 bg-red-950/20 overflow-hidden"
                 >
-                    <div className="px-4 py-2 bg-red-950/40 border-b border-red-500/20">
-                        <span className="text-red-400 font-semibold text-sm flex items-center gap-1.5">
-                            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                            {errors.length} {errors.length === 1 ? 'eroare' : 'erori'}
+                    <div className="px-4 py-3 bg-red-950/50 border-b border-red-500/30 flex items-center justify-between">
+                        <span className="text-red-400 font-bold text-sm flex items-center gap-2">
+                            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+                            {errors.length} {errors.length === 1 ? 'eroare în script' : 'erori în script'} — scriptul nu poate fi trimis
                         </span>
+                        <span className="text-xs text-red-400/60 font-mono">apasă Salvează după corecții</span>
                     </div>
-                    <div className="max-h-40 overflow-y-auto custom-scrollbar">
+                    <div className="max-h-64 overflow-y-auto custom-scrollbar divide-y divide-red-500/10">
                         {errors.map((err, i) => (
                             <div
                                 key={i}
-                                className="px-4 py-2 border-b border-red-500/10 last:border-0 hover:bg-red-950/30 transition-colors flex items-start gap-3"
+                                className="px-4 py-3 hover:bg-red-950/30 transition-colors flex items-start gap-3"
                             >
-                                {err.line > 0 && (
-                                    <span className="text-xs text-red-400/70 font-mono shrink-0 mt-0.5">
-                                        L{err.line}:{err.col}
-                                    </span>
-                                )}
-                                <span className="text-sm text-red-300">{err.message}</span>
+                                <span className="text-xs text-red-400/80 font-mono shrink-0 mt-0.5 min-w-[60px]">
+                                    {err.line > 0 ? `L${err.line}:${err.col}` : '—'}
+                                </span>
+                                <div className="flex-1 min-w-0">
+                                    <span className="text-sm text-red-300 leading-snug">{err.message}</span>
+                                </div>
+                                <span className="shrink-0 text-xs text-red-500/50 font-bold">#{i + 1}</span>
                             </div>
                         ))}
                     </div>

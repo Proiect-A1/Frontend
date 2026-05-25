@@ -11,6 +11,7 @@ import {
 import { createProblemZip } from '../utils/zipHelper';
 import { ZipImportError } from '../utils/unzipHelper';
 import type { ProposeProblemForm, ProblemProposalResponse } from '../types/proposeProblem';
+import { validateGeneratorScript } from '../utils/generatorValidator';
 
 interface ApiError { status: number; body: { message?: string; violations?: { message: string }[] } | null; message: string; }
 
@@ -189,6 +190,30 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
             setSubmitStatus('idle');
             setSubmitPhase('uploading');
 
+            // Validate generator script before any network calls.
+            if (data.generatorScript?.trim()) {
+                const genResult = validateGeneratorScript(data.generatorScript);
+                if (!genResult.valid) {
+                    setActiveTab('generator');
+                    const count = genResult.errors.length;
+                    const preview = genResult.errors
+                        .slice(0, 3)
+                        .map(e => `• L${e.line}:${e.col} — ${e.message}`)
+                        .join('\n');
+                    const suffix = count > 3 ? `\n... și încă ${count - 3} ${count - 3 === 1 ? 'eroare' : 'erori'}` : '';
+                    const summary = `Scriptul de generare are ${count} ${count === 1 ? 'eroare' : 'erori'}. Corectează-le înainte de a trimite.`;
+                    setSubmitStatus('error');
+                    setErrorMessage(summary);
+                    toast.error(summary, {
+                        description: preview + suffix,
+                        duration: 10000,
+                    });
+                    setIsSubmitting(false);
+                    setSubmitPhase('idle');
+                    return;
+                }
+            }
+
             try {
                 if (isEditMode && proposalId) {
                     await proposeProblemService.updateProposal(proposalId, data);
@@ -226,7 +251,7 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
                 setSubmitPhase('idle');
             }
         },
-        [isEditMode, proposalId],
+        [isEditMode, proposalId, setActiveTab],
     );
 
     const handleSaveDraftManual = useCallback(() => {
