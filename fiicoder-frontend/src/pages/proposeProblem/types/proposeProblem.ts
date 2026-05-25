@@ -35,9 +35,16 @@ export interface GeneratorValidationError {
   message: string;
 }
 
+export interface GeneratorValidationWarning {
+  line: number;
+  col: number;
+  message: string;
+}
+
 export interface GeneratorValidationResult {
   valid: boolean;
   errors: GeneratorValidationError[];
+  warnings: GeneratorValidationWarning[];
 }
 
 // ── Run results ──

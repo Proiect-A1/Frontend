@@ -40,7 +40,7 @@ export default function GeneratorTab() {
 
     const generatorScript = watch('generatorScript') || '';
 
-    const { status, errors, handleSave } = useGeneratorValidation(generatorScript);
+    const { status, errors, warnings, handleSave } = useGeneratorValidation(generatorScript);
     const [showDocsPanel, setShowDocsPanel] = useState(false);
 
     const buildGeneratorRules = () => {
@@ -235,6 +235,31 @@ export default function GeneratorTab() {
                                     <span className="text-sm text-red-300 leading-snug">{err.message}</span>
                                 </div>
                                 <span className="shrink-0 text-xs text-red-500/50 font-bold">#{i + 1}</span>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+            )}
+
+            {/* Warnings Panel */}
+            {warnings.length > 0 && (
+                <motion.div
+                    variants={itemVariants}
+                    className="rounded-2xl border-2 border-yellow-500/40 bg-yellow-950/20 overflow-hidden"
+                >
+                    <div className="px-4 py-3 bg-yellow-950/40 border-b border-yellow-500/20 flex items-center justify-between">
+                        <span className="text-yellow-400 font-bold text-sm flex items-center gap-2">
+                            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+                            {warnings.length} {warnings.length === 1 ? 'avertisment' : 'avertismente'}
+                        </span>
+                    </div>
+                    <div className="max-h-40 overflow-y-auto custom-scrollbar divide-y divide-yellow-500/10">
+                        {warnings.map((w, i) => (
+                            <div key={i} className="px-4 py-3 hover:bg-yellow-950/30 transition-colors flex items-start gap-3">
+                                <span className="text-xs text-yellow-400/80 font-mono shrink-0 mt-0.5 min-w-[60px]">
+                                    {w.line > 0 ? `L${w.line}:${w.col}` : '—'}
+                                </span>
+                                <span className="text-sm text-yellow-300 leading-snug">{w.message}</span>
                             </div>
                         ))}
                     </div>

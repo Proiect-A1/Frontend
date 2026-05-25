@@ -101,11 +101,13 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
         });
     };
 
-    // Map subtaskId -> sorted list of testIds belonging to it
+    // Map subtaskId -> globally-sequential testIds (matches the pre-populated order in the hook)
     const subtaskTestIds = new Map<number, number[]>();
     if (problemTests) {
+        let globalIdx = 0;
         problemTests.subtasks.forEach(subtask => {
-            subtaskTestIds.set(subtask.index, subtask.tests.map(t => t.testIndex).sort((a, b) => a - b));
+            const testIds = subtask.tests.map(() => globalIdx++);
+            subtaskTestIds.set(subtask.index, testIds);
         });
     }
 

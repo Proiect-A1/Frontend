@@ -1,28 +1,30 @@
 // Syntactic + semantic validator for the FiiCoder generator DSL.
 //
-// Grammar (from utils/generatorLanguage.ts):
-//   #MAIN <name>
-//   #VAL | #VALIDATOR <name> <args...>
-//   #GEN | #GENERATOR <name> <args...>
-//   #CHECK | #CHECKER <name> <args...>
-//   #INT | #INTERACTOR <name> <args...>
-//   #DEFGRP | #DEFGROUP <points: float> <name: string>
-//   #GRP | #GROUP <points: float>
-//   #IN | #SETIN <group names...>
-//   #ADDIN <group names...>
-//   #NOTIN <group names...>
-//   #TEST <points: float> <generator args...>
-//   = <filename>          - copy raw test file
-//   < <generator> <args>  - use specific generator
-//   <args...>             - append args to current #GEN
+// Aligned with test_generation_script_compiler_task.cpp (backend reference).
+//
+// Grammar:
+//   #MAIN <name>                        — exact 2 tokens, no dot in name
+//   #VAL | #VALIDATOR <name> <args...>  — min 2 tokens, no dot in name
+//   #GEN | #GENERATOR <name> <args...>  — min 2 tokens, no dot in name
+//   #CHECK | #CHECKER <name> <args...>  — min 2 tokens, no dot in name
+//   #INT | #INTERACTOR <name> <args...> — min 2 tokens, no dot in name
+//   #DEFGRP | #DEFGROUP <pts> <name>    — exact 3 tokens, pts >= 0
+//   #GRP | #GROUP <pts>                 — exact 2 tokens, pts >= 0
+//   #IN | #SETIN [group names...]       — no args = clear active groups (valid)
+//   #ADDIN [group names...]             — no args = redundant (warning)
+//   #NOTIN [group names...]             — no args = redundant (warning)
+//   #TEST <pts> <gen args...>           — min 3 tokens, pts >= 0
+//   = <filename>                        — exact 2 tokens, no / or \ in filename
+//   < <generator> <args>
+//   <args...>                           — bare continuation args
 //   // comment
 //
-// Runtime checks (does the generator actually compile and produce valid output)
-// are NOT done here — those need the sandbox. This validator catches syntax
-// errors, unknown directives, dangling references and most arithmetic mistakes.
+// Directives are CASE-SENSITIVE (matches backend behaviour).
+// Runtime checks (file existence, compilation) require the sandbox — not done here.
 
 import type {
     GeneratorValidationError,
+    GeneratorValidationWarning,
     GeneratorValidationResult,
 } from '../types/proposeProblem';
 
@@ -47,23 +49,26 @@ const KNOWN_DIRECTIVES: Record<string, string> = {
     '#TEST': '#TEST',
 };
 
-
-
 interface TokenizedLine {
     lineNumber: number;
     raw: string;
-    stripped: string;
     tokens: string[];
 }
 
 function tokenize(script: string): TokenizedLine[] {
     return script.split(/\r?\n/).map((raw, idx) => {
         const lineNumber = idx + 1;
-        // Strip line comments but keep the original line for offset reporting.
-        const commentIdx = raw.indexOf('//');
-        const stripped = (commentIdx >= 0 ? raw.slice(0, commentIdx) : raw).trim();
-        const tokens = stripped.length > 0 ? stripped.split(/\s+/) : [];
-        return { lineNumber, raw, stripped, tokens };
+        // Backend strips comments token-by-token: if a token starts with //,
+        // drop it and everything after; if // appears mid-token, trim to that point.
+        const parts = raw.split(/\s+/).filter(Boolean);
+        const tokens: string[] = [];
+        for (const part of parts) {
+            const ci = part.indexOf('//');
+            if (ci === 0) break;
+            if (ci > 0) { tokens.push(part.slice(0, ci)); break; }
+            tokens.push(part);
+        }
+        return { lineNumber, raw, tokens };
     });
 }
 
@@ -71,48 +76,77 @@ function isFloat(token: string): boolean {
     return /^[+-]?(\d+(\.\d+)?|\.\d+)$/.test(token);
 }
 
-
-
-
-
 export function validateGeneratorScript(
     script: string,
 ): GeneratorValidationResult {
     const errors: GeneratorValidationError[] = [];
+    const warnings: GeneratorValidationWarning[] = [];
 
     if (script.trim().length === 0) {
         return {
             valid: false,
             errors: [{ line: 1, col: 1, message: 'Scriptul de generare este gol.' }],
+            warnings: [],
         };
     }
 
     const lines = tokenize(script);
 
+    // Named groups defined via #DEFGRP/#DEFGROUP.
     const definedGroups = new Set<string>();
+
+    // Active group membership — mirrors backend's `current_groups` set.
+    // Named groups use their name; anonymous #GRP groups use "__grp_N".
+    const currentGroups = new Set<string>();
+    let groupDirectiveName: string | null = null; // current #GRP anonymous group name
+    let anonCounter = 0;
+
+    // Clears the anonymous group created by the last #GRP (if any).
+    // Called whenever #IN / #ADDIN / #NOTIN / #TEST is encountered.
+    function clearGroupDirective() {
+        if (groupDirectiveName !== null) {
+            currentGroups.delete(groupDirectiveName);
+            groupDirectiveName = null;
+        }
+    }
+
     let mainDeclared = false;
-    let activeGroupsHaveBeenSet = false; // either #DEFGRP/#GRP made one, or #IN set them
     let totalGroupPoints = 0;
     let totalTestPoints = 0;
-    let hasAnyGenerator = false;
 
     for (const line of lines) {
         if (line.tokens.length === 0) continue;
 
         const first = line.tokens[0];
 
-        // Line-level operators (= filename, < generator args ...)
+        // ── Line-level operators ────────────────────────────────────────────
         if (first === '=') {
-            if (line.tokens.length < 2) {
+            if (line.tokens.length !== 2) {
                 errors.push({
                     line: line.lineNumber,
                     col: 1,
-                    message: 'Operatorul „=" trebuie urmat de un nume de fișier (ex: `= exemplu.in`).',
+                    message: 'Operatorul „=" necesită exact un argument — numele fișierului (ex: `= exemplu.in`).',
                 });
                 continue;
             }
+            const filename = line.tokens[1];
+            if (filename.includes('/') || filename.includes('\\')) {
+                errors.push({
+                    line: line.lineNumber,
+                    col: line.raw.indexOf(filename) + 1,
+                    message: `Numele fișierului „${filename}" nu trebuie să conțină / sau \\ — doar numele fișierului, fără cale (ex: \`= exemplu.in\`).`,
+                });
+            }
+            if (currentGroups.size === 0) {
+                errors.push({
+                    line: line.lineNumber,
+                    col: 1,
+                    message: 'Acest test nu aparține niciunui subtask — folosește #IN / #GRP înainte.',
+                });
+            }
             continue;
         }
+
         if (first === '<') {
             if (line.tokens.length < 2) {
                 errors.push({
@@ -122,40 +156,47 @@ export function validateGeneratorScript(
                 });
                 continue;
             }
-
-            hasAnyGenerator = true;
+            if (currentGroups.size === 0) {
+                errors.push({
+                    line: line.lineNumber,
+                    col: 1,
+                    message: 'Acest test nu aparține niciunui subtask — folosește #IN / #GRP înainte.',
+                });
+            }
             continue;
         }
 
-        // Unknown directive — anything starting with # that we don't recognise.
+        // ── Directive handling ──────────────────────────────────────────────
         if (first.startsWith('#')) {
-            const upper = first.toUpperCase();
-            const canonical = KNOWN_DIRECTIVES[upper];
+            // Case-sensitive lookup — matches backend behaviour.
+            const canonical = KNOWN_DIRECTIVES[first];
             if (!canonical) {
                 errors.push({
                     line: line.lineNumber,
                     col: line.raw.indexOf(first) + 1,
-                    message: `Directivă necunoscută „${first}". Directive valide: ${Object.keys(KNOWN_DIRECTIVES).join(', ')}.`,
+                    message: `Directivă necunoscută „${first}". Directivele sunt case-sensitive. Valide: ${Object.keys(KNOWN_DIRECTIVES).join(', ')}.`,
                 });
                 continue;
             }
 
             switch (canonical) {
                 case '#MAIN': {
-                    if (line.tokens.length < 2) {
+                    if (line.tokens.length !== 2) {
                         errors.push({
                             line: line.lineNumber,
                             col: 1,
-                            message: '#MAIN trebuie urmat de numele soluției principale.',
+                            message: '#MAIN necesită exact un argument — numele executabilului fără extensie (ex: `#MAIN main`).',
                         });
                         break;
                     }
-                    if (mainDeclared) {
+                    const name = line.tokens[1];
+                    if (name.includes('.')) {
                         errors.push({
                             line: line.lineNumber,
-                            col: 1,
-                            message: '#MAIN este declarat de mai multe ori. Folosește o singură soluție principală.',
+                            col: line.raw.indexOf(name) + 1,
+                            message: `Numele executabilului „${name}" nu trebuie să conțină punct — nu folosi extensii (ex: \`#MAIN main\`, nu \`#MAIN main.cpp\`).`,
                         });
+                        break;
                     }
                     mainDeclared = true;
                     break;
@@ -169,20 +210,27 @@ export function validateGeneratorScript(
                         errors.push({
                             line: line.lineNumber,
                             col: 1,
-                            message: `${first} trebuie urmat de numele fișierului și opțional argumente.`,
+                            message: `${first} trebuie urmat de numele executabilului și opțional argumente.`,
                         });
                         break;
                     }
-                    if (canonical === '#GEN') hasAnyGenerator = true;
+                    const execName = line.tokens[1];
+                    if (execName.includes('.')) {
+                        errors.push({
+                            line: line.lineNumber,
+                            col: line.raw.indexOf(execName) + 1,
+                            message: `Numele executabilului „${execName}" nu trebuie să conțină punct — nu folosi extensii.`,
+                        });
+                    }
                     break;
                 }
 
                 case '#DEFGRP': {
-                    if (line.tokens.length < 3) {
+                    if (line.tokens.length !== 3) {
                         errors.push({
                             line: line.lineNumber,
                             col: 1,
-                            message: '#DEFGRP necesită puncte și nume: `#DEFGRP <puncte> <nume>`.',
+                            message: '#DEFGRP necesită exact două argumente: `#DEFGRP <puncte> <nume>`.',
                         });
                         break;
                     }
@@ -195,7 +243,16 @@ export function validateGeneratorScript(
                             message: `Punctaj invalid „${pts}" — trebuie să fie un număr.`,
                         });
                     } else {
-                        totalGroupPoints += parseFloat(pts);
+                        const ptsVal = parseFloat(pts);
+                        if (ptsVal < 0) {
+                            errors.push({
+                                line: line.lineNumber,
+                                col: line.raw.indexOf(pts) + 1,
+                                message: `Punctajul grupului nu poate fi negativ (primit: ${pts}).`,
+                            });
+                        } else {
+                            totalGroupPoints += ptsVal;
+                        }
                     }
                     if (definedGroups.has(name)) {
                         errors.push({
@@ -205,16 +262,17 @@ export function validateGeneratorScript(
                         });
                     }
                     definedGroups.add(name);
-                    activeGroupsHaveBeenSet = true;
                     break;
                 }
 
                 case '#GRP': {
-                    if (line.tokens.length < 2) {
+                    // Removes previous anonymous group, creates a new one.
+                    clearGroupDirective();
+                    if (line.tokens.length !== 2) {
                         errors.push({
                             line: line.lineNumber,
                             col: 1,
-                            message: '#GRP necesită un punctaj: `#GRP <puncte>`.',
+                            message: '#GRP necesită exact un argument: `#GRP <puncte>`.',
                         });
                         break;
                     }
@@ -226,20 +284,49 @@ export function validateGeneratorScript(
                             message: `Punctaj invalid „${pts}" — trebuie să fie un număr.`,
                         });
                     } else {
-                        totalGroupPoints += parseFloat(pts);
+                        const ptsVal = parseFloat(pts);
+                        if (ptsVal < 0) {
+                            errors.push({
+                                line: line.lineNumber,
+                                col: line.raw.indexOf(pts) + 1,
+                                message: `Punctajul grupului nu poate fi negativ (primit: ${pts}).`,
+                            });
+                        } else {
+                            totalGroupPoints += ptsVal;
+                        }
                     }
-                    activeGroupsHaveBeenSet = true;
+                    const anonName = `__grp_${anonCounter++}`;
+                    groupDirectiveName = anonName;
+                    currentGroups.add(anonName);
                     break;
                 }
 
-                case '#IN':
-                case '#ADDIN':
-                case '#NOTIN': {
+                case '#IN': {
+                    clearGroupDirective();
+                    currentGroups.clear();
+                    // #IN with no args = clear all active groups (valid, no warning).
+                    for (let i = 1; i < line.tokens.length; i++) {
+                        const grp = line.tokens[i];
+                        if (!definedGroups.has(grp)) {
+                            errors.push({
+                                line: line.lineNumber,
+                                col: line.raw.indexOf(grp) + 1,
+                                message: `Grupul „${grp}" nu este definit — folosește #DEFGRP înainte de a-l referenția.`,
+                            });
+                        } else {
+                            currentGroups.add(grp);
+                        }
+                    }
+                    break;
+                }
+
+                case '#ADDIN': {
+                    clearGroupDirective();
                     if (line.tokens.length < 2) {
-                        errors.push({
+                        warnings.push({
                             line: line.lineNumber,
                             col: 1,
-                            message: `${first} necesită cel puțin un nume de grup.`,
+                            message: `${first} fără argumente — comandă redundantă, nu are niciun efect.`,
                         });
                         break;
                     }
@@ -249,20 +336,49 @@ export function validateGeneratorScript(
                             errors.push({
                                 line: line.lineNumber,
                                 col: line.raw.indexOf(grp) + 1,
-                                message: `Grupul „${grp}" nu este definit — folosește #DEFGRP înainte.`,
+                                message: `Grupul „${grp}" nu este definit — folosește #DEFGRP înainte de a-l referenția.`,
                             });
+                        } else {
+                            currentGroups.add(grp);
                         }
                     }
-                    if (canonical === '#IN') activeGroupsHaveBeenSet = true;
+                    break;
+                }
+
+                case '#NOTIN': {
+                    clearGroupDirective();
+                    if (line.tokens.length < 2) {
+                        warnings.push({
+                            line: line.lineNumber,
+                            col: 1,
+                            message: `${first} fără argumente — comandă redundantă, nu are niciun efect.`,
+                        });
+                        break;
+                    }
+                    for (let i = 1; i < line.tokens.length; i++) {
+                        const grp = line.tokens[i];
+                        if (!definedGroups.has(grp)) {
+                            errors.push({
+                                line: line.lineNumber,
+                                col: line.raw.indexOf(grp) + 1,
+                                message: `Grupul „${grp}" nu este definit — folosește #DEFGRP înainte de a-l referenția.`,
+                            });
+                        } else {
+                            currentGroups.delete(grp);
+                        }
+                    }
                     break;
                 }
 
                 case '#TEST': {
-                    if (line.tokens.length < 2) {
+                    // #TEST creates its own anonymous subtask — always has a group.
+                    // Backend removes group_directive_gid before creating its own group.
+                    clearGroupDirective();
+                    if (line.tokens.length < 3) {
                         errors.push({
                             line: line.lineNumber,
                             col: 1,
-                            message: '#TEST necesită un punctaj: `#TEST <puncte> <args...>`.',
+                            message: '#TEST necesită punctaj și cel puțin un argument de generare: `#TEST <puncte> <args...>`.',
                         });
                         break;
                     }
@@ -274,14 +390,16 @@ export function validateGeneratorScript(
                             message: `Punctaj invalid „${pts}" pentru #TEST.`,
                         });
                     } else {
-                        totalTestPoints += parseFloat(pts);
-                    }
-                    if (!activeGroupsHaveBeenSet) {
-                        errors.push({
-                            line: line.lineNumber,
-                            col: 1,
-                            message: '#TEST apare înainte de orice grup activ (#DEFGRP / #GRP / #IN).',
-                        });
+                        const ptsVal = parseFloat(pts);
+                        if (ptsVal < 0) {
+                            errors.push({
+                                line: line.lineNumber,
+                                col: line.raw.indexOf(pts) + 1,
+                                message: `Punctajul testului nu poate fi negativ (primit: ${pts}).`,
+                            });
+                        } else {
+                            totalTestPoints += ptsVal;
+                        }
                     }
                     break;
                 }
@@ -289,8 +407,14 @@ export function validateGeneratorScript(
             continue;
         }
 
-        // Bare arguments (continuation of last directive) — no checks here, but
-        // we don't reject them either; the line was just a list of args.
+        // Bare arguments — continuation of last #GEN, always produces a test.
+        if (currentGroups.size === 0) {
+            errors.push({
+                line: line.lineNumber,
+                col: 1,
+                message: 'Acest test nu aparține niciunui subtask — folosește #IN / #GRP înainte.',
+            });
+        }
     }
 
     if (!mainDeclared) {
@@ -298,22 +422,6 @@ export function validateGeneratorScript(
             line: 1,
             col: 1,
             message: 'Lipsește #MAIN — declară soluția principală cu `#MAIN <sursă>`.',
-        });
-    }
-
-    if (!hasAnyGenerator) {
-        errors.push({
-            line: 1,
-            col: 1,
-            message: 'Scriptul nu folosește niciun generator (#GEN sau operatorul „<"). Adaugă cel puțin unul.',
-        });
-    }
-
-    if (totalGroupPoints > 0 && Math.abs(totalGroupPoints - 100) > 0.01) {
-        errors.push({
-            line: 1,
-            col: 1,
-            message: `Suma punctelor pe grupuri este ${totalGroupPoints}, nu 100. Verifică #DEFGRP / #GRP.`,
         });
     }
 
@@ -328,5 +436,6 @@ export function validateGeneratorScript(
     return {
         valid: errors.length === 0,
         errors,
+        warnings,
     };
 }
