@@ -274,6 +274,8 @@ export default function StatementTab() {
                       wordWrap: "on",
                       lineNumbers: "on",
                       scrollBeyondLastLine: false,
+                      fontFamily: "'JetBrains Mono', 'Fira Code', 'Ubuntu Mono', 'DejaVu Sans Mono', 'Cascadia Code', monospace",
+                      fontLigatures: true,
                     }}
                   />
                 </div>

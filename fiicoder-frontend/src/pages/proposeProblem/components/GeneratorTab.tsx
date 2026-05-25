@@ -204,6 +204,8 @@ export default function GeneratorTab() {
                             fontSize: 14,
                             tabSize: 4,
                             renderWhitespace: 'selection',
+                            fontFamily: "'JetBrains Mono', 'Fira Code', 'Ubuntu Mono', 'DejaVu Sans Mono', 'Cascadia Code', monospace",
+                            fontLigatures: true,
                         }}
                     />
                 </div>

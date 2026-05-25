@@ -155,6 +155,7 @@ export function useProblemDetails() {
             monacoRef.current = monaco;
             applyMonacoTheme(monaco, theme, { customColors });
             setTimeout(() => _editor.layout(), 100);
+
         },
         [theme, customColors],
     );
