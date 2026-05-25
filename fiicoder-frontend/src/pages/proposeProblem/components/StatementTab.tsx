@@ -19,6 +19,7 @@ import {
   packTranslation,
   getTranslationParts,
 } from "../../../utils/translationPacker";
+import { useMonacoContextMenu } from "../../../hooks/useMonacoContextMenu";
 
 const STATEMENT_TEMPLATE = `# Cerință
 Descrie ce trebuie să facă soluția...
@@ -83,6 +84,7 @@ export default function StatementTab() {
   const [activeLang, setActiveLang] = useState<"ro" | "en">("ro");
   const [isTranslating, setIsTranslating] = useState(false);
   const monacoRef = useRef<any>(null);
+  const { setupContextMenu, contextMenuEl } = useMonacoContextMenu();
 
   const buildStatementRules = (themeName: string) => {
     const palette = getEffectivePalette(themeName, customColors);
@@ -99,6 +101,7 @@ export default function StatementTab() {
       customColors,
       extraRules: buildStatementRules(theme),
     });
+    setupContextMenu(_editor);
   };
 
   // Apply theme reactively when theme changes (hook)
@@ -257,7 +260,7 @@ export default function StatementTab() {
               };
 
               return (
-                <div className="bg-(--surface-card) rounded-2xl border border-(--accent)/25 overflow-hidden h-96">
+                <div className="relative bg-(--surface-card) rounded-2xl border border-(--accent)/25 overflow-hidden h-96">
                   <Editor
                     height="100%"
                     defaultLanguage="markdown"
@@ -276,8 +279,10 @@ export default function StatementTab() {
                       scrollBeyondLastLine: false,
                       fontFamily: "'JetBrains Mono', 'Fira Code', 'Ubuntu Mono', 'DejaVu Sans Mono', 'Cascadia Code', monospace",
                       fontLigatures: true,
+                      contextmenu: false,
                     }}
                   />
+                  {contextMenuEl}
                 </div>
               );
             }}

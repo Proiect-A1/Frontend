@@ -10,6 +10,7 @@ import { registerGeneratorLanguage, LANGUAGE_ID } from '../utils/generatorLangua
 import { applyMonacoTheme, getEffectivePalette } from '../../../utils/monacoTheme';
 import { useGeneratorValidation } from '../hooks/useGeneratorValidation';
 import ScriptDocumentation from './ScriptDocumentation';
+import { useMonacoContextMenu } from '../../../hooks/useMonacoContextMenu';
 
 const EXAMPLE_SCRIPT = `#MAIN main
 #DEFGRP 10 exemple
@@ -42,6 +43,7 @@ export default function GeneratorTab() {
 
     const { status, errors, warnings, handleSave } = useGeneratorValidation(generatorScript);
     const [showDocsPanel, setShowDocsPanel] = useState(false);
+    const { setupContextMenu, contextMenuEl } = useMonacoContextMenu();
 
     const buildGeneratorRules = () => {
         const palette = getEffectivePalette(theme, customColors);
@@ -65,6 +67,7 @@ export default function GeneratorTab() {
             customColors,
             extraRules: buildGeneratorRules(),
         });
+        setupContextMenu(_editor);
     };
 
     // Reactively update Monaco theme when app theme changes
@@ -186,7 +189,7 @@ export default function GeneratorTab() {
             {/* Monaco Editor with custom language */}
             <motion.div variants={itemVariants}>
                 <div
-                    className="bg-(--surface-card) rounded-2xl border border-(--accent)/25 overflow-hidden"
+                    className="relative bg-(--surface-card) rounded-2xl border border-(--accent)/25 overflow-hidden"
                     style={{ height: errors.length > 0 ? '50vh' : '65vh' }}
                 >
                     <Editor
@@ -206,8 +209,10 @@ export default function GeneratorTab() {
                             renderWhitespace: 'selection',
                             fontFamily: "'JetBrains Mono', 'Fira Code', 'Ubuntu Mono', 'DejaVu Sans Mono', 'Cascadia Code', monospace",
                             fontLigatures: true,
+                            contextmenu: false,
                         }}
                     />
+                    {contextMenuEl}
                 </div>
             </motion.div>
 

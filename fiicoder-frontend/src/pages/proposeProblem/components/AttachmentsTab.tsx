@@ -9,6 +9,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { applyMonacoTheme } from '../../../utils/monacoTheme';
 import { useSourceRunState } from '../hooks/useSourceRunState';
 import { useFileManagement } from '../hooks/useFileManagement';
+import { useMonacoContextMenu } from '../../../hooks/useMonacoContextMenu';
 
 // Reordered per team request: Generatoare, Validatoare, Interactoare, Checkere, Surse
 const allCategories: { id: FileCategory; label: string; icon: React.ReactNode; description: string }[] = [
@@ -48,6 +49,7 @@ export default function AttachmentsTab() {
     const [isCreatingFile, setIsCreatingFile] = useState(false);
     const [newFilename, setNewFilename] = useState('');
     const monacoRef = useRef<any>(null);
+    const { setupContextMenu, contextMenuEl } = useMonacoContextMenu();
 
     // Extract file management state to hook
     const fileManagement = useFileManagement({
@@ -64,6 +66,7 @@ export default function AttachmentsTab() {
     const handleEditorMount: OnMount = (_editor, monaco) => {
         monacoRef.current = monaco;
         applyMonacoTheme(monaco, theme, { customColors });
+        setupContextMenu(_editor);
     };
 
     useEffect(() => {
@@ -414,7 +417,7 @@ export default function AttachmentsTab() {
                                                         Închide
                                                     </button>
                                                 </div>
-                                                <div style={{ height: '300px' }}>
+                                                <div className="relative" style={{ height: '300px' }}>
                                                     <Editor
                                                         height="100%"
                                                         language={file.language || 'plaintext'}
@@ -428,8 +431,10 @@ export default function AttachmentsTab() {
                                                             lineNumbers: 'on',
                                                             scrollBeyondLastLine: false,
                                                             fontSize: 13,
+                                                            contextmenu: false,
                                                         }}
                                                     />
+                                                    {contextMenuEl}
                                                 </div>
                                             </div>
                                         </motion.div>
