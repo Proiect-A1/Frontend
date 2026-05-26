@@ -182,14 +182,12 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
 
 export default function SubmissionDetailModal({ isOpen, onClose, submission, lang }: Props) {
     const { theme, customColors } = useTheme();
-    const [activeTab, setActiveTab] = useState<'code' | 'results'>('code');
     const [results, setResults] = useState<SubmissionStatus | null>(null);
     const [loadingResults, setLoadingResults] = useState(false);
 
     useEffect(() => {
         if (!isOpen || !submission?.id) return;
         setResults(null);
-        setActiveTab('code');
         setLoadingResults(true);
         submissionService.getStatus(submission.id)
             .then(data => setResults(data))
@@ -214,10 +212,6 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
     else if (langLower.includes('ts') || langLower.includes('typescript')) editorLang = 'typescript';
 
     const hasSubtasks = results?.subtasks && results.subtasks.length > 0;
-    const tabs = [
-        { id: 'code'    as const, label: lang === 'RO' ? 'Cod' : 'Code' },
-        { id: 'results' as const, label: lang === 'RO' ? 'Rezultate' : 'Results' },
-    ];
 
     return (
         <AnimatePresence>
@@ -234,7 +228,7 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-50 md:w-[min(90vw,900px)] md:h-[85vh] bg-(--surface-card) border-2 border-(--accent) rounded-3xl shadow-2xl flex flex-col overflow-hidden"
+                        className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-50 md:w-[min(95vw,1200px)] md:h-[85vh] bg-(--surface-card) border-2 border-(--accent) rounded-3xl shadow-2xl flex flex-col overflow-hidden"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between px-5 py-4 border-b border-(--accent)/20 bg-(--surface-muted) shrink-0">
@@ -267,89 +261,64 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
                             </button>
                         </div>
 
-                        {/* Tabs */}
-                        <div className="flex items-center gap-1 px-5 border-b border-(--accent)/15 bg-(--surface-muted) shrink-0">
-                            {tabs.map(tab => (
+                        {/* Side-by-side: code left, results right */}
+                        <div className="flex-1 min-h-0 flex flex-col md:flex-row overflow-hidden">
+                            {/* Code pane — 55% */}
+                            <div className="relative flex-[55] min-h-0 border-b md:border-b-0 md:border-r border-(--accent)/15">
+                                <Editor
+                                    height="100%"
+                                    language={editorLang}
+                                    value={submission.code}
+                                    onMount={(_editor, monaco) => {
+                                        applyMonacoTheme(monaco, theme, { customColors });
+                                    }}
+                                    options={{
+                                        readOnly: true,
+                                        minimap: { enabled: false },
+                                        scrollBeyondLastLine: false,
+                                        fontSize: 14,
+                                        fontFamily: "'JetBrains Mono', 'Fira Code', 'Ubuntu Mono', 'Cascadia Code', monospace",
+                                        fontLigatures: true,
+                                    }}
+                                />
                                 <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`relative px-3 py-2.5 text-xs font-bold transition-colors ${
-                                        activeTab === tab.id
-                                            ? 'text-(--accent)'
-                                            : 'text-(--text-muted) hover:text-(--text-h)'
-                                    }`}
+                                    onClick={() => navigator.clipboard.writeText(submission.code)}
+                                    className="absolute bottom-4 right-6 p-2 rounded-xl bg-(--surface-card) border-2 border-(--accent)/50 text-(--text-muted) hover:text-(--accent) hover:border-(--accent) shadow-lg transition-all z-10"
+                                    title={lang === 'RO' ? 'Copiază codul' : 'Copy code'}
                                 >
-                                    {tab.label}
-                                    {activeTab === tab.id && (
-                                        <motion.div
-                                            layoutId="modal-tab-indicator"
-                                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-(--accent) rounded-full"
-                                        />
-                                    )}
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
                                 </button>
-                            ))}
-                        </div>
+                            </div>
 
-                        {/* Content */}
-                        <div className="flex-1 min-h-0">
-                            {activeTab === 'code' && (
-                                <div className="h-full relative">
-                                    <Editor
-                                        height="100%"
-                                        language={editorLang}
-                                        value={submission.code}
-                                        onMount={(_editor, monaco) => {
-                                            applyMonacoTheme(monaco, theme, { customColors });
-                                        }}
-                                        options={{
-                                            readOnly: true,
-                                            minimap: { enabled: false },
-                                            scrollBeyondLastLine: false,
-                                            fontSize: 14,
-                                            fontFamily: "'JetBrains Mono', 'Fira Code', 'Ubuntu Mono', 'Cascadia Code', monospace",
-                                            fontLigatures: true,
-                                        }}
+                            {/* Results pane — 45% */}
+                            <div className="flex-[45] min-h-0 overflow-y-auto custom-scrollbar p-5">
+                                {loadingResults ? (
+                                    <div className="flex items-center justify-center h-40 gap-3">
+                                        <div className="animate-spin w-6 h-6 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
+                                        <span className="text-sm text-(--text-muted)">
+                                            {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
+                                        </span>
+                                    </div>
+                                ) : hasSubtasks ? (
+                                    <ResultsTab
+                                        subtasks={results!.subtasks}
+                                        score={submission.Score}
+                                        maxScore={results!.subtasks.reduce((s, st) => s + st.maxScore, 0)}
+                                        lang={lang}
                                     />
-                                    <button
-                                        onClick={() => navigator.clipboard.writeText(submission.code)}
-                                        className="absolute bottom-4 right-6 p-2 rounded-xl bg-(--surface-card) border-2 border-(--accent)/50 text-(--text-muted) hover:text-(--accent) hover:border-(--accent) shadow-lg transition-all z-10"
-                                        title={lang === 'RO' ? 'Copiază codul' : 'Copy code'}
-                                    >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            )}
-
-                            {activeTab === 'results' && (
-                                <div className="h-full overflow-y-auto custom-scrollbar p-5">
-                                    {loadingResults ? (
-                                        <div className="flex items-center justify-center h-40 gap-3">
-                                            <div className="animate-spin w-6 h-6 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
-                                            <span className="text-sm text-(--text-muted)">
-                                                {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
-                                            </span>
-                                        </div>
-                                    ) : hasSubtasks ? (
-                                        <ResultsTab
-                                            subtasks={results!.subtasks}
-                                            score={submission.Score}
-                                            maxScore={results!.subtasks.reduce((s, st) => s + st.maxScore, 0)}
-                                            lang={lang}
-                                        />
-                                    ) : submission.status === 'PENDING' ? (
-                                        <div className="flex flex-col items-center justify-center h-40 gap-2 text-(--text-muted)">
-                                            <div className="animate-spin w-6 h-6 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
-                                            <p className="text-sm">{lang === 'RO' ? 'În evaluare...' : 'Evaluating...'}</p>
-                                        </div>
-                                    ) : (
-                                        <div className="flex flex-col items-center justify-center h-40 gap-2 text-(--text-muted)">
-                                            <p className="text-sm italic">{lang === 'RO' ? 'Nu există rezultate disponibile.' : 'No results available.'}</p>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                                ) : submission.status === 'PENDING' ? (
+                                    <div className="flex flex-col items-center justify-center h-40 gap-2 text-(--text-muted)">
+                                        <div className="animate-spin w-6 h-6 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
+                                        <p className="text-sm">{lang === 'RO' ? 'În evaluare...' : 'Evaluating...'}</p>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center h-40 gap-2 text-(--text-muted)">
+                                        <p className="text-sm italic">{lang === 'RO' ? 'Nu există rezultate disponibile.' : 'No results available.'}</p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </motion.div>
                 </>

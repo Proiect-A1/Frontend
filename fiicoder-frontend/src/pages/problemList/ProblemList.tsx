@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -67,6 +67,23 @@ export default function ProblemList() {
       return matchesDifficulty && matchesSearch;
     });
   }, [difficultyFilter, searchTerm, problems]);
+
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
+          problemsQuery.fetchNextPage();
+        }
+      },
+      { rootMargin: '200px' },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, isLoadingMore, problemsQuery]);
 
   const suggestions = problems.map((p) => p.title);
 
@@ -182,28 +199,11 @@ export default function ProblemList() {
             </div>
           )}
 
-          {/* load button */}
-          {!loading && !error && hasMore && filteredProblems.length > 0 && (
-            <div className="mt-8 mb-4 flex justify-center">
-              <button
-                onClick={() => problemsQuery.fetchNextPage()}
-                disabled={isLoadingMore}
-                className="group relative flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-(--accent)/40 bg-(--accent)/10 text-(--text-h) font-bold text-sm transition-all duration-200 hover:bg-(--accent)/20 hover:border-(--accent) hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
-              >
-                {isLoadingMore ? (
-                  <>
-                    <div className="w-4 h-4 rounded-full border-2 border-(--text)/30 border-t-(--text) animate-spin" />
-                    {lang === "RO" ? "Se încarcă..." : "Loading..."}
-                  </>
-                ) : (
-                  <>
-                    {lang === "RO" ? "Afișează mai multe" : "Load more"}
-                    <span className="transition-transform group-hover:translate-y-0.5">
-                      ▼
-                    </span>
-                  </>
-                )}
-              </button>
+          {/* infinite scroll sentinel */}
+          <div ref={sentinelRef} className="h-1" />
+          {isLoadingMore && (
+            <div className="mt-6 mb-4 flex justify-center">
+              <div className="w-5 h-5 rounded-full border-2 border-(--accent)/30 border-t-(--accent) animate-spin" />
             </div>
           )}
 

@@ -51,14 +51,14 @@ export default function ClassesHub() {
     };
 
     const saveRecentClasses = (uid: string, classes: RecentClass[]) => {
-        localStorage.setItem(getRecentClassesKey(uid), JSON.stringify(classes.slice(0, 5)));
+        localStorage.setItem(getRecentClassesKey(uid), JSON.stringify(classes.slice(0, 10)));
     };
 
     const storeRecentClass = (c: RecentClass) => {
         if (!userId) return;
         setRecentClasses((prev) => {
             const filtered = prev.filter((item) => item.id !== c.id);
-            const updated = [c, ...filtered].slice(0, 5);
+            const updated = [c, ...filtered].slice(0, 10);
             saveRecentClasses(userId, updated);
             return updated;
         });
@@ -533,12 +533,26 @@ export default function ClassesHub() {
                                             {group.creatorUsername}
                                         </p>
                                     </div>
-                                    <Link
-                                        to={`/classes/${group.id}`}
-                                        className="inline-flex self-start shrink-0 rounded-xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
-                                    >
-                                        {lang === 'RO' ? 'Deschide' : 'Open'}
-                                    </Link>
+                                    <div className="flex items-center gap-2 self-start shrink-0">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(`${window.location.origin}/classes/${group.id}`);
+                                                toast.success(lang === 'RO' ? 'Link copiat!' : 'Link copied!');
+                                            }}
+                                            className="inline-flex items-center gap-1 rounded-xl border border-(--accent)/30 px-3 py-1.5 text-xs font-semibold text-(--text-muted) hover:bg-(--accent)/15 hover:text-(--text-h) transition-colors"
+                                            title={lang === 'RO' ? 'Copiază link-ul clasei' : 'Copy class link'}
+                                        >
+                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                                            {lang === 'RO' ? 'Link' : 'Link'}
+                                        </button>
+                                        <Link
+                                            to={`/classes/${group.id}`}
+                                            className="inline-flex rounded-xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
+                                        >
+                                            {lang === 'RO' ? 'Deschide' : 'Open'}
+                                        </Link>
+                                    </div>
                                 </div>
                             </motion.div>
                         ))}

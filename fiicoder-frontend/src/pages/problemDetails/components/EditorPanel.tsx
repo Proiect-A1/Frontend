@@ -124,6 +124,7 @@ export default function EditorPanel({
                                             onClick={() => {
                                                 setSelectedLanguageId(langItem.id);
                                                 setLanguage(langItem.name);
+                                                localStorage.setItem('fiicoder_editor_language', langItem.name);
                                                 setIsOpen(false);
                                             }}
                                             className="w-full text-left px-4 py-2 text-sm text-(--text-h) hover:bg-(--accent)/20 transition-colors"

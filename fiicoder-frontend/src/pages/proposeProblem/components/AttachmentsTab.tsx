@@ -7,7 +7,6 @@ import type { ProposeProblemForm, FileCategory } from '../types/proposeProblem';
 import { itemVariants, staggerConfig } from '../../../utils/motionConfig';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { applyMonacoTheme } from '../../../utils/monacoTheme';
-import { useSourceRunState } from '../hooks/useSourceRunState';
 import { useFileManagement } from '../hooks/useFileManagement';
 import { useMonacoContextMenu } from '../../../hooks/useMonacoContextMenu';
 
@@ -28,14 +27,6 @@ function formatFileSize(bytes: number): string {
     return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
 }
 
-const verdictColors: Record<string, string> = {
-    AC: 'text-green-400',
-    WA: 'text-red-400',
-    TLE: 'text-yellow-400',
-    MLE: 'text-orange-400',
-    RE: 'text-purple-400',
-    CE: 'text-gray-400',
-};
 
 export default function AttachmentsTab() {
     const { watch, setValue } = useFormContext<ProposeProblemForm>();
@@ -58,9 +49,6 @@ export default function AttachmentsTab() {
         activeCategory,
     });
 
-    // Extract run state to hook
-    const runState = useSourceRunState();
-
     const categoryFiles = files.filter((f) => f.category === activeCategory);
 
     const handleEditorMount: OnMount = (_editor, monaco) => {
@@ -76,7 +64,6 @@ export default function AttachmentsTab() {
     }, [theme, customColors]);
 
     const activeCat = categories.find((c) => c.id === activeCategory)!;
-    const isSources = activeCategory === 'sources';
 
     return (
         <motion.div
@@ -241,10 +228,6 @@ export default function AttachmentsTab() {
                         {activeCat.label} ({categoryFiles.length})
                     </h3>
                     {categoryFiles.map((file) => {
-                        const history = runState.runHistory[file.id];
-                        const isRunning = runState.runningFileId === file.id;
-                        const isResultsExpanded = runState.expandedResults.has(file.id);
-
                         return (
                             <div key={file.id} className="space-y-1">
                                 {/* File Card */}
@@ -282,26 +265,11 @@ export default function AttachmentsTab() {
                                                 <span className="text-xs text-(--text-muted)">
                                                     {formatFileSize(file.size)} · {file.language}
                                                 </span>
-                                                {isSources && history && (
-                                                    <span className={`text-xs font-bold ${history.score === history.maxScore ? 'text-green-400' : 'text-yellow-400'}`}>
-                                                        {history.score}/{history.maxScore}p
-                                                    </span>
-                                                )}
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="flex items-center gap-2">
-                                        {isSources && (
-                                            <button
-                                                type="button"
-                                                onClick={() => runState.handleRunSource(file.id, file.name)}
-                                                disabled={isRunning}
-                                                className="px-3 py-1 rounded-full text-xs font-semibold bg-(--accent)/20 text-(--accent) hover:bg-(--accent)/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                            >
-                                                {isRunning ? 'Rulează...' : 'Run'}
-                                            </button>
-                                        )}
                                         <button
                                             type="button"
                                             onClick={() => fileManagement.removeFile(file.id)}
@@ -311,89 +279,6 @@ export default function AttachmentsTab() {
                                         </button>
                                     </div>
                                 </div>
-
-                                {/* Run Results */}
-                                {isSources && history && (
-                                    <AnimatePresence>
-                                        {isResultsExpanded && (
-                                            <motion.div
-                                                initial={{ height: 0, opacity: 0 }}
-                                                animate={{ height: 'auto', opacity: 1 }}
-                                                exit={{ height: 0, opacity: 0 }}
-                                                transition={{ duration: 0.15 }}
-                                                className="overflow-hidden bg-(--surface-muted) rounded-2xl border border-(--accent)/20 p-3 space-y-2 text-xs"
-                                            >
-                                                {history.subtasks.map((st) => {
-                                                    const key = `${file.id}_${st.subtaskId}`;
-                                                    const isStExpanded = runState.expandedSubtasks.has(key);
-                                                    const isPerfect = st.scored === st.maxPoints;
-                                                    return (
-                                                        <div key={st.subtaskId}>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => runState.toggleSubtask(key)}
-                                                                className="w-full text-left flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-(--accent)/10 transition-colors"
-                                                            >
-                                                                <span className="text-(--text) font-semibold">
-                                                                    {st.name}
-                                                                </span>
-                                                                <span className={`text-xs font-bold ${isPerfect ? 'text-green-400' : 'text-red-400'}`}>
-                                                                    {st.scored}/{st.maxPoints}p
-                                                                </span>
-                                                            </button>
-                                                            <AnimatePresence>
-                                                                {isStExpanded && (
-                                                                    <motion.div
-                                                                        initial={{ height: 0, opacity: 0 }}
-                                                                        animate={{ height: 'auto', opacity: 1 }}
-                                                                        exit={{ height: 0, opacity: 0 }}
-                                                                        transition={{ duration: 0.15 }}
-                                                                        className="overflow-hidden"
-                                                                    >
-                                                                        <table className="w-full text-xs">
-                                                                            <tbody>
-                                                                                {st.tests.map((t) => (
-                                                                                    <tr
-                                                                                        key={t.testId}
-                                                                                        className="border-t border-(--accent)/5 hover:bg-(--surface-muted)/40 transition-colors"
-                                                                                    >
-                                                                                        <td className="py-1 px-4 font-mono text-(--text-muted)">
-                                                                                            #{t.testId}
-                                                                                        </td>
-                                                                                        <td className="py-1 px-2">
-                                                                                            <span
-                                                                                                className={`font-bold ${verdictColors[t.verdict] || 'text-(--text)'}`}
-                                                                                            >
-                                                                                                {t.verdict}
-                                                                                            </span>
-                                                                                        </td>
-                                                                                        <td className="py-1 px-2 font-mono text-(--text-muted)">
-                                                                                            {t.time?.toFixed(2)}s
-                                                                                        </td>
-                                                                                        <td className="py-1 px-2 font-mono text-(--text-muted)">
-                                                                                            {t.memory?.toFixed(1)}MB
-                                                                                        </td>
-                                                                                        <td className="py-1 px-2 text-right">
-                                                                                            <span
-                                                                                                className={`font-bold ${t.points === t.maxPoints ? 'text-green-400' : 'text-red-400'}`}
-                                                                                            >
-                                                                                                {t.points}/{t.maxPoints}
-                                                                                            </span>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                ))}
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </motion.div>
-                                                                )}
-                                                            </AnimatePresence>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                )}
 
                                 {/* Inline Editor */}
                                 <AnimatePresence>

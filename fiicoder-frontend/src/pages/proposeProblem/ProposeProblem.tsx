@@ -30,11 +30,11 @@ const defaultValues: ProposeProblemForm = {
 };
 
 const tabs = [
-    { id: 'general', labelRO: 'General', labelEN: 'General' },
-    { id: 'statement', labelRO: 'Enunț', labelEN: 'Statement' },
-    { id: 'files', labelRO: 'Fișiere', labelEN: 'Files' },
-    { id: 'tests', labelRO: 'Teste Manuale', labelEN: 'Manual Tests' },
-    { id: 'generator', labelRO: 'Script Generator', labelEN: 'Generator Script' },
+    { id: 'general', labelRO: 'General', labelEN: 'General', fields: ['title', 'difficulty', 'timeLimit', 'memoryLimit', 'tags', 'visibility'] as const },
+    { id: 'statement', labelRO: 'Enunț', labelEN: 'Statement', fields: ['statement'] as const },
+    { id: 'files', labelRO: 'Fișiere', labelEN: 'Files', fields: ['files', 'attachments'] as const },
+    { id: 'tests', labelRO: 'Teste Manuale', labelEN: 'Manual Tests', fields: ['tests', 'subtasks'] as const },
+    { id: 'generator', labelRO: 'Script Generator', labelEN: 'Generator Script', fields: ['generatorScript'] as const },
 ] as const;
 
 export default function ProposeProblem() {
@@ -190,7 +190,8 @@ export default function ProposeProblem() {
                                     <div className="flex flex-wrap gap-2 lg:justify-end">
                                         {tabs.map((tab) => {
                                             const isActive = activeTab === tab.id;
-                                            const baseClasses = 'px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center justify-center cursor-pointer outline-none';
+                                            const hasError = tab.fields.some(f => f in methods.formState.errors);
+                                            const baseClasses = 'relative px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold border-2 transition-all duration-200 flex items-center gap-1.5 cursor-pointer outline-none';
                                             return (
                                                 <button
                                                     key={tab.id}
@@ -199,6 +200,9 @@ export default function ProposeProblem() {
                                                     className={`${baseClasses} ${isActive ? 'bg-(--accent)/25 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5'}`}
                                                 >
                                                     {lang === 'RO' ? tab.labelRO : tab.labelEN}
+                                                    {hasError && (
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" aria-label="errors" />
+                                                    )}
                                                 </button>
                                             );
                                         })}

@@ -27,7 +27,7 @@ export function useProblemDetails() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const [language, setLanguage] = useState('C++');
+    const [language, setLanguage] = useState(() => localStorage.getItem('fiicoder_editor_language') ?? 'C++');
     const [isOpen, setIsOpen] = useState(false);
     const [status, setStatus] = useState<null | 'pending' | 'valid' | 'invalid'>(null);
     const monacoRef = useRef<any>(null);
@@ -45,6 +45,7 @@ export function useProblemDetails() {
     const [evalError, setEvalError] = useState<string | null>(null);
     const [problemTests, setProblemTests] = useState<ProblemTestDetailsDTO | null>(null);
     const wsCleanupRef = useRef<(() => void) | null>(null);
+    const handleSubmitRef = useRef<((e: React.FormEvent) => Promise<void>) | null>(null);
 
     const processedDescription = useMemo(() => {
         if (!problem?.description) return '';
@@ -191,12 +192,14 @@ export function useProblemDetails() {
                 setAvailableLanguages(langs);
                 setProblemTests(testDetails);
                 if (langs.length > 0) {
+                    const savedLangName = localStorage.getItem('fiicoder_editor_language');
+                    const savedLang = savedLangName ? langs.find(l => l.name === savedLangName) : null;
                     const cppLang = langs.find(l =>
                         l.name === 'C++' ||
                         l.name?.toLowerCase() === 'cpp' ||
                         l.name?.toLowerCase().includes('c++'),
                     );
-                    const defaultLang = cppLang ?? langs[0];
+                    const defaultLang = savedLang ?? cppLang ?? langs[0];
                     setSelectedLanguageId(defaultLang.id);
                     setLanguage(defaultLang.name);
                 }
@@ -240,6 +243,21 @@ export function useProblemDetails() {
             if (wsCleanupRef.current) wsCleanupRef.current();
         };
     }, []);
+
+    useEffect(() => {
+        handleSubmitRef.current = handleSubmit;
+    }, [handleSubmit]);
+
+    useEffect(() => {
+        const onKeyDown = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && isAuthenticated) {
+                e.preventDefault();
+                handleSubmitRef.current?.({} as React.FormEvent);
+            }
+        };
+        document.addEventListener('keydown', onKeyDown);
+        return () => document.removeEventListener('keydown', onKeyDown);
+    }, [isAuthenticated]);
 
     const handleLayoutAction = useCallback((action: FlexLayout.Action) => {
         if (action.type !== 'FlexLayout_RenameTab') {

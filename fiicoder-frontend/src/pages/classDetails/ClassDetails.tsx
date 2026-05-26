@@ -698,36 +698,58 @@ export default function ClassDetails() {
     const handleInviteStudent = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!inviteEmail.trim()) return;
+        const emails = inviteEmail
+            .split(/[\n,]+/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+        if (emails.length === 0) return;
         setLoadingInvite(true);
-        try {
-            await classService.inviteUser(groupId!, { email: inviteEmail.trim() });
-            setInviteFeedback({ msg: lang === 'RO' ? 'Succes!' : 'Success!', isError: false });
-            toast.success(lang === 'RO' ? 'Invitația a fost trimisă.' : 'Invitation sent.');
-            setInviteEmail('');
-        } catch (err: any) {
-            const rawMessage = extractErrorMessage(err, 'Error');
-            const lowered = rawMessage.toLowerCase();
-            let message = rawMessage;
-            if (lowered.includes('admin') && lowered.includes('invited')) {
-                message =
-                    lang === 'RO'
-                        ? 'Conturile de admin nu pot fi invitate într-un grup.'
-                        : 'Admin accounts cannot be invited to groups.';
-            } else if (lowered.includes('already a member')) {
-                message =
-                    lang === 'RO'
-                        ? 'Utilizatorul este deja membru al grupului.'
-                        : 'User is already a member of the group.';
-            } else if (lowered.includes('pending invitation')) {
-                message =
-                    lang === 'RO'
-                        ? 'Există deja o invitație în așteptare pentru acest utilizator.'
-                        : 'A pending invitation for this user already exists.';
+        const errors: string[] = [];
+        let successCount = 0;
+        for (const email of emails) {
+            try {
+                await classService.inviteUser(groupId!, { email });
+                successCount++;
+            } catch (err: any) {
+                const rawMessage = extractErrorMessage(err, 'Error');
+                const lowered = rawMessage.toLowerCase();
+                let message = rawMessage;
+                if (lowered.includes('admin') && lowered.includes('invited')) {
+                    message =
+                        lang === 'RO'
+                            ? `${email}: Conturile de admin nu pot fi invitate.`
+                            : `${email}: Admin accounts cannot be invited.`;
+                } else if (lowered.includes('already a member')) {
+                    message =
+                        lang === 'RO'
+                            ? `${email}: Deja membru.`
+                            : `${email}: Already a member.`;
+                } else if (lowered.includes('pending invitation')) {
+                    message =
+                        lang === 'RO'
+                            ? `${email}: Invitație deja în așteptare.`
+                            : `${email}: Invitation already pending.`;
+                } else {
+                    message = `${email}: ${rawMessage}`;
+                }
+                errors.push(message);
             }
-            setInviteFeedback({ msg: message, isError: true });
-            toast.error(message);
-        } finally {
-            setLoadingInvite(false);
+        }
+        setLoadingInvite(false);
+        if (successCount > 0) {
+            toast.success(
+                lang === 'RO'
+                    ? `${successCount} invitație${successCount > 1 ? ' trimise' : ' trimisă'}.`
+                    : `${successCount} invitation${successCount > 1 ? 's' : ''} sent.`,
+            );
+        }
+        if (errors.length > 0) {
+            setInviteFeedback({ msg: errors.join(' | '), isError: true });
+            errors.forEach((msg) => toast.error(msg));
+            setTimeout(() => setInviteFeedback(null), 8000);
+        } else {
+            setInviteFeedback({ msg: lang === 'RO' ? 'Succes!' : 'Success!', isError: false });
+            setInviteEmail('');
             setTimeout(() => setInviteFeedback(null), 5000);
         }
     };
@@ -894,11 +916,12 @@ export default function ClassDetails() {
                                     {lang === 'RO' ? 'Invită colegi' : 'Invite members'}
                                 </h3>
                                 <form onSubmit={handleInviteStudent} className="space-y-2">
-                                    <input
+                                    <textarea
                                         value={inviteEmail}
                                         onChange={(e) => setInviteEmail(e.target.value)}
-                                        placeholder={lang === 'RO' ? 'Email' : 'Email'}
-                                        className="w-full rounded-xl bg-(--surface-card) border border-(--accent)/25 px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
+                                        placeholder={lang === 'RO' ? 'Email-uri (separate prin virgulă sau linie nouă)' : 'Emails (comma or newline separated)'}
+                                        rows={3}
+                                        className="w-full rounded-xl bg-(--surface-card) border border-(--accent)/25 px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted) resize-none"
                                     />
                                     <button
                                         type="submit"

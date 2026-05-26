@@ -38,7 +38,6 @@ export default function ProposalsTab({
 }: Props) {
     const { lang } = useLanguage();
     const [subTab, setSubTab] = useState<'pending' | 'accepted'>('pending');
-    const [showTests, setShowTests] = useState(false);
 
     const selectedProposalMeta = proposals.find(p => p.id === selectedProposalId);
 
@@ -73,7 +72,7 @@ export default function ProposalsTab({
 
     const { data: testsData, isLoading: isTestsLoading } = useQuery({
         queryKey: ['admin', 'proposal', selectedProposalId, 'tests'],
-        enabled: !!selectedProposalId && showTests,
+        enabled: !!selectedProposalId,
         queryFn: () => adminService.getProblemTests(selectedProposalId as string),
     });
 
@@ -149,7 +148,7 @@ export default function ProposalsTab({
                                     <motion.button
                                         variants={itemVariants}
                                         key={proposal.id}
-                                        onClick={() => { setSelectedProposalId(proposal.id); setShowTests(false); }}
+                                        onClick={() => setSelectedProposalId(proposal.id)}
                                         className={`text-left p-4 rounded-2xl border transition-colors duration-200 ${
                                             isSelected
                                                 ? 'border-(--accent) bg-(--accent)/15'
@@ -248,82 +247,70 @@ export default function ProposalsTab({
                                     </div>
                                 </div>
 
-                                <div className="flex gap-2 border-b border-(--accent)/20 pb-2">
-                                    <button
-                                        onClick={() => setShowTests(false)}
-                                        className={`text-xs font-bold px-3 py-1.5 rounded-full border-2 transition-all ${!showTests ? 'bg-(--accent)/25 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15'}`}
-                                    >
-                                        {lang === 'RO' ? 'Detalii' : 'Details'}
-                                    </button>
-                                    <button
-                                        onClick={() => setShowTests(true)}
-                                        className={`text-xs font-bold px-3 py-1.5 rounded-full border-2 transition-all ${showTests ? 'bg-(--accent)/25 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15'}`}
-                                    >
-                                        {lang === 'RO' ? 'Teste' : 'Tests'}
-                                    </button>
+                                {/* Details section */}
+                                <div className="space-y-4">
+                                    {(selectedProposal.time_limit != null || selectedProposal.memory_limit != null) && (
+                                        <div className="flex gap-3 text-xs text-(--text-muted) font-semibold">
+                                            {selectedProposal.time_limit != null && (
+                                                <span className="flex items-center gap-1">
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                    {selectedProposal.time_limit}s
+                                                </span>
+                                            )}
+                                            {selectedProposal.memory_limit != null && (
+                                                <span className="flex items-center gap-1">
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" /></svg>
+                                                    {selectedProposal.memory_limit} MB
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
+                                    <div className="max-h-64 overflow-y-auto custom-scrollbar text-sm text-(--text) leading-relaxed prose-sm">
+                                        <ReactMarkdown
+                                            remarkPlugins={[remarkMath, remarkGfm]}
+                                            rehypePlugins={[rehypeKatex]}
+                                        >
+                                            {unpackTranslation(selectedProposal.statement ?? selectedProposal.description, lang)}
+                                        </ReactMarkdown>
+                                    </div>
+                                    {selectedProposal.tags && selectedProposal.tags.length > 0 && (
+                                        <div className="flex flex-wrap gap-2">
+                                            {selectedProposal.tags.map((tag) => (
+                                                <span key={tag} className="rounded-full border border-(--accent)/30 bg-(--accent)/10 px-2.5 py-1 text-[10px] font-bold text-(--text-h)">{tag}</span>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
 
-                                {showTests ? (
-                                    <div className="space-y-4">
-                                        {isTestsLoading ? (
-                                            <p className="text-sm text-(--text-muted)">{lang === 'RO' ? 'Se încarcă testele...' : 'Loading tests...'}</p>
-                                        ) : testsData?.subtasks && testsData.subtasks.length > 0 ? (
-                                            <div className="space-y-4">
-                                                {testsData.subtasks.map((subtask) => (
-                                                    <div key={subtask.index} className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
-                                                        <div className="flex justify-between items-center mb-2">
-                                                            <p className="text-xs font-bold text-(--text-h)">Subtask {subtask.index + 1}</p>
-                                                            <p className="text-xs font-black text-(--accent)">{subtask.score} pct</p>
-                                                        </div>
-                                                        <div className="grid grid-cols-5 gap-1">
-                                                            {subtask.tests.map((test) => (
-                                                                <div key={test.index} className="aspect-square rounded-md bg-(--accent)/10 border border-(--accent)/30 flex items-center justify-center text-[10px] font-bold text-(--text-h)" title={`Test ${test.index + 1}: ${test.score} pct`}>
-                                                                    {test.index + 1}
-                                                                </div>
-                                                            ))}
-                                                        </div>
+                                {/* Tests section */}
+                                <div className="space-y-3 border-t border-(--accent)/15 pt-4">
+                                    <p className="text-[11px] font-bold uppercase tracking-widest text-(--text-muted)">
+                                        {lang === 'RO' ? 'Teste' : 'Tests'}
+                                    </p>
+                                    {isTestsLoading ? (
+                                        <p className="text-sm text-(--text-muted)">{lang === 'RO' ? 'Se încarcă testele...' : 'Loading tests...'}</p>
+                                    ) : testsData?.subtasks && testsData.subtasks.length > 0 ? (
+                                        <div className="space-y-3">
+                                            {testsData.subtasks.map((subtask) => (
+                                                <div key={subtask.index} className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
+                                                    <div className="flex justify-between items-center mb-2">
+                                                        <p className="text-xs font-bold text-(--text-h)">Subtask {subtask.index + 1}</p>
+                                                        <p className="text-xs font-black text-(--accent)">{subtask.score} pct</p>
                                                     </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <p className="text-sm text-(--text-muted)">{lang === 'RO' ? 'Nu există teste generate pentru această propunere.' : 'No tests generated for this proposal.'}</p>
-                                        )}
-                                    </div>
-                                ) : (
-                                    <div className="space-y-4">
-                                        {(selectedProposal.time_limit != null || selectedProposal.memory_limit != null) && (
-                                            <div className="flex gap-3 text-xs text-(--text-muted) font-semibold">
-                                                {selectedProposal.time_limit != null && (
-                                                    <span className="flex items-center gap-1">
-                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                                        {selectedProposal.time_limit}s
-                                                    </span>
-                                                )}
-                                                {selectedProposal.memory_limit != null && (
-                                                    <span className="flex items-center gap-1">
-                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" /></svg>
-                                                        {selectedProposal.memory_limit} MB
-                                                    </span>
-                                                )}
-                                            </div>
-                                        )}
-                                        <div className="max-h-96 overflow-y-auto custom-scrollbar text-sm text-(--text) leading-relaxed prose-sm">
-                                            <ReactMarkdown
-                                                remarkPlugins={[remarkMath, remarkGfm]}
-                                                rehypePlugins={[rehypeKatex]}
-                                            >
-                                                {unpackTranslation(selectedProposal.statement ?? selectedProposal.description, lang)}
-                                            </ReactMarkdown>
+                                                    <div className="grid grid-cols-5 gap-1">
+                                                        {subtask.tests.map((test) => (
+                                                            <div key={test.index} className="aspect-square rounded-md bg-(--accent)/10 border border-(--accent)/30 flex items-center justify-center text-[10px] font-bold text-(--text-h)" title={`Test ${test.index + 1}: ${test.score} pct`}>
+                                                                {test.index + 1}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
-                                        {selectedProposal.tags && selectedProposal.tags.length > 0 && (
-                                            <div className="flex flex-wrap gap-2">
-                                                {selectedProposal.tags.map((tag) => (
-                                                    <span key={tag} className="rounded-full border border-(--accent)/30 bg-(--accent)/10 px-2.5 py-1 text-[10px] font-bold text-(--text-h)">{tag}</span>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
+                                    ) : (
+                                        <p className="text-sm text-(--text-muted)">{lang === 'RO' ? 'Nu există teste generate pentru această propunere.' : 'No tests generated for this proposal.'}</p>
+                                    )}
+                                </div>
 
                                 <div className="flex flex-wrap items-center justify-end gap-2 pt-4 border-t border-(--accent)/20">
                                     <button
