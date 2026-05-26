@@ -150,7 +150,7 @@
     --bg-color: #2C2E3B;
 
     --surface-page: color-mix(in srgb, var(--bg-color) 82%, #1e2029 18%);
-    --surface-card: color-mix(in srgb, #232530 80%, transparent);
+    --surface-card: color-mix(in srgb, #363848 85%, transparent);
     --surface-modal: #232530;
     --surface-muted: color-mix(in srgb, #1e2029 80%, transparent);
     --surface-input: #1a1c28;
@@ -203,7 +203,7 @@
     --hero-mid: #1A1A2E;
     --hero-end: #16163A;
     --line-color: color-mix(in srgb, var(--accent) 88%, white 12%);
-    --accent-secondary: color-mix(in srgb, var(--accent) 45%, #00E5FF 55%);
+    --accent-secondary: #00D4FF;
     --logo-filter: none;
     --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%23FFFFFF' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%23E91E8C'/%3E%3C/svg%3E");
     --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%23E91E8C' stroke='%231b1d22' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
@@ -216,15 +216,15 @@
     --bg-color: #EDD6CB;
 
     --surface-page: color-mix(in srgb, var(--bg-color) 90%, #E4C4B8 10%);
-    --surface-card: color-mix(in srgb, #FAF2EE 88%, transparent);
-    --surface-modal: #FAF2EE;
+    --surface-card: #FEFBF7;
+    --surface-modal: #FEFBF7;
     --surface-muted: color-mix(in srgb, #E8D0C8 88%, transparent);
     --surface-input: #EAD4C8;
     --surface-editor: #E2C8BC;
     --surface-dropdown: color-mix(in srgb, #F8EFEA 95%, transparent);
     --surface-hover: color-mix(in srgb, var(--accent) 12%, transparent);
 
-    --accent: #D4A49A;
+    --accent: #B5634A;
     --text: #3A1E12;
     --text-h: #281408;
     --text-muted: color-mix(in srgb, var(--text) 70%, transparent);
@@ -232,15 +232,15 @@
 
     --bg: var(--surface-page);
     --code-bg: color-mix(in srgb, #DFC4B8 60%, #EDD6CB 40%);
-    --hero-start: #DFC4B8;
+    --hero-start: #C8876A;
     --hero-mid: #E8D4CC;
     --hero-end: #F5EBE6;
     --line-color: color-mix(in srgb, var(--accent) 72%, white 28%);
-    --accent-secondary: color-mix(in srgb, var(--accent) 45%, #8FAB80 55%);
+    --accent-secondary: #C4956A;
     --logo-filter: none;
-    --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%23281408' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%23D4A49A'/%3E%3C/svg%3E");
-    --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%23D4A49A' stroke='%233A1E12' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
-    --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%23D4A49A' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%23281408'/%3E%3C/svg%3E");
+    --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='5.4' fill='none' stroke='%23281408' stroke-width='1.4'/%3E%3Ccircle cx='13' cy='13' r='2.8' fill='%23B5634A'/%3E%3C/svg%3E");
+    --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='29' height='29' viewBox='0 0 36 36'%3E%3Cpath d='M8 4L31 24L17 24.5L8 32Z' fill='%23B5634A' stroke='%233A1E12' stroke-width='2.8' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E");
+    --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Cpath d='M10 4.5h6M13 4.5v17M10 21.5h6M9.5 9h7M9.5 17h7' stroke='%23B5634A' stroke-width='1.9' stroke-linecap='round'/%3E%3Ccircle cx='13' cy='13' r='1.1' fill='%23281408'/%3E%3C/svg%3E");
 
     color-scheme: light;
 }
@@ -733,6 +733,9 @@ h1, h2, h3, h4, h5, h6 {
     font-family: var(--heading, inherit);
 }
 
+[data-theme='olivia'] {
+    --heading: 'Lora', Georgia, serif;
+}
 [data-theme='serika'] {
     --heading: 'JetBrains Mono', ui-monospace, monospace;
 }
@@ -742,6 +745,7 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme='superuser'] {
     --heading: 'JetBrains Mono', 'Courier New', monospace;
     --mono: 'JetBrains Mono', 'Courier New', monospace;
+    --sans: 'JetBrains Mono', 'Courier New', monospace;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -844,6 +848,89 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme='mcdonalds'] h3 {
     font-family: system-ui, 'Comic Sans MS', sans-serif !important;
     font-weight: 900 !important;
+}
+
+/* ── OLIVIA: Elegant, warm paper ── */
+[data-theme='olivia'] body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+}
+
+[data-theme='olivia'] .rounded-3xl { border-radius: 22px !important; }
+[data-theme='olivia'] .rounded-2xl { border-radius: 18px !important; }
+[data-theme='olivia'] .rounded-xl  { border-radius: 14px !important; }
+
+[data-theme='olivia'] .flexlayout__tabset {
+    box-shadow: 0 4px 28px color-mix(in srgb, var(--accent) 22%, transparent) !important;
+}
+
+[data-theme='olivia'] .transition-all,
+[data-theme='olivia'] .transition,
+[data-theme='olivia'] .transition-colors,
+[data-theme='olivia'] .transition-transform {
+    transition-duration: 340ms !important;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* ── EIGHTIES additions: Neon glow + CRT vignette + panel border glow ── */
+[data-theme='eighties'] h1,
+[data-theme='eighties'] h2,
+[data-theme='eighties'] h3 {
+    text-shadow:
+        0 0 6px color-mix(in srgb, var(--accent) 80%, transparent),
+        0 0 22px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+[data-theme='eighties'] body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9997;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
+}
+
+[data-theme='eighties'] .flexlayout__tabset {
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent),
+        0 0 18px color-mix(in srgb, var(--accent) 18%, transparent) !important;
+}
+
+/* ── SUPERUSER additions: Terminal caret ── */
+[data-theme='superuser'] input,
+[data-theme='superuser'] textarea {
+    caret-color: var(--accent);
+}
+
+/* ── SERIKA additions: Key-cap depth + heavier body + button press ── */
+[data-theme='serika'] .flexlayout__tabset {
+    box-shadow: 0 5px 0 rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+}
+
+[data-theme='serika'] body {
+    font-weight: 500;
+}
+
+[data-theme='serika'] button:active {
+    transform: translateY(2px) !important;
+}
+
+/* ── MCDONALDS additions: Playful dot pattern ── */
+[data-theme='mcdonalds'] body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: radial-gradient(circle, color-mix(in srgb, var(--accent) 14%, transparent) 1.5px, transparent 1.5px);
+    background-size: 22px 22px;
 }
 
 /* ── SELECTION HIGHLIGHTS ── */
