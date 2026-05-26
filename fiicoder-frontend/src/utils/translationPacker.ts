@@ -7,10 +7,10 @@ export function unpackTranslation(backendString: string | undefined | null, curr
         if (typeof parsedData === 'object' && parsedData !== null) {
             const langKey = currentLang.toLowerCase() as 'ro' | 'en';
             let text = parsedData[langKey];
-            
-            if (text === undefined) text = parsedData['ro'];
-            if (text === undefined) text = parsedData['en'];
-            if (text === undefined) return backendString;
+
+            if (!text) text = parsedData['ro'];
+            if (!text) text = parsedData['en'];
+            if (!text) return backendString;
 
             if (parsedData._encoded) {
                 try { 
@@ -33,6 +33,26 @@ export function packTranslation(roText: string, enText: string): string {
         ro: encodeURIComponent(roText), 
         en: encodeURIComponent(enText) 
     });
+}
+
+export function hasTranslation(backendString: string | undefined | null, lang: 'RO' | 'EN'): boolean {
+    if (!backendString) return false;
+    try {
+        let parsedData = JSON.parse(backendString);
+        if (typeof parsedData === 'string') parsedData = JSON.parse(parsedData);
+        if (typeof parsedData === 'object' && parsedData !== null) {
+            const langKey = lang.toLowerCase() as 'ro' | 'en';
+            const text = parsedData[langKey];
+            if (!text) return false;
+            if (parsedData._encoded) {
+                try { return !!decodeURIComponent(text); } catch { return !!text; }
+            }
+            return !!text;
+        }
+    } catch {
+        return true;
+    }
+    return true;
 }
 
 export function getTranslationParts(backendString: string | undefined | null): { ro: string; en: string } {

@@ -10,7 +10,7 @@ import type { Announcement } from '../../types/announcement';
 import { itemVariants, staggerConfig } from '../../utils/motionConfig';
 import { useTheme } from '../../contexts/ThemeContext';
 import { createPortal } from 'react-dom';
-import { unpackTranslation } from '../../utils/translationPacker';
+import { unpackTranslation, hasTranslation } from '../../utils/translationPacker';
 import { formatDateTime } from '../../utils/dateTime';
 
 const containerVariants = {
@@ -220,7 +220,10 @@ export default function Landing() {
         },
     });
 
-    const announcements = announcementsQuery.data ?? [];
+    const announcements = useMemo(() =>
+        (announcementsQuery.data ?? []).filter(ann => hasTranslation(ann.title, lang)),
+        [announcementsQuery.data, lang]
+    );
     const isAnnouncementsLoading = announcementsQuery.isPending;
     const [selectedAnnouncement, setSelectedAnnouncement] =
         useState<AnnouncementWithPriority | null>(null);
