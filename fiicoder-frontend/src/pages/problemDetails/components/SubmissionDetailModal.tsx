@@ -91,11 +91,12 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
                 <p className="text-[11px] font-bold uppercase tracking-widest text-(--text-muted) px-1">
                     {lang === 'RO' ? 'Subtask-uri' : 'Subtasks'}
                 </p>
-                {subtasks.map(st => {
+                {[...subtasks].sort((a, b) => a.index - b.index).map(st => {
                     const verdict = stVerdict(st);
                     const isExpanded = expanded.has(st.index);
-                    const allTimes = st.tests.map(t => t.time).filter(t => t > 0);
-                    const allMems  = st.tests.map(t => t.memory).filter(m => m > 0);
+                    const sortedTests = [...st.tests].sort((a, b) => a.index - b.index);
+                    const allTimes = sortedTests.map(t => t.time).filter(t => t > 0);
+                    const allMems  = sortedTests.map(t => t.memory).filter(m => m > 0);
                     const maxTimeMs = allTimes.length ? (Math.max(...allTimes) / 1_000_000).toFixed(0) : '-';
                     const maxMemKB  = allMems.length  ? (Math.max(...allMems)  / 1024).toFixed(0)      : '-';
 
@@ -149,10 +150,10 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
                                                 <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted) ml-auto w-16 text-right">Timp</span>
                                                 <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted) w-16 text-right">Memorie</span>
                                             </div>
-                                            {st.tests.map(t => {
+                                            {sortedTests.map(t => {
                                                 const color = testVerdictColors[t.verdict] ?? 'border-(--accent)/30 bg-(--accent)/5 text-(--text-muted)';
-                                                const timeMs = t.time   ? (t.time   / 1_000_000).toFixed(0) : '0';
-                                                const memKB  = t.memory ? (t.memory / 1024).toFixed(0)      : '0';
+                                                const timeMs = t.time   > 0 ? `${(t.time   / 1_000_000).toFixed(0)}ms` : '-';
+                                                const memKB  = t.memory > 0 ? `${(t.memory / 1024).toFixed(0)}KB`      : '-';
                                                 return (
                                                     <div key={t.index} className="flex items-center gap-3 px-4 py-2 hover:bg-(--accent)/5 transition-colors">
                                                         <span className="text-xs font-mono font-bold text-(--text-subtle) w-8">#{t.index}</span>
@@ -162,8 +163,8 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
                                                         {t.message && (
                                                             <span className="text-[10px] text-(--text-muted) truncate flex-1">{t.message}</span>
                                                         )}
-                                                        <span className="text-xs font-mono text-(--text-muted) ml-auto w-16 text-right">{timeMs}ms</span>
-                                                        <span className="text-xs font-mono text-(--text-muted) w-16 text-right">{memKB}KB</span>
+                                                        <span className="text-xs font-mono text-(--text-muted) ml-auto w-16 text-right">{timeMs}</span>
+                                                        <span className="text-xs font-mono text-(--text-muted) w-16 text-right">{memKB}</span>
                                                     </div>
                                                 );
                                             })}
