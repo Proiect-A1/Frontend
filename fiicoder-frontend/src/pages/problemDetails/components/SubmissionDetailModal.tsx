@@ -109,6 +109,8 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
                                     minimap: { enabled: false },
                                     scrollBeyondLastLine: false,
                                     fontSize: 14,
+                                    fontFamily: "'JetBrains Mono', 'Fira Code', 'Ubuntu Mono', 'DejaVu Sans Mono', 'Cascadia Code', monospace",
+                                    fontLigatures: true,
                                 }}
                             />
                             

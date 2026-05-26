@@ -432,6 +432,8 @@ export default function AttachmentsTab() {
                                                             scrollBeyondLastLine: false,
                                                             fontSize: 13,
                                                             contextmenu: false,
+                                                            fontFamily: "'JetBrains Mono', 'Fira Code', 'Ubuntu Mono', 'DejaVu Sans Mono', 'Cascadia Code', monospace",
+                                                            fontLigatures: true,
                                                         }}
                                                     />
                                                     {contextMenuEl}
