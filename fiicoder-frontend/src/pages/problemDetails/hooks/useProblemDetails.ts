@@ -245,10 +245,6 @@ export function useProblemDetails() {
     }, []);
 
     useEffect(() => {
-        handleSubmitRef.current = handleSubmit;
-    }, [handleSubmit]);
-
-    useEffect(() => {
         const onKeyDown = (e: KeyboardEvent) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && isAuthenticated) {
                 e.preventDefault();
@@ -390,6 +386,10 @@ export function useProblemDetails() {
         },
         [isAuthenticated, lang, problem, problemTitle, selectedLanguageId],
     );
+
+    useEffect(() => {
+        handleSubmitRef.current = handleSubmit;
+    }, [handleSubmit]);
 
     return {
         lang,
