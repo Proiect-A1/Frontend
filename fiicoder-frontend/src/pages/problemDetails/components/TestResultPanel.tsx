@@ -49,6 +49,19 @@ const verdictColors: Record<string, string> = {
     PENDING: 'border-sky-500/40 bg-sky-500/10 text-sky-300',
 };
 
+const verdictIcons: Record<string, string> = {
+    OK: '✓',
+    WA: '✗',
+    TLE: '⏱',
+    MLE: '⚠',
+    RTE: '!',
+    CPE: '{}',
+    FAIL: '✗',
+    SKIP: '—',
+    ILE: '⏱',
+    PENDING: '…',
+};
+
 type Props = {
     evalStatus: string;
     evalError?: string | null;
@@ -80,7 +93,10 @@ function TestRow({ t, idx }: { t: any; idx: number }) {
                     {t.verdict}
                 </span>
             ) : (
-                <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase border ${color} shrink-0`}>{t.verdict}</span>
+                <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase border ${color} shrink-0 flex items-center gap-1`}>
+                    <span aria-hidden="true">{verdictIcons[t.verdict] ?? ''}</span>
+                    {t.verdict}
+                </span>
             )}
             <span className="text-[10px] font-bold text-(--text-muted) ml-auto shrink-0">{formatScore(t.score)}/{formatScore(t.maxScore)}</span>
             <span className="text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">{timeMs}ms</span>

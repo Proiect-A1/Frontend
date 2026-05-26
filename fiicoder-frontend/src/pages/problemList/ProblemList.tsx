@@ -11,6 +11,7 @@ import {
 import FilterSidebar from "./components/FilterSidebar";
 import SearchInput from "../../components/SearchInput";
 import StatsSidebar from "./components/StatsSidebar";
+import ProblemSkeleton from "../../components/ProblemSkeleton";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function ProblemList() {
@@ -124,13 +125,7 @@ export default function ProblemList() {
         <div className="page-line-horizontal mb-6" />
 
         <div className="">
-          {loading && (
-            <p className="text-(--text)">
-              {lang === "RO"
-                ? "Se încarcă problemele..."
-                : "Loading problems..."}
-            </p>
-          )}
+          {loading && <ProblemSkeleton />}
           {error && <p className="text-red-400">{error}</p>}
 
           {!loading && !error && filteredProblems.length === 0 && (

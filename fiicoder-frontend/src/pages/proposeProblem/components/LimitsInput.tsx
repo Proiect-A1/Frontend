@@ -18,6 +18,7 @@ export default function LimitsInput() {
                             min="1"
                             max="30"
                             step="0.1"
+                            placeholder="ex: 1"
                             className="w-full rounded-2xl border border-(--accent)/25 bg-(--surface-input) px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
                         />
                     )}
@@ -35,6 +36,7 @@ export default function LimitsInput() {
                             min="16"
                             max="1024"
                             step="1"
+                            placeholder="ex: 256"
                             className="w-full rounded-2xl border border-(--accent)/25 bg-(--surface-input) px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
                         />
                     )}

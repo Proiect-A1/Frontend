@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { useLanguage, translations } from "../language/Language";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
@@ -40,6 +41,7 @@ export default function Navbar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const [navSearch, setNavSearch] = useState("");
+  const [searchEverFocused, setSearchEverFocused] = useState(false);
 
   const navProblemsQuery = useQuery({
     queryKey: ['nav-problems'],
@@ -47,6 +49,7 @@ export default function Navbar() {
     staleTime: 10 * 60_000,
     gcTime: 30 * 60_000,
     retry: 0,
+    enabled: searchEverFocused,
   });
 
   const navSuggestions = useMemo(
@@ -76,8 +79,9 @@ export default function Navbar() {
     try {
       const problem = await problemService.getProblemByTitle(trimmed);
       if (problem?.title) navigate(`/problems/${problem.title}`);
+      else toast.error(lang === 'RO' ? 'Problema nu a fost găsită.' : 'Problem not found.');
     } catch {
-      // ignore if not found
+      toast.error(lang === 'RO' ? 'Problema nu a fost găsită.' : 'Problem not found.');
     }
   };
 
@@ -244,6 +248,7 @@ export default function Navbar() {
                   suggestions={navSuggestions}
                   onEnter={handleNavSearchEnter}
                   onSelectSuggestion={(s) => navigate(`/problems/${s}`)}
+                  onFocus={() => setSearchEverFocused(true)}
                 />
               </div>
             </div>
@@ -382,6 +387,8 @@ export default function Navbar() {
           <button
             className="xl:hidden p-2 text-(--text) hover:text-(--text-h) focus:outline-none"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
+            aria-label={isMobileOpen ? "Închide meniu" : "Deschide meniu"}
+            aria-expanded={isMobileOpen}
           >
             {isMobileOpen ? (
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -431,7 +438,7 @@ export default function Navbar() {
                           type="color"
                           value={customColors.bg}
                           onChange={(event) => setCustomColors(event.target.value, customColors.accent)}
-                          className="w-7 h-7 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
+                          className="w-9 h-9 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
                         />
                         <span>{lang === "RO" ? "Fundal" : "Background"}</span>
                       </div>
@@ -440,7 +447,7 @@ export default function Navbar() {
                           type="color"
                           value={customColors.accent}
                           onChange={(event) => setCustomColors(customColors.bg, event.target.value)}
-                          className="w-7 h-7 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
+                          className="w-9 h-9 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
                         />
                         <span>Accent</span>
                       </div>

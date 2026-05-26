@@ -32,6 +32,7 @@ export default function FilterSidebar({
     // tag-uri din backend
     const [availableTags, setAvailableTags] = useState<TagResponseDTO[]>([]);
     const [tagsLoading, setTagsLoading] = useState(true);
+    const [tagsError, setTagsError] = useState(false);
 
     useEffect(() => {
         let mounted = true;
@@ -41,7 +42,7 @@ export default function FilterSidebar({
                 if (mounted) setAvailableTags(tags);
             })
             .catch(() => {
-                /* silently ignore */
+                if (mounted) setTagsError(true);
             })
             .finally(() => {
                 if (mounted) setTagsLoading(false);
@@ -148,6 +149,10 @@ export default function FilterSidebar({
                                     />
                                 ))}
                             </div>
+                        ) : tagsError ? (
+                            <p className="text-xs text-red-400">
+                                {lang === 'RO' ? 'Nu s-au putut încărca tag-urile.' : 'Failed to load tags.'}
+                            </p>
                         ) : availableTags.length === 0 ? (
                             <p className="text-xs text-(--text-muted)">{t.noTagsAvailable}</p>
                         ) : (

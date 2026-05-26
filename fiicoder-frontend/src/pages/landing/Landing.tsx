@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -230,6 +230,23 @@ export default function Landing() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showAllAnnouncements, setShowAllAnnouncements] = useState(false);
 
+    const [readIds, setReadIds] = useState<Set<string | number>>(() => {
+        try {
+            const stored = localStorage.getItem('fiicoder_read_announcements');
+            return stored ? new Set(JSON.parse(stored)) : new Set();
+        } catch {
+            return new Set();
+        }
+    });
+
+    useEffect(() => {
+        try {
+            localStorage.setItem('fiicoder_read_announcements', JSON.stringify([...readIds]));
+        } catch {
+            // ignore
+        }
+    }, [readIds]);
+
     // Memoize the features and stats list to avoid recreation on every render
     const features = useMemo(
         () => [
@@ -298,6 +315,7 @@ export default function Landing() {
     const handleOpenAnnouncement = async (announcement: AnnouncementWithPriority) => {
         setSelectedAnnouncement(announcement);
         setIsModalOpen(true);
+        setReadIds(prev => new Set([...prev, announcement.id]));
         try {
             const fresh = await adminService.getAnnouncementById(announcement.id);
             const unpackedFreshTitle = unpackTranslation(fresh.title, lang);
@@ -491,15 +509,22 @@ export default function Landing() {
                                                             ann.priority === 'high'
                                                                 ? 'text-(--accent)'
                                                                 : 'text-(--text-h)'
-                                                        }`}
+                                                        } ${readIds.has(ann.id) ? 'opacity-60' : ''}`}
                                                     >
                                                         {unpackTranslation(ann.title, lang)}
                                                     </h3>
-                                                    {ann.priority === 'high' && (
-                                                        <span className="shrink-0 px-1.5 py-0.5 rounded-md bg-(--accent) text-(--surface-card) text-[10px] font-black uppercase">
-                                                            !
-                                                        </span>
-                                                    )}
+                                                    <div className="flex items-center gap-1 shrink-0">
+                                                        {readIds.has(ann.id) && (
+                                                            <span className="text-[9px] font-bold text-(--text-subtle) uppercase tracking-wider">
+                                                                {lang === 'RO' ? 'citit' : 'read'}
+                                                            </span>
+                                                        )}
+                                                        {ann.priority === 'high' && (
+                                                            <span className="px-1.5 py-0.5 rounded-md bg-(--accent) text-(--surface-card) text-[10px] font-black uppercase">
+                                                                !
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                                 <p className="text-sm text-(--text-muted) mb-1.5 line-clamp-2 leading-snug">
                                                     {unpackTranslation(ann.content, lang)}

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
+import { toast } from 'sonner';
 import { profileService } from '../services/profileService';
 import { getGravatarUrl, getDiceBearUrl } from '../utils/gravatar';
 
@@ -123,7 +124,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         safeSet(GRAVATAR_KEY, gravatar);
         safeSet(DICEBEAR_KEY, dicebear);
       })
-      .catch(() => {});
+      .catch(() => {
+        toast.error('Eroare la încărcarea profilului. Încearcă să te reconectezi.');
+      });
   }, [token]);
 
   const login = useCallback((newToken: string, username?: string) => {

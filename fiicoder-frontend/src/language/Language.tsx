@@ -36,6 +36,7 @@ export const translations = {
         filterSearchPlaceholder: 'Problema 3',
         // Problem Details
         submitTitle: 'Trimite Soluția',
+        submitAuthHelpful: 'Loghează-te pentru a trimite soluții și a-ți vedea progresul.',
         placeholderCode: 'Scrie soluția ta aici...',
         evalBtn: 'Evaluare soluție',
         evalPending: 'Evaluare în curs...',
@@ -115,6 +116,7 @@ export const translations = {
         statPref: 'Preferred Difficulty',
         // Problem details page (submissions)
         submitTitle: 'Submit Solution',
+        submitAuthHelpful: 'Log in to submit solutions and track your progress.',
         placeholderCode: 'Type your solution here...',
         evalBtn: 'Submit Solution',
         evalPending: 'Evaluating...',

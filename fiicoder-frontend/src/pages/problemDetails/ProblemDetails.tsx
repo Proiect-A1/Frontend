@@ -88,6 +88,7 @@ export default function ProblemDetails() {
                         handleCodeChange={handleCodeChange}
                         handleEditorMount={handleEditorMount}
                         handleSubmit={handleSubmit}
+                        showClipboardButtons
                     />
                 );
             case 'testresult':
@@ -145,7 +146,7 @@ export default function ProblemDetails() {
                         lang={lang}
                     />
                 </div>
-                <div className="overflow-hidden bg-(--surface-card) border-2 border-(--accent) rounded-3xl min-h-100 flex flex-col">
+                <div className="overflow-hidden bg-(--surface-card) border-2 border-(--accent) rounded-3xl min-h-[50svh] flex flex-col">
                     <EditorPanel
                         isAuthenticated={isAuthenticated}
                         t={t}

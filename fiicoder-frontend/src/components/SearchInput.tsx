@@ -8,10 +8,12 @@ interface Props {
   onEnter?: () => void;
   onSelectSuggestion?: (s: string) => void;
   showIcon?: boolean;
+  onFocus?: () => void;
 }
 
-export default function SearchInput({ value, onChange, placeholder, suggestions = [], onEnter, onSelectSuggestion, showIcon = false }: Props) {
+export default function SearchInput({ value, onChange, placeholder, suggestions = [], onEnter, onSelectSuggestion, showIcon = false, onFocus }: Props) {
   const [open, setOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -25,6 +27,30 @@ export default function SearchInput({ value, onChange, placeholder, suggestions 
 
   const filtered = value ? suggestions.filter(s => s.toLowerCase().includes(value.toLowerCase())).slice(0, 6) : [];
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setHighlightedIndex(prev => (prev + 1) % filtered.length);
+      setOpen(true);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setHighlightedIndex(prev => (prev <= 0 ? filtered.length - 1 : prev - 1));
+      setOpen(true);
+    } else if (e.key === 'Enter') {
+      if (highlightedIndex >= 0 && filtered[highlightedIndex]) {
+        onSelectSuggestion?.(filtered[highlightedIndex]);
+        setOpen(false);
+        setHighlightedIndex(-1);
+      } else {
+        onEnter?.();
+        setOpen(false);
+      }
+    } else if (e.key === 'Escape') {
+      setOpen(false);
+      setHighlightedIndex(-1);
+    }
+  };
+
   return (
     <div ref={ref} className="relative">
       {showIcon && (
@@ -37,20 +63,21 @@ export default function SearchInput({ value, onChange, placeholder, suggestions 
       <input
         type="text"
         value={value}
-        onChange={e => { onChange(e.target.value); setOpen(true); }}
-        onKeyDown={e => { if (e.key === 'Enter') { onEnter?.(); setOpen(false); } }}
+        onChange={e => { onChange(e.target.value); setOpen(true); setHighlightedIndex(-1); }}
+        onKeyDown={handleKeyDown}
+        onFocus={onFocus}
         placeholder={placeholder}
         className={`w-full bg-(--surface-muted) border border-(--accent)/30 rounded-2xl py-2 text-sm text-(--text-h) outline-none focus:border-(--accent) transition-all ${showIcon ? 'pl-10 pr-4' : 'px-4'}`}
       />
 
       {open && filtered.length > 0 && (
         <div className="absolute z-50 mt-2 w-full bg-(--surface-dropdown) border border-(--accent)/30 rounded-xl shadow-2xl overflow-hidden">
-          {filtered.map(s => (
+          {filtered.map((s, idx) => (
             <button
               key={s}
               type="button"
-              onClick={() => { onSelectSuggestion?.(s); setOpen(false); }}
-              className="w-full text-left px-4 py-2 text-sm text-(--text) hover:bg-(--accent)/10"
+              onClick={() => { onSelectSuggestion?.(s); setOpen(false); setHighlightedIndex(-1); }}
+              className={`w-full text-left px-4 py-2 text-sm text-(--text) transition-colors ${idx === highlightedIndex ? 'bg-(--accent)/20 text-(--text-h)' : 'hover:bg-(--accent)/10'}`}
             >
               {s}
             </button>
