@@ -261,7 +261,7 @@ export default function ProfileOverviewContent({
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 lg:grid-cols-2 gap-4 min-w-0 mb-8"
+        className="grid grid-cols-1 lg:grid-cols-2 gap-4 min-w-0"
       >
         <motion.div
           variants={itemVariants}
@@ -373,7 +373,7 @@ export default function ProfileOverviewContent({
 
         <motion.div
           variants={itemVariants}
-          className="p-4 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow min-w-0 flex flex-col"
+          className="p-4 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow min-w-0 flex flex-col max-h-[480px]"
         >
           <h2 className="text-sm font-bold text-(--text-h) mb-3 uppercase tracking-wider shrink-0">
             {lang === "RO" ? "Submisii Recente" : "Recent Submissions"}
@@ -384,7 +384,7 @@ export default function ProfileOverviewContent({
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="flex flex-col gap-2 overflow-y-auto custom-scrollbar flex-1"
+              className="flex flex-col gap-2 overflow-y-auto custom-scrollbar flex-1 min-h-0"
             >
               {profile.recentSubmissions.content
                 .slice()
