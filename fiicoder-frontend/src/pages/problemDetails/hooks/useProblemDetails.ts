@@ -248,7 +248,7 @@ export function useProblemDetails() {
         const onKeyDown = (e: KeyboardEvent) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && isAuthenticated) {
                 e.preventDefault();
-                handleSubmitRef.current?.({} as React.FormEvent);
+                handleSubmitRef.current?.({ preventDefault: () => {} } as React.FormEvent);
             }
         };
         document.addEventListener('keydown', onKeyDown);
