@@ -245,6 +245,16 @@ export function useProblemDetails() {
     }, []);
 
     useEffect(() => {
+        const onBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (codeRef.current.trim()) {
+                e.preventDefault();
+            }
+        };
+        window.addEventListener('beforeunload', onBeforeUnload);
+        return () => window.removeEventListener('beforeunload', onBeforeUnload);
+    }, []);
+
+    useEffect(() => {
         const onKeyDown = (e: KeyboardEvent) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && isAuthenticated) {
                 e.preventDefault();

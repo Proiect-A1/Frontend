@@ -14,7 +14,7 @@ export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang,
     return (
         <div className="hidden xl:flex h-[4.5rem] shrink-0 bg-(--surface-card) border-2 border-(--accent) rounded-2xl items-center justify-between px-6">
             <div className="flex items-center gap-6">
-                <button className="text-[15px] font-black text-(--text-muted) hover:text-(--accent) flex items-center gap-3 uppercase tracking-tighter transition-colors group">
+                <button disabled title={lang === 'RO' ? 'Consolă — în curând' : 'Console — coming soon'} className="text-[15px] font-black text-(--text-muted) opacity-40 cursor-not-allowed flex items-center gap-3 uppercase tracking-tighter group">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="w-6 h-6 opacity-50 group-hover:opacity-100 transition-opacity"

@@ -30,8 +30,15 @@ const verdictClasses: Record<SubmissionVerdict, string> = {
     REJECTED: 'border-red-500/40 bg-red-500/10 text-red-300',
 };
 
+const PAGE_SIZE = 10;
+
 export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, lang }: Props) {
     const [selectedSubmission, setSelectedSubmission] = useState<ProblemSubmissionDTO | null>(null);
+    const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+    const sorted = recentSubmissions
+        .slice()
+        .sort((a, b) => new Date(b.submissiondate).getTime() - new Date(a.submissiondate).getTime());
 
     return (
         <div className="h-full p-6 bg-(--surface-card) overflow-y-auto custom-scrollbar">
@@ -40,10 +47,9 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
                     <p className="text-sm text-(--text-muted) italic">
                         {lang === 'RO' ? 'Autentifică-te pentru istoricul tău.' : 'Log in to see history.'}
                     </p>
-                ) : recentSubmissions.length > 0 ? (
-                    recentSubmissions
-                    .slice()
-                    .sort((a, b) => new Date(b.submissiondate).getTime() - new Date(a.submissiondate).getTime())
+                ) : sorted.length > 0 ? (
+                    sorted
+                    .slice(0, visibleCount)
                     .map((sub, idx) => {
                         const verdict = verdictFor(sub);
                         return (
@@ -72,6 +78,14 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
                     })
                 ) : (
                     <p className="text-sm text-(--text-muted) italic">{lang === 'RO' ? 'Nu ai încă submisii.' : 'No submissions yet.'}</p>
+                )}
+                {isAuthenticated && visibleCount < sorted.length && (
+                    <button
+                        onClick={() => setVisibleCount(c => c + PAGE_SIZE)}
+                        className="w-full mt-2 py-1.5 rounded-xl border border-(--accent)/30 bg-(--accent)/5 text-xs font-bold text-(--text-muted) hover:bg-(--accent)/15 hover:text-(--text-h) transition-colors"
+                    >
+                        {lang === 'RO' ? `Afișează mai multe (${sorted.length - visibleCount} rămase)` : `Load more (${sorted.length - visibleCount} left)`}
+                    </button>
                 )}
             </div>
 

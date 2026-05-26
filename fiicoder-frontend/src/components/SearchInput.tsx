@@ -9,9 +9,10 @@ interface Props {
   onSelectSuggestion?: (s: string) => void;
   showIcon?: boolean;
   onFocus?: () => void;
+  inputRef?: React.RefObject<HTMLInputElement>;
 }
 
-export default function SearchInput({ value, onChange, placeholder, suggestions = [], onEnter, onSelectSuggestion, showIcon = false, onFocus }: Props) {
+export default function SearchInput({ value, onChange, placeholder, suggestions = [], onEnter, onSelectSuggestion, showIcon = false, onFocus, inputRef }: Props) {
   const [open, setOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -61,6 +62,7 @@ export default function SearchInput({ value, onChange, placeholder, suggestions 
         </div>
       )}
       <input
+        ref={inputRef}
         type="text"
         value={value}
         onChange={e => { onChange(e.target.value); setOpen(true); setHighlightedIndex(-1); }}

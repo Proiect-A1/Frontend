@@ -90,6 +90,19 @@ export default function Navbar() {
   const mobileThemeDropdownRef = useRef<HTMLDivElement>(null);
   const profileButtonRef = useRef<HTMLDivElement>(null);
   const profilePanelRef = useRef<HTMLDivElement>(null);
+  const navSearchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        setSearchEverFocused(true);
+        navSearchInputRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   const themeLogo: Record<string, string> = {
     rose: "/logo.svg",
@@ -238,7 +251,7 @@ export default function Navbar() {
             </Link>
 
             <div className="hidden xl:flex items-center">
-              <div className="w-44">
+              <div className="w-52 relative">
                 <SearchInput
                   value={navSearch}
                   onChange={setNavSearch}
@@ -249,7 +262,13 @@ export default function Navbar() {
                   onEnter={handleNavSearchEnter}
                   onSelectSuggestion={(s) => navigate(`/problems/${s}`)}
                   onFocus={() => setSearchEverFocused(true)}
+                  inputRef={navSearchInputRef}
                 />
+                {!navSearch && (
+                  <kbd className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-(--accent)/20 bg-(--surface-card) text-[10px] font-mono text-(--text-muted) opacity-60">
+                    /
+                  </kbd>
+                )}
               </div>
             </div>
           </div>

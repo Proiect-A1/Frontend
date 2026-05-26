@@ -148,7 +148,12 @@ export default function ProfileProposalsPanel({ proposals, loading, lang, onTogg
                                     </Link>
                                     {onDelete && (
                                         <button
-                                            onClick={() => onDelete(proposal.title)}
+                                            onClick={() => {
+                                                const msg = lang === 'RO'
+                                                    ? `Ești sigur că vrei să ștergi „${proposal.title}"? Acțiunea este ireversibilă.`
+                                                    : `Are you sure you want to delete "${proposal.title}"? This cannot be undone.`;
+                                                if (window.confirm(msg)) onDelete(proposal.title);
+                                            }}
                                             className="px-3 py-1.5 rounded-full border-2 border-red-500/40 bg-red-500/10 text-xs font-bold text-red-500 hover:bg-red-500/20 transition-colors"
                                         >
                                             {lang === 'RO' ? 'Șterge' : 'Delete'}

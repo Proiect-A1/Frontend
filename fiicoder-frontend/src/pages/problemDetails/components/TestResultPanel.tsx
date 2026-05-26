@@ -143,6 +143,12 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                             ? 'Trimite codul pentru a vedea rezultatele.'
                             : 'Submit your code to see results.'}
                     </p>
+                    <p className="mt-2 text-[10px] text-(--text-muted) opacity-60">
+                        {lang === 'RO' ? 'Scurtătură:' : 'Shortcut:'}{' '}
+                        <kbd className="px-1 py-0.5 rounded border border-(--accent)/20 bg-(--surface-muted) font-mono text-[9px]">Ctrl</kbd>
+                        {' + '}
+                        <kbd className="px-1 py-0.5 rounded border border-(--accent)/20 bg-(--surface-muted) font-mono text-[9px]">↵</kbd>
+                    </p>
                 </div>
             )}
 

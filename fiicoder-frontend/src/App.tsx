@@ -18,6 +18,23 @@ const Profile = lazyWithRetry(() => import("./pages/profile/Profile"));
 const AdminPanel = lazyWithRetry(() => import("./pages/adminPanel/AdminPanel"));
 const ProposeProblem = lazyWithRetry(() => import("./pages/proposeProblem/ProposeProblem"));
 
+function NotFound() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full gap-6 text-center">
+      <div className="w-20 h-20 rounded-full bg-(--accent)/10 border-2 border-(--accent)/30 flex items-center justify-center">
+        <span className="text-3xl font-black text-(--accent)/50">404</span>
+      </div>
+      <div>
+        <h1 className="text-2xl font-bold text-(--text-h) mb-2">Pagina nu există</h1>
+        <p className="text-sm text-(--text-muted)">URL-ul acesta nu corespunde niciunei pagini.</p>
+      </div>
+      <a href="/" className="px-5 py-2 rounded-full border-2 border-(--accent)/50 bg-(--accent)/10 text-sm font-bold text-(--text-h) hover:bg-(--accent)/20 transition-colors">
+        Înapoi acasă
+      </a>
+    </div>
+  );
+}
+
 // Loading component for Suspense fallback
 function PageLoader() {
   return (
@@ -95,6 +112,7 @@ function AnimatedRoutes() {
                 </ProtectedRoute>
               }
             />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </motion.main>

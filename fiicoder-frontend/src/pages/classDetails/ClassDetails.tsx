@@ -85,6 +85,13 @@ function HomeworkItem({
     const [loadingStudentProgress, setLoadingStudentProgress] = useState(false);
 
     useEffect(() => {
+        if (!selectedStudentProgress) return;
+        const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setSelectedStudentProgress(null); };
+        document.addEventListener('keydown', onKey);
+        return () => document.removeEventListener('keydown', onKey);
+    }, [selectedStudentProgress]);
+
+    useEffect(() => {
         if (!isSelected) {
             setSelectedHomeworkDetail(null);
             setStats(null);
@@ -240,7 +247,10 @@ function HomeworkItem({
                     </p>
                     <div className="mt-3 flex flex-wrap gap-3 text-xs text-(--text-muted)">
                         <span>
-                            {lang === 'RO' ? 'Deadline' : 'Deadline'}: {homework.deadline}
+                            {lang === 'RO' ? 'Deadline' : 'Deadline'}:{' '}
+                            {homework.deadline
+                                ? new Date(homework.deadline).toLocaleString(lang === 'RO' ? 'ro-RO' : 'en-US', { dateStyle: 'medium', timeStyle: 'short', timeZoneName: 'short' })
+                                : '—'}
                         </span>
                     </div>
                 </div>
@@ -929,7 +939,7 @@ export default function ClassDetails() {
                                         className="w-full inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                                     >
                                         {loadingInvite
-                                            ? '...'
+                                            ? (lang === 'RO' ? 'Se trimite...' : 'Sending...')
                                             : lang === 'RO'
                                               ? 'Invită'
                                               : 'Invite'}

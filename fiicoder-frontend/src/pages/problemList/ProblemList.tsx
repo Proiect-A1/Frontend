@@ -24,6 +24,7 @@ export default function ProblemList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [sortOrder, setSortOrder] = useState<"default" | "az" | "za" | "easy" | "hard">("default");
 
   const ITEMS_PER_PAGE = 15;
 
@@ -57,8 +58,10 @@ export default function ProblemList() {
   const hasMore = problemsQuery.hasNextPage ?? false;
   const isLoadingMore = problemsQuery.isFetchingNextPage;
 
+  const DIFFICULTY_ORDER: Record<string, number> = { EASY: 0, MEDIUM: 1, HARD: 2, CONTEST: 3 };
+
   const filteredProblems = useMemo(() => {
-    return problems.filter((problem) => {
+    const filtered = problems.filter((problem) => {
       const matchesDifficulty =
         difficultyFilter === "ALL" || problem.difficulty === difficultyFilter;
       const matchesSearch = problem.title
@@ -66,7 +69,12 @@ export default function ProblemList() {
         .includes(searchTerm.toLowerCase());
       return matchesDifficulty && matchesSearch;
     });
-  }, [difficultyFilter, searchTerm, problems]);
+    if (sortOrder === "az") return [...filtered].sort((a, b) => a.title.localeCompare(b.title));
+    if (sortOrder === "za") return [...filtered].sort((a, b) => b.title.localeCompare(a.title));
+    if (sortOrder === "easy") return [...filtered].sort((a, b) => (DIFFICULTY_ORDER[a.difficulty] ?? 9) - (DIFFICULTY_ORDER[b.difficulty] ?? 9));
+    if (sortOrder === "hard") return [...filtered].sort((a, b) => (DIFFICULTY_ORDER[b.difficulty] ?? 9) - (DIFFICULTY_ORDER[a.difficulty] ?? 9));
+    return filtered;
+  }, [difficultyFilter, searchTerm, problems, sortOrder]);
 
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -95,6 +103,7 @@ export default function ProblemList() {
     setDifficultyFilter("ALL");
     setSelectedTags([]);
     setSearchTerm("");
+    setSortOrder("default");
   };
 
   return (
@@ -123,6 +132,18 @@ export default function ProblemList() {
                 {lang === "RO" ? "Propune problemă" : "Propose problem"}
               </Link>
             )}
+
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value as typeof sortOrder)}
+              className="shrink-0 rounded-xl border border-(--accent)/30 bg-(--surface-input) px-3 py-1.5 text-sm text-(--text) outline-none transition hover:border-(--accent) cursor-pointer"
+            >
+              <option value="default">{lang === "RO" ? "Implicit" : "Default"}</option>
+              <option value="az">A → Z</option>
+              <option value="za">Z → A</option>
+              <option value="easy">{lang === "RO" ? "Ușor → Greu" : "Easy → Hard"}</option>
+              <option value="hard">{lang === "RO" ? "Greu → Ușor" : "Hard → Easy"}</option>
+            </select>
 
             <div className="relative group w-full max-w-sm">
               <SearchInput
