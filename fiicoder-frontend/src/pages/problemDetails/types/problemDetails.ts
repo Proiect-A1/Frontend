@@ -11,6 +11,21 @@ export interface SubmissionResponse {
   ticket: string;
 }
 
+export interface SubmissionSubtaskTestDTO {
+  index: number;
+  verdict: string;
+  time: number;   // nanoseconds
+  memory: number; // bytes
+  message: string;
+}
+
+export interface SubmissionSubtaskDTO {
+  index: number;
+  score: number;
+  maxScore: number;
+  tests: SubmissionSubtaskTestDTO[];
+}
+
 /** Matches backend SubmissionViewResponseDTO. */
 export interface SubmissionStatus {
   code: string;
@@ -19,6 +34,7 @@ export interface SubmissionStatus {
   status: string;
   problemTitle: string;
   score: number;
+  subtasks: SubmissionSubtaskDTO[];
 }
 
 // ── WebSocket event types (from sandbox-service protocol) ─────────
@@ -62,7 +78,7 @@ export type EvaluationEvent = DoneTestEvent | DoneSubtaskEvent | DoneSubmissionE
 // ── Problem Submissions ───────────────────────────────────────────
 
 export interface ProblemSubmissionDTO {
-  id?: string;
+  id: string;
   code: string;
   language: unknown;
   Score: number;
