@@ -389,6 +389,7 @@ export default function ProfileOverviewContent({
               {profile.recentSubmissions.content
                 .slice()
                 .sort((a, b) => new Date(b.submissionDate).getTime() - new Date(a.submissionDate).getTime())
+                .slice(0, 20)
                 .map((submission) => {
                 const verdict = submissionVerdict(submission);
                 const verdictBadgeClasses: Record<typeof verdict, string> = isLightTheme

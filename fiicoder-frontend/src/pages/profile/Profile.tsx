@@ -26,7 +26,7 @@ export default function Profile() {
 
     const profileQuery = useQuery({
         queryKey: ['profile', 'me', userId],
-        queryFn: () => profileService.getMyProfile(),
+        queryFn: () => profileService.getMyProfile(0, 200),
     });
 
     const proposalsQuery = useQuery({
