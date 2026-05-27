@@ -11,13 +11,22 @@ export const THEMES = ["fii", "fiicode", "rose", "nord", "cream", "sage", "olivi
 export type Theme = (typeof THEMES)[number];
 const DEFAULT_THEME: Theme = "fii";
 
+export type CustomRadius = 'rounded' | 'medium' | 'square';
+export type CustomFont   = 'sans' | 'serif' | 'mono';
+export interface CustomColors {
+  bg: string;
+  accent: string;
+  radius: CustomRadius;
+  font: CustomFont;
+}
+
 interface ThemeContextValue {
   theme: Theme;
   themes: readonly Theme[];
   setTheme: (theme: Theme) => void;
   toggleTheme: () => void;
-  customColors: { bg: string; accent: string };
-  setCustomColors: (bg: string, accent: string) => void;
+  customColors: CustomColors;
+  setCustomColors: (colors: Partial<CustomColors>) => void;
 }
 
 const THEME_STORAGE_KEY = "fiicoder_theme";
@@ -39,7 +48,7 @@ const THEME_FAVICONS: Record<Theme, string> = {
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 const CUSTOM_COLORS_KEY = "fiicoder_custom_colors";
-const DEFAULT_CUSTOM_COLORS = { bg: "#090812", accent: "#ff5eb6" };
+const DEFAULT_CUSTOM_COLORS: CustomColors = { bg: "#090812", accent: "#ff5eb6", radius: 'rounded', font: 'sans' };
 
 function isTheme(value: string | null): value is Theme {
   return value !== null && THEMES.includes(value as Theme);
@@ -57,17 +66,20 @@ function safeReadTheme(): Theme {
   }
 }
 
-function safeReadCustomColors(): { bg: string; accent: string } {
+function safeReadCustomColors(): CustomColors {
   try {
     const stored = localStorage.getItem(CUSTOM_COLORS_KEY);
     if (!stored) return DEFAULT_CUSTOM_COLORS;
-    const parsed = JSON.parse(stored) as Partial<{ bg: string; accent: string }>;
-    if (
-      parsed &&
-      typeof parsed.bg === "string" &&
-      typeof parsed.accent === "string"
-    ) {
-      return { bg: parsed.bg, accent: parsed.accent };
+    const parsed = JSON.parse(stored) as Partial<{ bg: string; accent: string; radius: string; font: string }>;
+    if (parsed && typeof parsed.bg === "string" && typeof parsed.accent === "string") {
+      return {
+        bg:     parsed.bg,
+        accent: parsed.accent,
+        radius: (['rounded', 'medium', 'square'] as CustomRadius[]).includes(parsed.radius as CustomRadius)
+          ? (parsed.radius as CustomRadius) : 'rounded',
+        font:   (['sans', 'serif', 'mono'] as CustomFont[]).includes(parsed.font as CustomFont)
+          ? (parsed.font as CustomFont) : 'sans',
+      };
     }
     return DEFAULT_CUSTOM_COLORS;
   } catch {
@@ -139,6 +151,24 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             document.documentElement.style.setProperty('--cursor-default', `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(cursorDefault)}")`);
             document.documentElement.style.setProperty('--cursor-pointer', `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(cursorPointer)}")`);
             document.documentElement.style.setProperty('--cursor-text', `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(cursorText)}")`);
+            // Radius
+            document.documentElement.setAttribute('data-custom-radius', customColors.radius);
+
+            // Font
+            const FONT_MAP: Record<CustomFont, { sans: string; heading: string }> = {
+                sans:  { sans: "system-ui, 'Segoe UI', Roboto, sans-serif",  heading: "system-ui, 'Segoe UI', Roboto, sans-serif" },
+                serif: { sans: "'Lora', Georgia, serif",                     heading: "'Lora', Georgia, serif" },
+                mono:  { sans: "'JetBrains Mono', 'Courier New', monospace", heading: "'JetBrains Mono', 'Courier New', monospace" },
+            };
+            const fontCfg = FONT_MAP[customColors.font];
+            document.documentElement.style.setProperty('--sans', fontCfg.sans);
+            document.documentElement.style.setProperty('--heading', fontCfg.heading);
+            if (customColors.font === 'mono') {
+                document.documentElement.style.setProperty('--mono', "'JetBrains Mono', 'Courier New', monospace");
+            } else {
+                document.documentElement.style.removeProperty('--mono');
+            }
+
             safeWrite(CUSTOM_COLORS_KEY, JSON.stringify(customColors));
         } else {
             document.documentElement.style.removeProperty('--bg-color');
@@ -149,6 +179,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             document.documentElement.style.removeProperty('--cursor-default');
             document.documentElement.style.removeProperty('--cursor-pointer');
             document.documentElement.style.removeProperty('--cursor-text');
+            document.documentElement.removeAttribute('data-custom-radius');
+            document.documentElement.style.removeProperty('--sans');
+            document.documentElement.style.removeProperty('--heading');
+            document.documentElement.style.removeProperty('--mono');
         }
 
         document.documentElement.setAttribute('data-tone', isLightTone ? 'light' : 'dark');
@@ -192,8 +226,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           return THEMES[nextIndex];
         }),
       customColors,
-      setCustomColors: (bg: string, accent: string) =>
-        setCustomColorsState({ bg, accent }),
+      setCustomColors: (colors: Partial<CustomColors>) =>
+        setCustomColorsState((prev) => ({ ...prev, ...colors })),
     }),
     [theme, customColors],
   );

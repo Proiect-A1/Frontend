@@ -37,7 +37,6 @@ export default function Navbar() {
 
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isThemeOpen, setIsThemeOpen] = useState(false);
-  const [isMobileThemeOpen, setIsMobileThemeOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const [navSearch, setNavSearch] = useState("");
@@ -87,7 +86,6 @@ export default function Navbar() {
 
   const themeButtonRef = useRef<HTMLDivElement>(null);
   const themePanelRef = useRef<HTMLDivElement>(null);
-  const mobileThemeDropdownRef = useRef<HTMLDivElement>(null);
   const profileButtonRef = useRef<HTMLDivElement>(null);
   const profilePanelRef = useRef<HTMLDivElement>(null);
   const navSearchInputRef = useRef<HTMLInputElement>(null);
@@ -137,7 +135,6 @@ export default function Navbar() {
   const closeMenu = () => {
     setIsMobileOpen(false);
     setIsThemeOpen(false);
-    setIsMobileThemeOpen(false);
     setIsProfileOpen(false);
   };
 
@@ -151,12 +148,6 @@ export default function Navbar() {
         !themePanelRef.current.contains(target)
       ) {
         setIsThemeOpen(false);
-      }
-      if (
-        mobileThemeDropdownRef.current &&
-        !mobileThemeDropdownRef.current.contains(target)
-      ) {
-        setIsMobileThemeOpen(false);
       }
       if (
         profileButtonRef.current &&
@@ -394,7 +385,14 @@ export default function Navbar() {
                 onClick={() => setIsThemeOpen((prev) => !prev)}
                 className="flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold border-2 border-(--accent)/40 text-(--text-h) bg-(--accent)/10 transition-all duration-200 hover:bg-(--accent)/20 whitespace-nowrap"
               >
-                {lang === "RO" ? "Temă:" : "Theme:"} {formatThemeLabel(theme)}
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+                  <circle cx="7.5" cy="10.5" r="1" fill="currentColor" stroke="none"/>
+                  <circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/>
+                  <circle cx="16.5" cy="10.5" r="1" fill="currentColor" stroke="none"/>
+                  <circle cx="9.5" cy="14.5" r="1" fill="currentColor" stroke="none"/>
+                </svg>
+                {formatThemeLabel(theme)}
                 <motion.span animate={{ rotate: isThemeOpen ? 180 : 0 }}>
                   ▼
                 </motion.span>
@@ -456,7 +454,7 @@ export default function Navbar() {
                         <input
                           type="color"
                           value={customColors.bg}
-                          onChange={(event) => setCustomColors(event.target.value, customColors.accent)}
+                          onChange={(e) => setCustomColors({ bg: e.target.value })}
                           className="w-9 h-9 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
                         />
                         <span>{lang === "RO" ? "Fundal" : "Background"}</span>
@@ -465,10 +463,46 @@ export default function Navbar() {
                         <input
                           type="color"
                           value={customColors.accent}
-                          onChange={(event) => setCustomColors(customColors.bg, event.target.value)}
+                          onChange={(e) => setCustomColors({ accent: e.target.value })}
                           className="w-9 h-9 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
                         />
                         <span>Accent</span>
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-xs text-(--text-muted)">{lang === "RO" ? "Colțuri" : "Corners"}</span>
+                        <div className="flex gap-1">
+                          {(["rounded", "medium", "square"] as const).map((r) => (
+                            <button
+                              key={r}
+                              onClick={() => setCustomColors({ radius: r })}
+                              className={`flex-1 text-xs py-1 rounded border transition-colors ${
+                                customColors.radius === r
+                                  ? "bg-(--accent) text-white border-(--accent)"
+                                  : "border-(--accent)/30 text-(--text-muted) hover:border-(--accent)/60"
+                              }`}
+                            >
+                              {r === "rounded" ? "◯" : r === "medium" ? "▢" : "□"}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-xs text-(--text-muted)">Font</span>
+                        <div className="flex gap-1">
+                          {(["sans", "serif", "mono"] as const).map((f) => (
+                            <button
+                              key={f}
+                              onClick={() => setCustomColors({ font: f })}
+                              className={`flex-1 text-xs py-1 rounded border transition-colors ${
+                                customColors.font === f
+                                  ? "bg-(--accent) text-white border-(--accent)"
+                                  : "border-(--accent)/30 text-(--text-muted) hover:border-(--accent)/60"
+                              }`}
+                            >
+                              {f === "sans" ? "Aa" : f === "serif" ? "Ff" : "{}"}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -486,7 +520,7 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.12 }}
-              className="xl:hidden absolute top-full left-0 right-0 mt-6 p-6 bg-(--surface-card) backdrop-blur-xl border-2 border-(--accent) rounded-3xl flex flex-col gap-4"
+              className="xl:hidden absolute top-full left-0 right-0 mt-6 p-6 bg-(--surface-card) backdrop-blur-xl border-2 border-(--accent) rounded-3xl flex flex-col gap-4 max-h-[calc(100svh-5rem)] overflow-y-auto"
             >
               <Link to="/problems" onClick={closeMenu} className={getNavLinkClass("/problems") + " text-center"}>
                 {t.archiveBtn}
@@ -552,69 +586,92 @@ export default function Navbar() {
                 </div>
               </div>
 
-              <div className="relative w-full" ref={mobileThemeDropdownRef}>
-                <button
-                  onClick={() => setIsMobileThemeOpen(!isMobileThemeOpen)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold border-2 border-(--accent)/40 text-(--text-h) bg-(--accent)/10 transition-all duration-200 hover:bg-(--accent)/20"
-                >
-                  {lang === "RO" ? "Temă:" : "Theme:"} {formatThemeLabel(theme)}
-                  <motion.span animate={{ rotate: isMobileThemeOpen ? 180 : 0 }}>▼</motion.span>
-                </button>
+              <div className="flex flex-col gap-2">
+                <span className="text-xs uppercase tracking-widest text-(--text-muted) font-bold text-center flex items-center justify-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+                    <circle cx="7.5" cy="10.5" r="1" fill="currentColor" stroke="none"/>
+                    <circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/>
+                    <circle cx="16.5" cy="10.5" r="1" fill="currentColor" stroke="none"/>
+                    <circle cx="9.5" cy="14.5" r="1" fill="currentColor" stroke="none"/>
+                  </svg>
+                  {lang === "RO" ? "Temă" : "Theme"}
+                </span>
 
-                <AnimatePresence>
-                  {isMobileThemeOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute left-0 right-0 top-full mt-2 bg-(--surface-dropdown) border border-(--accent)/40 rounded-2xl shadow-xl overflow-hidden z-50"
+                <div className="grid grid-cols-3 gap-1.5">
+                  {themes.filter(t => t !== 'mcdonalds').map((themeName) => (
+                    <button
+                      key={themeName}
+                      onClick={() => setTheme(themeName)}
+                      className={`py-2 rounded-xl text-sm font-medium border transition-colors ${
+                        theme === themeName
+                          ? "bg-(--accent)/20 text-(--text-h) border-(--accent) font-bold"
+                          : "border-(--accent)/20 text-(--text-muted) hover:bg-(--accent)/10 hover:text-(--text-h) hover:border-(--accent)/40"
+                      }`}
                     >
-                      {themes.map((themeName) => (
-                        <div key={themeName} className="flex flex-col border-b border-(--accent)/10 last:border-none">
+                      {formatThemeLabel(themeName)}
+                    </button>
+                  ))}
+                </div>
+
+                {theme === "custom" && (
+                  <div className="p-3 flex flex-col gap-3 bg-black/10 rounded-xl border border-(--accent)/20">
+                    <div className="flex items-center gap-2 text-sm text-(--text-muted)">
+                      <input
+                        type="color"
+                        value={customColors.bg}
+                        onChange={(e) => setCustomColors({ bg: e.target.value })}
+                        className="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
+                      />
+                      <span>{lang === "RO" ? "Fundal" : "Background"}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-(--text-muted)">
+                      <input
+                        type="color"
+                        value={customColors.accent}
+                        onChange={(e) => setCustomColors({ accent: e.target.value })}
+                        className="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
+                      />
+                      <span>Accent</span>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-sm text-(--text-muted)">{lang === "RO" ? "Colțuri" : "Corners"}</span>
+                      <div className="flex gap-1">
+                        {(["rounded", "medium", "square"] as const).map((r) => (
                           <button
-                            onClick={() => {
-                              setTheme(themeName);
-                              if (themeName !== "custom") {
-                                setIsMobileThemeOpen(false);
-                              }
-                            }}
-                            className={`w-full text-left px-4 py-3 text-sm transition-colors ${
-                              theme === themeName
-                                ? "text-(--text-h) bg-(--accent)/20 font-bold"
-                                : "text-(--text-muted) hover:bg-(--accent)/10 hover:text-(--text-h)"
+                            key={r}
+                            onClick={() => setCustomColors({ radius: r })}
+                            className={`flex-1 text-sm py-1.5 rounded border transition-colors ${
+                              customColors.radius === r
+                                ? "bg-(--accent) text-white border-(--accent)"
+                                : "border-(--accent)/30 text-(--text-muted) hover:border-(--accent)/60"
                             }`}
                           >
-                            {formatThemeLabel(themeName)}
+                            {r === "rounded" ? "◯" : r === "medium" ? "▢" : "□"}
                           </button>
-
-                          {themeName === "custom" && theme === "custom" && (
-                            <div className="px-4 py-3 flex flex-col gap-3 bg-black/15 border-t border-(--accent)/20">
-                              <div className="flex items-center gap-2 text-sm text-(--text-muted)">
-                                <input
-                                  type="color"
-                                  value={customColors.bg}
-                                  onChange={(event) => setCustomColors(event.target.value, customColors.accent)}
-                                  className="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
-                                />
-                                <span>{lang === "RO" ? "Fundal" : "Background"}</span>
-                              </div>
-                              <div className="flex items-center gap-2 text-sm text-(--text-muted)">
-                                <input
-                                  type="color"
-                                  value={customColors.accent}
-                                  onChange={(event) => setCustomColors(customColors.bg, event.target.value)}
-                                  className="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
-                                />
-                                <span>Accent</span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-sm text-(--text-muted)">Font</span>
+                      <div className="flex gap-1">
+                        {(["sans", "serif", "mono"] as const).map((f) => (
+                          <button
+                            key={f}
+                            onClick={() => setCustomColors({ font: f })}
+                            className={`flex-1 text-sm py-1.5 rounded border transition-colors ${
+                              customColors.font === f
+                                ? "bg-(--accent) text-white border-(--accent)"
+                                : "border-(--accent)/30 text-(--text-muted) hover:border-(--accent)/60"
+                            }`}
+                          >
+                            {f === "sans" ? "Aa" : f === "serif" ? "Ff" : "{}"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
