@@ -38,8 +38,8 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
         .sort((a, b) => new Date(b.submissiondate).getTime() - new Date(a.submissiondate).getTime());
 
     return (
-        <div className="h-full p-6 bg-(--surface-card) overflow-y-auto custom-scrollbar">
-            <div className="space-y-3">
+        <div className="h-full p-4 bg-(--surface-card) overflow-y-auto custom-scrollbar @container">
+            <div className="space-y-2">
                 {!isAuthenticated ? (
                     <p className="text-sm text-(--text-muted) italic">
                         {t.loginToSeeHistory}
@@ -51,12 +51,11 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
                             <div
                                 key={idx}
                                 onClick={() => onSelectSubmission(sub)}
-                                className="p-3 rounded-2xl border-2 border-(--accent)/20 bg-(--accent)/5 flex items-center justify-between gap-3 cursor-pointer hover:bg-(--accent)/10 transition-colors"
+                                className="p-3 rounded-2xl border-2 border-(--accent)/20 bg-(--accent)/5 cursor-pointer hover:bg-(--accent)/10 transition-colors flex flex-col gap-1 @[200px]:flex-row @[200px]:items-center @[200px]:justify-between @[200px]:gap-3"
                             >
-                                <div className="min-w-0">
-                                    <p className="text-xs font-bold text-(--text-h)">
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-xs font-bold text-(--text-h) truncate">
                                         {new Date(sub.submissiondate).toLocaleString(t.dateLocale, {
-                                            year: 'numeric',
                                             month: 'short',
                                             day: 'numeric',
                                             hour: '2-digit',
@@ -65,7 +64,7 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
                                     </p>
                                     <p className="text-[10px] text-(--text-muted) font-mono">Score: {formatScore(sub.Score)}</p>
                                 </div>
-                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border-2 ${verdictClasses[verdict]}`}>
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border-2 shrink-0 self-start @[200px]:self-auto ${verdictClasses[verdict]}`}>
                                     {verdictLabel(verdict, lang)}
                                 </span>
                             </div>

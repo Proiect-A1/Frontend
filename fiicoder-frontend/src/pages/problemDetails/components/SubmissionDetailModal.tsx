@@ -1,10 +1,38 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import cpp from 'react-syntax-highlighter/dist/esm/languages/prism/cpp';
+import c from 'react-syntax-highlighter/dist/esm/languages/prism/c';
+import python from 'react-syntax-highlighter/dist/esm/languages/prism/python';
+import java from 'react-syntax-highlighter/dist/esm/languages/prism/java';
+import javascript from 'react-syntax-highlighter/dist/esm/languages/prism/javascript';
+import typescript from 'react-syntax-highlighter/dist/esm/languages/prism/typescript';
+import rust from 'react-syntax-highlighter/dist/esm/languages/prism/rust';
+import go from 'react-syntax-highlighter/dist/esm/languages/prism/go';
+import kotlin from 'react-syntax-highlighter/dist/esm/languages/prism/kotlin';
+import csharp from 'react-syntax-highlighter/dist/esm/languages/prism/csharp';
 import { formatScore } from '../utils/textUtils';
 import type { ProblemSubmissionDTO, SubmissionStatus, SubmissionSubtaskDTO } from '../types/problemDetails';
 import { submissionVerdictLabels, submissionVerdict, type SubmissionVerdict } from '../../profile/profileUtils';
 import { submissionService } from '../services/submissionService';
 import { translations } from '../../../language/Language';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { getMonacoLanguageId } from '../../../utils/monacoTheme';
+
+// Register languages once at module level
+SyntaxHighlighter.registerLanguage('cpp', cpp);
+SyntaxHighlighter.registerLanguage('c', c);
+SyntaxHighlighter.registerLanguage('python', python);
+SyntaxHighlighter.registerLanguage('java', java);
+SyntaxHighlighter.registerLanguage('javascript', javascript);
+SyntaxHighlighter.registerLanguage('typescript', typescript);
+SyntaxHighlighter.registerLanguage('rust', rust);
+SyntaxHighlighter.registerLanguage('go', go);
+SyntaxHighlighter.registerLanguage('kotlin', kotlin);
+SyntaxHighlighter.registerLanguage('csharp', csharp);
+
+const LIGHT_THEMES = new Set(['fii', 'cream', 'sage', 'olivia', 'mcdonalds']);
 
 type Props = {
     isOpen: boolean;
@@ -174,6 +202,8 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
 
 export default function SubmissionDetailModal({ isOpen, onClose, submission, lang }: Props) {
     const t = translations[lang as 'RO' | 'EN'] ?? translations.RO;
+    const { theme } = useTheme();
+    const isLight = LIGHT_THEMES.has(theme);
     const [results, setResults] = useState<SubmissionStatus | null>(null);
     const [loadingResults, setLoadingResults] = useState(false);
     const [copied, setCopied] = useState(false);
@@ -256,12 +286,25 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
                 <div className="flex-1 min-h-0 flex flex-col md:flex-row overflow-hidden">
                     {/* Code pane */}
                     <div className="relative flex-[55] min-h-0 border-b md:border-b-0 md:border-r border-(--accent)/15 overflow-hidden">
-                        <pre
-                            className="h-full overflow-auto custom-scrollbar p-5 text-sm leading-relaxed bg-(--surface-editor) text-(--text-h)"
-                            style={{ fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace" }}
+                        <SyntaxHighlighter
+                            language={getMonacoLanguageId(languageName)}
+                            style={isLight ? vs : vscDarkPlus}
+                            className="!h-full !overflow-auto custom-scrollbar !m-0 !rounded-none"
+                            customStyle={{
+                                margin: 0,
+                                padding: '1.25rem',
+                                fontSize: '0.875rem',
+                                lineHeight: '1.625',
+                                fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+                                height: '100%',
+                                background: 'var(--surface-editor)',
+                                overflow: 'auto',
+                                borderRadius: 0,
+                            }}
+                            codeTagProps={{ style: { fontFamily: 'inherit' } }}
                         >
-                            <code>{submission.code}</code>
-                        </pre>
+                            {submission.code}
+                        </SyntaxHighlighter>
                         <button
                             onClick={handleCopy}
                             className="absolute bottom-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-(--surface-card) border-2 border-(--accent)/50 text-(--text-muted) hover:text-(--accent) hover:border-(--accent) shadow-lg transition-all z-10 text-xs font-bold"

@@ -100,8 +100,8 @@ function TestRow({ t, idx }: { t: any; idx: number }) {
                 </span>
             )}
             <span className="text-[10px] font-bold text-(--text-muted) ml-auto shrink-0">{formatScore(t.score)}/{formatScore(t.maxScore)}</span>
-            <span className="text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">{timeMs}ms</span>
-            <span className="text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">{memKB}KB</span>
+            <span className="hidden @[220px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">{timeMs}ms</span>
+            <span className="hidden @[220px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">{memKB}KB</span>
         </motion.div>
     );
 }
@@ -214,7 +214,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
     const orphanTests = evalTests.filter(t => !assignedTestIds.has(t.testId));
 
     return (
-        <div className="relative h-full p-6 bg-(--surface-card) overflow-y-auto custom-scrollbar">
+        <div className="relative h-full p-6 bg-(--surface-card) overflow-y-auto custom-scrollbar @container">
             {showConfetti && <Confetti />}
             {evalStatus === 'idle' && (
                 <div className="h-full flex flex-col items-center justify-center text-center">
@@ -260,7 +260,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                             const verdictLabel = submissionVerdictLabels[summaryVerdict][lang === 'RO' ? 'ro' : 'en'];
                             return (
                                 <div className={`p-4 rounded-2xl border-2 ${summaryBorderClasses[summaryVerdict]}`}>
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex flex-col gap-2 @[200px]:flex-row @[200px]:items-center @[200px]:justify-between">
                                         <div className="flex items-center gap-3">
                                             <span className={`text-2xl font-black ${summaryScoreTextClasses[summaryVerdict]}`}>
                                                 {formatScore(evalSummary.score)}/{formatScore(evalSummary.maxScore)}
@@ -269,7 +269,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                                 {lang === 'RO' ? 'puncte' : 'points'}
                                             </span>
                                         </div>
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border-2 ${summaryBadgeClasses[summaryVerdict]}`}>
+                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border-2 self-start @[200px]:self-auto ${summaryBadgeClasses[summaryVerdict]}`}>
                                             {verdictLabel}
                                         </span>
                                     </div>
@@ -322,8 +322,8 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                             >
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                                             </svg>
-                                            <span className="text-[10px] font-mono font-bold w-16 shrink-0">
-                                                Subtask #{st.subtaskId}
+                                            <span className="text-[10px] font-mono font-bold shrink-0 min-w-0">
+                                                ST#{st.subtaskId}
                                             </span>
                                             <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border ${badgeClasses} shrink-0`}>
                                                 {verdictLabel}
@@ -331,10 +331,10 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                             <span className="text-[10px] font-black ml-auto shrink-0">
                                                 {formatScore(st.score)}/{formatScore(st.maxScore)}
                                             </span>
-                                            <span className="text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">
+                                            <span className="hidden @[220px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">
                                                 {maxTimeMs}ms
                                             </span>
-                                            <span className="text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">
+                                            <span className="hidden @[220px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">
                                                 {maxMemKB}KB
                                             </span>
                                         </motion.div>
