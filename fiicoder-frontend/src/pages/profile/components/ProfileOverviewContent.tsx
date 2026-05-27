@@ -13,6 +13,7 @@ import {
   submissionVerdict,
   submissionVerdictLabels,
 } from "../profileUtils";
+import ProfileAchievements from "./ProfileAchievements";
 
 type ProfileOverviewContentProps = {
   profile: ProfileResponseDTO;
@@ -60,6 +61,11 @@ export default function ProfileOverviewContent({
       value: profile.rankHard,
       cls: "red",
     },
+    {
+      label: "Contest",
+      value: profile.rankContest,
+      cls: "violet",
+    },
   ] as const;
 
   type PerformanceKey = (typeof performanceItems)[number]["cls"];
@@ -106,6 +112,19 @@ export default function ProfileOverviewContent({
           value: "text-red-300",
           bg: "bg-red-500/10",
           bar: "bg-red-400",
+        },
+    violet: isLightTheme
+      ? {
+          label: "text-violet-700",
+          value: "text-violet-600",
+          bg: "bg-violet-500/10",
+          bar: "bg-violet-400",
+        }
+      : {
+          label: "text-violet-400",
+          value: "text-violet-300",
+          bg: "bg-violet-500/10",
+          bar: "bg-violet-400",
         },
   };
 
@@ -447,6 +466,8 @@ export default function ProfileOverviewContent({
           )}
         </motion.div>
       </motion.div>
+
+      <ProfileAchievements profile={profile} lang={lang} />
     </>
   );
 }

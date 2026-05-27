@@ -71,28 +71,41 @@ function HomeworkRow({ hw, lang }: { hw: HomeworkResponseDTO; lang: 'RO' | 'EN' 
                     {progress && (() => {
                         const isCompleted = progress.totalProblems > 0 && progress.solvedProblems >= progress.totalProblems;
                         const isOverdue = new Date(hw.deadline).getTime() < Date.now();
+                        const pct = progress.progressPercentage;
+                        const barColor = isCompleted
+                            ? 'bg-emerald-400'
+                            : isOverdue
+                            ? 'bg-red-400'
+                            : 'bg-(--accent)';
                         return (
-                            <div className="flex flex-wrap gap-4 text-xs">
-                                <span className="text-(--text-muted)">
-                                    {lang === 'RO' ? 'Progres:' : 'Progress:'}{' '}
-                                    <span className="font-bold text-(--text-h)">
-                                        {progress.solvedProblems}/{progress.totalProblems}
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between text-xs">
+                                    <span className="text-(--text-muted)">
+                                        {lang === 'RO' ? 'Progres' : 'Progress'}{' '}
+                                        <span className="font-bold text-(--text-h)">
+                                            {progress.solvedProblems}/{progress.totalProblems}
+                                        </span>
                                     </span>
-                                </span>
-                                <span className="text-(--text-muted)">
-                                    {lang === 'RO' ? 'Procent:' : 'Percent:'}{' '}
-                                    <span className="font-bold text-(--text-h)">{progress.progressPercentage.toFixed(0)}%</span>
-                                </span>
-                                {isCompleted && (
-                                    <span className="text-emerald-400 font-bold">
-                                        {lang === 'RO' ? 'Finalizat' : 'Completed'}
-                                    </span>
-                                )}
-                                {isOverdue && !isCompleted && (
-                                    <span className="text-red-400 font-bold">
-                                        {lang === 'RO' ? 'Depășit' : 'Overdue'}
-                                    </span>
-                                )}
+                                    <div className="flex items-center gap-2">
+                                        {isCompleted && (
+                                            <span className="text-emerald-400 font-bold text-[10px]">
+                                                ✓ {lang === 'RO' ? 'Finalizat' : 'Completed'}
+                                            </span>
+                                        )}
+                                        {isOverdue && !isCompleted && (
+                                            <span className="text-red-400 font-bold text-[10px]">
+                                                ⚠ {lang === 'RO' ? 'Depășit' : 'Overdue'}
+                                            </span>
+                                        )}
+                                        <span className="font-bold text-(--text-h)">{pct.toFixed(0)}%</span>
+                                    </div>
+                                </div>
+                                <div className="w-full h-2 rounded-full bg-(--accent)/10">
+                                    <div
+                                        className={`h-2 rounded-full transition-all duration-500 ${barColor}`}
+                                        style={{ width: `${pct}%` }}
+                                    />
+                                </div>
                             </div>
                         );
                     })()}

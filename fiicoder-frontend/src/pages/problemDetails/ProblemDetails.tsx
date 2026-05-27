@@ -37,6 +37,8 @@ export default function ProblemDetails() {
         handleEditorMount,
         handleSubmit,
         handleLayoutAction,
+        handleLayoutSave,
+        resetLayout,
         problemTests,
     } = useProblemDetails();
 
@@ -124,6 +126,7 @@ export default function ProblemDetails() {
                     model={model}
                     factory={factory}
                     onAction={handleLayoutAction}
+                    onModelChange={handleLayoutSave}
                 />
             </div>
 
@@ -135,6 +138,7 @@ export default function ProblemDetails() {
                 lang={lang}
                 handleSubmit={handleSubmit}
                 status={status}
+                resetLayout={resetLayout}
             />
 
             {/* Mobile View: Standard Stacked Grid */}

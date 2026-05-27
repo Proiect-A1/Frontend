@@ -144,32 +144,48 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
                     <h2 className="text-sm font-bold text-(--text-h) mb-3 uppercase tracking-wider">
                         {lang === 'RO' ? 'Limbaje' : 'Languages'}
                     </h2>
-                    <div className="flex flex-wrap gap-2">
-                        {profile.mostUsedLanguages.map((language) => (
-                            <span
-                                key={language}
-                                className="px-3 py-1 rounded-full text-xs font-semibold border border-(--accent)/20 bg-(--accent)/5 text-(--text-h)"
-                            >
-                                {language}
-                            </span>
-                        ))}
-                    </div>
+                    {profile.mostUsedLanguages.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                            {profile.mostUsedLanguages.map((language) => (
+                                <span
+                                    key={language}
+                                    className="px-3 py-1 rounded-full text-xs font-semibold border border-(--accent)/20 bg-(--accent)/5 text-(--text-h)"
+                                >
+                                    {language}
+                                </span>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-xs text-(--text-muted) italic">
+                            {lang === 'RO'
+                                ? 'Rezolvă cel puțin 5 probleme cu același limbaj pentru a apărea aici.'
+                                : 'Solve at least 5 problems in the same language to appear here.'}
+                        </p>
+                    )}
                 </div>
 
                 <div>
                     <h2 className="text-sm font-bold text-(--text-h) mb-3 uppercase tracking-wider">
                         Skills
                     </h2>
-                    <div className="flex flex-wrap gap-2">
-                        {profile.skillBreakdownTags.map((skill) => (
-                            <span
-                                key={skill}
-                                className="px-2.5 py-1 rounded-full text-xs font-semibold border border-(--accent)/30 bg-(--accent)/10 text-(--text) hover:bg-(--accent)/20 transition-colors cursor-pointer"
-                            >
-                                {skill}
-                            </span>
-                        ))}
-                    </div>
+                    {profile.skillBreakdownTags.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                            {profile.skillBreakdownTags.map((skill) => (
+                                <span
+                                    key={skill}
+                                    className="px-2.5 py-1 rounded-full text-xs font-semibold border border-(--accent)/30 bg-(--accent)/10 text-(--text) hover:bg-(--accent)/20 transition-colors cursor-pointer"
+                                >
+                                    {skill}
+                                </span>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-xs text-(--text-muted) italic">
+                            {lang === 'RO'
+                                ? 'Rezolvă probleme cu aceleași tag-uri pentru a-ți construi profilul de skills.'
+                                : 'Solve problems sharing the same tags to build your skill profile.'}
+                        </p>
+                    )}
                 </div>
             </motion.div>
         </>

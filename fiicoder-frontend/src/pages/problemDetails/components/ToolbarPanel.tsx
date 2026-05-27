@@ -8,9 +8,10 @@ type Props = {
     lang: string;
     handleSubmit: (e?: any) => void;
     status: null | 'pending' | 'valid' | 'invalid';
+    resetLayout: () => void;
 };
 
-export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang, handleSubmit, status }: Props) {
+export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang, handleSubmit, status, resetLayout }: Props) {
     return (
         <div className="hidden xl:flex h-[4.5rem] shrink-0 bg-(--surface-card) border-2 border-(--accent) rounded-2xl items-center justify-between px-6">
             <div className="flex items-center gap-6">
@@ -30,6 +31,28 @@ export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang,
                         />
                     </svg>
                     {lang === 'RO' ? 'Consolă' : 'Console'}
+                </button>
+                <div className="w-px h-6 bg-(--accent)/20" />
+                <button
+                    onClick={resetLayout}
+                    title={lang === 'RO' ? 'Resetează layout-ul la valorile implicite' : 'Reset layout to default'}
+                    className="text-[15px] font-black text-(--text-muted) opacity-50 hover:opacity-100 flex items-center gap-3 uppercase tracking-tighter group transition-opacity"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-5 h-5 group-hover:scale-110 transition-transform"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                        />
+                    </svg>
+                    {lang === 'RO' ? 'Reset' : 'Reset'}
                 </button>
                 <div className="w-px h-6 bg-(--accent)/20" />
                 <div className="flex items-center gap-3">

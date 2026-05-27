@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { DoneSubtaskEvent, ProblemTestDetailsDTO } from '../types/problemDetails';
 import { formatScore } from '../utils/textUtils';
@@ -105,8 +105,69 @@ function TestRow({ t, idx }: { t: any; idx: number }) {
     );
 }
 
+const CONFETTI_COLORS = ['#22c55e', '#86efac', '#4ade80', '#fbbf24', '#a78bfa', '#38bdf8', '#f472b6'];
+const PARTICLE_COUNT = 38;
+
+function Confetti() {
+    const particles = useRef(
+        Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
+            id: i,
+            x: Math.random() * 100,         // % across the panel
+            rotate: Math.random() * 360,
+            color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+            size: 6 + Math.random() * 7,    // px
+            delay: Math.random() * 0.5,
+            duration: 1.4 + Math.random() * 1.0,
+            drift: (Math.random() - 0.5) * 80, // horizontal drift px
+        }))
+    ).current;
+
+    return (
+        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl z-10">
+            {particles.map(p => (
+                <motion.div
+                    key={p.id}
+                    className="absolute top-0 rounded-sm"
+                    style={{
+                        left: `${p.x}%`,
+                        width: p.size,
+                        height: p.size * 0.5,
+                        backgroundColor: p.color,
+                    }}
+                    initial={{ y: -16, opacity: 1, rotate: p.rotate, x: 0 }}
+                    animate={{
+                        y: ['0%', '110%'],
+                        opacity: [1, 1, 0],
+                        rotate: p.rotate + 360 * (Math.random() > 0.5 ? 1 : -1),
+                        x: [0, p.drift],
+                    }}
+                    transition={{
+                        duration: p.duration,
+                        delay: p.delay,
+                        ease: 'easeIn',
+                    }}
+                />
+            ))}
+        </div>
+    );
+}
+
 export default function TestResultPanel({ evalStatus, evalError, evalSummary, evalTests, evalSubtasks, lang, problemTests }: Props) {
     const [expandedSubtasks, setExpandedSubtasks] = useState<Set<number>>(new Set());
+    const [showConfetti, setShowConfetti] = useState(false);
+    const prevStatus = useRef<string>('idle');
+
+    useEffect(() => {
+        if (evalStatus === 'done' && prevStatus.current === 'evaluating' && evalSummary) {
+            const verdict = evalSummary.score >= evalSummary.maxScore && evalSummary.maxScore > 0;
+            if (verdict) {
+                setShowConfetti(true);
+                const timer = setTimeout(() => setShowConfetti(false), 3000);
+                return () => clearTimeout(timer);
+            }
+        }
+        prevStatus.current = evalStatus;
+    }, [evalStatus, evalSummary]);
 
     const toggleSubtask = (id: number) => {
         setExpandedSubtasks(prev => {
@@ -132,7 +193,8 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
     const orphanTests = evalTests.filter(t => !assignedTestIds.has(t.testId));
 
     return (
-        <div className="h-full p-6 bg-(--surface-card) overflow-y-auto custom-scrollbar">
+        <div className="relative h-full p-6 bg-(--surface-card) overflow-y-auto custom-scrollbar">
+            <AnimatePresence>{showConfetti && <Confetti />}</AnimatePresence>
             {evalStatus === 'idle' && (
                 <div className="h-full flex flex-col items-center justify-center text-center">
                     <div className="w-12 h-12 rounded-full bg-(--accent)/5 border-2 border-dashed border-(--accent)/20 flex items-center justify-center mb-3">
