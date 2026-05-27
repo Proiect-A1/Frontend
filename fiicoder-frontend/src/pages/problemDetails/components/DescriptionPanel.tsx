@@ -17,6 +17,12 @@ export default function DescriptionPanel({ problem, processedDescription, lang }
     // extra spaces (invalid CommonMark) still renders correctly.
     const normalized = processedDescription.replace(/\*\* ?(.+?) ?\*\*/g, '**$1**');
 
+    // Accept both camelCase (Spring default) and snake_case field names
+    console.log('[DescriptionPanel] problem keys:', Object.keys(problem), problem);
+    const timeLimit: number = problem.timeLimit ?? problem.time_limit ?? 0;
+    const memoryLimit: number = problem.memoryLimit ?? problem.memory_limit ?? 0;
+    const tags: string[] = Array.isArray(problem.tags) ? problem.tags : [];
+
     return (
         <div className="h-full p-6 overflow-y-auto custom-scrollbar bg-(--surface-card) text-(--text)">
             <p className="text-xs font-semibold uppercase tracking-wider text-(--accent)">
@@ -24,34 +30,34 @@ export default function DescriptionPanel({ problem, processedDescription, lang }
             </p>
             <h1 className="text-3xl font-bold text-(--text) mb-2">{problem.title}</h1>
             {/* Constraints row */}
-            {(problem.timeLimit > 0 || problem.memoryLimit > 0) && (
+            {(timeLimit > 0 || memoryLimit > 0) && (
                 <div className="mb-3 flex flex-wrap items-center gap-2">
-                    {problem.timeLimit > 0 && (
+                    {timeLimit > 0 && (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border border-(--accent)/25 bg-(--surface-muted) text-(--text-muted)">
                             <svg className="w-3.5 h-3.5 shrink-0 text-(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <circle cx="12" cy="12" r="10"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2"/>
                             </svg>
                             {lang === 'RO' ? 'Timp:' : 'Time:'}&nbsp;
                             <span className="font-mono text-(--text-h)">
-                                {problem.timeLimit % 1 === 0 ? problem.timeLimit : problem.timeLimit}s
+                                {timeLimit % 1 === 0 ? timeLimit : timeLimit}s
                             </span>
                         </span>
                     )}
-                    {problem.memoryLimit > 0 && (
+                    {memoryLimit > 0 && (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border border-(--accent)/25 bg-(--surface-muted) text-(--text-muted)">
                             <svg className="w-3.5 h-3.5 shrink-0 text-(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
                             </svg>
                             {lang === 'RO' ? 'Memorie:' : 'Memory:'}&nbsp;
-                            <span className="font-mono text-(--text-h)">{problem.memoryLimit} MB</span>
+                            <span className="font-mono text-(--text-h)">{memoryLimit} MB</span>
                         </span>
                     )}
                 </div>
             )}
 
-            {problem.tags && problem.tags.length > 0 && (
+            {tags.length > 0 && (
                 <div className="mb-3 flex flex-wrap gap-1.5">
-                    {problem.tags.map((tag: string) => (
+                    {tags.map((tag: string) => (
                         <span
                             key={tag}
                             className="px-2.5 py-0.5 rounded-full text-xs font-semibold border border-(--accent)/25 bg-(--accent)/10 text-(--text-muted)"
