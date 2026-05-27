@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Editor from '@monaco-editor/react';
-import { useTheme } from '../../../contexts/ThemeContext';
 import { formatScore } from '../utils/textUtils';
 import type { ProblemSubmissionDTO, SubmissionStatus, SubmissionSubtaskDTO } from '../types/problemDetails';
 import { submissionVerdictLabels, submissionVerdict, type SubmissionVerdict } from '../../profile/profileUtils';
-import { applyMonacoTheme } from '../../../utils/monacoTheme';
 import { submissionService } from '../services/submissionService';
 import { translations } from '../../../language/Language';
 
@@ -104,7 +101,6 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
 
                     return (
                         <div key={st.index} className="rounded-xl overflow-hidden border border-(--accent)/15">
-                            {/* Subtask header row */}
                             <button
                                 onClick={() => toggle(st.index)}
                                 className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-(--accent)/5 ${verdictBorderClasses[verdict]} border-0 bg-transparent`}
@@ -115,26 +111,21 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
                                 >
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                                 </svg>
-
                                 <span className="text-sm font-bold text-(--text-h) w-24 shrink-0">
                                     Subtask #{st.index}
                                 </span>
-
                                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border ${subtaskBadgeClasses[verdict]} shrink-0`}>
                                     {submissionVerdictLabels[verdict][lang === 'RO' || lang === 'ro' ? 'ro' : 'en']}
                                 </span>
-
                                 <span className="text-sm font-black text-(--text-h) ml-auto shrink-0">
                                     {formatScore(st.score)}/{formatScore(st.maxScore)}
                                 </span>
-
                                 <div className="flex gap-4 shrink-0 text-right">
                                     <span className="text-xs font-mono text-(--text-muted) w-16">{maxTimeMs}ms</span>
                                     <span className="text-xs font-mono text-(--text-muted) w-16">{maxMemKB}KB</span>
                                 </div>
                             </button>
 
-                            {/* Tests */}
                             <AnimatePresence initial={false}>
                                 {isExpanded && st.tests.length > 0 && (
                                     <motion.div
@@ -145,7 +136,6 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
                                         className="overflow-hidden"
                                     >
                                         <div className="border-t border-(--accent)/10 divide-y divide-(--accent)/10">
-                                            {/* Column headers */}
                                             <div className="flex items-center gap-3 px-4 py-1.5 bg-(--accent)/5">
                                                 <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted) w-8">Test</span>
                                                 <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted) w-14">Verdict</span>
@@ -183,10 +173,10 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
 }
 
 export default function SubmissionDetailModal({ isOpen, onClose, submission, lang }: Props) {
-    const { theme, customColors } = useTheme();
     const t = translations[lang as 'RO' | 'EN'] ?? translations.RO;
     const [results, setResults] = useState<SubmissionStatus | null>(null);
     const [loadingResults, setLoadingResults] = useState(false);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         if (!isOpen || !submission?.id) return;
@@ -198,7 +188,15 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
             .finally(() => setLoadingResults(false));
     }, [isOpen, submission?.id]);
 
-    if (!submission) return null;
+    // Close on Escape
+    useEffect(() => {
+        if (!isOpen) return;
+        const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+        document.addEventListener('keydown', handler);
+        return () => document.removeEventListener('keydown', handler);
+    }, [isOpen, onClose]);
+
+    if (!isOpen || !submission) return null;
 
     const verdict = submissionVerdict({ status: submission.status, score: submission.Score });
     const verdictLabel = submissionVerdictLabels[verdict][lang === 'RO' || lang === 'ro' ? 'ro' : 'en'];
@@ -206,126 +204,114 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
         ? submission.language
         : (submission.language as any)?.name || 'Unknown';
 
-    let editorLang = 'plaintext';
-    const langLower = languageName.toLowerCase();
-    if (langLower.includes('c++') || langLower.includes('cpp') || langLower.includes('c')) editorLang = 'cpp';
-    else if (langLower.includes('py')) editorLang = 'python';
-    else if (langLower.includes('java')) editorLang = 'java';
-    else if (langLower.includes('js') || langLower.includes('node') || langLower.includes('javascript')) editorLang = 'javascript';
-    else if (langLower.includes('ts') || langLower.includes('typescript')) editorLang = 'typescript';
-
     const hasSubtasks = results?.subtasks && results.subtasks.length > 0;
 
-    return (
-        <AnimatePresence>
-            {isOpen && (
-                <>
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={onClose}
-                        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
-                    />
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-50 md:w-[min(95vw,1200px)] md:h-[85vh] bg-(--surface-card) border-2 border-(--accent) rounded-3xl shadow-2xl flex flex-col overflow-hidden"
-                    >
-                        {/* Header */}
-                        <div className="flex items-center justify-between px-5 py-4 border-b border-(--accent)/20 bg-(--surface-muted) shrink-0">
-                            <div className="flex items-center gap-3 flex-wrap min-w-0">
-                                <div className="min-w-0">
-                                    <h3 className="text-base font-bold text-(--text-h)">
-                                        {t.submissionDetails}
-                                    </h3>
-                                    <p className="text-xs text-(--text-muted)">
-                                        {new Date(submission.submissiondate).toLocaleString(t.dateLocale)}
-                                    </p>
-                                </div>
-                                <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border-2 shrink-0 ${verdictBorderClasses[verdict]}`}>
-                                    {verdictLabel}
-                                </span>
-                                <span className="text-sm font-bold text-(--text-h) shrink-0">
-                                    {t.scoreLabel}: {formatScore(submission.Score)}
-                                </span>
-                                <span className="text-xs px-2 py-0.5 bg-(--accent)/10 text-(--accent) rounded-md border border-(--accent)/20 shrink-0">
-                                    {languageName}
-                                </span>
-                            </div>
-                            <button
-                                onClick={onClose}
-                                className="ml-3 w-8 h-8 shrink-0 flex items-center justify-center rounded-full hover:bg-(--accent)/10 text-(--text-muted) hover:text-(--accent) transition-colors"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
+    const handleCopy = () => {
+        navigator.clipboard.writeText(submission.code).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+        });
+    };
 
-                        {/* Side-by-side: code left, results right */}
-                        <div className="flex-1 min-h-0 flex flex-col md:flex-row overflow-hidden">
-                            {/* Code pane — 55% */}
-                            <div className="relative flex-[55] min-h-0 border-b md:border-b-0 md:border-r border-(--accent)/15">
-                                <Editor
-                                    height="100%"
-                                    language={editorLang}
-                                    value={submission.code}
-                                    onMount={(_editor, monaco) => {
-                                        applyMonacoTheme(monaco, theme, { customColors });
-                                    }}
-                                    options={{
-                                        readOnly: true,
-                                        minimap: { enabled: false },
-                                        scrollBeyondLastLine: false,
-                                        fontSize: 14,
-                                        fontFamily: "'JetBrains Mono', 'Fira Code', 'Ubuntu Mono', 'Cascadia Code', monospace",
-                                        fontLigatures: true,
-                                    }}
-                                />
-                                <button
-                                    onClick={() => navigator.clipboard.writeText(submission.code)}
-                                    className="absolute bottom-4 right-6 p-2 rounded-xl bg-(--surface-card) border-2 border-(--accent)/50 text-(--text-muted) hover:text-(--accent) hover:border-(--accent) shadow-lg transition-all z-10"
-                                    title={t.copyCode}
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    return (
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: 'rgba(0,0,0,0.65)' }}
+            onClick={onClose}
+        >
+            <div
+                className="relative w-full max-w-[min(95vw,1200px)] h-[85vh] bg-(--surface-card) border-2 border-(--accent) rounded-3xl shadow-2xl flex flex-col overflow-hidden"
+                onClick={e => e.stopPropagation()}
+            >
+                {/* Header */}
+                <div className="flex items-center justify-between px-5 py-4 border-b border-(--accent)/20 bg-(--surface-muted) shrink-0">
+                    <div className="flex items-center gap-3 flex-wrap min-w-0">
+                        <div className="min-w-0">
+                            <h3 className="text-base font-bold text-(--text-h)">{t.submissionDetails}</h3>
+                            <p className="text-xs text-(--text-muted)">
+                                {new Date(submission.submissiondate).toLocaleString(t.dateLocale)}
+                            </p>
+                        </div>
+                        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border-2 shrink-0 ${verdictBorderClasses[verdict]}`}>
+                            {verdictLabel}
+                        </span>
+                        <span className="text-sm font-bold text-(--text-h) shrink-0">
+                            {t.scoreLabel}: {formatScore(submission.Score)}
+                        </span>
+                        <span className="text-xs px-2 py-0.5 bg-(--accent)/10 text-(--accent) rounded-md border border-(--accent)/20 shrink-0">
+                            {languageName}
+                        </span>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="ml-3 w-8 h-8 shrink-0 flex items-center justify-center rounded-full hover:bg-(--accent)/10 text-(--text-muted) hover:text-(--accent) transition-colors"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                {/* Body: code left, results right */}
+                <div className="flex-1 min-h-0 flex flex-col md:flex-row overflow-hidden">
+                    {/* Code pane */}
+                    <div className="relative flex-[55] min-h-0 border-b md:border-b-0 md:border-r border-(--accent)/15 overflow-hidden">
+                        <pre
+                            className="h-full overflow-auto custom-scrollbar p-5 text-sm leading-relaxed bg-(--surface-editor) text-(--text-h)"
+                            style={{ fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace" }}
+                        >
+                            <code>{submission.code}</code>
+                        </pre>
+                        <button
+                            onClick={handleCopy}
+                            className="absolute bottom-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-(--surface-card) border-2 border-(--accent)/50 text-(--text-muted) hover:text-(--accent) hover:border-(--accent) shadow-lg transition-all z-10 text-xs font-bold"
+                            title={t.copyCode}
+                        >
+                            {copied ? (
+                                <>
+                                    <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <span className="text-green-400">Copiat</span>
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                     </svg>
-                                </button>
-                            </div>
+                                    {t.copyCode}
+                                </>
+                            )}
+                        </button>
+                    </div>
 
-                            {/* Results pane — 45% */}
-                            <div className="flex-[45] min-h-0 overflow-y-auto custom-scrollbar p-5">
-                                {loadingResults ? (
-                                    <div className="flex items-center justify-center h-40 gap-3">
-                                        <div className="animate-spin w-6 h-6 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
-                                        <span className="text-sm text-(--text-muted)">
-                                            {t.loadingLabel}
-                                        </span>
-                                    </div>
-                                ) : hasSubtasks ? (
-                                    <ResultsTab
-                                        subtasks={results!.subtasks}
-                                        score={submission.Score}
-                                        maxScore={results!.subtasks.reduce((s, st) => s + st.maxScore, 0)}
-                                        lang={lang}
-                                    />
-                                ) : submission.status === 'PENDING' ? (
-                                    <div className="flex flex-col items-center justify-center h-40 gap-2 text-(--text-muted)">
-                                        <div className="animate-spin w-6 h-6 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
-                                        <p className="text-sm">{t.evaluatingLabel}</p>
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-col items-center justify-center h-40 gap-2 text-(--text-muted)">
-                                        <p className="text-sm italic">{t.noResultsAvailable}</p>
-                                    </div>
-                                )}
+                    {/* Results pane */}
+                    <div className="flex-[45] min-h-0 overflow-y-auto custom-scrollbar p-5">
+                        {loadingResults ? (
+                            <div className="flex items-center justify-center h-40 gap-3">
+                                <div className="animate-spin w-6 h-6 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
+                                <span className="text-sm text-(--text-muted)">{t.loadingLabel}</span>
                             </div>
-                        </div>
-                    </motion.div>
-                </>
-            )}
-        </AnimatePresence>
+                        ) : hasSubtasks ? (
+                            <ResultsTab
+                                subtasks={results!.subtasks}
+                                score={submission.Score}
+                                maxScore={results!.subtasks.reduce((s, st) => s + st.maxScore, 0)}
+                                lang={lang}
+                            />
+                        ) : submission.status === 'PENDING' ? (
+                            <div className="flex flex-col items-center justify-center h-40 gap-2 text-(--text-muted)">
+                                <div className="animate-spin w-6 h-6 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
+                                <p className="text-sm">{t.evaluatingLabel}</p>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center h-40 gap-2 text-(--text-muted)">
+                                <p className="text-sm italic">{t.noResultsAvailable}</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }
