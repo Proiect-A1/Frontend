@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { ProfileResponseDTO } from '../../../services/profileService';
 import { itemVariants } from '../../../utils/motionConfig';
 import { getGravatarUrl, getDiceBearUrl } from '../../../utils/gravatar';
+import ProfileAchievementsModal, { computeAchievements } from './ProfileAchievements';
 
 type ProfileSidebarProps = {
     profile: ProfileResponseDTO;
@@ -13,6 +14,7 @@ type ProfileSidebarProps = {
 export default function ProfileSidebar({ profile, username, lang }: ProfileSidebarProps) {
     const [src, setSrc] = useState(() => getGravatarUrl(profile.email));
     const [failed, setFailed] = useState(false);
+    const [achievementsOpen, setAchievementsOpen] = useState(false);
 
     const handleError = () => {
         if (src === getGravatarUrl(profile.email)) setSrc(getDiceBearUrl(profile.email));
@@ -26,8 +28,21 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
               ? lang === 'RO' ? 'Profesor' : 'Professor'
               : lang === 'RO' ? 'Elev' : 'Student';
 
+    const achievements = computeAchievements(profile);
+    const unlocked = achievements.filter(a => a.unlocked);
+    const lockedCount = achievements.length - unlocked.length;
+    // Afișăm max 6 iconițe în preview
+    const previewIcons = unlocked.slice(0, 6);
+
     return (
         <>
+            <ProfileAchievementsModal
+                profile={profile}
+                lang={lang}
+                isOpen={achievementsOpen}
+                onClose={() => setAchievementsOpen(false)}
+            />
+
             <motion.div
                 variants={itemVariants}
                 className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow flex flex-col items-center lg:items-start text-center lg:text-left"
@@ -76,11 +91,7 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
                         <span>
                             {new Date(profile.createdAt).toLocaleDateString(
                                 lang === 'RO' ? 'ro-RO' : 'en-US',
-                                {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric',
-                                },
+                                { year: 'numeric', month: 'long', day: 'numeric' },
                             )}
                         </span>
                     </div>
@@ -92,6 +103,40 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
                             {roleLabel}
                         </span>
                     </div>
+                </div>
+
+                {/* Achievements strip */}
+                <div className="w-full border-t border-(--accent)/20 mt-4 pt-4">
+                    <button
+                        type="button"
+                        onClick={() => setAchievementsOpen(true)}
+                        className="w-full group flex items-center justify-between gap-2 cursor-pointer"
+                    >
+                        <div className="flex items-center gap-1.5">
+                            {unlocked.length === 0 ? (
+                                <span className="text-xs text-(--text-muted) italic">
+                                    {lang === 'RO' ? 'Nicio realizare încă' : 'No achievements yet'}
+                                </span>
+                            ) : (
+                                <>
+                                    {previewIcons.map(a => (
+                                        <span key={a.id} className="text-lg leading-none">{a.icon}</span>
+                                    ))}
+                                    {lockedCount > 0 && (
+                                        <span className="text-[10px] font-bold text-(--text-muted) ml-1">
+                                            +{lockedCount} 🔒
+                                        </span>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                        <span className="text-[10px] font-bold text-(--accent) group-hover:underline underline-offset-2 shrink-0 flex items-center gap-1">
+                            {unlocked.length}/{achievements.length}
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </span>
+                    </button>
                 </div>
             </motion.div>
 

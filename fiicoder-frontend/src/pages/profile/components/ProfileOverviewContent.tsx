@@ -13,7 +13,6 @@ import {
   submissionVerdict,
   submissionVerdictLabels,
 } from "../profileUtils";
-import ProfileAchievements from "./ProfileAchievements";
 
 type ProfileOverviewContentProps = {
   profile: ProfileResponseDTO;
@@ -467,7 +466,6 @@ export default function ProfileOverviewContent({
         </motion.div>
       </motion.div>
 
-      <ProfileAchievements profile={profile} lang={lang} />
     </>
   );
 }
