@@ -100,8 +100,8 @@ function TestRow({ t, idx }: { t: any; idx: number }) {
                 </span>
             )}
             <span className="text-[10px] font-bold text-(--text-muted) ml-auto shrink-0">{formatScore(t.score)}/{formatScore(t.maxScore)}</span>
-            <span className="hidden @[190px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">{timeMs}ms</span>
-            <span className="hidden @[190px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">{memKB}KB</span>
+            <span className="hidden @[320px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">{timeMs}ms</span>
+            <span className="hidden @[320px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">{memKB}KB</span>
         </motion.div>
     );
 }
@@ -214,7 +214,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
     const orphanTests = evalTests.filter(t => !assignedTestIds.has(t.testId));
 
     return (
-        <div className="relative h-full p-6 bg-(--surface-card) overflow-y-auto custom-scrollbar @container">
+        <div className="relative h-full p-4 bg-(--surface-card) overflow-y-auto overflow-x-hidden custom-scrollbar @container">
             {showConfetti && <Confetti />}
             {evalStatus === 'idle' && (
                 <div className="h-full flex flex-col items-center justify-center text-center">
@@ -262,7 +262,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                 <div className={`p-4 rounded-2xl border-2 ${summaryBorderClasses[summaryVerdict]}`}>
                                     <div className="flex flex-col gap-2 @[180px]:flex-row @[180px]:items-center @[180px]:justify-between">
                                         <div className="flex items-center gap-2">
-                                            <span className={`text-xl @[190px]:text-2xl font-black ${summaryScoreTextClasses[summaryVerdict]}`}>
+                                            <span className={`text-xl @[220px]:text-2xl font-black ${summaryScoreTextClasses[summaryVerdict]}`}>
                                                 {formatScore(evalSummary.score)}/{formatScore(evalSummary.maxScore)}
                                             </span>
                                             <span className="hidden @[180px]:block text-[10px] font-bold uppercase tracking-wider text-(--text-muted)">
@@ -325,16 +325,16 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                             <span className="text-[10px] font-mono font-bold shrink-0 min-w-0">
                                                 ST#{st.subtaskId}
                                             </span>
-                                            <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border ${badgeClasses} shrink-0`}>
+                                            <span className={`hidden @[195px]:block px-1.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border ${badgeClasses} shrink-0`}>
                                                 {verdictLabel}
                                             </span>
                                             <span className="text-[10px] font-black ml-auto shrink-0">
                                                 {formatScore(st.score)}/{formatScore(st.maxScore)}
                                             </span>
-                                            <span className="hidden @[190px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">
+                                            <span className="hidden @[320px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">
                                                 {maxTimeMs}ms
                                             </span>
-                                            <span className="hidden @[190px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">
+                                            <span className="hidden @[320px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">
                                                 {maxMemKB}KB
                                             </span>
                                         </motion.div>
