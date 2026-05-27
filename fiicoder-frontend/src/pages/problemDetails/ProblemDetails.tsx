@@ -1,15 +1,35 @@
 import { Link } from 'react-router-dom';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import * as FlexLayout from 'flexlayout-react';
 import DescriptionPanel from './components/DescriptionPanel';
 import EditorPanel from './components/EditorPanel';
 import TestResultPanel from './components/TestResultPanel';
 import SubmissionsPanel from './components/SubmissionsPanel';
+import SubmissionDetailModal from './components/SubmissionDetailModal';
 import ToolbarPanel from './components/ToolbarPanel';
 import 'flexlayout-react/style/dark.css';
 import { useProblemDetails } from './hooks/useProblemDetails';
+import type { ProblemSubmissionDTO } from './types/problemDetails';
+
+/** Tracks whether the viewport is >= 1280px (xl breakpoint).
+ *  Uses MediaQueryList — no polling, instant on resize. */
+function useIsDesktop() {
+    const [isDesktop, setIsDesktop] = useState(
+        () => typeof window !== 'undefined' && window.matchMedia('(min-width: 1280px)').matches,
+    );
+    useEffect(() => {
+        const mq = window.matchMedia('(min-width: 1280px)');
+        const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+        mq.addEventListener('change', handler);
+        return () => mq.removeEventListener('change', handler);
+    }, []);
+    return isDesktop;
+}
 
 export default function ProblemDetails() {
+    const isDesktop = useIsDesktop();
+    const [selectedSubmission, setSelectedSubmission] = useState<ProblemSubmissionDTO | null>(null);
+
     const {
         lang,
         t,
@@ -41,12 +61,20 @@ export default function ProblemDetails() {
         handleLayoutSave,
         resetLayout,
         problemTests,
+        codeRef,
     } = useProblemDetails();
 
-    // Navigate to submissions tab — works on both desktop (FlexLayout) and mobile
-    const handleGoToSubmissions = useCallback(() => {
+    // Open latest submission modal directly (toolbar shortcut)
+    const handleGoToLastSubmission = useCallback(() => {
+        const latest = recentSubmissions
+            .slice()
+            .sort((a, b) => new Date(b.submissiondate).getTime() - new Date(a.submissiondate).getTime())[0];
+        if (latest) {
+            setSelectedSubmission(latest);
+            return;
+        }
+        // No submissions yet — fall back to switching tab so the user sees the empty state
         setActiveTab('submissions');
-        // Desktop: find the submissions tab node and select it
         const traverse = (node: FlexLayout.Node): string | undefined => {
             if (node.getType() === 'tab' && (node as FlexLayout.TabNode).getComponent() === 'submissions') {
                 return node.getId();
@@ -61,7 +89,7 @@ export default function ProblemDetails() {
         if (submissionsId) {
             model.doAction(FlexLayout.Actions.selectTab(submissionsId));
         }
-    }, [model, setActiveTab]);
+    }, [model, recentSubmissions, setActiveTab, setSelectedSubmission]);
 
     if (loading) {
         return (
@@ -83,37 +111,31 @@ export default function ProblemDetails() {
         );
     }
 
-    // Render panels via dedicated components
+    // Shared editor props — identical for both layouts
+    const editorProps = {
+        isAuthenticated,
+        t,
+        language,
+        setLanguage,
+        isOpen,
+        setIsOpen,
+        availableLanguages,
+        setSelectedLanguageId,
+        handleCodeChange,
+        handleEditorMount,
+        handleSubmit,
+        showClipboardButtons: true,
+        // When switching layouts, the new Monaco instance picks up the current code
+        defaultCode: codeRef.current,
+    } as const;
 
+    // FlexLayout factory — editor instance lives here on desktop
     const factory = (node: FlexLayout.TabNode) => {
-        const component = node.getComponent();
-
-        switch (component) {
+        switch (node.getComponent()) {
             case 'description':
-                return (
-                    <DescriptionPanel
-                        problem={problem}
-                        processedDescription={processedDescription}
-                        lang={lang}
-                    />
-                );
+                return <DescriptionPanel problem={problem} processedDescription={processedDescription} lang={lang} />;
             case 'editor':
-                return (
-                    <EditorPanel
-                        isAuthenticated={isAuthenticated}
-                        t={t}
-                        language={language}
-                        setLanguage={setLanguage}
-                        isOpen={isOpen}
-                        setIsOpen={setIsOpen}
-                        availableLanguages={availableLanguages}
-                        setSelectedLanguageId={setSelectedLanguageId}
-                        handleCodeChange={handleCodeChange}
-                        handleEditorMount={handleEditorMount}
-                        handleSubmit={handleSubmit}
-                        showClipboardButtons
-                    />
-                );
+                return <EditorPanel {...editorProps} />;
             case 'testresult':
                 return (
                     <TestResultPanel
@@ -127,13 +149,7 @@ export default function ProblemDetails() {
                     />
                 );
             case 'submissions':
-                return (
-                    <SubmissionsPanel
-                        isAuthenticated={isAuthenticated}
-                        recentSubmissions={recentSubmissions}
-                        lang={lang}
-                    />
-                );
+                return <SubmissionsPanel isAuthenticated={isAuthenticated} recentSubmissions={recentSubmissions} lang={lang} onSelectSubmission={setSelectedSubmission} />;
             default:
                 return null;
         }
@@ -141,119 +157,94 @@ export default function ProblemDetails() {
 
     return (
         <div className="w-full flex flex-col gap-6 h-[calc(100svh-5rem)]">
-            {/* Desktop Workspace: FlexLayout */}
-            <div className="hidden xl:block relative flex-1 min-h-0 overflow-hidden">
-                <FlexLayout.Layout
-                    model={model}
-                    factory={factory}
-                    onAction={handleLayoutAction}
-                    onModelChange={handleLayoutSave}
-                />
-            </div>
-
-            {/* Workspace Toolbar (Status Bar) - Only on Desktop for now */}
-            <ToolbarPanel
-                evalStatus={evalStatus}
-                evalSummary={evalSummary}
-                evalTests={evalTests}
-                lang={lang}
-                handleSubmit={handleSubmit}
-                status={status}
-                resetLayout={resetLayout}
-                onStatusClick={handleGoToSubmissions}
-            />
-
-            {/* Mobile View: Standard Stacked Grid */}
-            <div className="xl:hidden flex flex-col gap-4">
-                <div className="overflow-hidden bg-(--surface-card) border-2 border-(--accent) rounded-3xl">
-                    <DescriptionPanel
-                        problem={problem}
-                        processedDescription={processedDescription}
+            {isDesktop ? (
+                /* ── Desktop: FlexLayout workspace + toolbar ── */
+                <>
+                    <div className="relative flex-1 min-h-0 overflow-hidden">
+                        <FlexLayout.Layout
+                            model={model}
+                            factory={factory}
+                            onAction={handleLayoutAction}
+                            onModelChange={handleLayoutSave}
+                        />
+                    </div>
+                    <ToolbarPanel
+                        evalStatus={evalStatus}
+                        evalSummary={evalSummary}
+                        evalTests={evalTests}
                         lang={lang}
-                    />
-                </div>
-                <div className="overflow-hidden bg-(--surface-card) border-2 border-(--accent) rounded-3xl min-h-[50svh] flex flex-col">
-                    <EditorPanel
-                        isAuthenticated={isAuthenticated}
-                        t={t}
-                        language={language}
-                        setLanguage={setLanguage}
-                        isOpen={isOpen}
-                        setIsOpen={setIsOpen}
-                        availableLanguages={availableLanguages}
-                        setSelectedLanguageId={setSelectedLanguageId}
-                        handleCodeChange={handleCodeChange}
-                        handleEditorMount={handleEditorMount}
                         handleSubmit={handleSubmit}
-                        showClipboardButtons
+                        status={status}
+                        resetLayout={resetLayout}
+                        onStatusClick={handleGoToLastSubmission}
                     />
-                </div>
-                <div className="bg-(--surface-card) border-2 border-(--accent) rounded-3xl mb-4 flex flex-col overflow-hidden">
-                    <div className="flex items-center gap-4 px-6 pt-6 pb-2 mb-2 bg-(--surface-card) overflow-x-auto border-b border-(--accent)/10">
-                        <button
-                            onClick={() => setActiveTab('testresult')}
-                            className={`text-xs font-bold pb-1 border-b-2 whitespace-nowrap ${activeTab === 'testresult' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
-                        >
-                            {lang === 'RO' ? 'Rezultat' : 'Result'}
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('submissions')}
-                            className={`text-xs font-bold pb-1 border-b-2 whitespace-nowrap ${activeTab === 'submissions' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
-                        >
-                            {lang === 'RO' ? 'Submisii' : 'Submissions'}
-                        </button>
+                </>
+            ) : (
+                /* ── Mobile: stacked layout ── */
+                <div className="flex flex-col gap-4">
+                    <div className="overflow-hidden bg-(--surface-card) border-2 border-(--accent) rounded-3xl">
+                        <DescriptionPanel problem={problem} processedDescription={processedDescription} lang={lang} />
                     </div>
-                    <div className="flex-1">
-                        {activeTab === 'testresult' && (
-                            <TestResultPanel
-                                evalStatus={evalStatus}
-                                evalError={evalError}
-                                evalSummary={evalSummary}
-                                evalTests={evalTests}
-                                evalSubtasks={evalSubtasks}
-                                lang={lang}
-                                problemTests={problemTests}
-                            />
-                        )}
-                        {activeTab === 'submissions' && (
-                            <SubmissionsPanel
-                                isAuthenticated={isAuthenticated}
-                                recentSubmissions={recentSubmissions}
-                                lang={lang}
-                            />
-                        )}
+
+                    <div className="overflow-hidden bg-(--surface-card) border-2 border-(--accent) rounded-3xl min-h-[50svh] flex flex-col">
+                        <EditorPanel {...editorProps} />
                     </div>
-                    <div className="px-6 pb-6 bg-(--surface-card)">
-                        <button
-                            onClick={handleSubmit}
-                            disabled={status === 'pending'}
-                            className="px-6 py-1.5 rounded-xl bg-(--accent) border-2 border-(--accent) text-xs text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group ml-auto mt-2"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="w-3.5 h-3.5 group-hover:scale-110 transition-transform"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={3}
+
+                    <div className="bg-(--surface-card) border-2 border-(--accent) rounded-3xl mb-4 flex flex-col overflow-hidden">
+                        <div className="flex items-center gap-4 px-6 pt-6 pb-2 mb-2 bg-(--surface-card) overflow-x-auto border-b border-(--accent)/10">
+                            <button
+                                onClick={() => setActiveTab('testresult')}
+                                className={`text-xs font-bold pb-1 border-b-2 whitespace-nowrap ${activeTab === 'testresult' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
                             >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M5 13l4 4L19 7"
+                                {lang === 'RO' ? 'Rezultat' : 'Result'}
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('submissions')}
+                                className={`text-xs font-bold pb-1 border-b-2 whitespace-nowrap ${activeTab === 'submissions' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
+                            >
+                                {lang === 'RO' ? 'Submisii' : 'Submissions'}
+                            </button>
+                        </div>
+                        <div className="flex-1">
+                            {activeTab === 'testresult' && (
+                                <TestResultPanel
+                                    evalStatus={evalStatus}
+                                    evalError={evalError}
+                                    evalSummary={evalSummary}
+                                    evalTests={evalTests}
+                                    evalSubtasks={evalSubtasks}
+                                    lang={lang}
+                                    problemTests={problemTests}
                                 />
-                            </svg>
-                            {status === 'pending'
-                                ? lang === 'RO'
-                                    ? 'Trimitere...'
-                                    : 'Submitting...'
-                                : lang === 'RO'
-                                  ? 'Trimite'
-                                  : 'Submit'}
-                        </button>
+                            )}
+                            {activeTab === 'submissions' && (
+                                <SubmissionsPanel isAuthenticated={isAuthenticated} recentSubmissions={recentSubmissions} lang={lang} onSelectSubmission={setSelectedSubmission} />
+                            )}
+                        </div>
+                        <div className="px-6 pb-6 bg-(--surface-card)">
+                            <button
+                                onClick={handleSubmit}
+                                disabled={status === 'pending'}
+                                className="px-6 py-1.5 rounded-xl bg-(--accent) border-2 border-(--accent) text-xs text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group ml-auto mt-2"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                                {status === 'pending'
+                                    ? lang === 'RO' ? 'Trimitere...' : 'Submitting...'
+                                    : lang === 'RO' ? 'Trimite' : 'Submit'}
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
+
+            <SubmissionDetailModal
+                isOpen={!!selectedSubmission}
+                onClose={() => setSelectedSubmission(null)}
+                submission={selectedSubmission}
+                lang={lang}
+            />
         </div>
     );
 }

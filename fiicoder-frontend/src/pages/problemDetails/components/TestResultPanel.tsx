@@ -182,7 +182,8 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
             const verdict = evalSummary.score >= evalSummary.maxScore && evalSummary.maxScore > 0;
             if (verdict) {
                 setShowConfetti(true);
-                const timer = setTimeout(() => setShowConfetti(false), 3000);
+                // max particle lifetime = delay(1.0) + duration(4.2) = 5.2s → wait for all to finish
+                const timer = setTimeout(() => setShowConfetti(false), 5800);
                 return () => clearTimeout(timer);
             }
         }
@@ -214,7 +215,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
 
     return (
         <div className="relative h-full p-6 bg-(--surface-card) overflow-y-auto custom-scrollbar">
-            <AnimatePresence>{showConfetti && <Confetti />}</AnimatePresence>
+            {showConfetti && <Confetti />}
             {evalStatus === 'idle' && (
                 <div className="h-full flex flex-col items-center justify-center text-center">
                     <div className="w-12 h-12 rounded-full bg-(--accent)/5 border-2 border-dashed border-(--accent)/20 flex items-center justify-center mb-3">
@@ -293,17 +294,18 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                 {lang === 'RO' ? 'Subtask-uri' : 'Subtasks'}
                             </p>
                             {evalSubtasks.map((st) => {
-                                const full = st.score >= st.maxScore;
+                                const testIds = subtaskTestIds.get(st.subtaskId) ?? [];
+                                const subtaskTests = evalTests.filter(t => testIds.includes(t.testId));
+                                const hasPendingTests = subtaskTests.some(t => t.verdict === 'PENDING');
+                                const full = st.score >= st.maxScore && st.maxScore > 0;
                                 const partial = st.score > 0 && !full;
-                                const subtaskVerdict: SubmissionVerdict = full ? 'ACCEPTED' : partial ? 'PARTIAL' : 'REJECTED';
+                                const subtaskVerdict: SubmissionVerdict = hasPendingTests ? 'PENDING' : full ? 'ACCEPTED' : partial ? 'PARTIAL' : 'REJECTED';
                                 const color = `${summaryBorderClasses[subtaskVerdict]} ${subtaskTextColor[subtaskVerdict]}`;
                                 const badgeClasses = summaryBadgeClasses[subtaskVerdict];
                                 const verdictLabel = submissionVerdictLabels[subtaskVerdict][lang === 'RO' ? 'ro' : 'en'];
                                 const maxMemKB = st.max_memory ? (st.max_memory / 1024).toFixed(0) : '-';
                                 const maxTimeMs = st.max_time ? (st.max_time / 1_000_000).toFixed(0) : '-';
                                 const isExpanded = expandedSubtasks.has(st.subtaskId);
-                                const testIds = subtaskTestIds.get(st.subtaskId) ?? [];
-                                const subtaskTests = evalTests.filter(t => testIds.includes(t.testId));
 
                                 return (
                                     <div key={st.subtaskId}>

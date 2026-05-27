@@ -444,6 +444,7 @@ export function useProblemDetails() {
         resetLayout,
         problemTitle,
         problemTests,
+        codeRef,
     };
 }
 

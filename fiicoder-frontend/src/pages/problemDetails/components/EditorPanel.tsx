@@ -17,6 +17,7 @@ type Props = {
     handleEditorMount: any;
     handleSubmit: (e: React.FormEvent) => void;
     showClipboardButtons?: boolean;
+    defaultCode?: string;
 };
 
 export default function EditorPanel({
@@ -32,6 +33,7 @@ export default function EditorPanel({
     handleEditorMount,
     handleSubmit,
     showClipboardButtons = false,
+    defaultCode = '',
 }: Props) {
     const editorInstanceRef = useRef<any>(null);
     const { setupContextMenu, contextMenuEl } = useMonacoContextMenu();
@@ -177,6 +179,7 @@ export default function EditorPanel({
                             height="100%"
                             language={getMonacoLanguageId(language)}
                             theme="vs-dark"
+                            defaultValue={defaultCode}
                             onChange={handleCodeChange}
                             onMount={onEditorMount}
                             loading={
