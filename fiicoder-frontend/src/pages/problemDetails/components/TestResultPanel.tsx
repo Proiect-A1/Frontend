@@ -100,8 +100,8 @@ function TestRow({ t, idx }: { t: any; idx: number }) {
                 </span>
             )}
             <span className="text-[10px] font-bold text-(--text-muted) ml-auto shrink-0">{formatScore(t.score)}/{formatScore(t.maxScore)}</span>
-            <span className="hidden @[220px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">{timeMs}ms</span>
-            <span className="hidden @[220px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">{memKB}KB</span>
+            <span className="hidden @[190px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">{timeMs}ms</span>
+            <span className="hidden @[190px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">{memKB}KB</span>
         </motion.div>
     );
 }
@@ -260,16 +260,16 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                             const verdictLabel = submissionVerdictLabels[summaryVerdict][lang === 'RO' ? 'ro' : 'en'];
                             return (
                                 <div className={`p-4 rounded-2xl border-2 ${summaryBorderClasses[summaryVerdict]}`}>
-                                    <div className="flex flex-col gap-2 @[200px]:flex-row @[200px]:items-center @[200px]:justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <span className={`text-2xl font-black ${summaryScoreTextClasses[summaryVerdict]}`}>
+                                    <div className="flex flex-col gap-2 @[180px]:flex-row @[180px]:items-center @[180px]:justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <span className={`text-xl @[190px]:text-2xl font-black ${summaryScoreTextClasses[summaryVerdict]}`}>
                                                 {formatScore(evalSummary.score)}/{formatScore(evalSummary.maxScore)}
                                             </span>
-                                            <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted)">
+                                            <span className="hidden @[180px]:block text-[10px] font-bold uppercase tracking-wider text-(--text-muted)">
                                                 {lang === 'RO' ? 'puncte' : 'points'}
                                             </span>
                                         </div>
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border-2 self-start @[200px]:self-auto ${summaryBadgeClasses[summaryVerdict]}`}>
+                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border-2 self-start @[180px]:self-auto ${summaryBadgeClasses[summaryVerdict]}`}>
                                             {verdictLabel}
                                         </span>
                                     </div>
@@ -290,7 +290,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                     {/* Subtasks with collapsible tests */}
                     {evalSubtasks.length > 0 && (
                         <div className="space-y-1.5">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-(--text-muted) px-1">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-(--text-muted) px-1 whitespace-nowrap">
                                 {lang === 'RO' ? 'Subtask-uri' : 'Subtasks'}
                             </p>
                             {evalSubtasks.map((st) => {
@@ -331,10 +331,10 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                             <span className="text-[10px] font-black ml-auto shrink-0">
                                                 {formatScore(st.score)}/{formatScore(st.maxScore)}
                                             </span>
-                                            <span className="hidden @[220px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">
+                                            <span className="hidden @[190px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">
                                                 {maxTimeMs}ms
                                             </span>
-                                            <span className="hidden @[220px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">
+                                            <span className="hidden @[190px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">
                                                 {maxMemKB}KB
                                             </span>
                                         </motion.div>
@@ -365,7 +365,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                     {/* Fallback: tests not assigned to any subtask */}
                     {orphanTests.length > 0 && (
                         <div className="space-y-1.5">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-(--text-muted) px-1">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-(--text-muted) px-1 whitespace-nowrap">
                                 {lang === 'RO' ? 'Teste' : 'Tests'}
                             </p>
                             {orphanTests.map((t, idx) => (

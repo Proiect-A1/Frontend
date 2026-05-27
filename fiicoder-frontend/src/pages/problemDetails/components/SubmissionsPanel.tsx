@@ -51,7 +51,7 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
                             <div
                                 key={idx}
                                 onClick={() => onSelectSubmission(sub)}
-                                className="p-3 rounded-2xl border-2 border-(--accent)/20 bg-(--accent)/5 cursor-pointer hover:bg-(--accent)/10 transition-colors flex flex-col gap-1 @[200px]:flex-row @[200px]:items-center @[200px]:justify-between @[200px]:gap-3"
+                                className="p-3 rounded-2xl border-2 border-(--accent)/20 bg-(--accent)/5 cursor-pointer hover:bg-(--accent)/10 transition-colors flex flex-col gap-1 @[180px]:flex-row @[180px]:items-center @[180px]:justify-between @[180px]:gap-3"
                             >
                                 <div className="min-w-0 flex-1">
                                     <p className="text-xs font-bold text-(--text-h) truncate">
@@ -64,7 +64,7 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
                                     </p>
                                     <p className="text-[10px] text-(--text-muted) font-mono">Score: {formatScore(sub.Score)}</p>
                                 </div>
-                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border-2 shrink-0 self-start @[200px]:self-auto ${verdictClasses[verdict]}`}>
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border-2 shrink-0 self-start @[180px]:self-auto ${verdictClasses[verdict]}`}>
                                     {verdictLabel(verdict, lang)}
                                 </span>
                             </div>

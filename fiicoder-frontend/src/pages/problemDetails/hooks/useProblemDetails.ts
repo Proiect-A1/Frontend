@@ -66,7 +66,7 @@ export function useProblemDetails() {
                 tabSetHeaderHeight: 36,
                 tabSetEnableTabStrip: true,
                 tabSetEnableMaximize: true,
-                tabSetMinWidth: 100,
+                tabSetMinWidth: 160,
                 tabSetMinHeight: 100,
             },
             borders: [],
@@ -91,7 +91,7 @@ export function useProblemDetails() {
                         children: [
                             {
                                 type: 'tabset',
-                                weight: 65,
+                                weight: 55,
                                 children: [
                                     {
                                         type: 'tab',
@@ -102,7 +102,7 @@ export function useProblemDetails() {
                             },
                             {
                                 type: 'row',
-                                weight: 35,
+                                weight: 45,
                                 children: [
                                     {
                                         type: 'tabset',
