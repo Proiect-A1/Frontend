@@ -69,6 +69,7 @@ type Props = {
     evalSummary?: any;
     evalTests: any[];
     evalSubtasks: DoneSubtaskEvent[];
+    evalElapsedMs?: number | null;
     lang: string;
     problemTests?: ProblemTestDetailsDTO | null;
 };
@@ -172,7 +173,7 @@ function Confetti() {
     );
 }
 
-export default function TestResultPanel({ evalStatus, evalError, evalSummary, evalTests, evalSubtasks, lang, problemTests }: Props) {
+export default function TestResultPanel({ evalStatus, evalError, evalSummary, evalTests, evalSubtasks, evalElapsedMs, lang, problemTests }: Props) {
     const [expandedSubtasks, setExpandedSubtasks] = useState<Set<number>>(new Set());
     const [showConfetti, setShowConfetti] = useState(false);
     const prevStatus = useRef<string>('idle');
@@ -273,6 +274,21 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                             {verdictLabel}
                                         </span>
                                     </div>
+                                    {evalElapsedMs != null && (
+                                        <div className="mt-2 flex items-center gap-1.5 text-[10px] text-(--text-muted)">
+                                            <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                                <circle cx="12" cy="12" r="10"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2"/>
+                                            </svg>
+                                            <span>
+                                                {lang === 'RO' ? 'Timp evaluare:' : 'Eval time:'}
+                                            </span>
+                                            <span className="font-mono font-bold text-(--text-h)">
+                                                {evalElapsedMs < 1000
+                                                    ? `${evalElapsedMs}ms`
+                                                    : `${(evalElapsedMs / 1000).toFixed(1)}s`}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })()

@@ -43,6 +43,8 @@ export function useProblemDetails() {
     const [evalSummary, setEvalSummary] = useState<DoneSubmissionEvent | null>(null);
     const [evalStatus, setEvalStatus] = useState<'idle' | 'connecting' | 'evaluating' | 'done' | 'error'>('idle');
     const [evalError, setEvalError] = useState<string | null>(null);
+    const [evalElapsedMs, setEvalElapsedMs] = useState<number | null>(null);
+    const evalStartRef = useRef<number | null>(null);
     const [problemTests, setProblemTests] = useState<ProblemTestDetailsDTO | null>(null);
     const wsCleanupRef = useRef<(() => void) | null>(null);
     const handleSubmitRef = useRef<((e: React.FormEvent) => Promise<void>) | null>(null);
@@ -295,6 +297,9 @@ export function useProblemDetails() {
                 wsCleanupRef.current = null;
             }
 
+            evalStartRef.current = Date.now();
+            setEvalElapsedMs(null);
+
             // Pre-populate tests and subtasks based on problemTests structure
             let initialTests: DoneTestEvent[] = [];
             let initialSubtasks: DoneSubtaskEvent[] = [];
@@ -374,6 +379,10 @@ export function useProblemDetails() {
                         }
                     },
                     (summary: any) => {
+                        if (evalStartRef.current !== null) {
+                            setEvalElapsedMs(Date.now() - evalStartRef.current);
+                            evalStartRef.current = null;
+                        }
                         setEvalSummary(summary);
                         setEvalStatus('done');
                         setStatus(summary.score >= summary.maxScore ? 'valid' : 'invalid');
@@ -388,6 +397,10 @@ export function useProblemDetails() {
                         }
                     },
                     (errorMsg: any) => {
+                        if (evalStartRef.current !== null) {
+                            setEvalElapsedMs(Date.now() - evalStartRef.current);
+                            evalStartRef.current = null;
+                        }
                         setEvalStatus('error');
                         setEvalError(errorMsg);
                         setStatus(null);
@@ -434,6 +447,7 @@ export function useProblemDetails() {
         evalSummary,
         evalStatus,
         evalError,
+        evalElapsedMs,
         processedDescription,
         model,
         handleCodeChange,

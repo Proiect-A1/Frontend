@@ -52,6 +52,7 @@ export default function ProblemDetails() {
         evalSummary,
         evalStatus,
         evalError,
+        evalElapsedMs,
         processedDescription,
         model,
         handleCodeChange,
@@ -144,6 +145,7 @@ export default function ProblemDetails() {
                         evalSummary={evalSummary}
                         evalTests={evalTests}
                         evalSubtasks={evalSubtasks}
+                        evalElapsedMs={evalElapsedMs}
                         lang={lang}
                         problemTests={problemTests}
                     />
@@ -213,6 +215,7 @@ export default function ProblemDetails() {
                                     evalSummary={evalSummary}
                                     evalTests={evalTests}
                                     evalSubtasks={evalSubtasks}
+                                    evalElapsedMs={evalElapsedMs}
                                     lang={lang}
                                     problemTests={problemTests}
                                 />

@@ -17,10 +17,9 @@ export default function DescriptionPanel({ problem, processedDescription, lang }
     // extra spaces (invalid CommonMark) still renders correctly.
     const normalized = processedDescription.replace(/\*\* ?(.+?) ?\*\*/g, '**$1**');
 
-    // Accept both camelCase (Spring default) and snake_case field names
-    console.log('[DescriptionPanel] problem keys:', Object.keys(problem), problem);
-    const timeLimit: number = problem.timeLimit ?? problem.time_limit ?? 0;
-    const memoryLimit: number = problem.memoryLimit ?? problem.memory_limit ?? 0;
+    // Backend sends snake_case; accept camelCase too for forward-compatibility
+    const timeLimit: number = problem.time_limit ?? problem.timeLimit ?? 0;
+    const memoryLimit: number = problem.memory_limit ?? problem.memoryLimit ?? 0;
     const tags: string[] = Array.isArray(problem.tags) ? problem.tags : [];
 
     return (
