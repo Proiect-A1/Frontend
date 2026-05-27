@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from '../../../utils/motionConfig';
-import { useLanguage } from '../../../language/Language';
+import { useT } from '../../../language/Language';
 import type { AuditLogEntry } from '../services/adminService';
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 };
 
 export default function AuditLogTab({ auditLog }: Props) {
-    const { lang } = useLanguage();
+    const t = useT();
 
     return (
         <motion.div
@@ -17,7 +17,7 @@ export default function AuditLogTab({ auditLog }: Props) {
         >
             <motion.div variants={itemVariants} className="mb-6">
                 <h2 className="text-2xl font-bold text-(--text-h)">
-                    {lang === 'RO' ? 'Jurnal Audit' : 'Audit Log'}
+                    {t.auditLogTitle}
                 </h2>
             </motion.div>
 
@@ -49,7 +49,7 @@ export default function AuditLogTab({ auditLog }: Props) {
                         </div>
 
                         <div className="text-xs uppercase tracking-widest text-(--text-muted) font-bold">
-                            {lang === 'RO' ? 'Utilizator:' : 'User:'}{' '}
+                            {t.auditLogUser}{' '}
                             {entry.actorUsername}
                         </div>
                     </motion.div>

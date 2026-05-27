@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from '../../../utils/motionConfig';
-import { useLanguage } from '../../../language/Language';
+import { useLanguage, useT } from '../../../language/Language';
 import type { Announcement } from '../../../types/announcement';
 import { unpackTranslation } from '../../../utils/translationPacker';
 import type { AnnouncementFormState } from '../hooks/useAdminAnnouncements';
@@ -26,6 +26,7 @@ export default function AnnouncementsTab({
     isSavingAnnouncement, handleAnnouncementSubmit, handleDeleteAnnouncement
 }: Props) {
     const { lang } = useLanguage();
+    const t = useT();
     const [formLang, setFormLang] = useState<'ro' | 'en'>('ro');
     const [isTranslating, setIsTranslating] = useState(false);
 
@@ -43,13 +44,13 @@ export default function AnnouncementsTab({
                     model: 'deepseek/deepseek-chat-v3-0324',
                     response_format: { type: 'json_object' },
                     messages: [
-                        { 
-                            role: 'system', 
-                            content: 'Translate the following JSON object values from Romanian to English. Respond ONLY with a valid JSON object keeping the exact keys "title" and "content". Keep all markdown/formatting intact.' 
+                        {
+                            role: 'system',
+                            content: 'Translate the following JSON object values from Romanian to English. Respond ONLY with a valid JSON object keeping the exact keys "title" and "content". Keep all markdown/formatting intact.'
                         },
-                        { 
-                            role: 'user', 
-                            content: JSON.stringify({ title: announcementForm.titleRo, content: announcementForm.contentRo }) 
+                        {
+                            role: 'user',
+                            content: JSON.stringify({ title: announcementForm.titleRo, content: announcementForm.contentRo })
                         }
                     ]
                 })
@@ -75,10 +76,10 @@ export default function AnnouncementsTab({
         <motion.div variants={containerVariants} className="space-y-6">
             <motion.div variants={itemVariants} className="mb-6 flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-(--text-h)">
-                    {lang === 'RO' ? 'Anunțuri Platformă' : 'Platform Announcements'}
+                    {t.announcementsTabTitle}
                 </h2>
             </motion.div>
-            
+
             <motion.form variants={itemVariants} onSubmit={handleAnnouncementSubmit} className="p-5 rounded-2xl border border-(--accent)/30 bg-(--surface-muted) space-y-4">
                 <div className="flex justify-between items-center mb-2">
                     <div className="relative flex items-center bg-(--surface-input) border-2 border-(--accent)/50 rounded-full p-1 h-9.5 w-24 overflow-hidden whitespace-nowrap">
@@ -113,19 +114,19 @@ export default function AnnouncementsTab({
 
                 <div className="space-y-2">
                     <label className="text-sm font-bold text-(--text-h) px-1 uppercase tracking-widest">
-                        {lang === 'RO' ? 'Titlu Anunț' : 'Announcement Title'} ({formLang.toUpperCase()})
+                        {t.announcementTitleLabel} ({formLang.toUpperCase()})
                     </label>
                     <input
                         type="text"
                         value={formLang === 'ro' ? announcementForm.titleRo : announcementForm.titleEn}
                         onChange={(e) => setAnnouncementForm({ ...announcementForm, [formLang === 'ro' ? 'titleRo' : 'titleEn']: e.target.value })}
-                        placeholder={lang === 'RO' ? "Introdu titlul..." : "Enter title..."}
+                        placeholder={t.announcementTitlePlaceholder}
                         className="w-full bg-(--surface-card) border border-(--accent)/40 rounded-2xl px-4 py-3 text-(--text-h) outline-none focus:border-(--accent) transition-all"
                     />
                 </div>
                 <div className="space-y-2">
                     <label className="text-sm font-bold text-(--text-h) px-1 uppercase tracking-widest">
-                        {lang === 'RO' ? 'Conținut' : 'Content'} ({formLang.toUpperCase()})
+                        {t.announcementContentLabel} ({formLang.toUpperCase()})
                     </label>
                     <textarea
                         value={formLang === 'ro' ? announcementForm.contentRo : announcementForm.contentEn}
@@ -137,11 +138,11 @@ export default function AnnouncementsTab({
                 <div className="flex justify-end gap-2">
                     {editingAnnouncementId && (
                         <button type="button" onClick={() => { setEditingAnnouncementId(null); setAnnouncementForm({ titleRo: '', titleEn: '', contentRo: '', contentEn: '' }); }} className="rounded-2xl border border-(--accent)/40 px-6 py-2 text-(--text-h) font-bold hover:bg-(--accent)/10 transition-all">
-                            {lang === 'RO' ? 'Anulează' : 'Cancel'}
+                            {t.announcementCancel}
                         </button>
                     )}
                     <button type="submit" disabled={isSavingAnnouncement} className="rounded-2xl bg-(--accent)/20 border border-(--accent)/40 px-6 py-2 text-(--text-h) font-bold hover:bg-(--accent)/30 disabled:opacity-50 transition-all">
-                        {isSavingAnnouncement ? '...' : (lang === 'RO' ? 'Salvează Anunțul' : 'Save Announcement')}
+                        {isSavingAnnouncement ? '...' : t.announcementSave}
                     </button>
                 </div>
             </motion.form>

@@ -11,6 +11,7 @@ import { applyMonacoTheme, getEffectivePalette } from '../../../utils/monacoThem
 import { useGeneratorValidation } from '../hooks/useGeneratorValidation';
 import ScriptDocumentation from './ScriptDocumentation';
 import { useMonacoContextMenu } from '../../../hooks/useMonacoContextMenu';
+import { useLanguage, useT, getGeneratorErrorLabel, getGeneratorWarningLabel } from '../../../language/Language';
 
 const EXAMPLE_SCRIPT = `#MAIN main
 #DEFGRP 10 exemple
@@ -36,6 +37,8 @@ const EXAMPLE_SCRIPT = `#MAIN main
 export default function GeneratorTab() {
     const { watch, setValue } = useFormContext<ProposeProblemForm>();
     const { theme, customColors } = useTheme();
+    const { lang } = useLanguage();
+    const t = useT();
     const monacoRef = useRef<any>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -99,9 +102,9 @@ export default function GeneratorTab() {
 
     const statusConfig = {
         idle: { icon: '', text: '', className: '' },
-        validating: { icon: <div className="w-3.5 h-3.5 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />, text: 'Se validează...', className: 'text-yellow-400' },
-        success: { icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>, text: 'Script valid!', className: 'text-green-400' },
-        error: { icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>, text: 'Erori găsite', className: 'text-red-400' },
+        validating: { icon: <div className="w-3.5 h-3.5 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />, text: t.generatorValidating, className: 'text-yellow-400' },
+        success: { icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>, text: t.generatorValid, className: 'text-green-400' },
+        error: { icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>, text: t.generatorErrorsFound, className: 'text-red-400' },
     };
 
     return (
@@ -117,20 +120,20 @@ export default function GeneratorTab() {
                 className="flex items-center justify-between flex-wrap gap-3"
             >
                 <div className="flex items-center gap-3">
-                    <h2 className="text-lg font-bold text-(--text-h)">Script Generator</h2>
+                    <h2 className="text-lg font-bold text-(--text-h)">{t.generatorTitle}</h2>
 
                     {/* Info icon -> toggle full documentation */}
                     <button
                         type="button"
                         onClick={() => setShowDocsPanel(!showDocsPanel)}
                         className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full font-semibold border transition-all ${
-                            showDocsPanel 
-                                ? 'border-(--accent) bg-(--accent) text-(--surface-card)' 
+                            showDocsPanel
+                                ? 'border-(--accent) bg-(--accent) text-(--surface-card)'
                                 : 'border-(--accent)/40 bg-(--accent)/10 text-(--text-h) hover:bg-(--accent)/20'
                         }`}
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-                        {showDocsPanel ? 'Ascunde Documentație' : 'Documentație'}
+                        {showDocsPanel ? t.generatorHideDocs : t.generatorShowDocs}
                     </button>
                 </div>
 
@@ -147,7 +150,7 @@ export default function GeneratorTab() {
                         onClick={insertExample}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full font-semibold border border-(--accent)/40 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors text-(--text-h)"
                     >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg> Exemplu
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg> {t.generatorExample}
                     </button>
 
                     {/* Upload */}
@@ -163,7 +166,7 @@ export default function GeneratorTab() {
                         onClick={() => fileInputRef.current?.click()}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full font-semibold border border-(--accent)/40 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors text-(--text-h)"
                     >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg> Încarcă
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg> {t.generatorUpload}
                     </button>
 
                     {/* Save */}
@@ -173,7 +176,7 @@ export default function GeneratorTab() {
                         disabled={status === 'validating'}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full font-semibold border border-(--accent)/40 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors text-(--text-h) disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg> Salvează
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg> {t.generatorSave}
                         <span className="text-xs text-(--text-muted) ml-1">(Ctrl+S)</span>
                     </button>
                 </div>
@@ -225,9 +228,9 @@ export default function GeneratorTab() {
                     <div className="px-4 py-3 bg-red-950/50 border-b border-red-500/30 flex items-center justify-between">
                         <span className="text-red-400 font-bold text-sm flex items-center gap-2">
                             <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
-                            {errors.length} {errors.length === 1 ? 'eroare în script' : 'erori în script'} — scriptul nu poate fi trimis
+                            {getGeneratorErrorLabel(lang, errors.length)} — {t.generatorCannotSubmit}
                         </span>
-                        <span className="text-xs text-red-400/60 font-mono">apasă Salvează după corecții</span>
+                        <span className="text-xs text-red-400/60 font-mono">{t.generatorSaveHint}</span>
                     </div>
                     <div className="max-h-64 overflow-y-auto custom-scrollbar divide-y divide-red-500/10">
                         {errors.map((err, i) => (
@@ -257,7 +260,7 @@ export default function GeneratorTab() {
                     <div className="px-4 py-3 bg-yellow-950/40 border-b border-yellow-500/20 flex items-center justify-between">
                         <span className="text-yellow-400 font-bold text-sm flex items-center gap-2">
                             <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
-                            {warnings.length} {warnings.length === 1 ? 'avertisment' : 'avertismente'}
+                            {getGeneratorWarningLabel(lang, warnings.length)}
                         </span>
                     </div>
                     <div className="max-h-40 overflow-y-auto custom-scrollbar divide-y divide-yellow-500/10">
@@ -282,14 +285,13 @@ export default function GeneratorTab() {
                 >
                     <p className="text-sm text-green-400 font-semibold flex items-center gap-1.5">
                         <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
-                        Sintaxă și referințe OK!
+                        {t.generatorSyntaxOk}
                     </p>
                     <p className="mt-1 text-xs text-green-400/80">
-                        Verificarea de rulare (compilarea generatorului, output valid) se face automat la trimitere prin sandbox.
+                        {t.generatorRuntimeNote}
                     </p>
                 </motion.div>
             )}
         </motion.div>
     );
 }
-

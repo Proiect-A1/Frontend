@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { tagService, type TagResponseDTO } from '../../../services/tagService';
 import { hoverTransition } from '../../../utils/motionConfig';
+import { useT } from '../../../language/Language';
 
 interface TagsAutocompleteProps {
     selectedTags: string[];
@@ -16,6 +17,7 @@ export default function TagsAutocomplete({ selectedTags, onTagsChange }: TagsAut
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const inputRef = useRef<HTMLInputElement>(null);
     const suggestionsRef = useRef<HTMLDivElement>(null);
+    const t = useT();
 
     useEffect(() => {
         tagService.getAllTags().then(setAvailableTags).catch(console.error);
@@ -99,7 +101,7 @@ export default function TagsAutocomplete({ selectedTags, onTagsChange }: TagsAut
 
     return (
         <div className="space-y-2">
-            <label className="text-(--text) font-semibold text-sm">Etichete</label>
+            <label className="text-(--text) font-semibold text-sm">{t.proposeTagsLabel}</label>
             <div className="relative">
                 <div className="flex flex-wrap gap-1.5 pb-1 mb-1">
                     {selectedTags.map((tag) => (
@@ -125,9 +127,7 @@ export default function TagsAutocomplete({ selectedTags, onTagsChange }: TagsAut
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
                     onFocus={handleInputFocus}
-                    placeholder={
-                        selectedTags.length === 0 ? 'Scrie pentru a căuta etichete...' : ''
-                    }
+                    placeholder={selectedTags.length === 0 ? t.proposeTagsPlaceholder : ''}
                     className="w-full rounded-2xl border border-(--accent)/25 bg-(--surface-input) px-3 py-2 text-sm text-(--text) placeholder:text-(--text-muted) outline-none transition hover:border-(--accent)"
                 />
 
@@ -161,9 +161,8 @@ export default function TagsAutocomplete({ selectedTags, onTagsChange }: TagsAut
                 </AnimatePresence>
             </div>
             <p className="text-xs text-(--text-muted)">
-                Selectează din lista de etichete existente.
+                {t.proposeTagsHelper}
             </p>
         </div>
     );
 }
-

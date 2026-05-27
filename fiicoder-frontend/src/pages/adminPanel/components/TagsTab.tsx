@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from '../../../utils/motionConfig';
-import { useLanguage } from '../../../language/Language';
+import { useT } from '../../../language/Language';
 import type { TagResponseDTO } from '../../../services/tagService';
 
 type Props = {
@@ -36,13 +36,13 @@ export default function TagsTab({
     handleTagSearch,
     clearTagSearch,
 }: Props) {
-    const { lang } = useLanguage();
+    const t = useT();
 
     return (
         <motion.div variants={containerVariants} className="space-y-6">
             <motion.div variants={itemVariants} className="mb-6">
                 <h2 className="text-2xl font-bold text-(--text-h)">
-                    {lang === 'RO' ? 'Gestionare Tag-uri' : 'Tag Management'}
+                    {t.tagMgmtTitle}
                 </h2>
             </motion.div>
             <motion.form
@@ -52,16 +52,14 @@ export default function TagsTab({
             >
                 <div className="flex flex-col gap-2">
                     <label className="text-sm font-bold text-(--text-h) px-1 uppercase tracking-widest">
-                        {editingTag
-                            ? (lang === 'RO' ? 'Editează Tag' : 'Edit Tag')
-                            : (lang === 'RO' ? 'Adaugă Tag Nou' : 'Add New Tag')}
+                        {editingTag ? t.tagEditLabel : t.tagAddLabel}
                     </label>
                     <div className="flex gap-2">
                         <input
                             type="text"
                             value={tagForm.title}
                             onChange={(e) => setTagForm({ title: e.target.value })}
-                            placeholder={lang === 'RO' ? "Nume tag (ex: Grafuri)" : "Tag name (ex: Graphs)"}
+                            placeholder={t.tagNamePlaceholder}
                             className="flex-1 bg-(--surface-card) border border-(--accent)/40 rounded-2xl px-4 py-2 text-(--text-h) outline-none focus:border-(--accent) transition-all"
                         />
                         <button
@@ -69,7 +67,7 @@ export default function TagsTab({
                             disabled={isSavingTag}
                             className="rounded-2xl bg-(--accent)/20 border border-(--accent)/40 px-6 py-2 text-(--text-h) font-bold hover:bg-(--accent)/30 disabled:opacity-50 transition-all"
                         >
-                            {isSavingTag ? '...' : (editingTag ? (lang === 'RO' ? 'Salvează' : 'Save') : (lang === 'RO' ? 'Adaugă' : 'Add'))}
+                            {isSavingTag ? '...' : (editingTag ? t.tagSaveBtn : t.tagAddBtn)}
                         </button>
                         {editingTag && (
                             <button
@@ -77,7 +75,7 @@ export default function TagsTab({
                                 onClick={() => { setEditingTag(null); setTagForm({ title: '' }); }}
                                 className="rounded-2xl border border-(--accent)/40 px-4 py-2 text-(--text-h) font-bold hover:bg-(--accent)/10 transition-all"
                             >
-                                {lang === 'RO' ? 'Anulează' : 'Cancel'}
+                                {t.tagCancelBtn}
                             </button>
                         )}
                     </div>
@@ -93,7 +91,7 @@ export default function TagsTab({
                     type="text"
                     value={tagSearch}
                     onChange={(e) => setTagSearch(e.target.value)}
-                    placeholder={lang === 'RO' ? 'Caută tag după titlu exact...' : 'Search tag by exact title...'}
+                    placeholder={t.tagSearchPlaceholder}
                     className="flex-1 bg-(--surface-card) border border-(--accent)/40 rounded-2xl px-4 py-2 text-(--text-h) outline-none transition-all text-sm"
                 />
                 <button
@@ -101,7 +99,7 @@ export default function TagsTab({
                     disabled={isSearchingTag}
                     className="rounded-2xl bg-(--accent)/20 border border-(--accent)/40 px-4 py-2 text-(--text-h) text-sm font-bold hover:bg-(--accent)/30 disabled:opacity-50 transition-all"
                 >
-                    {isSearchingTag ? '...' : (lang === 'RO' ? 'Caută' : 'Search')}
+                    {isSearchingTag ? '...' : t.tagSearchBtn}
                 </button>
                 {(tagSearch || tagSearchResult) && (
                     <button
@@ -116,7 +114,7 @@ export default function TagsTab({
 
             {tagSearchResult === 'not_found' && (
                 <motion.p variants={itemVariants} className="text-sm text-(--text-muted) px-1">
-                    {lang === 'RO' ? 'Niciun tag găsit.' : 'No tag found.'}
+                    {t.tagNotFound}
                 </motion.p>
             )}
 

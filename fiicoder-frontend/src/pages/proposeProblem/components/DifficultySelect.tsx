@@ -1,16 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import { useT, getProposeDifficultyLabel, useLanguage } from '../../../language/Language';
 
 type Difficulty = 'easy' | 'medium' | 'hard' | 'contest';
 
 const difficulties: Difficulty[] = ['easy', 'medium', 'hard', 'contest'];
-
-const difficultyLabels: Record<Difficulty, string> = {
-    easy: 'Ușoară',
-    medium: 'Medie',
-    hard: 'Grea',
-    contest: 'Concurs',
-};
 
 interface DifficultySelectProps {
     value: Difficulty;
@@ -19,17 +13,23 @@ interface DifficultySelectProps {
 
 export default function DifficultySelect({ value, onChange }: DifficultySelectProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const t = useT();
+    const { lang } = useLanguage();
 
     return (
         <div className="space-y-2">
-            <label className="text-(--text) font-semibold text-sm">Nivel de Dificultate</label>
+            <label className="text-(--text) font-semibold text-sm">{t.proposeDifficultyLabel}</label>
             <div className="relative w-full">
                 <button
                     type="button"
                     onClick={() => setIsOpen(!isOpen)}
                     className="w-full flex items-center justify-between rounded-2xl border border-(--accent)/30 bg-(--surface-input) px-3 py-2 text-sm text-(--text) outline-none transition hover:border-(--accent)"
                 >
-                    <span>{difficultyLabels[value] || 'Alege dificultate'}</span>
+                    <span>
+                        {value
+                            ? getProposeDifficultyLabel(lang, value)
+                            : t.proposeDifficultyPlaceholder}
+                    </span>
                     <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>▼</motion.span>
                 </button>
 
@@ -52,7 +52,7 @@ export default function DifficultySelect({ value, onChange }: DifficultySelectPr
                                     }}
                                     className="w-full text-left px-4 py-2 text-sm text-(--text) hover:bg-(--accent)/20 transition-colors"
                                 >
-                                    {difficultyLabels[diff]}
+                                    {getProposeDifficultyLabel(lang, diff)}
                                 </button>
                             ))}
                         </motion.div>
@@ -62,4 +62,3 @@ export default function DifficultySelect({ value, onChange }: DifficultySelectPr
         </div>
     );
 }
-

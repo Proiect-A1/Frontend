@@ -1,4 +1,3 @@
-// framer-motion not required here
 import { formatScore } from '../utils/textUtils';
 
 type Props = {
@@ -9,30 +8,13 @@ type Props = {
     handleSubmit: (e?: any) => void;
     status: null | 'pending' | 'valid' | 'invalid';
     resetLayout: () => void;
+    onStatusClick?: () => void;
 };
 
-export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang, handleSubmit, status, resetLayout }: Props) {
+export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang, handleSubmit, status, resetLayout, onStatusClick }: Props) {
     return (
         <div className="hidden xl:flex h-[4.5rem] shrink-0 bg-(--surface-card) border-2 border-(--accent) rounded-2xl items-center justify-between px-6">
             <div className="flex items-center gap-6">
-                <button disabled title={lang === 'RO' ? 'Consolă — în curând' : 'Console — coming soon'} className="text-[15px] font-black text-(--text-muted) opacity-40 cursor-not-allowed flex items-center gap-3 uppercase tracking-tighter group">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-6 h-6 opacity-50 group-hover:opacity-100 transition-opacity"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                    </svg>
-                    {lang === 'RO' ? 'Consolă' : 'Console'}
-                </button>
-                <div className="w-px h-6 bg-(--accent)/20" />
                 <button
                     onClick={resetLayout}
                     title={lang === 'RO' ? 'Resetează layout-ul la valorile implicite' : 'Reset layout to default'}
@@ -55,34 +37,46 @@ export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang,
                     {lang === 'RO' ? 'Reset' : 'Reset'}
                 </button>
                 <div className="w-px h-6 bg-(--accent)/20" />
-                <div className="flex items-center gap-3">
-                    <div
-                        className={`w-3 h-3 rounded-full ${
-                            evalStatus === 'evaluating' || evalStatus === 'connecting'
-                                ? 'bg-amber-500 animate-pulse'
-                                : evalStatus === 'done'
-                                  ? evalSummary && evalSummary.score >= evalSummary.maxScore
-                                      ? 'bg-green-500'
-                                      : 'bg-amber-500'
-                                  : evalStatus === 'error'
-                                    ? 'bg-red-500'
-                                    : 'bg-green-500'
-                        }`}
-                    />
-                    <span className="text-[15px] font-bold text-(--text-subtle) uppercase tracking-widest">
-                        {evalStatus === 'connecting'
-                            ? lang === 'RO' ? 'Conectare...' : 'Connecting...'
-                            : evalStatus === 'evaluating'
-                              ? lang === 'RO'
-                                  ? `Test ${evalTests.length}...`
-                                  : `Test ${evalTests.length}...`
-                              : evalStatus === 'done' && evalSummary
-                                ? `${formatScore(evalSummary.score)}/${formatScore(evalSummary.maxScore)}`
-                                : evalStatus === 'error'
-                                  ? 'Error'
-                                  : lang === 'RO' ? 'Sistem Activ' : 'System Ready'}
-                    </span>
-                </div>
+                {(() => {
+                    const isClickable = onStatusClick && evalStatus !== 'connecting' && evalStatus !== 'evaluating';
+                    const dotColor = evalStatus === 'evaluating' || evalStatus === 'connecting'
+                        ? 'bg-amber-500 animate-pulse'
+                        : evalStatus === 'done'
+                          ? evalSummary && evalSummary.score >= evalSummary.maxScore
+                              ? 'bg-green-500'
+                              : 'bg-amber-500'
+                          : evalStatus === 'error'
+                            ? 'bg-red-500'
+                            : 'bg-green-500';
+                    const label = evalStatus === 'connecting'
+                        ? lang === 'RO' ? 'Conectare...' : 'Connecting...'
+                        : evalStatus === 'evaluating'
+                          ? `Test ${evalTests.length}...`
+                          : evalStatus === 'done' && evalSummary
+                            ? `${formatScore(evalSummary.score)}/${formatScore(evalSummary.maxScore)}`
+                            : evalStatus === 'error'
+                              ? 'Error'
+                              : lang === 'RO' ? 'Sistem Activ' : 'System Ready';
+                    const content = (
+                        <>
+                            <div className={`w-3 h-3 rounded-full shrink-0 ${dotColor}`} />
+                            <span className="text-[15px] font-bold text-(--text-subtle) uppercase tracking-widest">
+                                {label}
+                            </span>
+                        </>
+                    );
+                    return isClickable ? (
+                        <button
+                            onClick={onStatusClick}
+                            title={lang === 'RO' ? 'Mergi la ultima submisie' : 'Go to last submission'}
+                            className="flex items-center gap-3 hover:opacity-70 transition-opacity cursor-pointer"
+                        >
+                            {content}
+                        </button>
+                    ) : (
+                        <div className="flex items-center gap-3">{content}</div>
+                    );
+                })()}
             </div>
 
             <div className="flex items-center gap-4">

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { ProblemProposalResponse } from '../../proposeProblem/types/proposeProblem';
 import { itemVariants } from '../../../utils/motionConfig';
+import { translations, getDeleteConfirmMsg } from '../../../language/Language';
 
 type ProfileProposalsPanelProps = {
     proposals: ProblemProposalResponse[] | null;
@@ -13,8 +14,7 @@ type ProfileProposalsPanelProps = {
 };
 
 export default function ProfileProposalsPanel({ proposals, loading, lang, onToggleVisibility, togglingTitle, onDelete }: ProfileProposalsPanelProps) {
-    const viewLabel = lang === 'RO' ? 'Vezi' : 'View';
-    const editLabel = lang === 'RO' ? 'Editează' : 'Edit';
+    const t = translations[lang as 'RO' | 'EN'];
 
     return (
         <motion.div
@@ -22,7 +22,7 @@ export default function ProfileProposalsPanel({ proposals, loading, lang, onTogg
             className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) card-glow min-w-0"
         >
             <h2 className="text-sm font-bold text-(--text-h) mb-2 uppercase tracking-wider">
-                {lang === 'RO' ? 'Propunerile Mele' : 'My Proposals'}
+                {t.myProposals}
             </h2>
             <div className="mb-4 rounded-2xl border border-(--accent)/30 bg-(--accent)/5 p-3 text-[11px] leading-relaxed text-(--text-muted) space-y-1">
                 <p>
@@ -55,9 +55,7 @@ export default function ProfileProposalsPanel({ proposals, loading, lang, onTogg
             ) : !proposals || proposals.length === 0 ? (
                 <div className="text-center p-8 rounded-2xl border-2 border-dashed border-(--accent)/20">
                     <p className="text-sm text-(--text-subtle)">
-                        {lang === 'RO'
-                            ? 'Nu ai trimis nicio propunere încă.'
-                            : "You haven't submitted any proposals yet."}
+                        {t.proposalNoProposals}
                     </p>
                 </div>
             ) : (
@@ -91,13 +89,11 @@ export default function ProfileProposalsPanel({ proposals, loading, lang, onTogg
                                                     : 'warning';
                                     const label =
                                         proposal.status === 'checked'
-                                            ? lang === 'RO' ? 'verificată' : 'checked'
+                                            ? t.proposalStatusChecked
                                             : proposal.status;
                                     const title =
                                         proposal.status === 'checked'
-                                            ? lang === 'RO'
-                                                ? 'Verificată automat de backend. Așteaptă aprobarea unui admin.'
-                                                : 'Auto-checked by backend. Awaiting admin approval.'
+                                            ? t.proposalCheckedTooltip
                                             : proposal.status;
                                     return (
                                         <span
@@ -123,40 +119,34 @@ export default function ProfileProposalsPanel({ proposals, loading, lang, onTogg
                                             {togglingTitle === proposal.title
                                                 ? '...'
                                                 : proposal.visibility === 'public'
-                                                ? (lang === 'RO' ? 'Fă privat' : 'Make private')
-                                                : (lang === 'RO' ? 'Fă public' : 'Make public')}
+                                                ? t.proposalMakePrivate
+                                                : t.proposalMakePublic}
                                         </button>
                                     )}
                                     <Link
                                         to={`/problems/${encodeURIComponent(proposal.title)}`}
                                         className="px-3 py-1.5 rounded-full border-2 border-(--accent)/40 bg-transparent text-xs font-bold text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) transition-colors"
                                     >
-                                        {viewLabel}
+                                        {t.proposalView}
                                     </Link>
                                     <Link
                                         to={`/propose/${proposal.id}`}
-                                        title={
-                                            lang === 'RO'
-                                                ? 'Editarea propunerilor existente este momentan indisponibilă. Folosește „Propune" pentru o versiune nouă.'
-                                                : 'Editing existing proposals is currently unavailable. Use "Propose" to submit a new version.'
-                                        }
+                                        title={t.proposalEditUnavailableTooltip}
                                         className="px-3 py-1.5 rounded-full border-2 border-(--accent)/40 bg-(--accent)/5 text-xs font-bold text-(--text-muted) hover:bg-(--accent)/15 transition-colors opacity-60 cursor-not-allowed"
                                         onClick={(e) => e.preventDefault()}
                                         aria-disabled
                                     >
-                                        {editLabel}
+                                        {t.proposalEdit}
                                     </Link>
                                     {onDelete && (
                                         <button
                                             onClick={() => {
-                                                const msg = lang === 'RO'
-                                                    ? `Ești sigur că vrei să ștergi „${proposal.title}"? Acțiunea este ireversibilă.`
-                                                    : `Are you sure you want to delete "${proposal.title}"? This cannot be undone.`;
+                                                const msg = getDeleteConfirmMsg(lang, proposal.title);
                                                 if (window.confirm(msg)) onDelete(proposal.title);
                                             }}
                                             className="px-3 py-1.5 rounded-full border-2 border-red-500/40 bg-red-500/10 text-xs font-bold text-red-500 hover:bg-red-500/20 transition-colors"
                                         >
-                                            {lang === 'RO' ? 'Șterge' : 'Delete'}
+                                            {t.proposalDelete}
                                         </button>
                                     )}
                                 </div>

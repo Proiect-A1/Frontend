@@ -13,6 +13,7 @@ import {
   submissionVerdict,
   submissionVerdictLabels,
 } from "../profileUtils";
+import { translations } from "../../../language/Language";
 
 type ProfileOverviewContentProps = {
   profile: ProfileResponseDTO;
@@ -40,23 +41,24 @@ export default function ProfileOverviewContent({
   lang,
   theme,
 }: ProfileOverviewContentProps) {
+  const t = translations[lang];
   const isLightTheme = theme === "cream" || theme === "sage" || theme === "olivia" || theme === "fii";
 
   const [calendarDate, setCalendarDate] = useState(new Date());
 
   const performanceItems = [
     {
-      label: lang === "RO" ? "Ușoare" : "Easy",
+      label: t.performanceEasy,
       value: profile.rankEasy,
       cls: "emerald",
     },
     {
-      label: lang === "RO" ? "Mediu" : "Medium",
+      label: t.performanceMedium,
       value: profile.rankMedium,
       cls: "amber",
     },
     {
-      label: lang === "RO" ? "Grele" : "Hard",
+      label: t.performanceHard,
       value: profile.rankHard,
       cls: "red",
     },
@@ -129,25 +131,25 @@ export default function ProfileOverviewContent({
 
   const statsCards = [
     {
-      label: lang === "RO" ? "Rezolvate" : "Solved",
+      label: t.profileSolvedLabel,
       value: String(profile.problemsSolved),
     },
     {
-      label: lang === "RO" ? "Submisii" : "Submissions",
+      label: t.profileSubmissionsLabel,
       value: String(profile.submissions),
     },
     {
-      label: lang === "RO" ? "Acceptare" : "Acceptance",
+      label: t.profileAcceptanceLabel,
       value: formatPercent(profile.acceptanceRate),
     },
     {
-      label: lang === "RO" ? "Serie" : "Streak",
+      label: t.profileStreakLabel,
       value: `${profile.streak}${profile.streakCapped ? "+" : ""}`,
     },
   ];
 
   const formatSubmissionDate = (isoString: string) => {
-    return new Date(isoString).toLocaleString(lang === 'RO' ? 'ro-RO' : 'en-US', {
+    return new Date(isoString).toLocaleString(t.dateLocale, {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
@@ -188,12 +190,9 @@ export default function ProfileOverviewContent({
   const remainingCells = (7 - (cells.length % 7)) % 7;
   for (let i = 0; i < remainingCells; i++) cells.push(null);
 
-  const weekDays =
-    lang === "RO"
-      ? ["L", "Ma", "Mi", "J", "V", "S", "D"]
-      : ["M", "T", "W", "T", "F", "S", "S"];
+  const weekDays = t.weekDays;
   const monthName = calendarDate.toLocaleDateString(
-    lang === "RO" ? "ro-RO" : "en-US",
+    t.dateLocale,
     {
       month: "long",
       year: "numeric",
@@ -219,7 +218,7 @@ export default function ProfileOverviewContent({
       >
         <div className="flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-(--accent)/20 pb-6 md:pb-0 md:pr-6">
           <span className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-2">
-            {lang === "RO" ? "Probleme Rezolvate" : "Problems Solved"}
+            {t.problemsSolvedLabel}
           </span>
           <span className="text-6xl font-black text-(--accent) drop-shadow-md">
             {profile.problemsSolved}
@@ -287,7 +286,7 @@ export default function ProfileOverviewContent({
         >
           <div className="flex items-center justify-between mb-4 gap-2">
             <h2 className="text-sm font-bold text-(--text-h) uppercase tracking-wider">
-              {lang === "RO" ? "Activitate Lunară" : "Monthly Activity"}
+              {t.monthlyActivity}
             </h2>
             <div className="flex items-center gap-2 bg-(--surface-card) px-2 py-1 rounded-xl border border-(--accent)/20">
               <button
@@ -370,7 +369,7 @@ export default function ProfileOverviewContent({
                         ? "1px solid color-mix(in srgb, var(--accent) 15%, transparent)"
                         : "none",
                   }}
-                  title={`${dateKey}: ${count} ${lang === "RO" ? "submisii" : "submissions"}`}
+                  title={`${dateKey}: ${count} ${t.profileSubmissionsLabel}`}
                 >
                   {dayNumber}
                 </div>
@@ -379,13 +378,13 @@ export default function ProfileOverviewContent({
           </div>
 
           <div className="mt-3 flex items-center justify-end gap-1.5 text-[10px] text-(--text-subtle) font-semibold">
-            <span>{lang === "RO" ? "Mai puțin" : "Less"}</span>
+            <span>{t.heatmapLess}</span>
             <div className="w-3 h-3 rounded-[3px]" style={getHeatmapStyle(0)} />
             <div className="w-3 h-3 rounded-[3px]" style={getHeatmapStyle(1)} />
             <div className="w-3 h-3 rounded-[3px]" style={getHeatmapStyle(2)} />
             <div className="w-3 h-3 rounded-[3px]" style={getHeatmapStyle(3)} />
             <div className="w-3 h-3 rounded-[3px]" style={getHeatmapStyle(4)} />
-            <span>{lang === "RO" ? "Mai mult" : "More"}</span>
+            <span>{t.heatmapMore}</span>
           </div>
         </motion.div>
 
@@ -394,7 +393,7 @@ export default function ProfileOverviewContent({
           className="p-4 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow min-w-0 flex flex-col max-h-[480px]"
         >
           <h2 className="text-sm font-bold text-(--text-h) mb-3 uppercase tracking-wider shrink-0">
-            {lang === "RO" ? "Submisii Recente" : "Recent Submissions"}
+            {t.recentSubmissions}
           </h2>
 
           {profile.recentSubmissions.content.length > 0 ? (
@@ -458,9 +457,7 @@ export default function ProfileOverviewContent({
             </motion.div>
           ) : (
             <p className="text-sm text-(--text-subtle)">
-              {lang === "RO"
-                ? "Nu există submisii recente."
-                : "No recent submissions."}
+              {t.noRecentSubmissions}
             </p>
           )}
         </motion.div>

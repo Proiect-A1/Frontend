@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navigate } from 'react-router-dom';
-import { useLanguage } from '../../language/Language';
+import { useT } from '../../language/Language';
 import { useAuth } from '../../contexts/AuthContext';
 import { pageVariants, containerVariants } from '../../utils/motionConfig';
 
@@ -24,18 +24,18 @@ import GroupsTab from './components/GroupsTab';
 import AdminSidebar from './components/AdminSidebar';
 
 const tabs = [
-    { id: 'users', labelRO: 'Utilizatori', labelEN: 'Users' },
-    { id: 'problems', labelRO: 'Probleme', labelEN: 'Problems' },
-    { id: 'tags', labelRO: 'Tag-uri', labelEN: 'Tags' },
-    { id: 'announcements', labelRO: 'Anunțuri', labelEN: 'Announcements' },
-    { id: 'groups', labelRO: 'Grupe', labelEN: 'Groups' },
-    { id: 'audit', labelRO: 'Audit', labelEN: 'Audit Log' },
+    { id: 'users' as const },
+    { id: 'problems' as const },
+    { id: 'tags' as const },
+    { id: 'announcements' as const },
+    { id: 'groups' as const },
+    { id: 'audit' as const },
 ] as const;
 
 type TabId = (typeof tabs)[number]['id'];
 
 export default function AdminPanel() {
-    const { lang } = useLanguage();
+    const t = useT();
     const { isAdmin } = useAuth();
     const [activeTab, setActiveTab] = useState<TabId>('users');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -48,6 +48,15 @@ export default function AdminPanel() {
     const tagsState = useAdminTags(isAdmin, activeTab);
     const auditState = useAdminAudit(isAdmin, activeTab);
     const groupsState = useAdminGroups(isAdmin, activeTab);
+
+    const tabLabel: Record<string, string> = {
+        users: t.adminTabUsers,
+        problems: t.adminTabProblems,
+        tags: t.adminTabTags,
+        announcements: t.adminTabAnnouncements,
+        groups: t.adminTabGroups,
+        audit: t.adminTabAudit,
+    };
 
     if (!isAdmin) return <Navigate to="/" replace />;
 
@@ -67,13 +76,13 @@ export default function AdminPanel() {
                                         type="button"
                                         onClick={() => setIsSidebarOpen(true)}
                                         className="w-10 h-10 rounded-full border-2 border-(--accent)/50 bg-(--accent)/10 flex items-center justify-center text-(--text-h) hover:bg-(--accent)/20 transition-all active:scale-95"
-                                        title={lang === 'RO' ? 'Deschide Rezumat' : 'Open Overview'}
+                                        title={t.adminOpenOverview}
                                     >
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" />
                                         </svg>
                                     </button>
-                                    <h1 className="text-3xl font-bold text-(--text-h)">Admin Panel</h1>
+                                    <h1 className="text-3xl font-bold text-(--text-h)">{t.adminPanelTitle}</h1>
                                 </div>
                                 <div className="flex flex-wrap gap-2 lg:justify-end">
                                     {tabs.map((tab) => {
@@ -86,7 +95,7 @@ export default function AdminPanel() {
                                                 onClick={() => setActiveTab(tab.id)}
                                                 className={`${baseClasses} ${isActive ? 'bg-(--accent)/25 border-(--accent) text-(--text-h)' : 'bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5'}`}
                                             >
-                                                {lang === 'RO' ? tab.labelRO : tab.labelEN}
+                                                {tabLabel[tab.id]}
                                             </button>
                                         );
                                     })}

@@ -4,6 +4,7 @@ import type { ProfileResponseDTO } from '../../../services/profileService';
 import { itemVariants } from '../../../utils/motionConfig';
 import { getGravatarUrl, getDiceBearUrl } from '../../../utils/gravatar';
 import ProfileAchievementsModal, { computeAchievements } from './ProfileAchievements';
+import { translations } from '../../../language/Language';
 
 type ProfileSidebarProps = {
     profile: ProfileResponseDTO;
@@ -12,6 +13,7 @@ type ProfileSidebarProps = {
 };
 
 export default function ProfileSidebar({ profile, username, lang }: ProfileSidebarProps) {
+    const t = translations[lang];
     const [src, setSrc] = useState(() => getGravatarUrl(profile.email));
     const [failed, setFailed] = useState(false);
     const [achievementsOpen, setAchievementsOpen] = useState(false);
@@ -23,10 +25,10 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
 
     const roleLabel =
         profile.role === 'ADMIN'
-            ? 'Admin'
+            ? t.roleAdmin
             : profile.role === 'PROFESSOR'
-              ? lang === 'RO' ? 'Profesor' : 'Professor'
-              : lang === 'RO' ? 'Elev' : 'Student';
+              ? t.roleProfessor
+              : t.roleStudent;
 
     const achievements = computeAchievements(profile);
     const unlocked = achievements.filter(a => a.unlocked);
@@ -65,10 +67,10 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
                         target="_blank"
                         rel="noopener noreferrer"
                         className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                        title={lang === 'RO' ? 'Schimbă poza pe Gravatar' : 'Change photo on Gravatar'}
+                        title={t.changePhotoOnGravatar}
                     >
                         <span className="text-white text-xs font-semibold text-center leading-tight px-1">
-                            {lang === 'RO' ? 'Schimbă\npoza' : 'Change\nphoto'}
+                            {t.changePhoto}
                         </span>
                     </a>
                 </div>
@@ -86,18 +88,18 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
                     </div>
                     <div className="flex justify-between items-center gap-4">
                         <span className="font-semibold text-(--text-muted)">
-                            {lang === 'RO' ? 'Membru din' : 'Joined'}
+                            {t.memberSince}
                         </span>
                         <span>
                             {new Date(profile.createdAt).toLocaleDateString(
-                                lang === 'RO' ? 'ro-RO' : 'en-US',
+                                t.dateLocale,
                                 { year: 'numeric', month: 'long', day: 'numeric' },
                             )}
                         </span>
                     </div>
                     <div className="flex justify-between items-center mt-2 gap-4">
                         <span className="font-semibold text-(--text-muted)">
-                            {lang === 'RO' ? 'Rol' : 'Role'}
+                            {t.roleLabel}
                         </span>
                         <span className="px-2 py-0.5 rounded-2xl text-[10px] font-bold uppercase border border-(--accent)/30 bg-(--accent)/10 text-(--text)">
                             {roleLabel}
@@ -115,7 +117,7 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
                         <div className="flex items-center gap-1.5">
                             {unlocked.length === 0 ? (
                                 <span className="text-xs text-(--text-muted) italic">
-                                    {lang === 'RO' ? 'Nicio realizare încă' : 'No achievements yet'}
+                                    {t.noAchievementsYet}
                                 </span>
                             ) : (
                                 <>
@@ -145,18 +147,18 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
                 className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) backdrop-blur-sm card-glow"
             >
                 <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
-                    {lang === 'RO' ? 'Statistici' : 'Community Stats'}
+                    {t.communityStats}
                 </h2>
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center justify-between gap-4">
                         <span className="text-sm text-(--text-muted)">
-                            {lang === 'RO' ? 'Total Submisii' : 'Total Submissions'}
+                            {t.totalSubmissions}
                         </span>
                         <span className="font-bold text-(--text-h)">{profile.submissions}</span>
                     </div>
                     <div className="flex items-center justify-between gap-4">
                         <span className="text-sm text-(--text-muted)">
-                            {lang === 'RO' ? 'Rată de Acceptare' : 'Acceptance Rate'}
+                            {t.acceptanceRate}
                         </span>
                         <span className="font-bold text-(--text-h)">
                             {(profile.acceptanceRate <= 1 ? profile.acceptanceRate * 100 : profile.acceptanceRate).toFixed(1).replace(/\.0$/, '')}%
@@ -164,7 +166,7 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
                     </div>
                     <div className="flex items-center justify-between gap-4">
                         <span className="text-sm text-(--text-muted)">
-                            {lang === 'RO' ? 'Zile Consecutive' : 'Daily Streak'}
+                            {t.dailyStreak}
                         </span>
                         <span className="font-bold text-orange-400 flex items-center gap-2">
                             <span className="flex items-center gap-1">
@@ -173,7 +175,7 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
                             </span>
                             {profile.streakCapped && (
                                 <span className="rounded-full border border-orange-400/40 bg-orange-400/10 px-2 py-0.5 text-[10px] uppercase tracking-widest text-orange-200">
-                                    {lang === 'RO' ? 'Limitat' : 'Capped'}
+                                    {t.streakCapped}
                                 </span>
                             )}
                         </span>
@@ -187,7 +189,7 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
             >
                 <div className="mb-6">
                     <h2 className="text-sm font-bold text-(--text-h) mb-3 uppercase tracking-wider">
-                        {lang === 'RO' ? 'Limbaje' : 'Languages'}
+                        {t.languagesLabel}
                     </h2>
                     {profile.mostUsedLanguages.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
@@ -202,16 +204,14 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
                         </div>
                     ) : (
                         <p className="text-xs text-(--text-muted) italic">
-                            {lang === 'RO'
-                                ? 'Rezolvă cel puțin 5 probleme cu același limbaj pentru a apărea aici.'
-                                : 'Solve at least 5 problems in the same language to appear here.'}
+                            {t.languagesEmpty}
                         </p>
                     )}
                 </div>
 
                 <div>
                     <h2 className="text-sm font-bold text-(--text-h) mb-3 uppercase tracking-wider">
-                        Skills
+                        {t.skillsLabel}
                     </h2>
                     {profile.skillBreakdownTags.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
@@ -226,9 +226,7 @@ export default function ProfileSidebar({ profile, username, lang }: ProfileSideb
                         </div>
                     ) : (
                         <p className="text-xs text-(--text-muted) italic">
-                            {lang === 'RO'
-                                ? 'Rezolvă probleme cu aceleași tag-uri pentru a-ți construi profilul de skills.'
-                                : 'Solve problems sharing the same tags to build your skill profile.'}
+                            {t.skillsEmpty}
                         </p>
                     )}
                 </div>

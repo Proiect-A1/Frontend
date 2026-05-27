@@ -7,7 +7,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { containerVariants, itemVariants } from '../../../utils/motionConfig';
-import { useLanguage } from '../../../language/Language';
+import { useLanguage, useT } from '../../../language/Language';
 import { adminService, type ProblemProposal, type ProblemProposalDetail, type AcceptedProblem } from '../services/adminService';
 import { unpackTranslation } from '../../../utils/translationPacker';
 
@@ -37,6 +37,7 @@ export default function ProposalsTab({
     handleChangeVisibility,
 }: Props) {
     const { lang } = useLanguage();
+    const t = useT();
     const [subTab, setSubTab] = useState<'pending' | 'accepted'>('pending');
 
     const selectedProposalMeta = proposals.find(p => p.id === selectedProposalId);
@@ -46,21 +47,15 @@ export default function ProposalsTab({
         if (upper === 'CHECKED') {
             return {
                 className: 'border-sky-400/60 bg-sky-400/20 text-sky-400',
-                label: lang === 'RO' ? 'VERIFICAT' : 'CHECKED',
-                title:
-                    lang === 'RO'
-                        ? 'Verificat automat de backend. Așteaptă review-ul tău.'
-                        : 'Auto-checked by backend. Awaiting your review.',
+                label: t.proposalStatusCheckedBadge,
+                title: t.proposalStatusCheckedDesc,
             };
         }
         if (upper === 'PENDING') {
             return {
                 className: 'border-amber-400/60 bg-amber-400/20 text-amber-500',
-                label: lang === 'RO' ? 'ÎN AȘTEPTARE' : 'PENDING',
-                title:
-                    lang === 'RO'
-                        ? 'Încă neverificată automat de backend.'
-                        : 'Not yet auto-checked by backend.',
+                label: t.proposalStatusPendingBadge,
+                title: t.proposalStatusPendingDesc,
             };
         }
         return {
@@ -94,11 +89,11 @@ export default function ProposalsTab({
         <motion.div variants={containerVariants} className="space-y-6">
             <motion.div variants={itemVariants} className="flex items-center justify-between gap-4">
                 <h2 className="text-2xl font-bold text-(--text-h)">
-                    {lang === 'RO' ? 'Gestionare Probleme' : 'Problem Management'}
+                    {t.problemMgmtTitle}
                 </h2>
                 <div className="flex gap-2">
-                    {subTabBtn('pending', lang === 'RO' ? 'În așteptare' : 'Pending')}
-                    {subTabBtn('accepted', lang === 'RO' ? 'Acceptate' : 'Accepted')}
+                    {subTabBtn('pending', t.proposalsPending)}
+                    {subTabBtn('accepted', t.proposalsAccepted)}
                 </div>
             </motion.div>
 
@@ -113,7 +108,7 @@ export default function ProposalsTab({
                             variants={itemVariants}
                             className="flex items-center justify-between text-sm text-(--text-muted) font-semibold gap-3"
                         >
-                            <span>{lang === 'RO' ? 'Propuneri în așteptare' : 'Pending proposals'}</span>
+                            <span>{t.proposalsPendingList}</span>
                             <span className="flex items-center gap-2">
                                 <span>{proposals.length}</span>
                                 {(() => {
@@ -124,10 +119,10 @@ export default function ProposalsTab({
                                     return (
                                         <span className="text-[10px] uppercase tracking-widest font-bold flex items-center gap-1">
                                             <span className="px-1.5 py-0.5 rounded-full border border-amber-400/60 bg-amber-400/15 text-amber-500">
-                                                {pendingCount} {lang === 'RO' ? 'pending' : 'pending'}
+                                                {pendingCount} {t.proposalPendingWord}
                                             </span>
                                             <span className="px-1.5 py-0.5 rounded-full border border-sky-400/60 bg-sky-400/15 text-sky-400">
-                                                {checkedCount} {lang === 'RO' ? 'verif.' : 'checked'}
+                                                {checkedCount} {t.proposalCheckedWord}
                                             </span>
                                         </span>
                                     );
@@ -138,7 +133,7 @@ export default function ProposalsTab({
                         <motion.div variants={containerVariants} className="grid gap-3">
                             {proposals.length === 0 && (
                                 <motion.p variants={itemVariants} className="text-(--text-muted) text-sm">
-                                    {lang === 'RO' ? 'Nu există propuneri în așteptare.' : 'There are no pending proposals.'}
+                                    {t.proposalNoPending}
                                 </motion.p>
                             )}
 
@@ -174,7 +169,7 @@ export default function ProposalsTab({
                                         </div>
                                         <div className="flex items-center justify-between text-xs text-(--text-muted) font-semibold">
                                             <span>
-                                                {lang === 'RO' ? 'Propus de' : 'By'}:{' '}
+                                                {t.proposalByLabel}:{' '}
                                                 <span className="text-(--text)">{proposal.authorUsername}</span>
                                             </span>
                                             {(() => {
@@ -201,12 +196,12 @@ export default function ProposalsTab({
                     >
                         {!selectedProposal && selectedProposalId && (
                             <p className="text-(--text-muted) text-sm">
-                                {lang === 'RO' ? 'Se încarcă detaliile propunerii...' : 'Loading proposal details...'}
+                                {t.proposalLoadingDetails}
                             </p>
                         )}
                         {!selectedProposal && !selectedProposalId && (
                             <p className="text-(--text-muted) text-sm text-center py-8">
-                                {lang === 'RO' ? 'Selectează o propunere pentru a vedea detaliile.' : 'Select a proposal to see the details.'}
+                                {t.proposalSelectToSee}
                             </p>
                         )}
                         {selectedProposal && (
@@ -229,7 +224,7 @@ export default function ProposalsTab({
                                     </div>
                                     <div className="flex flex-wrap items-center gap-2 text-xs text-(--text-muted)">
                                         <span>
-                                            {lang === 'RO' ? 'Propus de' : 'By'}{' '}
+                                            {t.proposalByLabel}{' '}
                                             <span className="text-(--text-h) font-bold">{selectedProposal.authorUsername}</span>
                                         </span>
                                         {selectedProposalMeta?.createdAt && (
@@ -285,10 +280,10 @@ export default function ProposalsTab({
                                 {/* Tests section */}
                                 <div className="space-y-3 border-t border-(--accent)/15 pt-4">
                                     <p className="text-[11px] font-bold uppercase tracking-widest text-(--text-muted)">
-                                        {lang === 'RO' ? 'Teste' : 'Tests'}
+                                        {t.proposalTestsLabel}
                                     </p>
                                     {isTestsLoading ? (
-                                        <p className="text-sm text-(--text-muted)">{lang === 'RO' ? 'Se încarcă testele...' : 'Loading tests...'}</p>
+                                        <p className="text-sm text-(--text-muted)">{t.proposalTestsLoading}</p>
                                     ) : testsData?.subtasks && testsData.subtasks.length > 0 ? (
                                         <div className="space-y-3">
                                             {testsData.subtasks.map((subtask) => (
@@ -308,7 +303,7 @@ export default function ProposalsTab({
                                             ))}
                                         </div>
                                     ) : (
-                                        <p className="text-sm text-(--text-muted)">{lang === 'RO' ? 'Nu există teste generate pentru această propunere.' : 'No tests generated for this proposal.'}</p>
+                                        <p className="text-sm text-(--text-muted)">{t.proposalNoTests}</p>
                                     )}
                                 </div>
 
@@ -317,7 +312,7 @@ export default function ProposalsTab({
                                         onClick={() => handleDeleteProposal(selectedProposal.id)}
                                         className="px-4 py-2 rounded-full border-2 border-red-900/40 bg-red-900/10 text-red-400 text-xs font-bold hover:bg-red-900/20 transition-all active:scale-95 mr-auto"
                                     >
-                                        {lang === 'RO' ? 'Șterge' : 'Delete'}
+                                        {t.proposalDeleteBtn}
                                     </button>
                                     {selectedProposal.zipDownloadLink && selectedProposal.status === 'ACCEPTED' && (
                                         <a
@@ -333,13 +328,13 @@ export default function ProposalsTab({
                                         onClick={() => handleReviewProposal(selectedProposal.id, 'reject')}
                                         className="px-4 py-2 rounded-full border-2 border-red-500/40 bg-red-500/10 text-red-500 text-xs font-bold hover:bg-red-500/20 transition-all active:scale-95"
                                     >
-                                        {lang === 'RO' ? 'Respinge' : 'Reject'}
+                                        {t.proposalRejectBtn}
                                     </button>
                                     <button
                                         onClick={() => handleReviewProposal(selectedProposal.id, 'approve')}
                                         className="px-4 py-2 rounded-full border-2 border-green-500/40 bg-green-500/10 text-green-500 text-xs font-bold hover:bg-green-500/20 transition-all active:scale-95"
                                     >
-                                        {lang === 'RO' ? 'Aprobă' : 'Approve'}
+                                        {t.proposalApproveBtn}
                                     </button>
                                 </div>
                             </div>
@@ -354,19 +349,19 @@ export default function ProposalsTab({
                         variants={itemVariants}
                         className="flex items-center justify-between text-sm text-(--text-muted) font-semibold"
                     >
-                        <span>{lang === 'RO' ? 'Probleme acceptate (publice)' : 'Accepted problems (public)'}</span>
+                        <span>{t.acceptedProblemsTitle}</span>
                         <span>{isAcceptedLoading ? '...' : acceptedProblems.length}</span>
                     </motion.div>
 
                     {isAcceptedLoading && (
                         <motion.p variants={itemVariants} className="text-(--text-muted) text-sm">
-                            {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
+                            {t.acceptedLoading}
                         </motion.p>
                     )}
 
                     {!isAcceptedLoading && acceptedProblems.length === 0 && (
                         <motion.p variants={itemVariants} className="text-(--text-muted) text-sm">
-                            {lang === 'RO' ? 'Nu există probleme acceptate.' : 'No accepted problems.'}
+                            {t.acceptedNone}
                         </motion.p>
                     )}
 
@@ -385,8 +380,8 @@ export default function ProposalsTab({
                                             : 'border-(--accent)/40 bg-(--accent)/10 text-(--text-muted)'
                                     }`}>
                                         {problem.problemVisibility === 'PUBLIC'
-                                            ? (lang === 'RO' ? 'Public' : 'Public')
-                                            : (lang === 'RO' ? 'Privat' : 'Private')}
+                                            ? t.visibilityPublic
+                                            : t.visibilityPrivate}
                                     </span>
                                     {problem.difficulty && (
                                         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border border-(--accent)/30 bg-(--accent)/10 text-(--text-muted)">
@@ -413,14 +408,14 @@ export default function ProposalsTab({
                                     className="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-(--accent)/50 bg-(--accent)/10 text-(--text-h) hover:bg-(--accent)/20 transition-all active:scale-95"
                                 >
                                     {problem.problemVisibility === 'PUBLIC'
-                                        ? (lang === 'RO' ? 'Fă privat' : 'Make private')
-                                        : (lang === 'RO' ? 'Fă public' : 'Make public')}
+                                        ? t.makePrivateBtn
+                                        : t.makePublicBtn}
                                 </button>
                                 <button
                                     onClick={() => handleDeleteAccepted(problem.title)}
                                     className="px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-red-900/40 bg-red-900/10 text-red-400 hover:bg-red-900/20 transition-all active:scale-95"
                                 >
-                                    {lang === 'RO' ? 'Șterge' : 'Delete'}
+                                    {t.proposalDeleteBtn}
                                 </button>
                             </div>
                         </motion.div>

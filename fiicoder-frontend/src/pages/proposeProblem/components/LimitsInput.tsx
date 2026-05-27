@@ -1,13 +1,15 @@
 import { Controller, useFormContext } from 'react-hook-form';
+import { useT } from '../../../language/Language';
 import type { ProposeProblemForm } from '../types/proposeProblem';
 
 export default function LimitsInput() {
     const { control } = useFormContext<ProposeProblemForm>();
+    const t = useT();
 
     return (
         <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-                <label className="text-(--text) font-semibold text-sm">Timp Limită (s)</label>
+                <label className="text-(--text) font-semibold text-sm">{t.proposeTimeLimitLabel}</label>
                 <Controller
                     name="timeLimit"
                     control={control}
@@ -25,7 +27,7 @@ export default function LimitsInput() {
                 />
             </div>
             <div className="space-y-2">
-                <label className="text-(--text) font-semibold text-sm">Memorie Limită (MB)</label>
+                <label className="text-(--text) font-semibold text-sm">{t.proposeMemoryLimitLabel}</label>
                 <Controller
                     name="memoryLimit"
                     control={control}
@@ -45,4 +47,3 @@ export default function LimitsInput() {
         </div>
     );
 }
-

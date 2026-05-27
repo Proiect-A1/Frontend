@@ -1,5 +1,6 @@
 import { useFormContext } from 'react-hook-form';
 import { motion } from 'framer-motion';
+import { useT } from '../../../language/Language';
 import type { ProposeProblemForm } from '../types/proposeProblem';
 import { itemVariants, staggerConfig } from '../../../utils/motionConfig';
 import TitleInput from './TitleInput';
@@ -12,6 +13,7 @@ import GeneralPreview from './GeneralPreview';
 export default function GeneralTab() {
     const { watch, setValue } = useFormContext<ProposeProblemForm>();
     const formData = watch();
+    const t = useT();
 
     return (
         <motion.div
@@ -55,8 +57,7 @@ export default function GeneralTab() {
                 className="p-4 bg-(--surface-muted) rounded-2xl border border-(--accent)/25 text-sm text-(--text-muted)"
             >
                 <p>
-                    <strong>Sfat:</strong> Alege limite care sunt realiste pentru problema ta. Timp
-                    prea mic poate frustra utilizatorii.
+                    <strong>💡</strong> {t.proposeTip}
                 </p>
             </motion.div>
 
@@ -64,4 +65,3 @@ export default function GeneralTab() {
         </motion.div>
     );
 }
-

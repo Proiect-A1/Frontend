@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { containerVariants, itemVariants } from '../../../utils/motionConfig';
-import { useLanguage } from '../../../language/Language';
+import { useLanguage, useT } from '../../../language/Language';
 import type {
     GroupInvitation,
     GroupSummary,
@@ -65,6 +65,7 @@ export default function GroupsTab({
     handleDeleteGroup,
 }: Props) {
     const { lang } = useLanguage();
+    const t = useT();
     const [searchInput, setSearchInput] = useState(criteria.search ?? '');
     const [creatorInput, setCreatorInput] = useState(criteria.creatorUsername ?? '');
     const [createdAfter, setCreatedAfter] = useState(criteria.createdAfter ?? '');
@@ -97,7 +98,7 @@ export default function GroupsTab({
         <motion.div variants={containerVariants} className="space-y-6">
             <motion.div variants={itemVariants} className="flex items-center justify-between gap-4 flex-wrap">
                 <h2 className="text-2xl font-bold text-(--text-h)">
-                    {lang === 'RO' ? 'Gestionare Grupe' : 'Group Management'}
+                    {t.groupMgmtTitle}
                 </h2>
                 <div className="flex items-center gap-4">
                     <button
@@ -130,46 +131,46 @@ export default function GroupsTab({
                 <input
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
-                    placeholder={lang === 'RO' ? 'Caută după nume...' : 'Search by name...'}
+                    placeholder={t.groupSearchByName}
                     className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
                 />
                 <input
                     value={creatorInput}
                     onChange={(e) => setCreatorInput(e.target.value)}
-                    placeholder={lang === 'RO' ? 'Creator (username)' : 'Creator (username)'}
+                    placeholder="Creator (username)"
                     className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
                 />
                 <input
                     type="date"
                     value={createdAfter}
                     onChange={(e) => setCreatedAfter(e.target.value)}
-                    title={lang === 'RO' ? 'Creată după' : 'Created after'}
+                    title={t.groupCreatedAfter}
                     className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition"
                 />
                 <input
                     type="date"
                     value={createdBefore}
                     onChange={(e) => setCreatedBefore(e.target.value)}
-                    title={lang === 'RO' ? 'Creată înainte de' : 'Created before'}
+                    title={t.groupCreatedBefore}
                     className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition"
                 />
                 <div className="md:col-span-2 xl:col-span-4 flex items-center justify-between flex-wrap gap-3">
                     <div className="text-xs text-(--text-muted) font-semibold">
-                        {lang === 'RO' ? 'Total' : 'Total'}: {totalElements}
+                        {t.groupTotal}: {totalElements}
                     </div>
                     <div className="flex items-center gap-2">
                         <label className="text-xs text-(--text-muted) font-bold uppercase tracking-widest">
-                            {lang === 'RO' ? 'Sortează' : 'Sort'}
+                            {t.groupSort}
                         </label>
                         <select
                             value={sort}
                             onChange={(e) => setSort(e.target.value)}
                             className="rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-1.5 text-xs text-(--text-h) outline-none"
                         >
-                            <option value="createdAt,desc">{lang === 'RO' ? 'Cele mai noi' : 'Newest first'}</option>
-                            <option value="createdAt,asc">{lang === 'RO' ? 'Cele mai vechi' : 'Oldest first'}</option>
-                            <option value="name,asc">{lang === 'RO' ? 'Nume A–Z' : 'Name A–Z'}</option>
-                            <option value="name,desc">{lang === 'RO' ? 'Nume Z–A' : 'Name Z–A'}</option>
+                            <option value="createdAt,desc">{t.groupSortNewest}</option>
+                            <option value="createdAt,asc">{t.groupSortOldest}</option>
+                            <option value="name,asc">{t.groupSortNameAZ}</option>
+                            <option value="name,desc">{t.groupSortNameZA}</option>
                         </select>
                         {(searchInput || creatorInput || createdAfter || createdBefore) && (
                             <button
@@ -182,7 +183,7 @@ export default function GroupsTab({
                                 }}
                                 className="rounded-full border border-(--accent)/35 px-3 py-1 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
                             >
-                                {lang === 'RO' ? 'Resetează filtrele' : 'Reset filters'}
+                                {t.groupResetFilters}
                             </button>
                         )}
                     </div>
@@ -198,13 +199,13 @@ export default function GroupsTab({
                         variants={itemVariants}
                         className="flex items-center justify-between text-sm text-(--text-muted) font-semibold"
                     >
-                        <span>{lang === 'RO' ? 'Grupe disponibile' : 'Available groups'}</span>
+                        <span>{t.groupAvailable}</span>
                         <span>{groups.length}</span>
                     </motion.div>
 
                     {isLoading && (
                         <motion.p variants={itemVariants} className="text-(--text-muted) text-sm">
-                            {lang === 'RO' ? 'Se incarca grupele...' : 'Loading groups...'}
+                            {t.groupLoading}
                         </motion.p>
                     )}
 
@@ -214,7 +215,7 @@ export default function GroupsTab({
                                 variants={itemVariants}
                                 className="text-(--text-muted) text-sm"
                             >
-                                {lang === 'RO' ? 'Nu exista grupe.' : 'No groups found.'}
+                                {t.groupNone}
                             </motion.p>
                         )}
 
@@ -246,7 +247,7 @@ export default function GroupsTab({
                                     )}
                                     <div className="mt-2 flex items-center justify-between gap-2 flex-wrap text-xs text-(--text-muted) font-semibold">
                                         <span>
-                                            {lang === 'RO' ? 'Creator' : 'Creator'}:{' '}
+                                            {t.groupCreatorLabel}:{' '}
                                             <span className="text-(--text)">
                                                 {group.creatorUsername}
                                             </span>
@@ -254,7 +255,7 @@ export default function GroupsTab({
                                         {typeof group.memberCount === 'number' && (
                                             <span className="px-2 py-0.5 rounded-full border border-(--accent)/30 bg-(--accent)/5 text-(--text-h)">
                                                 {group.memberCount}{' '}
-                                                {lang === 'RO' ? 'membri' : 'members'}
+                                                {t.groupMembersLabel}
                                             </span>
                                         )}
                                     </div>
@@ -270,17 +271,13 @@ export default function GroupsTab({
                 >
                     {!selectedGroup && !selectedGroupId && (
                         <p className="text-(--text-muted) text-sm text-center py-8">
-                            {lang === 'RO'
-                                ? 'Selecteaza o grupa pentru detalii.'
-                                : 'Select a group to see details.'}
+                            {t.groupSelectToSee}
                         </p>
                     )}
 
                     {!selectedGroup && selectedGroupId && (
                         <p className="text-(--text-muted) text-sm">
-                            {lang === 'RO'
-                                ? 'Se incarca detaliile grupei...'
-                                : 'Loading group details...'}
+                            {t.groupLoadingDetails}
                         </p>
                     )}
 
@@ -297,7 +294,7 @@ export default function GroupsTab({
                                 )}
                                 <div className="flex flex-wrap items-center gap-2 text-xs text-(--text-muted)">
                                     <span>
-                                        {lang === 'RO' ? 'Creator' : 'Creator'}:{' '}
+                                        {t.groupCreatorLabel}:{' '}
                                         <span className="text-(--text-h) font-bold">
                                             {selectedGroup.creatorUsername}
                                         </span>
@@ -306,7 +303,7 @@ export default function GroupsTab({
                                     {typeof selectedGroup.memberCount === 'number' && (
                                         <span className="px-2 py-0.5 rounded-full border border-(--accent)/30 bg-(--accent)/10 text-(--text-h)">
                                             {selectedGroup.memberCount}{' '}
-                                            {lang === 'RO' ? 'membri' : 'members'}
+                                            {t.groupMembersLabel}
                                         </span>
                                     )}
                                 </div>
@@ -317,21 +314,21 @@ export default function GroupsTab({
                                     to={`/classes/${selectedGroup.id}`}
                                     className="rounded-full border border-(--accent)/40 bg-(--accent)/10 px-3 py-1 text-xs font-bold text-(--text-h) hover:bg-(--accent)/20 transition-all"
                                 >
-                                    {lang === 'RO' ? 'Deschide clasa' : 'Open class'}
+                                    {t.groupOpenClass}
                                 </Link>
                                 <button
                                     type="button"
                                     onClick={() => handleDeleteGroup(selectedGroup)}
                                     className="rounded-full border border-red-500/60 bg-red-500/10 px-3 py-1 text-xs font-bold text-red-500 hover:bg-red-500/20 transition-all"
                                 >
-                                    {lang === 'RO' ? 'Sterge' : 'Delete'}
+                                    {t.groupDelete}
                                 </button>
                             </div>
 
                             <div className="border-t border-(--accent)/20 pt-4 space-y-3">
                                 <div className="flex items-center justify-between">
                                     <h4 className="text-sm font-bold text-(--text-h)">
-                                        {lang === 'RO' ? 'Membri' : 'Members'}
+                                        {t.groupMembersTitle}
                                     </h4>
                                     <span className="text-xs text-(--text-muted)">
                                         {isMembersLoading
@@ -344,9 +341,7 @@ export default function GroupsTab({
 
                                 {isMembersLoading && (
                                     <p className="text-xs text-(--text-muted)">
-                                        {lang === 'RO'
-                                            ? 'Se incarca membrii...'
-                                            : 'Loading members...'}
+                                        {t.groupMembersLoading}
                                     </p>
                                 )}
 
@@ -357,7 +352,7 @@ export default function GroupsTab({
                                                 <p className="text-xs font-bold text-(--text-h) truncate">
                                                     {members.teacher.username}{' '}
                                                     <span className="text-[10px] uppercase tracking-widest text-(--text-muted) ml-1">
-                                                        {lang === 'RO' ? 'Profesor' : 'Teacher'}
+                                                        {t.groupTeacherLabel}
                                                     </span>
                                                 </p>
                                                 <p className="text-[10px] text-(--text-muted) truncate">
@@ -369,9 +364,7 @@ export default function GroupsTab({
                                         </div>
                                         {members.students.length === 0 && (
                                             <p className="text-xs text-(--text-muted)">
-                                                {lang === 'RO'
-                                                    ? 'Niciun student.'
-                                                    : 'No students.'}
+                                                {t.groupNoStudents}
                                             </p>
                                         )}
                                         {members.students.map((student) => (
@@ -398,7 +391,7 @@ export default function GroupsTab({
                                                     }
                                                     className="shrink-0 rounded-full border border-red-500/40 bg-red-500/10 text-red-400 px-2 py-0.5 text-[10px] font-bold hover:bg-red-500/20"
                                                 >
-                                                    {lang === 'RO' ? 'Elimină' : 'Remove'}
+                                                    {t.groupRemoveMember}
                                                 </button>
                                             </div>
                                         ))}
@@ -409,9 +402,7 @@ export default function GroupsTab({
                             <div className="border-t border-(--accent)/20 pt-4 space-y-3">
                                 <div className="flex items-center justify-between">
                                     <h4 className="text-sm font-bold text-(--text-h)">
-                                        {lang === 'RO'
-                                            ? 'Invitatii pending'
-                                            : 'Pending invitations'}
+                                        {t.groupPendingInvitations}
                                     </h4>
                                     <span className="text-xs text-(--text-muted)">
                                         {isInvitationsLoading ? '...' : invitations.length}
@@ -420,17 +411,13 @@ export default function GroupsTab({
 
                                 {isInvitationsLoading && (
                                     <p className="text-xs text-(--text-muted)">
-                                        {lang === 'RO'
-                                            ? 'Se incarca invitatiile...'
-                                            : 'Loading invitations...'}
+                                        {t.groupInvitationsLoading}
                                     </p>
                                 )}
 
                                 {!isInvitationsLoading && invitations.length === 0 && (
                                     <p className="text-xs text-(--text-muted)">
-                                        {lang === 'RO'
-                                            ? 'Nu exista invitatii pending.'
-                                            : 'No pending invitations.'}
+                                        {t.groupNoPendingInvitations}
                                     </p>
                                 )}
 
@@ -460,9 +447,7 @@ export default function GroupsTab({
 
                             {isSelectedLoading && (
                                 <p className="text-xs text-(--text-muted)">
-                                    {lang === 'RO'
-                                        ? 'Se actualizeaza detaliile...'
-                                        : 'Refreshing details...'}
+                                    {t.groupRefreshing}
                                 </p>
                             )}
                         </div>

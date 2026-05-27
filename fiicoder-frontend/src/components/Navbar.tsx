@@ -78,9 +78,9 @@ export default function Navbar() {
     try {
       const problem = await problemService.getProblemByTitle(trimmed);
       if (problem?.title) navigate(`/problems/${problem.title}`);
-      else toast.error(lang === 'RO' ? 'Problema nu a fost găsită.' : 'Problem not found.');
+      else toast.error(t.problemNotFound);
     } catch {
-      toast.error(lang === 'RO' ? 'Problema nu a fost găsită.' : 'Problem not found.');
+      toast.error(t.problemNotFound);
     }
   };
 
@@ -92,7 +92,9 @@ export default function Navbar() {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+      const activeEl = document.activeElement;
+      const inMonaco = !!activeEl?.closest?.('.monaco-editor');
+      if (e.key === '/' && activeEl?.tagName !== 'INPUT' && activeEl?.tagName !== 'TEXTAREA' && !inMonaco) {
         e.preventDefault();
         setSearchEverFocused(true);
         navSearchInputRef.current?.focus();
@@ -246,9 +248,7 @@ export default function Navbar() {
                 <SearchInput
                   value={navSearch}
                   onChange={setNavSearch}
-                  placeholder={
-                    lang === "RO" ? "Caută problemă..." : "Search problem..."
-                  }
+                  placeholder={t.navSearchPlaceholder}
                   suggestions={navSuggestions}
                   onEnter={handleNavSearchEnter}
                   onSelectSuggestion={(s) => navigate(`/problems/${s}`)}
@@ -337,7 +337,7 @@ export default function Navbar() {
 
                       <div className="flex flex-col min-w-0 w-full -mt-1">
                         <span className="text-sm font-bold text-(--text-h) truncate">
-                          {lang === "RO" ? `Bună, ${username}!` : `Hello, ${username}!`}
+                          {`${t.navGreetingPrefix}${username}!`}
                         </span>
                         <span className="text-[11px] text-(--text-muted) font-mono truncate">@{username}</span>
                       </div>
@@ -348,14 +348,14 @@ export default function Navbar() {
                           onClick={closeMenu}
                           className="w-full px-4 py-2 text-xs font-bold rounded-full border-2 border-(--accent)/40 bg-transparent text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5 transition-all duration-200 text-center"
                         >
-                          {lang === "RO" ? "Vezi profil" : "View profile"}
+                          {t.navViewProfile}
                         </Link>
                         <Link
                           to="/classes"
                           onClick={closeMenu}
                           className="w-full px-4 py-2 text-xs font-bold rounded-full border-2 border-(--accent)/40 bg-transparent text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5 transition-all duration-200 text-center"
                         >
-                          {lang === "RO" ? "Clase" : "Classes"}
+                          {t.classesTitle}
                         </Link>
                       </div>
 
@@ -404,7 +404,7 @@ export default function Navbar() {
           <button
             className="xl:hidden p-2 text-(--text) hover:text-(--text-h) focus:outline-none"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
-            aria-label={isMobileOpen ? "Închide meniu" : "Deschide meniu"}
+            aria-label={isMobileOpen ? t.navCloseMenu : t.navOpenMenu}
             aria-expanded={isMobileOpen}
           >
             {isMobileOpen ? (
@@ -457,7 +457,7 @@ export default function Navbar() {
                           onChange={(e) => setCustomColors({ bg: e.target.value })}
                           className="w-9 h-9 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
                         />
-                        <span>{lang === "RO" ? "Fundal" : "Background"}</span>
+                        <span>{t.navBackground}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-(--text-muted)">
                         <input
@@ -469,7 +469,7 @@ export default function Navbar() {
                         <span>Accent</span>
                       </div>
                       <div className="flex flex-col gap-1.5">
-                        <span className="text-xs text-(--text-muted)">{lang === "RO" ? "Colțuri" : "Corners"}</span>
+                        <span className="text-xs text-(--text-muted)">{t.navCorners}</span>
                         <div className="flex gap-1">
                           {(["rounded", "medium", "square"] as const).map((r) => (
                             <button
@@ -568,7 +568,7 @@ export default function Navbar() {
 
               <div className="flex flex-col items-center gap-2">
                 <span className="text-xs uppercase tracking-widest text-(--text-muted) font-bold">
-                  {lang === "RO" ? "Limbă" : "Language"}
+                  {t.languageLabel}
                 </span>
                 <div className="flex justify-center gap-4">
                   <button
@@ -595,7 +595,7 @@ export default function Navbar() {
                     <circle cx="16.5" cy="10.5" r="1" fill="currentColor" stroke="none"/>
                     <circle cx="9.5" cy="14.5" r="1" fill="currentColor" stroke="none"/>
                   </svg>
-                  {lang === "RO" ? "Temă" : "Theme"}
+                  {t.themeLabel}
                 </span>
 
                 <div className="grid grid-cols-3 gap-1.5">
@@ -623,7 +623,7 @@ export default function Navbar() {
                         onChange={(e) => setCustomColors({ bg: e.target.value })}
                         className="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
                       />
-                      <span>{lang === "RO" ? "Fundal" : "Background"}</span>
+                      <span>{t.navBackground}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-(--text-muted)">
                       <input

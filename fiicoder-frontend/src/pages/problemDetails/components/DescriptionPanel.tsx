@@ -3,6 +3,7 @@ import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
+import { translations } from '../../../language/Language';
 
 type Props = {
     problem: any;
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export default function DescriptionPanel({ problem, processedDescription, lang }: Props) {
+    const t = translations[lang as 'RO' | 'EN'] ?? translations.RO;
     // Normalize `** text **` → `**text**` so that backend-generated bold with
     // extra spaces (invalid CommonMark) still renders correctly.
     const normalized = processedDescription.replace(/\*\* ?(.+?) ?\*\*/g, '**$1**');
@@ -18,7 +20,7 @@ export default function DescriptionPanel({ problem, processedDescription, lang }
     return (
         <div className="h-full p-6 overflow-y-auto custom-scrollbar bg-(--surface-card) text-(--text)">
             <p className="text-xs font-semibold uppercase tracking-wider text-(--accent)">
-                {lang === 'RO' ? 'Problemă: ' : 'Problem: '} {problem.title}
+                {t.problemLabel} {problem.title}
             </p>
             <h1 className="text-3xl font-bold text-(--text) mb-2">{problem.title}</h1>
             {problem.tags && problem.tags.length > 0 && (

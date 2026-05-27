@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useLanguage } from '../../../language/Language';
+import { useT } from '../../../language/Language';
 import { itemVariants, staggerConfig } from '../../../utils/motionConfig';
 
 const MOCK_TOP_SOLVERS = [
@@ -17,7 +17,7 @@ const MOCK_POPULAR_PROBLEMS = [
 ];
 
 export default function StatsSidebar() {
-    const { lang } = useLanguage();
+    const t = useT();
 
     return (
         <aside className="hidden xl:flex flex-col gap-6">
@@ -30,7 +30,7 @@ export default function StatsSidebar() {
                 <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: staggerConfig } }}>
                 <motion.div variants={itemVariants} className="flex items-center justify-between">
                     <h2 className="text-m font-bold text-(--text-h) uppercase tracking-widest">
-                        {lang === 'RO' ? 'Top Utilizatori' : 'Top Solvers'}
+                        {t.topSolvers}
                     </h2>
                     <span className="text-xs     bg-(--accent)/10 text-(--accent) px-2 py-0.5 rounded-full font-bold">
                         GLOBAL
@@ -54,7 +54,7 @@ export default function StatsSidebar() {
                                         {user.username}
                                     </p>
                                     <p className="text-[10px] text-(--text-muted)">
-                                        {user.solved} {lang === 'RO' ? 'rezolvate' : 'solved'}
+                                        {user.solved} {t.solvedLabel}
                                     </p>
                                 </div>
                             </div>
@@ -73,7 +73,7 @@ export default function StatsSidebar() {
             >
                 <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: staggerConfig } }}>
                 <motion.h2 variants={itemVariants} className="text-m font-bold text-(--text-h) uppercase tracking-widest">
-                    {lang === 'RO' ? 'Probleme Populare' : 'Popular Problems'}
+                    {t.popularProblems}
                 </motion.h2>
                 <div className="page-line-horizontal" />
                 <motion.div variants={{ visible: { transition: staggerConfig } }} initial="hidden" animate="visible" className="space-y-4">
@@ -82,7 +82,7 @@ export default function StatsSidebar() {
                             <h3 className="text-xs font-bold text-(--text-h) mb-1">{prob.title}</h3>
                             <div className="flex items-center justify-between">
                                 <span className="text-[9px] text-(--text-muted) font-semibold uppercase">
-                                    {prob.solved} {lang === 'RO' ? 'încercări' : 'attempts'}
+                                    {prob.solved} {t.attemptsLabel}
                                 </span>
                                 <span className={`text-[8px] font-black ${
                                     prob.difficulty === 'EASY' ? 'text-emerald-400' :

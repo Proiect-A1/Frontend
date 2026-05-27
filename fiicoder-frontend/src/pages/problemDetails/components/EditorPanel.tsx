@@ -1,6 +1,6 @@
 import Editor from '@monaco-editor/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState } from 'react';
 import { getMonacoLanguageId } from '../../../utils/monacoTheme';
 import { useMonacoContextMenu } from '../../../hooks/useMonacoContextMenu';
 
@@ -35,6 +35,7 @@ export default function EditorPanel({
 }: Props) {
     const editorInstanceRef = useRef<any>(null);
     const { setupContextMenu, contextMenuEl } = useMonacoContextMenu();
+    const [wordWrap, setWordWrap] = useState<'on' | 'off'>('on');
 
     const editorOptions = useMemo(() => ({
         fontSize: 14,
@@ -50,9 +51,10 @@ export default function EditorPanel({
         cursorSmoothCaretAnimation: 'off' as const,
         bracketPairColorization: { enabled: true },
         automaticLayout: true,
-        wordWrap: 'on' as const,
+        wordWrap: wordWrap,
+        scrollbar: { horizontal: wordWrap === 'off' ? 'visible' as const : 'auto' as const },
         contextmenu: false,
-    }), []);
+    }), [wordWrap]);
 
     const onEditorMount = (editor: any, monaco: any) => {
         editorInstanceRef.current = editor;
@@ -141,7 +143,7 @@ export default function EditorPanel({
 
                 <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-4 overflow-hidden">
                     {showClipboardButtons && (
-                        <div className="flex gap-2 shrink-0">
+                        <div className="flex gap-2 shrink-0 flex-wrap">
                             {[
                                 { label: 'Copy', action: handleCopy },
                                 { label: 'Cut', action: handleCut },
@@ -156,6 +158,18 @@ export default function EditorPanel({
                                     {label}
                                 </button>
                             ))}
+                            <button
+                                type="button"
+                                onClick={() => setWordWrap(w => w === 'on' ? 'off' : 'on')}
+                                title={wordWrap === 'on' ? 'Dezactivează word wrap (scroll orizontal)' : 'Activează word wrap'}
+                                className={`px-3 py-1 rounded-lg border text-xs font-bold transition-colors ml-auto ${
+                                    wordWrap === 'off'
+                                        ? 'border-(--accent) bg-(--accent)/20 text-(--accent)'
+                                        : 'border-(--accent)/40 bg-(--accent)/10 text-(--text-muted) hover:bg-(--accent)/20 hover:text-(--text-h)'
+                                }`}
+                            >
+                                ↵ Wrap
+                            </button>
                         </div>
                     )}
                     <div className="relative flex-1 rounded-2xl overflow-hidden border border-(--accent)/20 bg-(--surface-editor) min-h-0">

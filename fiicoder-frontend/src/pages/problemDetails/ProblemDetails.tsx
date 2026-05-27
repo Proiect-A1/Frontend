@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useCallback } from 'react';
 import * as FlexLayout from 'flexlayout-react';
 import DescriptionPanel from './components/DescriptionPanel';
 import EditorPanel from './components/EditorPanel';
@@ -41,6 +42,26 @@ export default function ProblemDetails() {
         resetLayout,
         problemTests,
     } = useProblemDetails();
+
+    // Navigate to submissions tab — works on both desktop (FlexLayout) and mobile
+    const handleGoToSubmissions = useCallback(() => {
+        setActiveTab('submissions');
+        // Desktop: find the submissions tab node and select it
+        const traverse = (node: FlexLayout.Node): string | undefined => {
+            if (node.getType() === 'tab' && (node as FlexLayout.TabNode).getComponent() === 'submissions') {
+                return node.getId();
+            }
+            for (const child of node.getChildren()) {
+                const found = traverse(child);
+                if (found) return found;
+            }
+            return undefined;
+        };
+        const submissionsId = traverse(model.getRootRow());
+        if (submissionsId) {
+            model.doAction(FlexLayout.Actions.selectTab(submissionsId));
+        }
+    }, [model, setActiveTab]);
 
     if (loading) {
         return (
@@ -139,6 +160,7 @@ export default function ProblemDetails() {
                 handleSubmit={handleSubmit}
                 status={status}
                 resetLayout={resetLayout}
+                onStatusClick={handleGoToSubmissions}
             />
 
             {/* Mobile View: Standard Stacked Grid */}

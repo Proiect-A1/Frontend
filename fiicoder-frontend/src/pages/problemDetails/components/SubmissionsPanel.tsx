@@ -7,6 +7,7 @@ import {
 import { formatScore } from '../utils/textUtils';
 import { useState } from 'react';
 import SubmissionDetailModal from './SubmissionDetailModal';
+import { translations, getLoadMoreLabel } from '../../../language/Language';
 
 type Props = {
     isAuthenticated: boolean;
@@ -20,7 +21,7 @@ function verdictFor(sub: ProblemSubmissionDTO): SubmissionVerdict {
 
 function verdictLabel(verdict: SubmissionVerdict, lang: string) {
     const label = submissionVerdictLabels[verdict];
-    return lang === 'RO' ? label.ro : label.en;
+    return lang === 'RO' || lang === 'ro' ? label.ro : label.en;
 }
 
 const verdictClasses: Record<SubmissionVerdict, string> = {
@@ -35,6 +36,7 @@ const PAGE_SIZE = 10;
 export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, lang }: Props) {
     const [selectedSubmission, setSelectedSubmission] = useState<ProblemSubmissionDTO | null>(null);
     const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+    const t = translations[lang as 'RO' | 'EN'] ?? translations.RO;
 
     const sorted = recentSubmissions
         .slice()
@@ -45,7 +47,7 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
             <div className="space-y-3">
                 {!isAuthenticated ? (
                     <p className="text-sm text-(--text-muted) italic">
-                        {lang === 'RO' ? 'Autentifică-te pentru istoricul tău.' : 'Log in to see history.'}
+                        {t.loginToSeeHistory}
                     </p>
                 ) : sorted.length > 0 ? (
                     sorted
@@ -60,7 +62,7 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
                             >
                                 <div className="min-w-0">
                                     <p className="text-xs font-bold text-(--text-h)">
-                                        {new Date(sub.submissiondate).toLocaleString(lang === 'RO' ? 'ro-RO' : 'en-US', {
+                                        {new Date(sub.submissiondate).toLocaleString(t.dateLocale, {
                                             year: 'numeric',
                                             month: 'short',
                                             day: 'numeric',
@@ -77,14 +79,14 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
                         );
                     })
                 ) : (
-                    <p className="text-sm text-(--text-muted) italic">{lang === 'RO' ? 'Nu ai încă submisii.' : 'No submissions yet.'}</p>
+                    <p className="text-sm text-(--text-muted) italic">{t.noSubmissionsYet}</p>
                 )}
                 {isAuthenticated && visibleCount < sorted.length && (
                     <button
                         onClick={() => setVisibleCount(c => c + PAGE_SIZE)}
                         className="w-full mt-2 py-1.5 rounded-xl border border-(--accent)/30 bg-(--accent)/5 text-xs font-bold text-(--text-muted) hover:bg-(--accent)/15 hover:text-(--text-h) transition-colors"
                     >
-                        {lang === 'RO' ? `Afișează mai multe (${sorted.length - visibleCount} rămase)` : `Load more (${sorted.length - visibleCount} left)`}
+                        {getLoadMoreLabel(lang as 'RO' | 'EN', sorted.length - visibleCount)}
                     </button>
                 )}
             </div>

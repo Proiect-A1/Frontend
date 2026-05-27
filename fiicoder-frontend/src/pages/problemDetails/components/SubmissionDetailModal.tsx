@@ -7,6 +7,7 @@ import type { ProblemSubmissionDTO, SubmissionStatus, SubmissionSubtaskDTO } fro
 import { submissionVerdictLabels, submissionVerdict, type SubmissionVerdict } from '../../profile/profileUtils';
 import { applyMonacoTheme } from '../../../utils/monacoTheme';
 import { submissionService } from '../services/submissionService';
+import { translations } from '../../../language/Language';
 
 type Props = {
     isOpen: boolean;
@@ -60,6 +61,7 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
     maxScore: number;
     lang: string;
 }) {
+    const t = translations[lang as 'RO' | 'EN'] ?? translations.RO;
     const [expanded, setExpanded] = useState<Set<number>>(new Set());
     const toggle = (idx: number) => setExpanded(prev => {
         const next = new Set(prev);
@@ -78,18 +80,18 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
                         {formatScore(score)}<span className="text-lg font-bold opacity-60">/{formatScore(maxScore)}</span>
                     </span>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted)">
-                        {lang === 'RO' ? 'puncte' : 'points'}
+                        {t.pointsLabel}
                     </span>
                 </div>
                 <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border-2 ${verdictBorderClasses[overallVerdict]}`}>
-                    {submissionVerdictLabels[overallVerdict][lang === 'RO' ? 'ro' : 'en']}
+                    {submissionVerdictLabels[overallVerdict][lang === 'RO' || lang === 'ro' ? 'ro' : 'en']}
                 </span>
             </div>
 
             {/* Subtasks */}
             <div className="space-y-2">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-(--text-muted) px-1">
-                    {lang === 'RO' ? 'Subtask-uri' : 'Subtasks'}
+                    {t.subtasksLabel}
                 </p>
                 {[...subtasks].sort((a, b) => a.index - b.index).map(st => {
                     const verdict = stVerdict(st);
@@ -119,7 +121,7 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
                                 </span>
 
                                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border ${subtaskBadgeClasses[verdict]} shrink-0`}>
-                                    {submissionVerdictLabels[verdict][lang === 'RO' ? 'ro' : 'en']}
+                                    {submissionVerdictLabels[verdict][lang === 'RO' || lang === 'ro' ? 'ro' : 'en']}
                                 </span>
 
                                 <span className="text-sm font-black text-(--text-h) ml-auto shrink-0">
@@ -147,21 +149,21 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
                                             <div className="flex items-center gap-3 px-4 py-1.5 bg-(--accent)/5">
                                                 <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted) w-8">Test</span>
                                                 <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted) w-14">Verdict</span>
-                                                <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted) ml-auto w-16 text-right">Timp</span>
-                                                <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted) w-16 text-right">Memorie</span>
+                                                <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted) ml-auto w-16 text-right">{t.timeLabel}</span>
+                                                <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted) w-16 text-right">{t.memoryLabel}</span>
                                             </div>
-                                            {sortedTests.map(t => {
-                                                const color = testVerdictColors[t.verdict] ?? 'border-(--accent)/30 bg-(--accent)/5 text-(--text-muted)';
-                                                const timeMs = t.time   > 0 ? `${(t.time   / 1_000_000).toFixed(0)}ms` : '-';
-                                                const memKB  = t.memory > 0 ? `${(t.memory / 1024).toFixed(0)}KB`      : '-';
+                                            {sortedTests.map(test => {
+                                                const color = testVerdictColors[test.verdict] ?? 'border-(--accent)/30 bg-(--accent)/5 text-(--text-muted)';
+                                                const timeMs = test.time   > 0 ? `${(test.time   / 1_000_000).toFixed(0)}ms` : '-';
+                                                const memKB  = test.memory > 0 ? `${(test.memory / 1024).toFixed(0)}KB`      : '-';
                                                 return (
-                                                    <div key={t.index} className="flex items-center gap-3 px-4 py-2 hover:bg-(--accent)/5 transition-colors">
-                                                        <span className="text-xs font-mono font-bold text-(--text-subtle) w-8">#{t.index}</span>
+                                                    <div key={test.index} className="flex items-center gap-3 px-4 py-2 hover:bg-(--accent)/5 transition-colors">
+                                                        <span className="text-xs font-mono font-bold text-(--text-subtle) w-8">#{test.index}</span>
                                                         <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase border w-14 text-center ${color}`}>
-                                                            {t.verdict}
+                                                            {test.verdict}
                                                         </span>
-                                                        {t.message && (
-                                                            <span className="text-[10px] text-(--text-muted) truncate flex-1">{t.message}</span>
+                                                        {test.message && (
+                                                            <span className="text-[10px] text-(--text-muted) truncate flex-1">{test.message}</span>
                                                         )}
                                                         <span className="text-xs font-mono text-(--text-muted) ml-auto w-16 text-right">{timeMs}</span>
                                                         <span className="text-xs font-mono text-(--text-muted) w-16 text-right">{memKB}</span>
@@ -182,6 +184,7 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
 
 export default function SubmissionDetailModal({ isOpen, onClose, submission, lang }: Props) {
     const { theme, customColors } = useTheme();
+    const t = translations[lang as 'RO' | 'EN'] ?? translations.RO;
     const [results, setResults] = useState<SubmissionStatus | null>(null);
     const [loadingResults, setLoadingResults] = useState(false);
 
@@ -198,7 +201,7 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
     if (!submission) return null;
 
     const verdict = submissionVerdict({ status: submission.status, score: submission.Score });
-    const verdictLabel = submissionVerdictLabels[verdict][lang === 'RO' ? 'ro' : 'en'];
+    const verdictLabel = submissionVerdictLabels[verdict][lang === 'RO' || lang === 'ro' ? 'ro' : 'en'];
     const languageName = typeof submission.language === 'string'
         ? submission.language
         : (submission.language as any)?.name || 'Unknown';
@@ -235,17 +238,17 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
                             <div className="flex items-center gap-3 flex-wrap min-w-0">
                                 <div className="min-w-0">
                                     <h3 className="text-base font-bold text-(--text-h)">
-                                        {lang === 'RO' ? 'Detalii Submisie' : 'Submission Details'}
+                                        {t.submissionDetails}
                                     </h3>
                                     <p className="text-xs text-(--text-muted)">
-                                        {new Date(submission.submissiondate).toLocaleString(lang === 'RO' ? 'ro-RO' : 'en-US')}
+                                        {new Date(submission.submissiondate).toLocaleString(t.dateLocale)}
                                     </p>
                                 </div>
                                 <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border-2 shrink-0 ${verdictBorderClasses[verdict]}`}>
                                     {verdictLabel}
                                 </span>
                                 <span className="text-sm font-bold text-(--text-h) shrink-0">
-                                    {lang === 'RO' ? 'Scor' : 'Score'}: {formatScore(submission.Score)}
+                                    {t.scoreLabel}: {formatScore(submission.Score)}
                                 </span>
                                 <span className="text-xs px-2 py-0.5 bg-(--accent)/10 text-(--accent) rounded-md border border-(--accent)/20 shrink-0">
                                     {languageName}
@@ -284,7 +287,7 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
                                 <button
                                     onClick={() => navigator.clipboard.writeText(submission.code)}
                                     className="absolute bottom-4 right-6 p-2 rounded-xl bg-(--surface-card) border-2 border-(--accent)/50 text-(--text-muted) hover:text-(--accent) hover:border-(--accent) shadow-lg transition-all z-10"
-                                    title={lang === 'RO' ? 'Copiază codul' : 'Copy code'}
+                                    title={t.copyCode}
                                 >
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -298,7 +301,7 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
                                     <div className="flex items-center justify-center h-40 gap-3">
                                         <div className="animate-spin w-6 h-6 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
                                         <span className="text-sm text-(--text-muted)">
-                                            {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
+                                            {t.loadingLabel}
                                         </span>
                                     </div>
                                 ) : hasSubtasks ? (
@@ -311,11 +314,11 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
                                 ) : submission.status === 'PENDING' ? (
                                     <div className="flex flex-col items-center justify-center h-40 gap-2 text-(--text-muted)">
                                         <div className="animate-spin w-6 h-6 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
-                                        <p className="text-sm">{lang === 'RO' ? 'În evaluare...' : 'Evaluating...'}</p>
+                                        <p className="text-sm">{t.evaluatingLabel}</p>
                                     </div>
                                 ) : (
                                     <div className="flex flex-col items-center justify-center h-40 gap-2 text-(--text-muted)">
-                                        <p className="text-sm italic">{lang === 'RO' ? 'Nu există rezultate disponibile.' : 'No results available.'}</p>
+                                        <p className="text-sm italic">{t.noResultsAvailable}</p>
                                     </div>
                                 )}
                             </div>

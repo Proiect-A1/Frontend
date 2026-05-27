@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useT } from '../../../language/Language';
 
 interface InteractiveToggleProps {
     value: boolean;
@@ -6,13 +7,15 @@ interface InteractiveToggleProps {
 }
 
 export default function InteractiveToggle({ value, onChange }: InteractiveToggleProps) {
+    const t = useT();
+
     return (
         <label className="flex items-center gap-3 cursor-pointer group">
             <button
                 type="button"
                 role="switch"
                 aria-checked={value}
-                aria-label="Toggle problem interactor"
+                aria-label={t.proposeInteractiveAriaLabel}
                 tabIndex={0}
                 onClick={(e) => {
                     e.stopPropagation();
@@ -49,14 +52,12 @@ export default function InteractiveToggle({ value, onChange }: InteractiveToggle
                             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                         />
                     </svg>
-                    Problemă Interactivă
+                    {t.proposeInteractiveLabel}
                 </span>
                 <p className="text-xs text-(--text-muted)">
-                    Activează dacă problema necesită un interactor (comunicare bidirecțională cu
-                    soluția).
+                    {t.proposeInteractiveDesc}
                 </p>
             </div>
         </label>
     );
 }
-

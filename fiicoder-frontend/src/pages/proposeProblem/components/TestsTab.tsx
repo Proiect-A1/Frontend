@@ -1,5 +1,6 @@
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 import { motion } from 'framer-motion';
+import { useT } from '../../../language/Language';
 import type { ProposeProblemForm } from '../types/proposeProblem';
 import { itemVariants, staggerConfig } from '../../../utils/motionConfig';
 
@@ -9,6 +10,7 @@ export default function TestsTab() {
         control,
         name: 'tests',
     });
+    const t = useT();
 
     const addTest = () => {
         append({
@@ -36,8 +38,7 @@ export default function TestsTab() {
                 className="p-4 bg-(--surface-muted) rounded-2xl border border-(--accent)/20"
             >
                 <p className="text-sm text-(--text)">
-                    <strong>Teste Manuale:</strong> Adaugă teste individuale cu input/output.
-                    Aceste teste sunt mereu vizibile în Subtask-uri, independent de generator.
+                    {t.proposeTestsInfo}
                 </p>
             </motion.div>
 
@@ -47,19 +48,19 @@ export default function TestsTab() {
                     <thead>
                         <tr className="border-b border-(--accent)/20">
                             <th className="text-left text-(--text) font-semibold py-3 px-4">
-                                ID Test
+                                {t.proposeTestsColId}
                             </th>
                             <th className="text-left text-(--text) font-semibold py-3 px-4">
-                                Input
+                                {t.proposeTestsColInput}
                             </th>
                             <th className="text-left text-(--text) font-semibold py-3 px-4">
-                                Output
+                                {t.proposeTestsColOutput}
                             </th>
                             <th className="text-left text-(--text) font-semibold py-3 px-4">
-                                Puncte
+                                {t.proposeTestsColPoints}
                             </th>
                             <th className="text-center text-(--text) font-semibold py-3 px-4 w-12">
-                                Acțiuni
+                                {t.proposeTestsColActions}
                             </th>
                         </tr>
                     </thead>
@@ -67,8 +68,7 @@ export default function TestsTab() {
                         {fields.length === 0 ? (
                             <tr>
                                 <td colSpan={5} className="text-center text-(--text-muted) py-8">
-                                    Nu ai adăugat niciun test. Fă clic pe butonul de mai jos pentru
-                                    a adăuga.
+                                    {t.proposeTestsEmpty}
                                 </td>
                             </tr>
                         ) : (
@@ -90,7 +90,7 @@ export default function TestsTab() {
                                                 <textarea
                                                     {...field}
                                                     className="w-full h-16 p-2 bg-(--surface-muted) border border-(--accent) rounded text-xs text-(--text) font-mono focus:outline-none focus:[box-shadow:0_0_0_2px_color-mix(in_srgb,var(--accent)_50%,transparent)] transition-all"
-                                                    placeholder="Input..."
+                                                    placeholder={t.proposeTestsColInput + '...'}
                                                 />
                                             )}
                                         />
@@ -105,7 +105,7 @@ export default function TestsTab() {
                                                 <textarea
                                                     {...field}
                                                     className="w-full h-16 p-2 bg-(--surface-muted) border border-(--accent) rounded text-xs text-(--text) font-mono focus:outline-none focus:[box-shadow:0_0_0_2px_color-mix(in_srgb,var(--accent)_50%,transparent)] transition-all"
-                                                    placeholder="Output..."
+                                                    placeholder={t.proposeTestsColOutput + '...'}
                                                 />
                                             )}
                                         />
@@ -136,7 +136,7 @@ export default function TestsTab() {
                                             type="button"
                                             onClick={() => remove(index)}
                                             className="p-2 text-red-400 hover:bg-red-500/20 rounded transition-colors inline-block"
-                                            title="Șterge test"
+                                            title={t.proposeTestsDeleteTitle}
                                         >
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                         </button>
@@ -155,7 +155,8 @@ export default function TestsTab() {
                 onClick={addTest}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-(--accent)/50 rounded-2xl text-(--text-h) hover:border-(--accent) hover:bg-(--accent)/10 transition-colors font-semibold"
             >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg> Adaugă Test
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
+                {t.proposeTestsAddBtn}
             </motion.button>
 
             {/* Stats */}
@@ -164,10 +165,9 @@ export default function TestsTab() {
                 className="px-4 py-3 bg-(--surface-muted) rounded-2xl border border-(--accent)/25"
             >
                 <p className="text-sm text-(--text)">
-                    <strong>Total teste:</strong> {fields.length}
+                    <strong>{t.proposeTestsTotal}</strong> {fields.length}
                 </p>
             </motion.div>
         </motion.div>
     );
 }
-

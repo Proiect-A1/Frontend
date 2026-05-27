@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { DoneSubtaskEvent, ProblemTestDetailsDTO } from '../types/problemDetails';
 import { formatScore } from '../utils/textUtils';
@@ -105,50 +106,69 @@ function TestRow({ t, idx }: { t: any; idx: number }) {
     );
 }
 
-const CONFETTI_COLORS = ['#22c55e', '#86efac', '#4ade80', '#fbbf24', '#a78bfa', '#38bdf8', '#f472b6'];
-const PARTICLE_COUNT = 38;
+const CONFETTI_COLORS = [
+    '#22c55e', '#86efac', '#4ade80', '#fbbf24', '#a78bfa',
+    '#38bdf8', '#f472b6', '#fb923c', '#e879f9', '#34d399',
+    '#60a5fa', '#facc15', '#f87171', '#a3e635',
+];
+const PARTICLE_COUNT = 140;
+
+type ParticleDef = {
+    id: number; x: number; color: string; width: number; height: number;
+    isCircle: boolean; rotate: number; delay: number; duration: number;
+    drift: number; rotateEnd: number; yEnd: number;
+};
 
 function Confetti() {
-    const particles = useRef(
-        Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
-            id: i,
-            x: Math.random() * 100,         // % across the panel
-            rotate: Math.random() * 360,
-            color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
-            size: 6 + Math.random() * 7,    // px
-            delay: Math.random() * 0.5,
-            duration: 1.4 + Math.random() * 1.0,
-            drift: (Math.random() - 0.5) * 80, // horizontal drift px
-        }))
+    const particles = useRef<ParticleDef[]>(
+        Array.from({ length: PARTICLE_COUNT }, (_, i) => {
+            const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+            return {
+                id: i,
+                x: Math.random() * 100,
+                color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+                width: 5 + Math.random() * 11,
+                height: 3 + Math.random() * 7,
+                isCircle: Math.random() > 0.65,
+                rotate: Math.random() * 360,
+                delay: Math.random() * 1.0,
+                duration: 2.2 + Math.random() * 2.0,
+                drift: (Math.random() - 0.5) * 220,
+                rotateEnd: Math.random() * 720 * (Math.random() > 0.5 ? 1 : -1),
+                yEnd: vh * 1.15,
+            };
+        })
     ).current;
 
-    return (
-        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl z-10">
+    return createPortal(
+        <div
+            style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}
+            aria-hidden="true"
+        >
             {particles.map(p => (
                 <motion.div
                     key={p.id}
-                    className="absolute top-0 rounded-sm"
                     style={{
+                        position: 'absolute',
                         left: `${p.x}%`,
-                        width: p.size,
-                        height: p.size * 0.5,
+                        top: 0,
+                        width: p.width,
+                        height: p.isCircle ? p.width : p.height,
                         backgroundColor: p.color,
+                        borderRadius: p.isCircle ? '50%' : '2px',
                     }}
-                    initial={{ y: -16, opacity: 1, rotate: p.rotate, x: 0 }}
+                    initial={{ y: -24, opacity: 1, rotate: p.rotate, x: 0 }}
                     animate={{
-                        y: ['0%', '110%'],
-                        opacity: [1, 1, 0],
-                        rotate: p.rotate + 360 * (Math.random() > 0.5 ? 1 : -1),
-                        x: [0, p.drift],
+                        y: p.yEnd,
+                        opacity: [1, 1, 1, 0.6, 0],
+                        rotate: p.rotate + p.rotateEnd,
+                        x: p.drift,
                     }}
-                    transition={{
-                        duration: p.duration,
-                        delay: p.delay,
-                        ease: 'easeIn',
-                    }}
+                    transition={{ duration: p.duration, delay: p.delay, ease: 'easeIn' }}
                 />
             ))}
-        </div>
+        </div>,
+        document.body
     );
 }
 
