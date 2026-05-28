@@ -11,6 +11,8 @@ RUN npm ci --no-audit --no-fund --prefer-offline
 
 # Copiem sursele
 COPY . .
+ARG VITE_OPENAI_API_KEY
+ENV VITE_OPENAI_API_KEY=$VITE_OPENAI_API_KEY
 RUN npm run build
 
 # Stage 2: Containerul Intern Nginx

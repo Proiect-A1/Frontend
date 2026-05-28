@@ -31,22 +31,12 @@ jobs:
             git reset --hard frontend/dev
             git clean -fd
 
-            # Adăugăm cheia API OpenAI în .env pentru ca Vite să o poată accesa la build
-            echo "VITE_OPENAI_API_KEY=${{ secrets.VITE_OPENAI_API_KEY }}" > fiicoder-frontend/.env
-
             # Ne întoarcem la root /home/github/sandbox și refacem containerul
             cd ../
 
-            # Adăugăm în /etc/environment conform instrucțiunilor (cu fallback securizat pentru a nu crăpa la permisiuni sudo)
-            if [ -w /etc/environment ] || sudo -n true 2>/dev/null; then
-              sudo sed -i '/VITE_OPENAI_API_KEY/d' /etc/environment || true
-              echo "VITE_OPENAI_API_KEY=${{ secrets.VITE_OPENAI_API_KEY }}" | sudo tee -a /etc/environment > /dev/null
-              source /etc/environment || true
-            else
-              echo "⚠️ Warning: Lipsă permisiuni de scriere în /etc/environment. Rămânem la config-ul din fișierul .env."
-            fi
-
-            docker compose down frontend && docker compose up --quiet-build --build -d frontend  
+            docker compose down frontend
+            docker compose build --build-arg VITE_OPENAI_API_KEY=${{ secrets.VITE_OPENAI_API_KEY }} frontend
+            docker compose up -d frontend
 
             docker image prune -f
             sleep 20
