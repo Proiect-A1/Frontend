@@ -322,7 +322,7 @@ export default function Navbar() {
                       initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.08 }}
+                      transition={{ duration: 0.11 }}
                       className="absolute right-0 top-full mt-3 w-64 bg-(--surface-dropdown) border-2 border-(--accent) rounded-3xl shadow-2xl p-5 z-50 flex flex-col items-center text-center gap-4"
                     >
                       <div className="w-20 h-20 rounded-full border-2 border-(--accent) shadow-md overflow-hidden flex items-center justify-center bg-(--surface-muted)">
@@ -427,7 +427,7 @@ export default function Navbar() {
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.08 }}
+              transition={{ duration: 0.11 }}
               className="hidden xl:block absolute right-5 top-full mt-3 w-40 bg-(--surface-dropdown) border border-(--accent)/40 rounded-2xl shadow-xl overflow-hidden z-50"
             >
               {themes.filter(t => t !== 'mcdonalds').map((themeName) => (
@@ -519,7 +519,7 @@ export default function Navbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.07 }}
+              transition={{ duration: 0.09 }}
               className="xl:hidden absolute top-full left-0 right-0 mt-6 p-6 bg-(--surface-card) backdrop-blur-xl border-2 border-(--accent) rounded-3xl flex flex-col gap-4 max-h-[calc(100svh-5rem)] overflow-y-auto"
             >
               <Link to="/problems" onClick={closeMenu} className={getNavLinkClass("/problems") + " text-center"}>

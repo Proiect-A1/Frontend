@@ -114,7 +114,7 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        transition={{ duration: 0.1 }}
+                        transition={{ duration: 0.15 }}
                         onClick={(e) => e.stopPropagation()}
                         className="fixed inset-0 z-9999 flex items-center justify-center px-4 pointer-events-none"
                     >

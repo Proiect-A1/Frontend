@@ -198,7 +198,7 @@ export default function ProfileAchievementsModal({ profile, lang, isOpen, onClos
                         initial={{ x: '-100%', opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: '-100%', opacity: 0 }}
-                        transition={{ type: 'spring', damping: 22, stiffness: 420 }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 350 }}
                     >
                         {/* Header */}
                         <div className="flex items-start justify-between gap-3 p-6 pb-4 border-b border-(--accent)/20 shrink-0">
@@ -234,7 +234,7 @@ export default function ProfileAchievementsModal({ profile, lang, isOpen, onClos
                                     className="h-2 rounded-full bg-(--accent)"
                                     initial={{ width: 0 }}
                                     animate={{ width: `${pct}%` }}
-                                    transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
+                                    transition={{ duration: 0.5, ease: 'easeOut', delay: 0.15 }}
                                 />
                             </div>
                         </div>
@@ -253,7 +253,7 @@ export default function ProfileAchievementsModal({ profile, lang, isOpen, onClos
                                             key={a.id}
                                             initial={{ opacity: 0, x: -12 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: i * 0.02 }}
+                                            transition={{ delay: i * 0.03 }}
                                             className="rounded-2xl border border-emerald-500/25 bg-emerald-500/8 p-4 flex items-center gap-4"
                                         >
                                             <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-2xl shrink-0">

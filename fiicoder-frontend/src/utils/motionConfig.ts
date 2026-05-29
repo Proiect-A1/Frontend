@@ -14,14 +14,14 @@ export const pageVariants = prefersReducedMotion()
     }
   : {
       initial: { opacity: 0 },
-      animate: { opacity: 1, transition: { duration: 0.1 } },
-      exit: { opacity: 0, transition: { duration: 0.07 } },
+      animate: { opacity: 1, transition: { duration: 0.15 } },
+      exit: { opacity: 0, transition: { duration: 0.1 } },
     };
 
 // components loads in cascade
 export const staggerConfig = prefersReducedMotion()
   ? { staggerChildren: 0, delayChildren: 0 }
-  : { staggerChildren: 0.04, delayChildren: 0.05 };
+  : { staggerChildren: 0.06, delayChildren: 0.07 };
 
 // vertical slide + fade
 export const itemVariants = prefersReducedMotion()
@@ -30,8 +30,8 @@ export const itemVariants = prefersReducedMotion()
       visible: { opacity: 1, y: 0, transition: { duration: 0 } },
     }
   : {
-      hidden: { opacity: 0, y: 8 },
-      visible: { opacity: 1, y: 0, transition: { duration: 0.18, ease: "easeOut" } },
+      hidden: { opacity: 0, y: 11 },
+      visible: { opacity: 1, y: 0, transition: { duration: 0.26, ease: "easeOut" } },
     };
 
 export const containerVariants = prefersReducedMotion()
@@ -43,7 +43,7 @@ export const containerVariants = prefersReducedMotion()
   : {
       hidden: { opacity: 0 },
       visible: { opacity: 1, transition: staggerConfig },
-      exit: { opacity: 0, transition: { duration: 0.07 } },
+      exit: { opacity: 0, transition: { duration: 0.11 } },
     };
 
 // animatie pentru dropdowns
@@ -54,7 +54,7 @@ export const dropdownVariants = prefersReducedMotion()
       exit: { opacity: 0, y: 0, transition: { duration: 0 } },
     }
   : {
-      hidden: { opacity: 0, y: -4 },
-      visible: { opacity: 1, y: 0, transition: { duration: 0.08 } },
-      exit: { opacity: 0, y: -4, transition: { duration: 0.06 } },
+      hidden: { opacity: 0, y: -5 },
+      visible: { opacity: 1, y: 0, transition: { duration: 0.11 } },
+      exit: { opacity: 0, y: -5, transition: { duration: 0.08 } },
     };

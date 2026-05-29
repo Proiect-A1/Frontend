@@ -65,7 +65,7 @@ export default function ScriptDocumentation() {
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -5 }}
-                        transition={{ duration: 0.08 }}
+                        transition={{ duration: 0.11 }}
                     >
                         <ReactMarkdown
                             remarkPlugins={[remarkGfm]}

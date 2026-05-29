@@ -138,7 +138,7 @@ export default function TagsAutocomplete({ selectedTags, onTagsChange }: TagsAut
                             initial={{ opacity: 0, y: -6 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -6 }}
-                            transition={{ duration: 0.07 }}
+                            transition={{ duration: 0.09 }}
                             className="absolute z-50 mt-1 w-full bg-(--surface-dropdown) border border-(--accent)/25 rounded-2xl overflow-hidden max-h-48 overflow-y-auto"
                         >
                             {suggestions.map((tag, index) => (
