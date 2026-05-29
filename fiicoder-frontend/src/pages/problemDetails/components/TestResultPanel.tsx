@@ -313,10 +313,9 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                 const testIds = subtaskTestIds.get(st.subtaskId) ?? [];
                                 const subtaskTests = evalTests.filter(t => testIds.includes(t.testId));
                                 const hasPendingTests = subtaskTests.some(t => t.verdict === 'PENDING');
-                                const subtaskResultReceived = st.submissionId !== '';
                                 const full = st.score >= st.maxScore && st.maxScore > 0;
                                 const partial = st.score > 0 && !full;
-                                const subtaskVerdict: SubmissionVerdict = (!subtaskResultReceived || hasPendingTests) ? 'PENDING' : full ? 'ACCEPTED' : partial ? 'PARTIAL' : 'REJECTED';
+                                const subtaskVerdict: SubmissionVerdict = hasPendingTests ? 'PENDING' : full ? 'ACCEPTED' : partial ? 'PARTIAL' : 'REJECTED';
                                 const color = `${summaryBorderClasses[subtaskVerdict]} ${subtaskTextColor[subtaskVerdict]}`;
                                 const badgeClasses = summaryBadgeClasses[subtaskVerdict];
                                 const verdictLabel = submissionVerdictLabels[subtaskVerdict][lang === 'RO' ? 'ro' : 'en'];
