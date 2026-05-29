@@ -66,6 +66,25 @@ export default function Navbar() {
       return;
     }
 
+    if (trimmed.toLowerCase() === 'stupify') {
+      const isActive = document.documentElement.hasAttribute('data-trippy');
+      if (isActive) {
+        document.documentElement.removeAttribute('data-trippy');
+        document.getElementById('trippy-filter-svg')?.remove();
+      } else {
+        document.documentElement.setAttribute('data-trippy', '1');
+        if (!document.getElementById('trippy-filter-svg')) {
+          const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          svg.id = 'trippy-filter-svg';
+          svg.setAttribute('style', 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none');
+          svg.innerHTML = '<defs><filter id="trippy" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="3" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G"/></filter></defs>';
+          document.body.prepend(svg);
+        }
+      }
+      setNavSearch('');
+      return;
+    }
+
     const matchedSuggestion = navSuggestions.find((title) =>
       title.toLowerCase().includes(trimmed.toLowerCase()),
     );

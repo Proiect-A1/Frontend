@@ -407,15 +407,31 @@
     color: var(--text);
 }
 
+/* ── TRIPPY SECRET MODE (activat prin "stupify" în search) ── */
+[data-trippy] .rounded-3xl,
+[data-trippy] .rounded-2xl,
+[data-trippy] .rounded-xl,
+[data-trippy] .rounded-lg,
+[data-trippy] .rounded-full,
+[data-trippy] .flexlayout__tabset {
+    filter: url('#trippy');
+}
+
 /* ── CUSTOM THEME WOBBLY BORDER ── */
-/* SVG filter #squiggle injectat din ThemeContext când border === 'wobbly' */
+/* SVG wavy path injectat dinamic din JS (applyWavyBorders) pe fiecare element */
+
+/* Ascunde bordul drept — wavy SVG îl înlocuiește vizual */
 [data-theme='custom'][data-custom-border='wobbly'] .rounded-3xl,
 [data-theme='custom'][data-custom-border='wobbly'] .rounded-2xl,
 [data-theme='custom'][data-custom-border='wobbly'] .rounded-xl,
-[data-theme='custom'][data-custom-border='wobbly'] .rounded-lg,
-[data-theme='custom'][data-custom-border='wobbly'] .rounded-full,
+[data-theme='custom'][data-custom-border='wobbly'] .rounded-full {
+    border-color: transparent !important;
+}
+
+/* Flexlayout: scoate border-ul și permite SVG-ului să iasă în afară */
 [data-theme='custom'][data-custom-border='wobbly'] .flexlayout__tabset {
-    filter: url('#squiggle');
+    border: none !important;
+    overflow: visible !important;
 }
 
 /* ── CUSTOM THEME RADIUS VARIANTS ── */

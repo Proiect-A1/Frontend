@@ -3,6 +3,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -104,14 +105,121 @@ function safeWrite(key: string, value: string) {
   }
 }
 
+// ── WAVY BORDER ──────────────────────────────────────────────────────────────
+
+function generateWavyRectPath(w: number, h: number): string {
+  const A = 5, L = 54, R = 22;
+
+  function waveX(x1: number, x2: number, y: number, startUp: boolean): string {
+    const dist = x2 - x1;
+    const n = Math.max(1, Math.round(Math.abs(dist) / L));
+    const wl = dist / n;
+    let d = '', cx = x1, up = startUp;
+    for (let i = 0; i < n; i++) {
+      const dy = up ? -A : A;
+      d += ` C${(cx+wl*.3).toFixed(1)},${(y+dy).toFixed(1)} ${(cx+wl*.7).toFixed(1)},${(y+dy).toFixed(1)} ${(cx+wl).toFixed(1)},${y}`;
+      cx += wl; up = !up;
+    }
+    return d;
+  }
+
+  function waveY(y1: number, y2: number, x: number, startRight: boolean): string {
+    const dist = y2 - y1;
+    const n = Math.max(1, Math.round(Math.abs(dist) / L));
+    const wl = dist / n;
+    let d = '', cy = y1, right = startRight;
+    for (let i = 0; i < n; i++) {
+      const dx = right ? A : -A;
+      d += ` C${(x+dx).toFixed(1)},${(cy+wl*.3).toFixed(1)} ${(x+dx).toFixed(1)},${(cy+wl*.7).toFixed(1)} ${x},${(cy+wl).toFixed(1)}`;
+      cy += wl; right = !right;
+    }
+    return d;
+  }
+
+  const r = Math.min(R, w / 4, h / 4);
+  return [
+    `M${r},0`,
+    waveX(r, w - r, 0, true),
+    ` Q${w},0 ${w},${r}`,
+    waveY(r, h - r, w, true),
+    ` Q${w},${h} ${w-r},${h}`,
+    waveX(w - r, r, h, false),
+    ` Q0,${h} 0,${h-r}`,
+    waveY(h - r, r, 0, false),
+    ` Q0,0 ${r},0 Z`,
+  ].join('');
+}
+
+const WAVY_SEL = '.flexlayout__tabset, .rounded-3xl, .rounded-2xl, .rounded-xl, .rounded-full';
+
+function applyWavyBorders(): () => void {
+  const ros: ResizeObserver[] = [];
+  const seen = new WeakSet<Element>();
+  const ns = 'http://www.w3.org/2000/svg';
+  const OFF = 4;
+
+  function add(el: HTMLElement) {
+    if (seen.has(el) || el.hasAttribute('data-wavy-border')) return;
+    seen.add(el);
+    el.setAttribute('data-wavy-border', '1');
+    if (window.getComputedStyle(el).position === 'static') el.style.position = 'relative';
+
+    const svg = document.createElementNS(ns, 'svg') as SVGSVGElement;
+    svg.setAttribute('data-wavy-overlay', '1');
+    svg.style.cssText = `position:absolute;top:-${OFF}px;left:-${OFF}px;width:calc(100% + ${OFF*2}px);height:calc(100% + ${OFF*2}px);pointer-events:none;z-index:20;overflow:visible`;
+
+    const path = document.createElementNS(ns, 'path') as SVGPathElement;
+    path.style.fill = 'none';
+    path.style.stroke = 'var(--accent)';
+    path.style.strokeWidth = '2';
+    path.style.strokeLinecap = 'round';
+    path.style.strokeLinejoin = 'round';
+    svg.appendChild(path);
+    el.appendChild(svg);
+
+    const update = () => {
+      const w = el.offsetWidth + OFF * 2, h = el.offsetHeight + OFF * 2;
+      if (w < 20 || h < 20) return;
+      path.setAttribute('d', generateWavyRectPath(w, h));
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    ros.push(ro);
+  }
+
+  document.querySelectorAll<HTMLElement>(WAVY_SEL).forEach(add);
+
+  const mo = new MutationObserver(muts => {
+    for (const { addedNodes } of muts)
+      addedNodes.forEach(n => {
+        if (!(n instanceof HTMLElement)) return;
+        if (n.matches?.(WAVY_SEL)) add(n);
+        n.querySelectorAll<HTMLElement>(WAVY_SEL).forEach(add);
+      });
+  });
+  mo.observe(document.body, { childList: true, subtree: true });
+
+  return () => {
+    mo.disconnect();
+    ros.forEach(r => r.disconnect());
+    document.querySelectorAll('[data-wavy-overlay]').forEach(e => e.remove());
+    document.querySelectorAll('[data-wavy-border]').forEach(e => e.removeAttribute('data-wavy-border'));
+  };
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(safeReadTheme);
 
   const [customColors, setCustomColorsState] = useState(safeReadCustomColors);
+  const wavyCleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
         safeWrite(THEME_STORAGE_KEY, theme);
+        wavyCleanupRef.current?.();
+        wavyCleanupRef.current = null;
+        document.getElementById('custom-squiggle-svg')?.remove();
 
         // Resolve effective tone (light/dark) per theme — used to retarget
         // low-contrast Tailwind palette utilities (text-amber-400, bg-red-500/15, etc.)
@@ -177,15 +285,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             // Border style
             document.documentElement.setAttribute('data-custom-border', customColors.border);
             if (customColors.border === 'wobbly') {
-                if (!document.getElementById('custom-squiggle-svg')) {
-                    const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                    svgEl.id = 'custom-squiggle-svg';
-                    svgEl.setAttribute('style', 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none');
-                    svgEl.innerHTML = '<defs><filter id="squiggle" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="3" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G"/></filter></defs>';
-                    document.body.prepend(svgEl);
-                }
-            } else {
-                document.getElementById('custom-squiggle-svg')?.remove();
+                requestAnimationFrame(() => {
+                    wavyCleanupRef.current = applyWavyBorders();
+                });
             }
 
             safeWrite(CUSTOM_COLORS_KEY, JSON.stringify(customColors));
@@ -200,7 +302,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             document.documentElement.style.removeProperty('--cursor-text');
             document.documentElement.removeAttribute('data-custom-radius');
             document.documentElement.removeAttribute('data-custom-border');
-            document.getElementById('custom-squiggle-svg')?.remove();
             document.documentElement.style.removeProperty('--sans');
             document.documentElement.style.removeProperty('--heading');
             document.documentElement.style.removeProperty('--mono');
