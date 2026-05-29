@@ -176,6 +176,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
             // Border style
             document.documentElement.setAttribute('data-custom-border', customColors.border);
+            if (customColors.border === 'wobbly') {
+                if (!document.getElementById('custom-squiggle-svg')) {
+                    const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    svgEl.id = 'custom-squiggle-svg';
+                    svgEl.setAttribute('style', 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none');
+                    svgEl.innerHTML = '<defs><filter id="squiggle" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="3" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G"/></filter></defs>';
+                    document.body.prepend(svgEl);
+                }
+            } else {
+                document.getElementById('custom-squiggle-svg')?.remove();
+            }
 
             safeWrite(CUSTOM_COLORS_KEY, JSON.stringify(customColors));
         } else {
@@ -189,6 +200,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             document.documentElement.style.removeProperty('--cursor-text');
             document.documentElement.removeAttribute('data-custom-radius');
             document.documentElement.removeAttribute('data-custom-border');
+            document.getElementById('custom-squiggle-svg')?.remove();
             document.documentElement.style.removeProperty('--sans');
             document.documentElement.style.removeProperty('--heading');
             document.documentElement.style.removeProperty('--mono');
