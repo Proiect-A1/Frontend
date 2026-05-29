@@ -203,8 +203,9 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
     // Map subtaskId -> globally-sequential testIds (matches the pre-populated order in the hook)
     const subtaskTestIds = new Map<number, number[]>();
     if (problemTests) {
+        let globalIdx = 0;
         problemTests.subtasks.forEach(subtask => {
-            const testIds = subtask.tests.map(test => test.testIndex);
+            const testIds = subtask.tests.map(() => globalIdx++);
             subtaskTestIds.set(subtask.index, testIds);
         });
     }
@@ -312,9 +313,10 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                 const testIds = subtaskTestIds.get(st.subtaskId) ?? [];
                                 const subtaskTests = evalTests.filter(t => testIds.includes(t.testId));
                                 const hasPendingTests = subtaskTests.some(t => t.verdict === 'PENDING');
+                                const subtaskResultReceived = st.submissionId !== '';
                                 const full = st.score >= st.maxScore && st.maxScore > 0;
                                 const partial = st.score > 0 && !full;
-                                const subtaskVerdict: SubmissionVerdict = hasPendingTests ? 'PENDING' : full ? 'ACCEPTED' : partial ? 'PARTIAL' : 'REJECTED';
+                                const subtaskVerdict: SubmissionVerdict = (!subtaskResultReceived || hasPendingTests) ? 'PENDING' : full ? 'ACCEPTED' : partial ? 'PARTIAL' : 'REJECTED';
                                 const color = `${summaryBorderClasses[subtaskVerdict]} ${subtaskTextColor[subtaskVerdict]}`;
                                 const badgeClasses = summaryBadgeClasses[subtaskVerdict];
                                 const verdictLabel = submissionVerdictLabels[subtaskVerdict][lang === 'RO' ? 'ro' : 'en'];

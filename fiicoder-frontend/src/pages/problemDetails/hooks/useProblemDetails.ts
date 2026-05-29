@@ -304,6 +304,7 @@ export function useProblemDetails() {
             let initialTests: DoneTestEvent[] = [];
             let initialSubtasks: DoneSubtaskEvent[] = [];
             if (problemTests && problemTests.subtasks) {
+                let globalTestIdx = 0;
                 problemTests.subtasks.forEach(subtask => {
                     initialSubtasks.push({
                         request: "doneSubtask",
@@ -320,7 +321,7 @@ export function useProblemDetails() {
                         initialTests.push({
                             request: "doneTest",
                             submissionId: "",
-                            testId: test.testIndex,
+                            testId: globalTestIdx++,
                             verdict: "PENDING",
                             message: "",
                             score: 0,
