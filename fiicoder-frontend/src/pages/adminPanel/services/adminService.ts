@@ -88,9 +88,9 @@ export interface GroupsPage {
 export interface ProblemTestDetails {
     subtasks: {
         index: number;
-        score: number;
+        total_score: number;
         tests: {
-            index: number;
+            testIndex: number;
             score: number;
         }[];
     }[];

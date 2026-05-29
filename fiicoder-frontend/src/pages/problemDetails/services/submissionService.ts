@@ -62,9 +62,13 @@ export function connectToEvaluation(
     // Connection established - waiting for events
   };
 
+  let msgCount = 0;
+
   ws.onmessage = (messageEvent) => {
     try {
       const data = JSON.parse(messageEvent.data);
+      msgCount++;
+      console.log(`[WS] msg #${msgCount}:`, data.request, data);
 
       switch (data.request) {
         case "doneTest":
@@ -90,8 +94,8 @@ export function connectToEvaluation(
   };
 
   ws.onclose = (event) => {
+    console.log(`[WS] closed after ${msgCount} messages — code: ${event.code}, reason: "${event.reason}"`);
     if (event.code !== 1000) {
-      // Abnormal close
       console.warn("[WS] Connection closed unexpectedly:", event.code, event.reason);
     }
   };

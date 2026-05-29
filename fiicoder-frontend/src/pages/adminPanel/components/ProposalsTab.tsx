@@ -290,12 +290,12 @@ export default function ProposalsTab({
                                                 <div key={subtask.index} className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
                                                     <div className="flex justify-between items-center mb-2">
                                                         <p className="text-xs font-bold text-(--text-h)">Subtask {subtask.index + 1}</p>
-                                                        <p className="text-xs font-black text-(--accent)">{subtask.score} pct</p>
+                                                        <p className="text-xs font-black text-(--accent)">{subtask.total_score} pct</p>
                                                     </div>
                                                     <div className="grid grid-cols-5 gap-1">
                                                         {subtask.tests.map((test) => (
-                                                            <div key={test.index} className="aspect-square rounded-md bg-(--accent)/10 border border-(--accent)/30 flex items-center justify-center text-[10px] font-bold text-(--text-h)" title={`Test ${test.index + 1}: ${test.score} pct`}>
-                                                                {test.index + 1}
+                                                            <div key={test.testIndex} className="aspect-square rounded-md bg-(--accent)/10 border border-(--accent)/30 flex items-center justify-center text-[10px] font-bold text-(--text-h)" title={`Test ${test.testIndex + 1}: ${test.score} pct`}>
+                                                                {test.testIndex + 1}
                                                             </div>
                                                         ))}
                                                     </div>
