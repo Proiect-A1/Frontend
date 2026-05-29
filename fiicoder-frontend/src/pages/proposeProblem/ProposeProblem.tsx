@@ -175,9 +175,11 @@ export default function ProposeProblem() {
                                                 <span className="font-bold"> respinsă automat</span>.
                                                 După verificare, problema mai are nevoie de
                                                 <span className="font-bold"> aprobarea unui admin</span>.
-                                                Editarea unei propuneri existente nu funcționează
-                                                momentan — folosește acest formular pentru a trimite o
-                                                versiune nouă.
+                                                {isEditMode && (
+                                                    <> La editare, modificările doar de metadate se
+                                                    aplică imediat; dacă schimbi fișierele, problema
+                                                    trece din nou prin verificarea automată.</>
+                                                )}
                                             </>
                                         ) : (
                                             <>
@@ -187,8 +189,11 @@ export default function ProposeProblem() {
                                                 <span className="font-bold"> auto-rejected</span>.
                                                 After the check, the problem still needs
                                                 <span className="font-bold"> admin approval</span>.
-                                                Editing an existing proposal is not working right now —
-                                                use this form to submit a new version.
+                                                {isEditMode && (
+                                                    <> When editing, metadata-only changes apply
+                                                    immediately; changing the files sends the problem
+                                                    back through automated verification.</>
+                                                )}
                                             </>
                                         )}
                                     </p>

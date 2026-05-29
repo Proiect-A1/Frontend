@@ -29,16 +29,18 @@ export default function ProfileProposalsPanel({ proposals, loading, lang, onTogg
                     {lang === 'RO' ? (
                         <>
                             <span className="font-bold text-(--text-h)">Cum funcționează:</span>{' '}
-                            <span className="font-bold text-(--text-h)">„Propune"</span> trimite o
-                            versiune nouă. <span className="font-bold text-(--text-h)">„Editează"</span>{' '}
-                            propuneri existente este momentan indisponibil.
+                            <span className="font-bold text-(--text-h)">„Editează"</span> îți permite
+                            să modifici o propunere existentă. Dacă schimbi doar metadatele (titlu,
+                            enunț, limite, etichete) modificările se aplică imediat. Dacă schimbi
+                            fișierele, propunerea trece din nou prin verificarea automată.
                         </>
                     ) : (
                         <>
                             <span className="font-bold text-(--text-h)">How it works:</span>{' '}
-                            <span className="font-bold text-(--text-h)">"Propose"</span> submits a
-                            new version. <span className="font-bold text-(--text-h)">"Edit"</span> for
-                            existing proposals is currently unavailable.
+                            <span className="font-bold text-(--text-h)">"Edit"</span> lets you change
+                            an existing proposal. Metadata-only changes (title, statement, limits,
+                            tags) apply instantly. Changing the files sends the proposal back through
+                            automated verification.
                         </>
                     )}
                 </p>
@@ -130,11 +132,8 @@ export default function ProfileProposalsPanel({ proposals, loading, lang, onTogg
                                         {t.proposalView}
                                     </Link>
                                     <Link
-                                        to={`/propose/${proposal.id}`}
-                                        title={t.proposalEditUnavailableTooltip}
-                                        className="px-3 py-1.5 rounded-full border-2 border-(--accent)/40 bg-(--accent)/5 text-xs font-bold text-(--text-muted) hover:bg-(--accent)/15 transition-colors opacity-60 cursor-not-allowed"
-                                        onClick={(e) => e.preventDefault()}
-                                        aria-disabled
+                                        to={`/propose/${encodeURIComponent(proposal.id)}`}
+                                        className="px-3 py-1.5 rounded-full border-2 border-(--accent)/40 bg-transparent text-xs font-bold text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) transition-colors"
                                     >
                                         {t.proposalEdit}
                                     </Link>

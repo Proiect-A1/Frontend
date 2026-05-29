@@ -92,9 +92,65 @@ export const proposeProblemService = {
     return await pollProposalState(formData.title, formData.visibility);
   },
 
-  // Update an existing proposal (new version) -> The backend handles update with the same POST
-  updateProposal: async (_proposalId: string, formData: ProposeProblemForm): Promise<ProblemProposalResponse> => {
-    return await proposeProblemService.submitProposal(formData);
+  // Edit an existing proposal via PATCH /problems/{title}/edit.
+  //
+  // Only the fields that actually changed are sent in the body (the backend
+  // treats absent JsonNullable fields as "no change"). `fileChanges` is set to
+  // true only when the uploaded package content changed (source files, manual
+  // tests or generator script) — metadata-only edits send `false`.
+  //
+  // - fileChanges=true  → backend re-quarantines the problem and returns a
+  //                       presigned upload URL; we upload the new ZIP and poll
+  //                       until automated verification finishes.
+  // - fileChanges=false → backend applies metadata directly and moves the
+  //                       problem back to CHECKED; no upload / polling needed.
+  updateProposal: async (
+    proposalId: string,
+    formData: ProposeProblemForm,
+    originalForm: ProposeProblemForm,
+  ): Promise<ProblemProposalResponse> => {
+    const { body, fileChanges, hasMetadataChanges } = buildEditPayload(originalForm, formData);
+
+    if (!fileChanges && !hasMetadataChanges) {
+      throw { status: 0, body: null, message: 'NO_CHANGES' };
+    }
+
+    const { zipProblemUploadURL } = await apiClient.patch<{ zipProblemUploadURL: string | null }>(
+      `/problems/${encodeURIComponent(proposalId)}/edit`,
+      body,
+    );
+
+    // The title may have changed — subsequent lookups must use the new one.
+    const effectiveTitle = (body.title as string | undefined) ?? proposalId;
+
+    if (fileChanges) {
+      if (!zipProblemUploadURL) {
+        throw { status: 0, body: null, message: 'ZIP_UPLOAD_FAILED' };
+      }
+
+      const zipBlob = await createProblemZip(formData);
+      const uploadRes = await fetch(zipProblemUploadURL, {
+        method: 'PUT',
+        body: zipBlob,
+        headers: { 'Content-Type': 'application/octet-stream' },
+      });
+      if (!uploadRes.ok) {
+        throw { status: uploadRes.status, body: null, message: 'ZIP_UPLOAD_FAILED' };
+      }
+
+      // Edited package goes back through the async auto-verification pipeline.
+      return await pollProposalState(effectiveTitle, formData.visibility);
+    }
+
+    // Metadata-only edit: backend already moved the problem to CHECKED.
+    return {
+      id: effectiveTitle,
+      title: effectiveTitle,
+      status: 'checked',
+      visibility: 'private',
+      hasPendingUpdate: false,
+      submittedAt: new Date().toISOString(),
+    };
   },
 
   // Get specific proposal details (full form data for editing)
@@ -159,9 +215,69 @@ function buildPayload(formData: ProposeProblemForm) {
     description: formData.statement,
     difficultyLevel: formData.difficulty.toUpperCase(),
     timeLimit: Number(formData.timeLimit),
-    memoryLimit: Number(formData.memoryLimit),
+    // memoryLimit is an integer (MB) on the backend.
+    memoryLimit: Math.round(Number(formData.memoryLimit)),
     tagTitles: formData.tags,
   };
+}
+
+// Builds the PATCH body for an edit. Includes only the metadata fields that
+// differ from the original (matching the backend's JsonNullable semantics, where
+// an absent field means "leave unchanged"), and decides `fileChanges` by
+// comparing only the parts that end up inside the uploaded ZIP.
+function buildEditPayload(original: ProposeProblemForm, current: ProposeProblemForm) {
+  const body: Record<string, unknown> = {};
+
+  if (current.title !== original.title) body.title = current.title;
+  if (current.statement !== original.statement) body.description = current.statement;
+  if (current.difficulty !== original.difficulty) body.difficultyLevel = current.difficulty.toUpperCase();
+  if (Number(current.timeLimit) !== Number(original.timeLimit)) body.timeLimit = Number(current.timeLimit);
+  if (Math.round(Number(current.memoryLimit)) !== Math.round(Number(original.memoryLimit))) {
+    body.memoryLimit = Math.round(Number(current.memoryLimit));
+  }
+  if (!sameTags(current.tags, original.tags)) body.tagTitles = current.tags;
+
+  const hasMetadataChanges = Object.keys(body).length > 0;
+  const fileChanges = packageChanged(original, current);
+
+  body.fileChanges = fileChanges;
+
+  return { body, fileChanges, hasMetadataChanges };
+}
+
+// Tags are an unordered set on the backend; compare ignoring order.
+function sameTags(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false;
+  const sortedA = [...a].sort();
+  const sortedB = [...b].sort();
+  return sortedA.every((tag, i) => tag === sortedB[i]);
+}
+
+// True when anything that gets written into the ZIP changed: the categorized
+// source files, the manual test cases (only `manual` tests are serialized as
+// raw_tests, see zipHelper) and the generator script.
+function packageChanged(original: ProposeProblemForm, current: ProposeProblemForm): boolean {
+  if ((original.generatorScript || '') !== (current.generatorScript || '')) return true;
+  if (normalizeFiles(original.files) !== normalizeFiles(current.files)) return true;
+  if (normalizeManualTests(original.tests) !== normalizeManualTests(current.tests)) return true;
+  return false;
+}
+
+function normalizeFiles(files: ProposeProblemForm['files']): string {
+  return JSON.stringify(
+    files
+      .map((f) => ({ category: f.category, name: f.name, content: f.content }))
+      .sort((a, b) => `${a.category}/${a.name}`.localeCompare(`${b.category}/${b.name}`)),
+  );
+}
+
+function normalizeManualTests(tests: ProposeProblemForm['tests']): string {
+  return JSON.stringify(
+    tests
+      .filter((test) => test.source === 'manual')
+      .map((test) => ({ id: test.id, input: test.input, output: test.output }))
+      .sort((a, b) => a.id.localeCompare(b.id)),
+  );
 }
 
 function mapProblemStatus(status?: string): ProblemProposalResponse["status"] {

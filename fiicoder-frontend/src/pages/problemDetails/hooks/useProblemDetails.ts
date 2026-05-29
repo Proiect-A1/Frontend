@@ -151,7 +151,7 @@ export function useProblemDetails() {
 
     const [model, setModel] = useState(() => {
         try {
-            const saved = localStorage.getItem('fiicoder_problemdetails_layout_v3');
+            const saved = localStorage.getItem('fiicoder_problemdetails_layout_v4');
             if (saved) {
                 return FlexLayout.Model.fromJson(JSON.parse(saved));
             }
@@ -287,14 +287,14 @@ export function useProblemDetails() {
     // Called AFTER the model is updated — correct place to persist the layout
     const handleLayoutSave = useCallback((updatedModel: FlexLayout.Model) => {
         try {
-            localStorage.setItem('fiicoder_problemdetails_layout_v3', JSON.stringify(updatedModel.toJson()));
+            localStorage.setItem('fiicoder_problemdetails_layout_v4', JSON.stringify(updatedModel.toJson()));
         } catch {
             // Silently fail if localStorage is unavailable
         }
     }, []);
 
     const resetLayout = useCallback(() => {
-        localStorage.removeItem('fiicoder_problemdetails_layout_v3');
+        localStorage.removeItem('fiicoder_problemdetails_layout_v4');
         setModel(FlexLayout.Model.fromJson(getDefaultLayout(langRef.current)));
     }, []);
 

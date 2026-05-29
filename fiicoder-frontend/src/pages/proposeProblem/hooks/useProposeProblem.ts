@@ -90,6 +90,9 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
     const [isImporting, setIsImporting] = useState(false);
 
     const draftTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    // Snapshot of the proposal as loaded, used to diff metadata vs file changes
+    // when saving an edit.
+    const originalFormRef = useRef<ProposeProblemForm | null>(null);
 
     useEffect(() => {
         if (!proposalId) return;
@@ -102,6 +105,7 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
             .then((data) => {
                 if (!cancelled) {
                     methods.reset(data);
+                    originalFormRef.current = data;
                 }
             })
             .catch((err) => {
@@ -216,9 +220,34 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
 
             try {
                 if (isEditMode && proposalId) {
-                    await proposeProblemService.updateProposal(proposalId, data);
-                    toast.success('Propunerea a fost actualizată cu succes.');
-                    setSubmitStatus('success');
+                    const original = originalFormRef.current;
+                    if (!original) {
+                        const msg = 'Propunerea originală nu este încărcată. Reîncarcă pagina și încearcă din nou.';
+                        setSubmitStatus('error');
+                        setErrorMessage(msg);
+                        toast.error(msg, { duration: 8000 });
+                        return;
+                    }
+
+                    const result = await proposeProblemService.updateProposal(proposalId, data, original);
+                    // Diff future edits against the state we just saved.
+                    originalFormRef.current = data;
+
+                    if (result.status === 'rejected') {
+                        setSubmitStatus('error');
+                        const msg = 'Versiunea editată a fost respinsă automat la verificare. Verifică structura fișierelor din ZIP și încearcă din nou.';
+                        setErrorMessage(msg);
+                        toast.error(msg, { duration: 10000 });
+                    } else if (result.status === 'pending') {
+                        setSubmitStatus('pending-review');
+                        toast.info(
+                            'Modificările au fost trimise. Verificarea automată e încă în curs — vezi „Propunerile mele" peste câteva momente.',
+                            { duration: 9000 },
+                        );
+                    } else {
+                        setSubmitStatus('success');
+                        toast.success('Propunerea a fost actualizată cu succes.');
+                    }
                 } else {
                     setSubmitPhase('verifying');
                     const result = await proposeProblemService.submitProposal(data);
@@ -242,6 +271,12 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
                     }
                 }
             } catch (error) {
+                if (isApiError(error) && error.message === 'NO_CHANGES') {
+                    setSubmitStatus('idle');
+                    setErrorMessage('');
+                    toast.info('Nu ai modificat nimic — nu este nimic de salvat.');
+                    return;
+                }
                 setSubmitStatus('error');
                 const message = parseSubmitError(error);
                 setErrorMessage(message);
