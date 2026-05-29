@@ -119,7 +119,7 @@ export default function EditorPanel({
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.12 }}
+                                    transition={{ duration: 0.07 }}
                                     className="absolute z-50 w-full bg-(--surface-dropdown) border border-(--accent)/40 rounded-xl shadow-2xl overflow-hidden"
                                 >
                                     {availableLanguages.map((langItem) => (

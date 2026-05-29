@@ -160,7 +160,7 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
                                         initial={{ height: 0 }}
                                         animate={{ height: 'auto' }}
                                         exit={{ height: 0 }}
-                                        transition={{ duration: 0.2 }}
+                                        transition={{ duration: 0.12 }}
                                         className="overflow-hidden"
                                     >
                                         <div className="border-t border-(--accent)/10 divide-y divide-(--accent)/10">

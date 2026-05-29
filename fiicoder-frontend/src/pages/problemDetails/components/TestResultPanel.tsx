@@ -85,7 +85,7 @@ function TestRow({ t, idx }: { t: any; idx: number }) {
             key={idx}
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.15, delay: idx * 0.02 }}
+            transition={{ duration: 0.08, delay: idx * 0.01 }}
             className="flex items-center gap-3 p-2 rounded-lg border border-(--accent)/10 bg-(--accent)/5 hover:bg-(--accent)/10 transition-colors"
         >
             <span className="text-[10px] font-mono font-bold text-(--text-subtle) w-6 text-center shrink-0">#{t.testId}</span>
@@ -132,8 +132,8 @@ function Confetti() {
                 height: 3 + Math.random() * 7,
                 isCircle: Math.random() > 0.65,
                 rotate: Math.random() * 360,
-                delay: Math.random() * 1.0,
-                duration: 2.2 + Math.random() * 2.0,
+                delay: Math.random() * 0.25,
+                duration: 0.9 + Math.random() * 0.8,
                 drift: (Math.random() - 0.5) * 220,
                 rotateEnd: Math.random() * 720 * (Math.random() > 0.5 ? 1 : -1),
                 yEnd: vh * 1.15,
@@ -328,7 +328,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                         <motion.div
                                             initial={{ opacity: 0, y: 8 }}
                                             animate={{ opacity: 1, y: 0 }}
-                                            transition={{ duration: 0.2, delay: st.subtaskId * 0.05 }}
+                                            transition={{ duration: 0.1, delay: st.subtaskId * 0.02 }}
                                             className={`flex items-center gap-3 p-2.5 rounded-xl border ${color} cursor-pointer select-none`}
                                             onClick={() => toggleSubtask(st.subtaskId)}
                                         >
@@ -361,7 +361,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                                     initial={{ height: 0, opacity: 0 }}
                                                     animate={{ height: 'auto', opacity: 1 }}
                                                     exit={{ height: 0, opacity: 0 }}
-                                                    transition={{ duration: 0.2 }}
+                                                    transition={{ duration: 0.12 }}
                                                     className="overflow-hidden"
                                                 >
                                                     <div className="pl-5 pt-1.5 pb-0.5 space-y-1">
