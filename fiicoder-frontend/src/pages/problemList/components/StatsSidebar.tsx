@@ -24,7 +24,7 @@ export default function StatsSidebar() {
             <motion.div
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.28, ease: "easeOut" }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
                 className="p-5 rounded-3xl border-2 border-(--accent) bg-(--surface-card) card-glow overflow-y-auto custom-scrollbar max-h-[calc(100svh-8.5rem)]"
             >
                 <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: staggerConfig } }}>
@@ -68,7 +68,7 @@ export default function StatsSidebar() {
             <motion.div
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.28, ease: "easeOut", delay: 0.07 }}
+                transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
                 className="p-5 rounded-3xl border-2 border-(--accent) bg-(--surface-card) card-glow"
             >
                 <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: staggerConfig } }}>

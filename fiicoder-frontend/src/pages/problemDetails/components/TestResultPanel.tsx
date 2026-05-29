@@ -85,7 +85,7 @@ function TestRow({ t, idx }: { t: any; idx: number }) {
             key={idx}
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.12, delay: idx * 0.015 }}
+            transition={{ duration: 0.15, delay: idx * 0.02 }}
             className="flex items-center gap-3 p-2 rounded-lg border border-(--accent)/10 bg-(--accent)/5 hover:bg-(--accent)/10 transition-colors"
         >
             <span className="text-[10px] font-mono font-bold text-(--text-subtle) w-6 text-center shrink-0">#{t.testId}</span>
@@ -328,7 +328,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                         <motion.div
                                             initial={{ opacity: 0, y: 8 }}
                                             animate={{ opacity: 1, y: 0 }}
-                                            transition={{ duration: 0.15, delay: st.subtaskId * 0.035 }}
+                                            transition={{ duration: 0.2, delay: st.subtaskId * 0.05 }}
                                             className={`flex items-center gap-3 p-2.5 rounded-xl border ${color} cursor-pointer select-none`}
                                             onClick={() => toggleSubtask(st.subtaskId)}
                                         >
@@ -361,7 +361,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                                     initial={{ height: 0, opacity: 0 }}
                                                     animate={{ height: 'auto', opacity: 1 }}
                                                     exit={{ height: 0, opacity: 0 }}
-                                                    transition={{ duration: 0.16 }}
+                                                    transition={{ duration: 0.2 }}
                                                     className="overflow-hidden"
                                                 >
                                                     <div className="pl-5 pt-1.5 pb-0.5 space-y-1">

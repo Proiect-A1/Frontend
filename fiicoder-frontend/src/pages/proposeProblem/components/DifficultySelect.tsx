@@ -39,7 +39,7 @@ export default function DifficultySelect({ value, onChange }: DifficultySelectPr
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.09 }}
+                            transition={{ duration: 0.12 }}
                             className="absolute z-50 mt-1 w-full bg-(--surface-dropdown) border border-(--accent)/30 rounded-2xl overflow-hidden"
                         >
                             {difficulties.map((diff) => (

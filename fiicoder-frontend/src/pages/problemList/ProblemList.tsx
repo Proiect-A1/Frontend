@@ -180,8 +180,8 @@ export default function ProblemList() {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{
-                    delay: (index % ITEMS_PER_PAGE) * 0.05,
-                    duration: 0.22,
+                    delay: (index % ITEMS_PER_PAGE) * 0.07,
+                    duration: 0.3,
                   }}
                 >
                   <Link
