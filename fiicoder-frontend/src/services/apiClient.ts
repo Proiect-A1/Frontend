@@ -1,17 +1,16 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 const TOKEN_KEY = 'fiicoder_jwt';
 
-// Cloudflare Access Service Token (necesar pentru a trece de firewall-ul CF)
-const CF_ACCESS_CLIENT_ID = import.meta.env.VITE_CF_ACCESS_CLIENT_ID || '77c033abcecc445a14ca70470aebdbd9.access';
-const CF_ACCESS_CLIENT_SECRET = import.meta.env.VITE_CF_ACCESS_CLIENT_SECRET || 'a312fdd32366072f0cd1d6fb9ff7acccc68ca388d1b40c14a42ea7a1ff818293';
+const CF_ACCESS_CLIENT_ID = import.meta.env.VITE_CF_ACCESS_CLIENT_ID;
+const CF_ACCESS_CLIENT_SECRET = import.meta.env.VITE_CF_ACCESS_CLIENT_SECRET;
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 function getAuthHeaders(): Record<string, string> {
   const token = localStorage.getItem(TOKEN_KEY);
   return {
-    'CF-Access-Client-Id': CF_ACCESS_CLIENT_ID,
-    'CF-Access-Client-Secret': CF_ACCESS_CLIENT_SECRET,
+    ...(CF_ACCESS_CLIENT_ID ? { 'CF-Access-Client-Id': CF_ACCESS_CLIENT_ID } : {}),
+    ...(CF_ACCESS_CLIENT_SECRET ? { 'CF-Access-Client-Secret': CF_ACCESS_CLIENT_SECRET } : {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 }

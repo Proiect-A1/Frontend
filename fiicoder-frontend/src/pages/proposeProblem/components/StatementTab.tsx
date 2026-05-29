@@ -159,8 +159,7 @@ export default function StatementTab() {
         );
         setActiveLang("en");
       }
-    } catch (e) {
-      console.error("Translation failed", e);
+    } catch {
     } finally {
       setIsTranslating(false);
     }
