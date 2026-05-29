@@ -1,0 +1,45 @@
+name: Deploy to Prod
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Executing remote SSH commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -e 
+            echo "Frontend deployment has started..."
+
+            # Mergem în folderul corespondent pentru Frontend
+            cd ~/fiicoder/prod/Frontend
+
+            # Ne asigurăm că tragem de pe branch-ul de dev
+            git fetch --all
+            git checkout main
+            git reset --hard frontend/main
+            git clean -fd
+
+            # Ne întoarcem la root /home/github/sandbox și refacem containerul
+            cd ../
+
+            docker compose down prod-frontend
+            docker compose build --build-arg VITE_OPENAI_API_KEY=${{ secrets.VITE_OPENAI_API_KEY }} prod-frontend
+            docker compose up -d prod-frontend
+
+            docker image prune -f
+            sleep 20
+            echo "FRONTEND DEPLOYMENT LOGS"
+            docker logs prod-fiicoder-frontend 
+            echo "✅ Frontend deployment has finished successfully!"
