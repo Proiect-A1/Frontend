@@ -76,9 +76,10 @@ export function useProblemDetails() {
                 type: 'row',
                 weight: 100,
                 children: [
+                    // ── Left: Description ──────────────────────────────
                     {
                         type: 'tabset',
-                        weight: 40,
+                        weight: 30,
                         children: [
                             {
                                 type: 'tab',
@@ -87,9 +88,10 @@ export function useProblemDetails() {
                             },
                         ],
                     },
+                    // ── Middle: Result (top) + Submissions (bottom) ────
                     {
                         type: 'row',
-                        weight: 60,
+                        weight: 35,
                         children: [
                             {
                                 type: 'tabset',
@@ -97,38 +99,33 @@ export function useProblemDetails() {
                                 children: [
                                     {
                                         type: 'tab',
-                                        name: currentLang === 'RO' ? 'Cod' : 'Code',
-                                        component: 'editor',
+                                        name: currentLang === 'RO' ? 'Rezultat' : 'Result',
+                                        component: 'testresult',
                                     },
                                 ],
                             },
                             {
-                                type: 'row',
+                                type: 'tabset',
                                 weight: 45,
                                 children: [
                                     {
-                                        type: 'tabset',
-                                        weight: 50,
-                                        children: [
-                                            {
-                                                type: 'tab',
-                                                name: currentLang === 'RO' ? 'Rezultat' : 'Result',
-                                                component: 'testresult',
-                                            },
-                                        ],
-                                    },
-                                    {
-                                        type: 'tabset',
-                                        weight: 50,
-                                        children: [
-                                            {
-                                                type: 'tab',
-                                                name: currentLang === 'RO' ? 'Submisii' : 'Submissions',
-                                                component: 'submissions',
-                                            },
-                                        ],
+                                        type: 'tab',
+                                        name: currentLang === 'RO' ? 'Submisii' : 'Submissions',
+                                        component: 'submissions',
                                     },
                                 ],
+                            },
+                        ],
+                    },
+                    // ── Right: Editor ──────────────────────────────────
+                    {
+                        type: 'tabset',
+                        weight: 35,
+                        children: [
+                            {
+                                type: 'tab',
+                                name: currentLang === 'RO' ? 'Cod' : 'Code',
+                                component: 'editor',
                             },
                         ],
                     },
@@ -139,7 +136,7 @@ export function useProblemDetails() {
 
     const [model, setModel] = useState(() => {
         try {
-            const saved = localStorage.getItem('fiicoder_problemdetails_layout_v2');
+            const saved = localStorage.getItem('fiicoder_problemdetails_layout_v3');
             if (saved) {
                 return FlexLayout.Model.fromJson(JSON.parse(saved));
             }
@@ -275,14 +272,14 @@ export function useProblemDetails() {
     // Called AFTER the model is updated — correct place to persist the layout
     const handleLayoutSave = useCallback((updatedModel: FlexLayout.Model) => {
         try {
-            localStorage.setItem('fiicoder_problemdetails_layout_v2', JSON.stringify(updatedModel.toJson()));
+            localStorage.setItem('fiicoder_problemdetails_layout_v3', JSON.stringify(updatedModel.toJson()));
         } catch {
             // Silently fail if localStorage is unavailable
         }
     }, []);
 
     const resetLayout = useCallback(() => {
-        localStorage.removeItem('fiicoder_problemdetails_layout_v2');
+        localStorage.removeItem('fiicoder_problemdetails_layout_v3');
         setModel(FlexLayout.Model.fromJson(getDefaultLayout(langRef.current)));
     }, []);
 

@@ -23,7 +23,7 @@ export const staggerConfig = prefersReducedMotion()
   ? { staggerChildren: 0, delayChildren: 0 }
   : { staggerChildren: 0.08, delayChildren: 0.1 };
 
-// vertical slide + fade 
+// vertical slide + fade
 export const itemVariants = prefersReducedMotion()
   ? {
       hidden: { opacity: 0, y: 0 },

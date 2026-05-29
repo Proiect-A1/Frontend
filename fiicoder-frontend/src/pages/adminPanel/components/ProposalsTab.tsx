@@ -6,7 +6,15 @@ import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
-import { containerVariants, itemVariants } from '../../../utils/motionConfig';
+const itemVariants = {
+    hidden: { opacity: 0, y: 6 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.12, ease: 'easeOut' } },
+};
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.03, delayChildren: 0.03 } },
+    exit: { opacity: 0, transition: { duration: 0.08 } },
+};
 import { useLanguage, useT } from '../../../language/Language';
 import { adminService, type ProblemProposal, type ProblemProposalDetail, type AcceptedProblem } from '../services/adminService';
 import { unpackTranslation } from '../../../utils/translationPacker';
