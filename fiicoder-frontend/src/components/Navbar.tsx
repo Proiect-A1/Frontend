@@ -270,6 +270,12 @@ export default function Navbar() {
               {t.archiveBtn}
             </Link>
 
+            {isAuthenticated && (
+              <Link to="/leaderboard" className={getNavLinkClass("/leaderboard")}>
+                {lang === "RO" ? "Clasament" : "Leaderboard"}
+              </Link>
+            )}
+
             {!isAuthenticated && (
               <Link to="/login" className={getNavLinkClass("/login")}>
                 {t.loginBtn}
@@ -525,6 +531,12 @@ export default function Navbar() {
               <Link to="/problems" onClick={closeMenu} className={getNavLinkClass("/problems") + " text-center"}>
                 {t.archiveBtn}
               </Link>
+
+              {isAuthenticated && (
+                <Link to="/leaderboard" onClick={closeMenu} className={getNavLinkClass("/leaderboard") + " text-center"}>
+                  {lang === "RO" ? "Clasament" : "Leaderboard"}
+                </Link>
+              )}
 
               {isAuthenticated && (
                 <Link to="/classes" onClick={closeMenu} className={getNavLinkClass("/classes") + " text-center"}>

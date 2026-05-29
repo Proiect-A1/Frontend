@@ -17,6 +17,7 @@ const ClassDetails = lazyWithRetry(() => import("./pages/classDetails/ClassDetai
 const Profile = lazyWithRetry(() => import("./pages/profile/Profile"));
 const AdminPanel = lazyWithRetry(() => import("./pages/adminPanel/AdminPanel"));
 const ProposeProblem = lazyWithRetry(() => import("./pages/proposeProblem/ProposeProblem"));
+const Leaderboard = lazyWithRetry(() => import("./pages/leaderboard/Leaderboard"));
 
 function NotFound() {
   return (
@@ -64,6 +65,14 @@ function AnimatedRoutes() {
             <Route path="/login" element={<Login />} />
             <Route path="/problems" element={<ProblemList />} />
             <Route path="/problems/:problemTitle" element={<ProblemDetails />} />
+            <Route
+              path="/leaderboard"
+              element={
+                <ProtectedRoute>
+                  <Leaderboard />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/profile"
               element={
