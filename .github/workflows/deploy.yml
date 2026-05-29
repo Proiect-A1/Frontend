@@ -23,7 +23,7 @@ jobs:
             echo "Frontend deployment has started..."
 
             # Mergem în folderul corespondent pentru Frontend
-            cd /home/github/sandbox/Frontend
+            cd ~/fiicoder/dev/Frontend
 
             # Ne asigurăm că tragem de pe branch-ul de dev
             git fetch --all
