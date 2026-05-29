@@ -8,6 +8,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { containerVariants, pageVariants } from '../../utils/motionConfig';
 import { profileService } from '../../services/profileService';
 import { proposeProblemService } from '../proposeProblem/services/proposeProblemService';
+import type { ProblemProposalResponse } from '../proposeProblem/types/proposeProblem';
 import { problemService } from '../../services/problemService';
 import { toast } from 'sonner';
 import ProfileSidebar from './components/ProfileSidebar';
@@ -66,12 +67,21 @@ export default function Profile() {
         currentVisibility: 'public' | 'private',
     ) => {
         const newVisibility = currentVisibility === 'public' ? 'PRIVATE' : 'PUBLIC';
+        const newVisibilityLower = newVisibility.toLowerCase() as 'public' | 'private';
         setTogglingTitle(title);
+
+        const queryKey = ['profile', 'proposals', userId];
+        const previous = queryClient.getQueryData(queryKey);
+        queryClient.setQueryData<ProblemProposalResponse[]>(
+            queryKey,
+            old => old?.map(p => p.title === title ? { ...p, visibility: newVisibilityLower } : p),
+        );
+
         try {
             await problemService.changeVisibility(title, newVisibility);
-            await queryClient.invalidateQueries({ queryKey: ['profile', 'proposals'] });
             toast.success(lang === 'RO' ? 'Vizibilitate actualizată.' : 'Visibility updated.');
         } catch {
+            queryClient.setQueryData(queryKey, previous);
             toast.error(
                 lang === 'RO'
                     ? 'Eroare la actualizarea vizibilității.'
