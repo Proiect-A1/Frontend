@@ -410,20 +410,43 @@
 /* ── CUSTOM THEME WOBBLY BORDER ── */
 @keyframes custom-wobble {
     0%, 100% { border-radius: 28px; }
-    20%       { border-radius: 35px 18px 32px 22px / 22px 34px 18px 36px; }
-    40%       { border-radius: 20px 34px 22px 36px / 36px 20px 34px 18px; }
-    60%       { border-radius: 34px 22px 36px 18px / 18px 36px 22px 34px; }
-    80%       { border-radius: 22px 36px 18px 34px / 34px 18px 36px 22px; }
+    20%       { border-radius: 36px 20px 32px 24px / 24px 34px 20px 38px; }
+    40%       { border-radius: 22px 34px 24px 36px / 38px 22px 36px 20px; }
+    60%       { border-radius: 36px 24px 36px 20px / 20px 38px 24px 36px; }
+    80%       { border-radius: 24px 38px 20px 36px / 36px 20px 38px 24px; }
 }
 
-[data-theme='custom'][data-custom-border='wobbly'] .flexlayout__tabset {
-    animation: custom-wobble 7s ease-in-out infinite !important;
+/* Tailwind rounded classes – fără !important, deci animația câștigă direct */
+[data-theme='custom'][data-custom-border='wobbly'] .rounded-3xl,
+[data-theme='custom'][data-custom-border='wobbly'] .rounded-2xl {
+    animation: custom-wobble 6s ease-in-out infinite;
 }
-[data-theme='custom'][data-custom-border='wobbly'] .flexlayout__tab {
-    animation: custom-wobble 7s ease-in-out infinite 2s !important;
+[data-theme='custom'][data-custom-border='wobbly'] .rounded-xl,
+[data-theme='custom'][data-custom-border='wobbly'] .rounded-lg {
+    animation: custom-wobble 5s ease-in-out infinite 0.8s;
+}
+[data-theme='custom'][data-custom-border='wobbly'] .rounded-full {
+    animation: custom-wobble 4s ease-in-out infinite 1.5s;
+}
+
+/* Flexlayout panels – border-radius are !important în baza CSS-ului nostru,
+   deci folosim ::before ca să nu existe conflicte */
+[data-theme='custom'][data-custom-border='wobbly'] .flexlayout__tabset {
+    border: none !important;
+    position: relative !important;
+}
+[data-theme='custom'][data-custom-border='wobbly'] .flexlayout__tabset::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--accent);
+    border-radius: 28px;
+    pointer-events: none;
+    z-index: 10;
+    animation: custom-wobble 6s ease-in-out infinite;
 }
 [data-theme='custom'][data-custom-border='wobbly'] .flexlayout__outline_rect {
-    animation: custom-wobble 7s ease-in-out infinite !important;
+    animation: custom-wobble 4s ease-in-out infinite !important;
 }
 
 /* ── CUSTOM THEME RADIUS VARIANTS ── */

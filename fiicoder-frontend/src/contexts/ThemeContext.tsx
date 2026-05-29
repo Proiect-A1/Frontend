@@ -163,7 +163,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
                 sans:  { sans: "system-ui, 'Segoe UI', Roboto, sans-serif",  heading: "system-ui, 'Segoe UI', Roboto, sans-serif" },
                 serif: { sans: "'Lora', Georgia, serif",                     heading: "'Lora', Georgia, serif" },
                 mono:  { sans: "'JetBrains Mono', 'Courier New', monospace", heading: "'JetBrains Mono', 'Courier New', monospace" },
-                pixel: { sans: "'Press Start 2P', monospace",                heading: "'Press Start 2P', monospace" },
+                pixel: { sans: "'Pixelify Sans', monospace",                 heading: "'Pixelify Sans', monospace" },
             };
             const fontCfg = FONT_MAP[customColors.font];
             document.documentElement.style.setProperty('--sans', fontCfg.sans);
