@@ -225,7 +225,9 @@ export default function ProposalsTab({
                                     <div className="flex flex-wrap items-center gap-2 text-xs text-(--text-muted)">
                                         <span>
                                             {t.proposalByLabel}{' '}
-                                            <span className="text-(--text-h) font-bold">{selectedProposal.authorUsername}</span>
+                                            <span className="text-(--text-h) font-bold">
+                                                {selectedProposalMeta?.authorUsername || selectedProposal.authorUsername}
+                                            </span>
                                         </span>
                                         {selectedProposalMeta?.createdAt && (
                                             <>
@@ -278,32 +280,33 @@ export default function ProposalsTab({
                                 </div>
 
                                 {/* Tests section */}
-                                <div className="space-y-3 border-t border-(--accent)/15 pt-4">
-                                    <p className="text-[11px] font-bold uppercase tracking-widest text-(--text-muted)">
+                                <div className="border-t border-(--accent)/15 pt-4">
+                                    <p className="text-[11px] font-bold uppercase tracking-widest text-(--text-muted) mb-2">
                                         {t.proposalTestsLabel}
                                     </p>
                                     {isTestsLoading ? (
-                                        <p className="text-sm text-(--text-muted)">{t.proposalTestsLoading}</p>
+                                        <p className="text-xs text-(--text-muted)">{t.proposalTestsLoading}</p>
                                     ) : testsData?.subtasks && testsData.subtasks.length > 0 ? (
-                                        <div className="space-y-3">
-                                            {testsData.subtasks.map((subtask) => (
-                                                <div key={subtask.index} className="rounded-2xl border border-(--accent)/20 bg-black/15 p-3">
-                                                    <div className="flex justify-between items-center mb-2">
-                                                        <p className="text-xs font-bold text-(--text-h)">Subtask {subtask.index + 1}</p>
-                                                        <p className="text-xs font-black text-(--accent)">{subtask.total_score} pct</p>
-                                                    </div>
-                                                    <div className="grid grid-cols-5 gap-1">
-                                                        {subtask.tests.map((test) => (
-                                                            <div key={test.testIndex} className="aspect-square rounded-md bg-(--accent)/10 border border-(--accent)/30 flex items-center justify-center text-[10px] font-bold text-(--text-h)" title={`Test ${test.testIndex + 1}: ${test.score} pct`}>
-                                                                {test.testIndex + 1}
-                                                            </div>
-                                                        ))}
-                                                    </div>
+                                        <div className="rounded-xl border border-(--accent)/20 overflow-hidden">
+                                            {testsData.subtasks.map((subtask, i) => (
+                                                <div
+                                                    key={subtask.index}
+                                                    className={`flex items-center gap-3 px-3 py-2 text-xs ${i > 0 ? 'border-t border-(--accent)/10' : ''}`}
+                                                >
+                                                    <span className="font-bold text-(--text-h) w-20 shrink-0">
+                                                        Subtask {subtask.index + 1}
+                                                    </span>
+                                                    <span className="text-(--text-muted) flex-1">
+                                                        {subtask.tests.length} {subtask.tests.length === 1 ? 'test' : 'teste'}
+                                                    </span>
+                                                    <span className="font-black text-(--accent) shrink-0">
+                                                        {subtask.total_score} pct
+                                                    </span>
                                                 </div>
                                             ))}
                                         </div>
                                     ) : (
-                                        <p className="text-sm text-(--text-muted)">{t.proposalNoTests}</p>
+                                        <p className="text-xs text-(--text-muted)">{t.proposalNoTests}</p>
                                     )}
                                 </div>
 

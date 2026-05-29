@@ -226,7 +226,7 @@ export const adminService = {
                 return {
                     id: p.title,
                     title: p.title,
-                    authorUsername: p.proposedBy || p.authorUsername || 'unknown',
+                    authorUsername: p.user?.username || p.proposedBy || p.authorUsername || 'unknown',
                     description: p.description || '',
                     difficulty: p.difficulty || '',
                     status: normalizedStatus,
@@ -246,7 +246,7 @@ export const adminService = {
             return {
                 id: p.title,
                 title: p.title,
-                authorUsername: 'unknown', // Not provided by this DTO
+                authorUsername: p.user?.username || p.authorUsername || 'unknown',
                 description: p.description || '',
                 status: 'PENDING',
                 createdAt: new Date().toISOString(),

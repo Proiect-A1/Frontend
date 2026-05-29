@@ -26,7 +26,7 @@ export const submissionService = {
   getByProblem: (title: string) =>
     apiClient.get<ProblemSubmissionDTO[]>(`/problems/${encodeURIComponent(title)}/submissions`),
 
-  // GET /api/problems/{title}/tests
+  // GET /api/problems/{title}/tests 
   getTests: (title: string) =>
     apiClient.get<ProblemTestDetailsDTO>(`/problems/${encodeURIComponent(title)}/tests`),
 };
