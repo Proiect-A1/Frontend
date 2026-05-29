@@ -7,6 +7,9 @@ import TestResultPanel from './components/TestResultPanel';
 import SubmissionsPanel from './components/SubmissionsPanel';
 import SubmissionDetailModal from './components/SubmissionDetailModal';
 import ToolbarPanel from './components/ToolbarPanel';
+import NotesPanel from './components/NotesPanel';
+import DiffPanel from './components/DiffPanel';
+import PaintPanel from './components/PaintPanel';
 import 'flexlayout-react/style/dark.css';
 import { useProblemDetails } from './hooks/useProblemDetails';
 import type { ProblemSubmissionDTO } from './types/problemDetails';
@@ -62,6 +65,7 @@ export default function ProblemDetails() {
         handleLayoutSave,
         resetLayout,
         problemTests,
+        problemTitle,
         codeRef,
     } = useProblemDetails();
 
@@ -152,6 +156,12 @@ export default function ProblemDetails() {
                 );
             case 'submissions':
                 return <SubmissionsPanel isAuthenticated={isAuthenticated} recentSubmissions={recentSubmissions} lang={lang} onSelectSubmission={setSelectedSubmission} />;
+            case 'notes':
+                return <NotesPanel lang={lang} problemTitle={problemTitle ?? ''} />;
+            case 'diff':
+                return <DiffPanel lang={lang} recentSubmissions={recentSubmissions} codeRef={codeRef} language={language} />;
+            case 'paint':
+                return <PaintPanel lang={lang} problemTitle={problemTitle ?? ''} />;
             default:
                 return null;
         }

@@ -76,7 +76,7 @@ export function useProblemDetails() {
                 type: 'row',
                 weight: 100,
                 children: [
-                    // ── Left: Description ──────────────────────────────
+                    // ── Left: Description + Notes + Paint ─────────────
                     {
                         type: 'tabset',
                         weight: 30,
@@ -86,9 +86,19 @@ export function useProblemDetails() {
                                 name: currentLang === 'RO' ? 'Descriere' : 'Description',
                                 component: 'description',
                             },
+                            {
+                                type: 'tab',
+                                name: currentLang === 'RO' ? 'Notițe' : 'Notes',
+                                component: 'notes',
+                            },
+                            {
+                                type: 'tab',
+                                name: currentLang === 'RO' ? 'Desen' : 'Paint',
+                                component: 'paint',
+                            },
                         ],
                     },
-                    // ── Middle: Result (top) + Submissions (bottom) ────
+                    // ── Middle: Result (top) + Submissions + Diff (bottom)
                     {
                         type: 'row',
                         weight: 35,
@@ -112,6 +122,11 @@ export function useProblemDetails() {
                                         type: 'tab',
                                         name: currentLang === 'RO' ? 'Submisii' : 'Submissions',
                                         component: 'submissions',
+                                    },
+                                    {
+                                        type: 'tab',
+                                        name: 'Diff',
+                                        component: 'diff',
                                     },
                                 ],
                             },
