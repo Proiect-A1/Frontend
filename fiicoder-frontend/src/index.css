@@ -407,6 +407,25 @@
     color: var(--text);
 }
 
+/* ── CUSTOM THEME WOBBLY BORDER ── */
+@keyframes custom-wobble {
+    0%, 100% { border-radius: 28px; }
+    20%       { border-radius: 35px 18px 32px 22px / 22px 34px 18px 36px; }
+    40%       { border-radius: 20px 34px 22px 36px / 36px 20px 34px 18px; }
+    60%       { border-radius: 34px 22px 36px 18px / 18px 36px 22px 34px; }
+    80%       { border-radius: 22px 36px 18px 34px / 34px 18px 36px 22px; }
+}
+
+[data-theme='custom'][data-custom-border='wobbly'] .flexlayout__tabset {
+    animation: custom-wobble 7s ease-in-out infinite !important;
+}
+[data-theme='custom'][data-custom-border='wobbly'] .flexlayout__tab {
+    animation: custom-wobble 7s ease-in-out infinite 2s !important;
+}
+[data-theme='custom'][data-custom-border='wobbly'] .flexlayout__outline_rect {
+    animation: custom-wobble 7s ease-in-out infinite !important;
+}
+
 /* ── CUSTOM THEME RADIUS VARIANTS ── */
 [data-theme='custom'][data-custom-radius='medium'] .rounded-3xl { border-radius: 12px !important; }
 [data-theme='custom'][data-custom-radius='medium'] .rounded-2xl { border-radius: 10px !important; }

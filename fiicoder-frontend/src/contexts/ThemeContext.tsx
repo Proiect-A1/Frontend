@@ -12,12 +12,14 @@ export type Theme = (typeof THEMES)[number];
 const DEFAULT_THEME: Theme = "fii";
 
 export type CustomRadius = 'rounded' | 'medium' | 'square';
-export type CustomFont   = 'sans' | 'serif' | 'mono';
+export type CustomFont   = 'sans' | 'serif' | 'mono' | 'pixel';
+export type CustomBorder = 'default' | 'wobbly';
 export interface CustomColors {
   bg: string;
   accent: string;
   radius: CustomRadius;
   font: CustomFont;
+  border: CustomBorder;
 }
 
 interface ThemeContextValue {
@@ -48,7 +50,7 @@ const THEME_FAVICONS: Record<Theme, string> = {
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 const CUSTOM_COLORS_KEY = "fiicoder_custom_colors";
-const DEFAULT_CUSTOM_COLORS: CustomColors = { bg: "#090812", accent: "#ff5eb6", radius: 'rounded', font: 'sans' };
+const DEFAULT_CUSTOM_COLORS: CustomColors = { bg: "#090812", accent: "#ff5eb6", radius: 'rounded', font: 'sans', border: 'default' };
 
 function isTheme(value: string | null): value is Theme {
   return value !== null && THEMES.includes(value as Theme);
@@ -70,15 +72,17 @@ function safeReadCustomColors(): CustomColors {
   try {
     const stored = localStorage.getItem(CUSTOM_COLORS_KEY);
     if (!stored) return DEFAULT_CUSTOM_COLORS;
-    const parsed = JSON.parse(stored) as Partial<{ bg: string; accent: string; radius: string; font: string }>;
+    const parsed = JSON.parse(stored) as Partial<{ bg: string; accent: string; radius: string; font: string; border: string }>;
     if (parsed && typeof parsed.bg === "string" && typeof parsed.accent === "string") {
       return {
         bg:     parsed.bg,
         accent: parsed.accent,
         radius: (['rounded', 'medium', 'square'] as CustomRadius[]).includes(parsed.radius as CustomRadius)
           ? (parsed.radius as CustomRadius) : 'rounded',
-        font:   (['sans', 'serif', 'mono'] as CustomFont[]).includes(parsed.font as CustomFont)
+        font:   (['sans', 'serif', 'mono', 'pixel'] as CustomFont[]).includes(parsed.font as CustomFont)
           ? (parsed.font as CustomFont) : 'sans',
+        border: (['default', 'wobbly'] as CustomBorder[]).includes(parsed.border as CustomBorder)
+          ? (parsed.border as CustomBorder) : 'default',
       };
     }
     return DEFAULT_CUSTOM_COLORS;
@@ -159,15 +163,19 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
                 sans:  { sans: "system-ui, 'Segoe UI', Roboto, sans-serif",  heading: "system-ui, 'Segoe UI', Roboto, sans-serif" },
                 serif: { sans: "'Lora', Georgia, serif",                     heading: "'Lora', Georgia, serif" },
                 mono:  { sans: "'JetBrains Mono', 'Courier New', monospace", heading: "'JetBrains Mono', 'Courier New', monospace" },
+                pixel: { sans: "'Press Start 2P', monospace",                heading: "'Press Start 2P', monospace" },
             };
             const fontCfg = FONT_MAP[customColors.font];
             document.documentElement.style.setProperty('--sans', fontCfg.sans);
             document.documentElement.style.setProperty('--heading', fontCfg.heading);
-            if (customColors.font === 'mono') {
-                document.documentElement.style.setProperty('--mono', "'JetBrains Mono', 'Courier New', monospace");
+            if (customColors.font === 'mono' || customColors.font === 'pixel') {
+                document.documentElement.style.setProperty('--mono', fontCfg.sans);
             } else {
                 document.documentElement.style.removeProperty('--mono');
             }
+
+            // Border style
+            document.documentElement.setAttribute('data-custom-border', customColors.border);
 
             safeWrite(CUSTOM_COLORS_KEY, JSON.stringify(customColors));
         } else {
@@ -180,6 +188,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             document.documentElement.style.removeProperty('--cursor-pointer');
             document.documentElement.style.removeProperty('--cursor-text');
             document.documentElement.removeAttribute('data-custom-radius');
+            document.documentElement.removeAttribute('data-custom-border');
             document.documentElement.style.removeProperty('--sans');
             document.documentElement.style.removeProperty('--heading');
             document.documentElement.style.removeProperty('--mono');

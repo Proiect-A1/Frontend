@@ -434,86 +434,71 @@ export default function Navbar() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.15 }}
-              className="hidden xl:block absolute right-5 top-full mt-3 w-40 bg-(--surface-dropdown) border border-(--accent)/40 rounded-2xl shadow-xl overflow-hidden z-50"
+              className="hidden xl:block absolute right-5 top-full mt-3 w-52 bg-(--surface-dropdown) border border-(--accent)/40 rounded-2xl shadow-xl overflow-hidden z-50"
             >
-              {themes.filter(t => t !== 'mcdonalds').map((themeName) => (
-                <div key={themeName} className="flex flex-col border-b border-(--accent)/10 last:border-none">
+              <div className="p-2 grid grid-cols-2 gap-1">
+                {themes.filter(t => t !== 'mcdonalds').map((themeName) => (
                   <button
-                    onClick={() => {
-                      setTheme(themeName);
-                      if (themeName !== "custom") {
-                        setIsThemeOpen(false);
-                      }
-                    }}
-                    className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                    key={themeName}
+                    onClick={() => { setTheme(themeName); if (themeName !== "custom") setIsThemeOpen(false); }}
+                    className={`text-center px-2 py-1.5 text-xs rounded-lg transition-colors ${
                       theme === themeName
-                        ? "text-(--text-h) bg-(--accent)/20 font-bold"
+                        ? "bg-(--accent)/20 text-(--text-h) font-bold"
                         : "text-(--text-muted) hover:bg-(--accent)/10 hover:text-(--text-h)"
                     }`}
                   >
                     {formatThemeLabel(themeName)}
                   </button>
+                ))}
+              </div>
 
-                  {themeName === "custom" && theme === "custom" && (
-                    <div className="px-4 py-3 flex flex-col gap-3 bg-black/10 border-t border-(--accent)/20">
-                      <div className="flex items-center gap-2 text-xs text-(--text-muted)">
-                        <input
-                          type="color"
-                          value={customColors.bg}
-                          onChange={(e) => setCustomColors({ bg: e.target.value })}
-                          className="w-9 h-9 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
-                        />
-                        <span>{t.navBackground}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-(--text-muted)">
-                        <input
-                          type="color"
-                          value={customColors.accent}
-                          onChange={(e) => setCustomColors({ accent: e.target.value })}
-                          className="w-9 h-9 rounded cursor-pointer bg-transparent border-none p-0 shrink-0"
-                        />
-                        <span>Accent</span>
-                      </div>
-                      <div className="flex flex-col gap-1.5">
-                        <span className="text-xs text-(--text-muted)">{t.navCorners}</span>
-                        <div className="flex gap-1">
-                          {(["rounded", "medium", "square"] as const).map((r) => (
-                            <button
-                              key={r}
-                              onClick={() => setCustomColors({ radius: r })}
-                              className={`flex-1 text-xs py-1 rounded border transition-colors ${
-                                customColors.radius === r
-                                  ? "bg-(--accent) text-white border-(--accent)"
-                                  : "border-(--accent)/30 text-(--text-muted) hover:border-(--accent)/60"
-                              }`}
-                            >
-                              {r === "rounded" ? "◯" : r === "medium" ? "▢" : "□"}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-1.5">
-                        <span className="text-xs text-(--text-muted)">Font</span>
-                        <div className="flex gap-1">
-                          {(["sans", "serif", "mono"] as const).map((f) => (
-                            <button
-                              key={f}
-                              onClick={() => setCustomColors({ font: f })}
-                              className={`flex-1 text-xs py-1 rounded border transition-colors ${
-                                customColors.font === f
-                                  ? "bg-(--accent) text-white border-(--accent)"
-                                  : "border-(--accent)/30 text-(--text-muted) hover:border-(--accent)/60"
-                              }`}
-                            >
-                              {f === "sans" ? "Aa" : f === "serif" ? "Ff" : "{}"}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+              {theme === "custom" && (
+                <div className="px-3 py-2.5 flex flex-col gap-2 bg-black/10 border-t border-(--accent)/20">
+                  <div className="flex gap-2">
+                    <div className="flex items-center gap-1.5 text-xs text-(--text-muted) flex-1">
+                      <input type="color" value={customColors.bg} onChange={(e) => setCustomColors({ bg: e.target.value })} className="w-7 h-7 rounded cursor-pointer bg-transparent border-none p-0 shrink-0" />
+                      <span>{t.navBackground}</span>
                     </div>
-                  )}
+                    <div className="flex items-center gap-1.5 text-xs text-(--text-muted) flex-1">
+                      <input type="color" value={customColors.accent} onChange={(e) => setCustomColors({ accent: e.target.value })} className="w-7 h-7 rounded cursor-pointer bg-transparent border-none p-0 shrink-0" />
+                      <span>Accent</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs text-(--text-muted)">{t.navCorners}</span>
+                    <div className="flex gap-1">
+                      {(["rounded", "medium", "square"] as const).map((r) => (
+                        <button key={r} onClick={() => setCustomColors({ radius: r })}
+                          className={`flex-1 text-xs py-0.5 rounded border transition-colors ${customColors.radius === r ? "bg-(--accent) text-white border-(--accent)" : "border-(--accent)/30 text-(--text-muted) hover:border-(--accent)/60"}`}>
+                          {r === "rounded" ? "◯" : r === "medium" ? "▢" : "□"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs text-(--text-muted)">{lang === "RO" ? "Margine" : "Border"}</span>
+                    <div className="flex gap-1">
+                      {(["default", "wobbly"] as const).map((b) => (
+                        <button key={b} onClick={() => setCustomColors({ border: b })}
+                          className={`flex-1 text-xs py-0.5 rounded border transition-colors ${customColors.border === b ? "bg-(--accent) text-white border-(--accent)" : "border-(--accent)/30 text-(--text-muted) hover:border-(--accent)/60"}`}>
+                          {b === "default" ? "―" : "〰"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs text-(--text-muted)">Font</span>
+                    <div className="flex gap-1">
+                      {(["sans", "serif", "mono", "pixel"] as const).map((f) => (
+                        <button key={f} onClick={() => setCustomColors({ font: f })}
+                          className={`flex-1 text-[10px] py-0.5 rounded border transition-colors ${customColors.font === f ? "bg-(--accent) text-white border-(--accent)" : "border-(--accent)/30 text-(--text-muted) hover:border-(--accent)/60"}`}>
+                          {f === "sans" ? "Aa" : f === "serif" ? "Ff" : f === "mono" ? "{}" : "⊞"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              ))}
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -665,9 +650,27 @@ export default function Navbar() {
                       </div>
                     </div>
                     <div className="flex flex-col gap-1.5">
+                      <span className="text-sm text-(--text-muted)">{lang === "RO" ? "Margine" : "Border"}</span>
+                      <div className="flex gap-1">
+                        {(["default", "wobbly"] as const).map((b) => (
+                          <button
+                            key={b}
+                            onClick={() => setCustomColors({ border: b })}
+                            className={`flex-1 text-sm py-1.5 rounded border transition-colors ${
+                              customColors.border === b
+                                ? "bg-(--accent) text-white border-(--accent)"
+                                : "border-(--accent)/30 text-(--text-muted) hover:border-(--accent)/60"
+                            }`}
+                          >
+                            {b === "default" ? "―" : "〰"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
                       <span className="text-sm text-(--text-muted)">Font</span>
                       <div className="flex gap-1">
-                        {(["sans", "serif", "mono"] as const).map((f) => (
+                        {(["sans", "serif", "mono", "pixel"] as const).map((f) => (
                           <button
                             key={f}
                             onClick={() => setCustomColors({ font: f })}
@@ -677,7 +680,7 @@ export default function Navbar() {
                                 : "border-(--accent)/30 text-(--text-muted) hover:border-(--accent)/60"
                             }`}
                           >
-                            {f === "sans" ? "Aa" : f === "serif" ? "Ff" : "{}"}
+                            {f === "sans" ? "Aa" : f === "serif" ? "Ff" : f === "mono" ? "{}" : "⊞"}
                           </button>
                         ))}
                       </div>
