@@ -34,12 +34,12 @@ jobs:
             # Ne întoarcem la root /home/github/sandbox și refacem containerul
             cd ../
 
-            docker compose down frontend
-            docker compose build --build-arg VITE_OPENAI_API_KEY=${{ secrets.VITE_OPENAI_API_KEY }} frontend
-            docker compose up -d frontend
+            docker compose down dev-frontend
+            docker compose build --build-arg VITE_OPENAI_API_KEY=${{ secrets.VITE_OPENAI_API_KEY }} dev-frontend
+            docker compose up -d dev-frontend
 
             docker image prune -f
             sleep 20
             echo "FRONTEND DEPLOYMENT LOGS"
-            docker logs fiicoder-frontend 
+            docker logs dev-fiicoder-frontend 
             echo "✅ Frontend deployment has finished successfully!"
