@@ -1,14 +1,18 @@
 import { motion } from 'framer-motion';
-import { useT } from '../../../language/Language';
+import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { useT, useLanguage } from '../../../language/Language';
 import { itemVariants, staggerConfig } from '../../../utils/motionConfig';
+import { useAuth } from '../../../contexts/AuthContext';
+import { leaderboardService, type LeaderboardEntry } from '../../leaderboard/services/leaderboardService';
 
-const MOCK_TOP_SOLVERS = [
-    { username: 'GolderbergPrivate', solved: 142, rank: 1, avatar: 'GP' },
-    { username: 'algo_master', solved: 128, rank: 2, avatar: 'AM' },
-    { username: 'cpp_wizard', solved: 95, rank: 3, avatar: 'CW' },
-    { username: 'theorist', solved: 84, rank: 4, avatar: 'TH' },
-    { username: 'newbie_coder', solved: 67, rank: 5, avatar: 'NC' },
-];
+const TOP_SOLVERS_COUNT = 5;
+
+function solverInitials(entry: LeaderboardEntry): string {
+    const { firstName, lastName, username } = entry.user;
+    const combined = `${firstName?.charAt(0) ?? ''}${lastName?.charAt(0) ?? ''}`.trim();
+    return (combined || username.charAt(0) || '?').toUpperCase();
+}
 
 const MOCK_POPULAR_PROBLEMS = [
     { title: 'A+B Problem', solved: 1250, difficulty: 'EASY' },
@@ -18,6 +22,19 @@ const MOCK_POPULAR_PROBLEMS = [
 
 export default function StatsSidebar() {
     const t = useT();
+    const { lang } = useLanguage();
+    const { isAuthenticated } = useAuth();
+
+    const topSolversQuery = useQuery({
+        queryKey: ['leaderboard-top', TOP_SOLVERS_COUNT],
+        queryFn: () => leaderboardService.getLeaderboard(1, TOP_SOLVERS_COUNT),
+        staleTime: 5 * 60_000,
+        gcTime: 30 * 60_000,
+        retry: 0,
+        enabled: isAuthenticated,
+    });
+
+    const topSolvers = topSolversQuery.data ?? [];
 
     return (
         <aside className="hidden xl:flex flex-col gap-6">
@@ -32,33 +49,51 @@ export default function StatsSidebar() {
                     <h2 className="text-m font-bold text-(--text-h) uppercase tracking-widest">
                         {t.topSolvers}
                     </h2>
-                    <span className="text-xs     bg-(--accent)/10 text-(--accent) px-2 py-0.5 rounded-full font-bold">
-                        GLOBAL
-                    </span>
+                    <Link to="/leaderboard" className="text-xs bg-(--accent)/10 text-(--accent) px-2 py-0.5 rounded-full font-bold hover:bg-(--accent)/20 transition-colors">
+                        {lang === 'RO' ? 'Vezi tot' : 'View all'}
+                    </Link>
                 </motion.div>
                 <div className="page-line-horizontal" />
                 <motion.div variants={{ visible: { transition: staggerConfig } }} initial="hidden" animate="visible" className="space-y-4">
-                    {MOCK_TOP_SOLVERS.map((user, idx) => (
-                        <motion.div variants={itemVariants} key={user.username} className="flex items-center justify-between group p-3 rounded-2xl border border-(--accent)/30 bg-(--accent)/5 hover:border-(--accent)/60 transition-colors">
-                            <div className="flex items-center gap-3">
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black border-2 ${
+                    {!isAuthenticated && (
+                        <p className="text-xs text-(--text-muted) p-3 rounded-2xl border border-(--accent)/20 bg-(--accent)/5">
+                            {lang === 'RO' ? 'Autentifică-te pentru a vedea clasamentul.' : 'Log in to see the leaderboard.'}
+                        </p>
+                    )}
+
+                    {isAuthenticated && topSolversQuery.isPending && (
+                        Array.from({ length: TOP_SOLVERS_COUNT }).map((_, i) => (
+                            <div key={i} className="h-[58px] rounded-2xl border border-(--accent)/20 bg-(--accent)/5 animate-pulse" />
+                        ))
+                    )}
+
+                    {isAuthenticated && !topSolversQuery.isPending && topSolvers.length === 0 && (
+                        <p className="text-xs text-(--text-muted) p-3 rounded-2xl border border-(--accent)/20 bg-(--accent)/5">
+                            {lang === 'RO' ? 'Niciun rezolvator încă.' : 'No solvers yet.'}
+                        </p>
+                    )}
+
+                    {topSolvers.map((entry, idx) => (
+                        <motion.div variants={itemVariants} key={entry.user.id} className="flex items-center justify-between group p-3 rounded-2xl border border-(--accent)/30 bg-(--accent)/5 hover:border-(--accent)/60 transition-colors">
+                            <div className="flex items-center gap-3 min-w-0">
+                                <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-[10px] font-black border-2 ${
                                     idx === 0 ? 'bg-amber-500/20 border-amber-500 text-amber-500' :
                                     idx === 1 ? 'bg-slate-400/20 border-slate-400 text-slate-400' :
                                     idx === 2 ? 'bg-orange-700/20 border-orange-700 text-orange-700' :
                                     'bg-(--accent)/10 border-(--accent) text-(--accent)'
                                 }`}>
-                                    {user.avatar}
+                                    {solverInitials(entry)}
                                 </div>
                                 <div className="min-w-0">
                                     <p className="text-sm font-bold text-(--text-h) truncate group-hover:text-(--accent) transition-colors">
-                                        {user.username}
+                                        {entry.user.username}
                                     </p>
                                     <p className="text-[10px] text-(--text-muted)">
-                                        {user.solved} {t.solvedLabel}
+                                        {entry.solvedCount} {t.solvedLabel}
                                     </p>
                                 </div>
                             </div>
-                            <span className="text-xs font-black italic opacity-20">#{user.rank}</span>
+                            <span className="text-xs font-black italic opacity-20">#{entry.rank}</span>
                         </motion.div>
                     ))}
                 </motion.div>
