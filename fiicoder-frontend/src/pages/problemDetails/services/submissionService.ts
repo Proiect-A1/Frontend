@@ -67,8 +67,8 @@ export function connectToEvaluation(
   ws.onmessage = (messageEvent) => {
     try {
       const data = JSON.parse(messageEvent.data);
-      msgCount++;
-      console.log(`[WS] msg #${msgCount}:`, data.request, data);
+       msgCount++;
+      console.log(`[WS] #${msgCount} ${data.request} testId=${data.testId ?? '-'} subtaskId=${data.subtaskId ?? '-'}`);
 
       switch (data.request) {
         case "doneTest":
