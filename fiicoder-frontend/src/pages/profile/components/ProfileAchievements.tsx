@@ -15,9 +15,7 @@ type Achievement = {
     label: { ro: string; en: string };
     desc: { ro: string; en: string };
     unlocked: boolean;
-    // For numeric progress (e.g. 8/25 problems)
     progress?: { current: number; target: number; unit: { ro: string; en: string } };
-    // For non-numeric hints on locked achievements
     hint?: { ro: string; en: string };
 };
 
@@ -101,11 +99,11 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
             id: 'sharpshooter',
             icon: '🎯',
             label: { ro: 'Țintaș', en: 'Sharpshooter' },
-            desc: { ro: 'Rată de acceptare ≥ 80% (min. 5 submisii)', en: 'Acceptance rate ≥ 80% (min. 5 submissions)' },
+            desc: { ro: 'Rată acceptare ≥ 80% (min. 5 submisii)', en: 'Acceptance rate ≥ 80% (min. 5 submissions)' },
             unlocked: acceptance >= 80 && submissions >= 5,
             hint: {
-                ro: `Rată actuală: ${acceptance.toFixed(1)}% — îți trebuie ≥ 80% și cel puțin 5 submisii`,
-                en: `Current rate: ${acceptance.toFixed(1)}% — need ≥ 80% and at least 5 submissions`,
+                ro: `Rată actuală: ${acceptance.toFixed(1)}% — îți trebuie ≥ 80% cu cel puțin 5 submisii`,
+                en: `Current rate: ${acceptance.toFixed(1)}% — need ≥ 80% with at least 5 submissions`,
             },
         },
         {
@@ -120,7 +118,7 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
             id: 'specialist',
             icon: '🧩',
             label: { ro: 'Specialist', en: 'Specialist' },
-            desc: { ro: 'Profil de skills format (rezolvă ≥ 5 probleme cu același tag)', en: 'Skill profile built (solve ≥ 5 problems sharing a tag)' },
+            desc: { ro: 'Rezolvă ≥ 5 probleme cu același tag', en: 'Solve ≥ 5 problems sharing a tag' },
             unlocked: hasSkills,
             hint: {
                 ro: 'Rezolvă cel puțin 5 probleme care au același tag',
@@ -131,18 +129,18 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
             id: 'hard_hitter',
             icon: '🏔️',
             label: { ro: 'Alpinist', en: 'Hard Hitter' },
-            desc: { ro: 'Rezolvat cel puțin o problemă HARD', en: 'Solved at least one HARD problem' },
+            desc: { ro: 'Obține scor maxim la o problemă HARD', en: 'Get full score on a HARD problem' },
             unlocked: hasHard,
             hint: {
-                ro: 'Găsește o problemă de dificultate HARD și obține scor maxim',
-                en: 'Find a HARD difficulty problem and get full score',
+                ro: 'Găsește o problemă de dificultate HARD și obține 100 puncte',
+                en: 'Find a HARD difficulty problem and score 100 points',
             },
         },
         {
             id: 'contestant',
             icon: '🏆',
             label: { ro: 'Contestant', en: 'Contestant' },
-            desc: { ro: 'Rezolvat o problemă de tip CONTEST', en: 'Solved a CONTEST problem' },
+            desc: { ro: 'Rezolvat o problemă CONTEST', en: 'Solved a CONTEST problem' },
             unlocked: hasContest,
             hint: {
                 ro: 'Rezolvă o problemă din categoria CONTEST',
@@ -153,11 +151,11 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
             id: 'contributor',
             icon: '📦',
             label: { ro: 'Contributor', en: 'Contributor' },
-            desc: { ro: 'Cont de Profesor sau Admin — poți propune probleme', en: 'Professor or Admin account — can propose problems' },
+            desc: { ro: 'Cont Profesor sau Admin — poți propune probleme', en: 'Professor or Admin account — can propose problems' },
             unlocked: hasProposal,
             hint: {
                 ro: 'Disponibil doar pentru conturi de Profesor sau Admin',
-                en: 'Available only for Professor or Admin accounts',
+                en: 'Only available for Professor or Admin accounts',
             },
         },
     ];
@@ -167,8 +165,8 @@ export default function ProfileAchievementsModal({ profile, lang, isOpen, onClos
     const achievements = computeAchievements(profile);
     const unlocked = achievements.filter(a => a.unlocked);
     const locked = achievements.filter(a => !a.unlocked);
+    const pct = Math.round((unlocked.length / achievements.length) * 100);
 
-    // Close on Escape
     useEffect(() => {
         if (!isOpen) return;
         const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -176,7 +174,6 @@ export default function ProfileAchievementsModal({ profile, lang, isOpen, onClos
         return () => document.removeEventListener('keydown', handler);
     }, [isOpen, onClose]);
 
-    // Lock body scroll
     useEffect(() => {
         document.body.style.overflow = isOpen ? 'hidden' : '';
         return () => { document.body.style.overflow = ''; };
@@ -188,157 +185,164 @@ export default function ProfileAchievementsModal({ profile, lang, isOpen, onClos
                 <>
                     {/* Backdrop */}
                     <motion.div
-                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+                        className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
                     />
 
-                    {/* Panel */}
-                    <motion.div
-                        className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-(--surface-card) border-l border-(--accent)/30 shadow-2xl flex flex-col"
-                        initial={{ x: '100%' }}
-                        animate={{ x: 0 }}
-                        exit={{ x: '100%' }}
+                    {/* Panel — slide from left, matches AdminSidebar aesthetic */}
+                    <motion.aside
+                        className="fixed z-50 inset-y-0 left-0 w-full max-w-sm bg-(--surface-card) border-r-2 border-(--accent) flex flex-col shadow-2xl"
+                        initial={{ x: '-100%', opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: '-100%', opacity: 0 }}
                         transition={{ type: 'spring', damping: 28, stiffness: 280 }}
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between px-6 py-5 border-b border-(--accent)/20 shrink-0">
+                        <div className="flex items-start justify-between gap-3 p-6 pb-4 border-b border-(--accent)/20 shrink-0">
                             <div>
-                                <h2 className="text-lg font-bold text-(--text-h)">
+                                <h2 className="text-2xl font-bold text-(--text-h)">
                                     {lang === 'RO' ? 'Realizări' : 'Achievements'}
                                 </h2>
-                                <p className="text-xs text-(--text-muted) mt-0.5">
+                                <p className="text-xs text-(--text-muted) font-semibold mt-1">
                                     {unlocked.length}/{achievements.length} {lang === 'RO' ? 'deblocate' : 'unlocked'}
                                 </p>
                             </div>
                             <button
+                                type="button"
                                 onClick={onClose}
-                                className="w-8 h-8 rounded-full flex items-center justify-center border border-(--accent)/30 bg-(--accent)/5 hover:bg-(--accent)/15 text-(--text-muted) hover:text-(--text-h) transition-colors cursor-pointer"
+                                className="w-10 h-10 rounded-full border-2 border-(--accent)/50 bg-(--accent)/10 flex items-center justify-center text-(--text-h) hover:bg-(--accent)/20 transition-all active:scale-95 shrink-0 cursor-pointer"
                             >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
 
-                        {/* Progress bar global */}
+                        {/* Global progress */}
                         <div className="px-6 py-4 border-b border-(--accent)/10 shrink-0">
-                            <div className="flex items-center justify-between text-xs mb-1.5">
-                                <span className="text-(--text-muted)">{lang === 'RO' ? 'Progres total' : 'Overall progress'}</span>
-                                <span className="font-bold text-(--accent)">{Math.round(unlocked.length / achievements.length * 100)}%</span>
+                            <div className="flex items-center justify-between text-xs mb-2">
+                                <span className="text-(--text-muted) font-semibold uppercase tracking-widest">
+                                    {lang === 'RO' ? 'Progres total' : 'Overall progress'}
+                                </span>
+                                <span className="font-black text-(--accent)">{pct}%</span>
                             </div>
                             <div className="h-2 w-full rounded-full bg-(--accent)/10">
                                 <motion.div
                                     className="h-2 rounded-full bg-(--accent)"
                                     initial={{ width: 0 }}
-                                    animate={{ width: `${unlocked.length / achievements.length * 100}%` }}
-                                    transition={{ duration: 0.6, ease: 'easeOut', delay: 0.15 }}
+                                    animate={{ width: `${pct}%` }}
+                                    transition={{ duration: 0.7, ease: 'easeOut', delay: 0.2 }}
                                 />
                             </div>
                         </div>
 
-                        {/* List */}
-                        <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-4 space-y-3">
-                            {/* Unlocked */}
+                        {/* Achievement list */}
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-3">
+
+                            {/* Unlocked section */}
                             {unlocked.length > 0 && (
-                                <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-2">
+                                <div className="space-y-2">
+                                    <p className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3">
                                         ✓ {lang === 'RO' ? 'Deblocate' : 'Unlocked'}
                                     </p>
-                                    <div className="space-y-2">
-                                        {unlocked.map(a => (
-                                            <motion.div
-                                                key={a.id}
-                                                initial={{ opacity: 0, x: 16 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                className="flex items-center gap-3 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5"
-                                            >
-                                                <span className="text-2xl leading-none shrink-0">{a.icon}</span>
-                                                <div className="min-w-0">
-                                                    <p className="text-sm font-bold text-(--text-h)">
-                                                        {lang === 'RO' ? a.label.ro : a.label.en}
-                                                    </p>
-                                                    <p className="text-[11px] text-(--text-muted) mt-0.5">
-                                                        {lang === 'RO' ? a.desc.ro : a.desc.en}
-                                                    </p>
-                                                </div>
-                                                <svg className="w-4 h-4 text-emerald-400 shrink-0 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                                    {unlocked.map((a, i) => (
+                                        <motion.div
+                                            key={a.id}
+                                            initial={{ opacity: 0, x: -12 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.04 }}
+                                            className="rounded-2xl border border-emerald-500/25 bg-emerald-500/8 p-4 flex items-center gap-4"
+                                        >
+                                            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-2xl shrink-0">
+                                                {a.icon}
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="text-sm font-bold text-(--text-h)">
+                                                    {lang === 'RO' ? a.label.ro : a.label.en}
+                                                </p>
+                                                <p className="text-[11px] text-(--text-muted) mt-0.5 leading-relaxed">
+                                                    {lang === 'RO' ? a.desc.ro : a.desc.en}
+                                                </p>
+                                            </div>
+                                            <div className="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
+                                                <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                                                 </svg>
-                                            </motion.div>
-                                        ))}
-                                    </div>
+                                            </div>
+                                        </motion.div>
+                                    ))}
                                 </div>
                             )}
 
-                            {/* Locked */}
+                            {/* Locked section */}
                             {locked.length > 0 && (
-                                <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-(--text-muted) mb-2 mt-4">
+                                <div className="space-y-2">
+                                    <p className="text-xs font-bold text-(--text-muted) uppercase tracking-widest mb-3 mt-5">
                                         🔒 {lang === 'RO' ? 'Nedeblocate' : 'Locked'}
                                     </p>
-                                    <div className="space-y-2">
-                                        {locked.map(a => {
-                                            const pct = a.progress
-                                                ? Math.round((a.progress.current / a.progress.target) * 100)
-                                                : 0;
-                                            return (
-                                                <div
-                                                    key={a.id}
-                                                    className="flex flex-col gap-2 p-3 rounded-xl border border-(--accent)/15 bg-(--accent)/3"
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="text-2xl leading-none shrink-0 grayscale opacity-50">{a.icon}</span>
-                                                        <div className="min-w-0 flex-1">
-                                                            <p className="text-sm font-bold text-(--text-muted)">
-                                                                {lang === 'RO' ? a.label.ro : a.label.en}
-                                                            </p>
-                                                            <p className="text-[11px] text-(--text-subtle) mt-0.5">
-                                                                {lang === 'RO' ? a.desc.ro : a.desc.en}
-                                                            </p>
-                                                        </div>
-                                                        {a.progress && (
-                                                            <span className="text-[11px] font-bold font-mono text-(--text-muted) shrink-0">
-                                                                {a.progress.current}/{a.progress.target}
-                                                            </span>
-                                                        )}
+                                    {locked.map((a) => {
+                                        const barPct = a.progress
+                                            ? Math.round((a.progress.current / a.progress.target) * 100)
+                                            : 0;
+                                        return (
+                                            <div
+                                                key={a.id}
+                                                className="rounded-2xl border border-(--accent)/15 bg-(--accent)/5 p-4 flex flex-col gap-3"
+                                            >
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 rounded-2xl bg-(--accent)/10 flex items-center justify-center text-2xl shrink-0 grayscale opacity-50">
+                                                        {a.icon}
                                                     </div>
-
-                                                    {/* Progress bar pentru achievements numerice */}
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="text-sm font-bold text-(--text-muted)">
+                                                            {lang === 'RO' ? a.label.ro : a.label.en}
+                                                        </p>
+                                                        <p className="text-[11px] text-(--text-subtle) mt-0.5 leading-relaxed">
+                                                            {lang === 'RO' ? a.desc.ro : a.desc.en}
+                                                        </p>
+                                                    </div>
                                                     {a.progress && (
-                                                        <div className="pl-9">
-                                                            <div className="h-1.5 w-full rounded-full bg-(--accent)/10">
-                                                                <div
-                                                                    className="h-1.5 rounded-full bg-(--accent)/40 transition-all duration-500"
-                                                                    style={{ width: `${pct}%` }}
-                                                                />
-                                                            </div>
-                                                            <p className="text-[10px] text-(--text-subtle) mt-1">
-                                                                {lang === 'RO'
-                                                                    ? `${a.progress.current} din ${a.progress.target} ${a.progress.unit.ro}`
-                                                                    : `${a.progress.current} of ${a.progress.target} ${a.progress.unit.en}`}
-                                                            </p>
-                                                        </div>
-                                                    )}
-
-                                                    {/* Hint pentru achievements non-numerice */}
-                                                    {a.hint && !a.progress && (
-                                                        <div className="pl-9">
-                                                            <p className="text-[10px] text-(--text-subtle) italic">
-                                                                💡 {lang === 'RO' ? a.hint.ro : a.hint.en}
-                                                            </p>
-                                                        </div>
+                                                        <span className="text-xs font-black font-mono text-(--text-muted) shrink-0">
+                                                            {a.progress.current}<span className="opacity-40">/{a.progress.target}</span>
+                                                        </span>
                                                     )}
                                                 </div>
-                                            );
-                                        })}
-                                    </div>
+
+                                                {/* Numeric progress bar */}
+                                                {a.progress && (
+                                                    <div className="pl-16">
+                                                        <div className="h-1.5 w-full rounded-full bg-(--accent)/10 mb-1">
+                                                            <div
+                                                                className="h-1.5 rounded-full bg-(--accent)/35 transition-all duration-500"
+                                                                style={{ width: `${barPct}%` }}
+                                                            />
+                                                        </div>
+                                                        <p className="text-[10px] text-(--text-subtle)">
+                                                            {lang === 'RO'
+                                                                ? `${a.progress.current} din ${a.progress.target} ${a.progress.unit.ro}`
+                                                                : `${a.progress.current} of ${a.progress.target} ${a.progress.unit.en}`}
+                                                        </p>
+                                                    </div>
+                                                )}
+
+                                                {/* Hint for non-numeric */}
+                                                {a.hint && !a.progress && (
+                                                    <div className="pl-16">
+                                                        <p className="text-[10px] text-(--text-subtle) italic leading-relaxed">
+                                                            💡 {lang === 'RO' ? a.hint.ro : a.hint.en}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
-                    </motion.div>
+                    </motion.aside>
                 </>
             )}
         </AnimatePresence>
