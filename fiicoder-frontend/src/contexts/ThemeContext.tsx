@@ -3,7 +3,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -14,7 +13,7 @@ const DEFAULT_THEME: Theme = "fii";
 
 export type CustomRadius = 'rounded' | 'medium' | 'square';
 export type CustomFont   = 'sans' | 'serif' | 'mono' | 'pixel';
-export type CustomBorder = 'default' | 'wobbly';
+export type CustomBorder = 'default' | 'asymmetric' | 'dashed-dotted';
 export interface CustomColors {
   bg: string;
   accent: string;
@@ -82,7 +81,7 @@ function safeReadCustomColors(): CustomColors {
           ? (parsed.radius as CustomRadius) : 'rounded',
         font:   (['sans', 'serif', 'mono', 'pixel'] as CustomFont[]).includes(parsed.font as CustomFont)
           ? (parsed.font as CustomFont) : 'sans',
-        border: (['default', 'wobbly'] as CustomBorder[]).includes(parsed.border as CustomBorder)
+        border: (['default', 'asymmetric', 'dashed-dotted'] as CustomBorder[]).includes(parsed.border as CustomBorder)
           ? (parsed.border as CustomBorder) : 'default',
       };
     }
@@ -105,127 +104,14 @@ function safeWrite(key: string, value: string) {
   }
 }
 
-// ── WAVY BORDER ──────────────────────────────────────────────────────────────
-
-function generateWavyRectPath(w: number, h: number): string {
-  // SVG e mai mare cu OFF px pe fiecare parte față de element
-  const OFF = 4;   // trebuie să fie egal cu OFF din applyWavyBorders
-  const WL  = 52;  // lungimea unui val complet (px) — mai mare = mai plat
-  const A   = 3.5; // amplitudine — cât de mult deviază de la marginea dreaptă
-
-  const L = OFF, T = OFF, R = w - OFF, B = h - OFF;
-  const CR = Math.min(10, (R - L) / 6, (B - T) / 6);
-
-  // Q bezier pentru un segment orizontal, cu undă perpendiculară față de margine
-  function wX(xa: number, xb: number, y: number, outDir: number): string {
-    const dist = xb - xa;
-    const n = Math.max(2, Math.round(Math.abs(dist) / (WL / 2)));
-    const hw = dist / n;
-    let d = '', x = xa, out = true;
-    for (let i = 0; i < n; i++) {
-      const cy = (y + outDir * (out ? A : -A)).toFixed(2);
-      d += ` Q${(x + hw / 2).toFixed(2)},${cy} ${(x + hw).toFixed(2)},${y}`;
-      x += hw; out = !out;
-    }
-    return d;
-  }
-
-  // Q bezier pentru un segment vertical
-  function wY(ya: number, yb: number, x: number, outDir: number): string {
-    const dist = yb - ya;
-    const n = Math.max(2, Math.round(Math.abs(dist) / (WL / 2)));
-    const hw = dist / n;
-    let d = '', y = ya, out = true;
-    for (let i = 0; i < n; i++) {
-      const cx = (x + outDir * (out ? A : -A)).toFixed(2);
-      d += ` Q${cx},${(y + hw / 2).toFixed(2)} ${x},${(y + hw).toFixed(2)}`;
-      y += hw; out = !out;
-    }
-    return d;
-  }
-
-  return [
-    `M${L + CR},${T}`,
-    wX(L + CR, R - CR, T, -1),   // top — outward = sus (-y)
-    ` Q${R},${T} ${R},${T + CR}`,
-    wY(T + CR, B - CR, R, +1),   // right — outward = dreapta (+x)
-    ` Q${R},${B} ${R - CR},${B}`,
-    wX(R - CR, L + CR, B, +1),   // bottom — outward = jos (+y)
-    ` Q${L},${B} ${L},${B - CR}`,
-    wY(B - CR, T + CR, L, -1),   // left — outward = stânga (-x)
-    ` Q${L},${T} ${L + CR},${T} Z`,
-  ].join('');
-}
-
-const WAVY_SEL = '.flexlayout__tabset, .rounded-3xl, .rounded-2xl, .rounded-xl';
-
-function applyWavyBorders(): () => void {
-  const ros: ResizeObserver[] = [];
-  const seen = new WeakSet<Element>();
-  const ns = 'http://www.w3.org/2000/svg';
-  const OFF = 4;
-
-  function add(el: HTMLElement) {
-    if (seen.has(el) || el.hasAttribute('data-wavy-border')) return;
-    seen.add(el);
-    el.setAttribute('data-wavy-border', '1');
-    if (window.getComputedStyle(el).position === 'static') el.style.position = 'relative';
-
-    const svg = document.createElementNS(ns, 'svg') as SVGSVGElement;
-    svg.setAttribute('data-wavy-overlay', '1');
-    svg.style.cssText = `position:absolute;top:-${OFF}px;left:-${OFF}px;width:calc(100% + ${OFF*2}px);height:calc(100% + ${OFF*2}px);pointer-events:none;z-index:20;overflow:visible`;
-
-    const path = document.createElementNS(ns, 'path') as SVGPathElement;
-    path.style.fill = 'none';
-    path.style.stroke = 'var(--accent)';
-    path.style.strokeWidth = '2';
-    path.style.strokeLinecap = 'round';
-    path.style.strokeLinejoin = 'round';
-    svg.appendChild(path);
-    el.appendChild(svg);
-
-    const update = () => {
-      const w = el.offsetWidth + OFF * 2, h = el.offsetHeight + OFF * 2;
-      if (w < 20 || h < 20) return;
-      path.setAttribute('d', generateWavyRectPath(w, h));
-    };
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    ros.push(ro);
-  }
-
-  document.querySelectorAll<HTMLElement>(WAVY_SEL).forEach(add);
-
-  const mo = new MutationObserver(muts => {
-    for (const { addedNodes } of muts)
-      addedNodes.forEach(n => {
-        if (!(n instanceof HTMLElement)) return;
-        if (n.matches?.(WAVY_SEL)) add(n);
-        n.querySelectorAll<HTMLElement>(WAVY_SEL).forEach(add);
-      });
-  });
-  mo.observe(document.body, { childList: true, subtree: true });
-
-  return () => {
-    mo.disconnect();
-    ros.forEach(r => r.disconnect());
-    document.querySelectorAll('[data-wavy-overlay]').forEach(e => e.remove());
-    document.querySelectorAll('[data-wavy-border]').forEach(e => e.removeAttribute('data-wavy-border'));
-  };
-}
-
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(safeReadTheme);
 
   const [customColors, setCustomColorsState] = useState(safeReadCustomColors);
-  const wavyCleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
         safeWrite(THEME_STORAGE_KEY, theme);
-        wavyCleanupRef.current?.();
-        wavyCleanupRef.current = null;
         document.getElementById('custom-squiggle-svg')?.remove();
 
         // Resolve effective tone (light/dark) per theme — used to retarget
@@ -291,11 +177,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
             // Border style
             document.documentElement.setAttribute('data-custom-border', customColors.border);
-            if (customColors.border === 'wobbly') {
-                requestAnimationFrame(() => {
-                    wavyCleanupRef.current = applyWavyBorders();
-                });
-            }
 
             safeWrite(CUSTOM_COLORS_KEY, JSON.stringify(customColors));
         } else {

@@ -417,20 +417,46 @@
     filter: url('#trippy');
 }
 
-/* ── CUSTOM THEME WOBBLY BORDER ── */
-/* SVG wavy path injectat dinamic din JS (applyWavyBorders) pe fiecare element */
+/* ── CUSTOM THEME BORDER VARIANTS ── */
 
-/* Ascunde bordul drept — wavy SVG îl înlocuiește vizual */
-[data-theme='custom'][data-custom-border='wobbly'] .rounded-3xl,
-[data-theme='custom'][data-custom-border='wobbly'] .rounded-2xl,
-[data-theme='custom'][data-custom-border='wobbly'] .rounded-xl {
-    border-color: transparent !important;
+/* Asymmetric: alternating large/small corners on each element */
+[data-theme='custom'][data-custom-border='asymmetric'] .rounded-3xl,
+[data-theme='custom'][data-custom-border='asymmetric'] .rounded-2xl,
+[data-theme='custom'][data-custom-border='asymmetric'] .rounded-xl {
+    border-radius: 24px 6px 24px 6px !important;
+}
+[data-theme='custom'][data-custom-border='asymmetric'] .rounded-lg,
+[data-theme='custom'][data-custom-border='asymmetric'] .rounded-md {
+    border-radius: 12px 3px 12px 3px !important;
+}
+[data-theme='custom'][data-custom-border='asymmetric'] .rounded,
+[data-theme='custom'][data-custom-border='asymmetric'] .rounded-full {
+    border-radius: 8px 2px 8px 2px !important;
+}
+[data-theme='custom'][data-custom-border='asymmetric'] .flexlayout__tabset,
+[data-theme='custom'][data-custom-border='asymmetric'] .flexlayout__tab,
+[data-theme='custom'][data-custom-border='asymmetric'] .flexlayout__outline_rect {
+    border-radius: 6px 24px 6px 24px !important;
 }
 
-/* Flexlayout: scoate border-ul și permite SVG-ului să iasă în afară */
-[data-theme='custom'][data-custom-border='wobbly'] .flexlayout__tabset {
-    border: none !important;
-    overflow: visible !important;
+/* Dashed-dotted: dashed on top/bottom, dotted on left/right */
+[data-theme='custom'][data-custom-border='dashed-dotted'] .rounded-3xl,
+[data-theme='custom'][data-custom-border='dashed-dotted'] .rounded-2xl,
+[data-theme='custom'][data-custom-border='dashed-dotted'] .rounded-xl {
+    border-top-style: dashed !important;
+    border-bottom-style: dashed !important;
+    border-left-style: dotted !important;
+    border-right-style: dotted !important;
+    border-color: color-mix(in srgb, var(--accent) 65%, transparent) !important;
+    border-width: 2px !important;
+}
+[data-theme='custom'][data-custom-border='dashed-dotted'] .flexlayout__tabset {
+    border-top-style: dashed !important;
+    border-bottom-style: dashed !important;
+    border-left-style: dotted !important;
+    border-right-style: dotted !important;
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent) !important;
+    border-width: 2px !important;
 }
 
 /* ── CUSTOM THEME RADIUS VARIANTS ── */

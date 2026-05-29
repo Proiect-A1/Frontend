@@ -497,10 +497,10 @@ export default function Navbar() {
                   <div className="flex flex-col gap-1">
                     <span className="text-xs text-(--text-muted)">{lang === "RO" ? "Margine" : "Border"}</span>
                     <div className="flex gap-1">
-                      {(["default", "wobbly"] as const).map((b) => (
+                      {(["default", "asymmetric", "dashed-dotted"] as const).map((b) => (
                         <button key={b} onClick={() => setCustomColors({ border: b })}
                           className={`flex-1 text-xs py-0.5 rounded border transition-colors ${customColors.border === b ? "bg-(--accent) text-white border-(--accent)" : "border-(--accent)/30 text-(--text-muted) hover:border-(--accent)/60"}`}>
-                          {b === "default" ? "―" : "〰"}
+                          {b === "default" ? "―" : b === "asymmetric" ? "⌒" : "╌·"}
                         </button>
                       ))}
                     </div>
@@ -671,7 +671,7 @@ export default function Navbar() {
                     <div className="flex flex-col gap-1.5">
                       <span className="text-sm text-(--text-muted)">{lang === "RO" ? "Margine" : "Border"}</span>
                       <div className="flex gap-1">
-                        {(["default", "wobbly"] as const).map((b) => (
+                        {(["default", "asymmetric", "dashed-dotted"] as const).map((b) => (
                           <button
                             key={b}
                             onClick={() => setCustomColors({ border: b })}
@@ -681,7 +681,7 @@ export default function Navbar() {
                                 : "border-(--accent)/30 text-(--text-muted) hover:border-(--accent)/60"
                             }`}
                           >
-                            {b === "default" ? "―" : "〰"}
+                            {b === "default" ? "―" : b === "asymmetric" ? "⌒" : "╌·"}
                           </button>
                         ))}
                       </div>
