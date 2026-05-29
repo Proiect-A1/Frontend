@@ -108,45 +108,48 @@ function safeWrite(key: string, value: string) {
 // ── WAVY BORDER ──────────────────────────────────────────────────────────────
 
 function generateWavyRectPath(w: number, h: number): string {
-  const A = 5, L = 54, R = 22;
+  // Fiecare bump = semicert cu raza R_bump.
+  // Sweep-urile alternează → undă sinusoidală uniformă de jur-împrejur.
+  const R_BUMP = 10; // raza unui bump (diametru = 20px per semiciclu)
+  const C = Math.min(5, w / 8, h / 8); // raza colțurilor
 
-  function waveX(x1: number, x2: number, y: number, startUp: boolean): string {
+  function arcX(x1: number, x2: number, firstSweep: 0 | 1): string {
     const dist = x2 - x1;
-    const n = Math.max(1, Math.round(Math.abs(dist) / L));
-    const wl = dist / n;
-    let d = '', cx = x1, up = startUp;
+    const n = Math.max(2, Math.round(Math.abs(dist) / R_BUMP));
+    const d = dist / n;
+    const r = Math.abs(d) / 2;
+    let path = '', sw = firstSweep;
     for (let i = 0; i < n; i++) {
-      const dy = up ? -A : A;
-      d += ` C${(cx+wl*.3).toFixed(1)},${(y+dy).toFixed(1)} ${(cx+wl*.7).toFixed(1)},${(y+dy).toFixed(1)} ${(cx+wl).toFixed(1)},${y}`;
-      cx += wl; up = !up;
+      path += ` a${r.toFixed(2)} ${r.toFixed(2)} 0 0 ${sw} ${d.toFixed(2)} 0`;
+      sw = (1 - sw) as 0 | 1;
     }
-    return d;
+    return path;
   }
 
-  function waveY(y1: number, y2: number, x: number, startRight: boolean): string {
+  function arcY(y1: number, y2: number, firstSweep: 0 | 1): string {
     const dist = y2 - y1;
-    const n = Math.max(1, Math.round(Math.abs(dist) / L));
-    const wl = dist / n;
-    let d = '', cy = y1, right = startRight;
+    const n = Math.max(2, Math.round(Math.abs(dist) / R_BUMP));
+    const d = dist / n;
+    const r = Math.abs(d) / 2;
+    let path = '', sw = firstSweep;
     for (let i = 0; i < n; i++) {
-      const dx = right ? A : -A;
-      d += ` C${(x+dx).toFixed(1)},${(cy+wl*.3).toFixed(1)} ${(x+dx).toFixed(1)},${(cy+wl*.7).toFixed(1)} ${x},${(cy+wl).toFixed(1)}`;
-      cy += wl; right = !right;
+      path += ` a${r.toFixed(2)} ${r.toFixed(2)} 0 0 ${sw} 0 ${d.toFixed(2)}`;
+      sw = (1 - sw) as 0 | 1;
     }
-    return d;
+    return path;
   }
 
-  const r = Math.min(R, w / 4, h / 4);
+  // Sweep-uri: top 0=up, right 1=right, bottom 1=down, left 0=left
   return [
-    `M${r},0`,
-    waveX(r, w - r, 0, true),
-    ` Q${w},0 ${w},${r}`,
-    waveY(r, h - r, w, true),
-    ` Q${w},${h} ${w-r},${h}`,
-    waveX(w - r, r, h, false),
-    ` Q0,${h} 0,${h-r}`,
-    waveY(h - r, r, 0, false),
-    ` Q0,0 ${r},0 Z`,
+    `M${C},0`,
+    arcX(C, w - C, 0),
+    ` Q${w},0 ${w},${C}`,
+    arcY(C, h - C, 1),
+    ` Q${w},${h} ${w - C},${h}`,
+    arcX(w - C, C, 1),
+    ` Q0,${h} 0,${h - C}`,
+    arcY(h - C, C, 0),
+    ` Q0,0 ${C},0 Z`,
   ].join('');
 }
 
