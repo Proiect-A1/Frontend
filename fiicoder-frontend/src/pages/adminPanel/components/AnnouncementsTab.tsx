@@ -65,7 +65,8 @@ export default function AnnouncementsTab({
                 });
                 setFormLang('en');
             }
-        } catch {
+        } catch (e) {
+            console.error('Translation failed', e);
         } finally {
             setIsTranslating(false);
         }

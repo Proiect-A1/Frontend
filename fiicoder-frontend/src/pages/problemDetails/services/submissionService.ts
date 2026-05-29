@@ -62,9 +62,14 @@ export function connectToEvaluation(
     // Connection established - waiting for events
   };
 
+  let msgCount = 0;
+
   ws.onmessage = (messageEvent) => {
     try {
       const data = JSON.parse(messageEvent.data);
+       msgCount++;
+      console.log(`[WS] #${msgCount} ${data.request} testId=${data.testId ?? '-'} subtaskId=${data.subtaskId ?? '-'}`);
+
       switch (data.request) {
         case "doneTest":
           onEvent(data as DoneTestEvent);
@@ -76,9 +81,11 @@ export function connectToEvaluation(
           onEvent(data as DoneSubmissionEvent);
           onDone(data as DoneSubmissionEvent);
           break;
+        default:
+          console.warn("[WS] Unknown event type:", data.request);
       }
     } catch (err) {
-      onError("Eroare la procesarea răspunsului de la sandbox.");
+      console.error("[WS] Failed to parse message:", err);
     }
   };
 
@@ -86,7 +93,12 @@ export function connectToEvaluation(
     onError("Eroare la conexiunea WebSocket cu sandbox-ul.");
   };
 
-  ws.onclose = () => {};
+  ws.onclose = (event) => {
+    console.log(`[WS] closed after ${msgCount} messages — code: ${event.code}, reason: "${event.reason}"`);
+    if (event.code !== 1000) {
+      console.warn("[WS] Connection closed unexpectedly:", event.code, event.reason);
+    }
+  };
 
   // Return cleanup function
   return () => {
