@@ -10,8 +10,9 @@ import {
 } from '../services/proposeProblemService';
 import { createProblemZip } from '../utils/zipHelper';
 import { ZipImportError } from '../utils/unzipHelper';
-import type { ProposeProblemForm, ProblemProposalResponse } from '../types/proposeProblem';
+import type { ProposeProblemForm } from '../types/proposeProblem';
 import { validateGeneratorScript } from '../utils/generatorValidator';
+import { useTabParam } from '../../../hooks/useTabParam';
 
 interface ApiError { status: number; body: { message?: string; violations?: { message: string }[] } | null; message: string; }
 
@@ -77,7 +78,9 @@ type UseProposeProblemOptions = {
 export function useProposeProblem({ proposalId, navigate, methods, defaultValues }: UseProposeProblemOptions) {
     const isEditMode = Boolean(proposalId);
 
-    const [activeTab, setActiveTab] = useState('general');
+    const [activeTab, setActiveTab] = useTabParam('general', {
+        validValues: ['general', 'statement', 'files', 'tests', 'generator'],
+    });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error' | 'pending-review' | 'checked'>('idle');
@@ -85,8 +88,6 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
     const [submitPhase, setSubmitPhase] = useState<'idle' | 'uploading' | 'verifying'>('idle');
     const [hasDraft, setHasDraft] = useState(false);
     const [showDraftBanner, setShowDraftBanner] = useState(false);
-    const [proposals, setProposals] = useState<ProblemProposalResponse[] | null>(null);
-    const [loadingProposals, setLoadingProposals] = useState(false);
     const [isImporting, setIsImporting] = useState(false);
 
     const draftTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -150,29 +151,6 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
         };
     }, [isEditMode, methods]);
 
-    useEffect(() => {
-        let mounted = true;
-
-        async function loadProposals() {
-            setLoadingProposals(true);
-            try {
-                const data = await proposeProblemService.getMyProposals();
-                if (mounted) setProposals(data);
-            } catch {
-                if (mounted) setProposals([]);
-            } finally {
-                if (mounted) setLoadingProposals(false);
-            }
-        }
-
-        if (activeTab === 'proposals') {
-            void loadProposals();
-        }
-
-        return () => {
-            mounted = false;
-        };
-    }, [activeTab]);
 
     const handleRestoreDraft = useCallback(() => {
         const draft = loadDraft();
@@ -365,8 +343,6 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
         handleSaveDraftManual,
         handleResetForm,
         handleGoToNewProposal,
-        proposals,
-        loadingProposals,
         handleExport,
         handleImport,
         isImporting,

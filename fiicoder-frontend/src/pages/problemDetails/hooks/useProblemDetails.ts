@@ -14,6 +14,7 @@ import * as FlexLayout from 'flexlayout-react';
 import { applyMonacoTheme } from '../../../utils/monacoTheme';
 import { unindent } from '../utils/textUtils';
 import { unpackTranslation } from '../../../utils/translationPacker';
+import { useTabParam } from '../../../hooks/useTabParam';
 
 export function useProblemDetails() {
     const { problemTitle } = useParams();
@@ -36,7 +37,9 @@ export function useProblemDetails() {
     const [availableLanguages, setAvailableLanguages] = useState<LanguageDTO[]>([]);
     const [selectedLanguageId, setSelectedLanguageId] = useState<string>('');
     const [recentSubmissions, setRecentSubmissions] = useState<ProblemSubmissionDTO[]>([]);
-    const [activeTab, setActiveTab] = useState<'testresult' | 'submissions'>('testresult');
+    const [activeTab, setActiveTab] = useTabParam<'testresult' | 'submissions'>('testresult', {
+        validValues: ['testresult', 'submissions'],
+    });
 
     const [evalTests, setEvalTests] = useState<DoneTestEvent[]>([]);
     const [evalSubtasks, setEvalSubtasks] = useState<DoneSubtaskEvent[]>([]);

@@ -22,6 +22,7 @@ import AnnouncementsTab from './components/AnnouncementsTab';
 import AuditLogTab from './components/AuditLogTab';
 import GroupsTab from './components/GroupsTab';
 import AdminSidebar from './components/AdminSidebar';
+import { useTabParam } from '../../hooks/useTabParam';
 
 const tabs = [
     { id: 'users' as const },
@@ -37,7 +38,9 @@ type TabId = (typeof tabs)[number]['id'];
 export default function AdminPanel() {
     const t = useT();
     const { isAdmin } = useAuth();
-    const [activeTab, setActiveTab] = useState<TabId>('users');
+    const [activeTab, setActiveTab] = useTabParam<TabId>('users', {
+        validValues: tabs.map((tab) => tab.id),
+    });
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     // Data Hooks

@@ -14,6 +14,7 @@ import ProfileSidebar from './components/ProfileSidebar';
 import ProfileOverviewContent from './components/ProfileOverviewContent';
 import ProfileProposalsPanel from './components/ProfileProposalsPanel';
 import ProfileHomeworkPanel from './components/ProfileHomeworkPanel';
+import { useTabParam } from '../../hooks/useTabParam';
 
 export default function Profile() {
     const { username, userId, isAdmin, isProfessor } = useAuth();
@@ -21,7 +22,10 @@ export default function Profile() {
     const { theme } = useTheme();
     const queryClient = useQueryClient();
     const canViewProposals = isAdmin || isProfessor;
-    const [activeTab, setActiveTab] = useState<'overview' | 'proposals' | 'homework'>('overview');
+    const [activeTab, setActiveTab] = useTabParam<'overview' | 'proposals' | 'homework'>(
+        'overview',
+        { validValues: ['overview', 'proposals', 'homework'] },
+    );
     const [togglingTitle, setTogglingTitle] = useState<string | null>(null);
 
     const profileQuery = useQuery({

@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTabParam } from '../../../hooks/useTabParam';
 
 const docs = [
     {
@@ -35,7 +35,14 @@ const docs = [
 ];
 
 export default function ScriptDocumentation() {
-    const [activeTab, setActiveTab] = useState(0);
+    // Stored in the URL as a string index under a distinct param so it does
+    // not collide with the parent ProposeProblem `?tab=` param.
+    const [activeTabRaw, setActiveTabRaw] = useTabParam('0', {
+        paramName: 'doc',
+        validValues: docs.map((_, idx) => String(idx)),
+    });
+    const activeTab = Number(activeTabRaw);
+    const setActiveTab = (idx: number) => setActiveTabRaw(String(idx));
 
     return (
         <div className="flex flex-col h-full bg-(--surface-card) border border-(--accent)/25 rounded-2xl overflow-hidden mb-4">

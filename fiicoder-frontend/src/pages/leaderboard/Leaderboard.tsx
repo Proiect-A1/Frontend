@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useLanguage } from "../../language/Language";
+import UserAvatar from "../../components/UserAvatar";
 import { leaderboardService, type LeaderboardEntry } from "./services/leaderboardService";
 
 const PAGE_SIZE = 20;
@@ -123,10 +124,12 @@ export default function Leaderboard() {
                     {entry.rank}
                   </div>
 
-                  {/* avatar initials */}
-                  <div className="w-10 h-10 shrink-0 rounded-full border-2 border-(--accent)/40 bg-(--accent) flex items-center justify-center text-sm font-black text-white uppercase">
-                    {initials(entry)}
-                  </div>
+                  {/* avatar */}
+                  <UserAvatar
+                    email={entry.user.email}
+                    fallback={initials(entry)}
+                    className="w-10 h-10 shrink-0 rounded-full border-2 border-(--accent)/40 bg-(--accent) flex items-center justify-center text-sm font-black text-white uppercase"
+                  />
 
                   {/* identity */}
                   <div className="min-w-0 flex-1">

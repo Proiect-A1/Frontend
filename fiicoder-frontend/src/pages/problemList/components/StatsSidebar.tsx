@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useT, useLanguage } from '../../../language/Language';
 import { itemVariants, staggerConfig } from '../../../utils/motionConfig';
 import { useAuth } from '../../../contexts/AuthContext';
+import UserAvatar from '../../../components/UserAvatar';
 import { leaderboardService, type LeaderboardEntry } from '../../leaderboard/services/leaderboardService';
 
 const TOP_SOLVERS_COUNT = 5;
@@ -76,14 +77,16 @@ export default function StatsSidebar() {
                     {topSolvers.map((entry, idx) => (
                         <motion.div variants={itemVariants} key={entry.user.id} className="flex items-center justify-between group p-3 rounded-2xl border border-(--accent)/30 bg-(--accent)/5 hover:border-(--accent)/60 transition-colors">
                             <div className="flex items-center gap-3 min-w-0">
-                                <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-[10px] font-black border-2 ${
-                                    idx === 0 ? 'bg-amber-500/20 border-amber-500 text-amber-500' :
-                                    idx === 1 ? 'bg-slate-400/20 border-slate-400 text-slate-400' :
-                                    idx === 2 ? 'bg-orange-700/20 border-orange-700 text-orange-700' :
-                                    'bg-(--accent)/10 border-(--accent) text-(--accent)'
-                                }`}>
-                                    {solverInitials(entry)}
-                                </div>
+                                <UserAvatar
+                                    email={entry.user.email}
+                                    fallback={solverInitials(entry)}
+                                    className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-[10px] font-black border-2 ${
+                                        idx === 0 ? 'bg-amber-500/20 border-amber-500 text-amber-500' :
+                                        idx === 1 ? 'bg-slate-400/20 border-slate-400 text-slate-400' :
+                                        idx === 2 ? 'bg-orange-700/20 border-orange-700 text-orange-700' :
+                                        'bg-(--accent)/10 border-(--accent) text-(--accent)'
+                                    }`}
+                                />
                                 <div className="min-w-0">
                                     <p className="text-sm font-bold text-(--text-h) truncate group-hover:text-(--accent) transition-colors">
                                         {entry.user.username}
