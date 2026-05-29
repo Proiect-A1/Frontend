@@ -108,52 +108,56 @@ function safeWrite(key: string, value: string) {
 // ── WAVY BORDER ──────────────────────────────────────────────────────────────
 
 function generateWavyRectPath(w: number, h: number): string {
-  // Fiecare bump = semicert cu raza R_bump.
-  // Sweep-urile alternează → undă sinusoidală uniformă de jur-împrejur.
-  const R_BUMP = 10; // raza unui bump (diametru = 20px per semiciclu)
-  const C = Math.min(5, w / 8, h / 8); // raza colțurilor
+  // SVG e mai mare cu OFF px pe fiecare parte față de element
+  const OFF = 4;   // trebuie să fie egal cu OFF din applyWavyBorders
+  const WL  = 52;  // lungimea unui val complet (px) — mai mare = mai plat
+  const A   = 3.5; // amplitudine — cât de mult deviază de la marginea dreaptă
 
-  function arcX(x1: number, x2: number, firstSweep: 0 | 1): string {
-    const dist = x2 - x1;
-    const n = Math.max(2, Math.round(Math.abs(dist) / R_BUMP));
-    const d = dist / n;
-    const r = Math.abs(d) / 2;
-    let path = '', sw = firstSweep;
+  const L = OFF, T = OFF, R = w - OFF, B = h - OFF;
+  const CR = Math.min(10, (R - L) / 6, (B - T) / 6);
+
+  // Q bezier pentru un segment orizontal, cu undă perpendiculară față de margine
+  function wX(xa: number, xb: number, y: number, outDir: number): string {
+    const dist = xb - xa;
+    const n = Math.max(2, Math.round(Math.abs(dist) / (WL / 2)));
+    const hw = dist / n;
+    let d = '', x = xa, out = true;
     for (let i = 0; i < n; i++) {
-      path += ` a${r.toFixed(2)} ${r.toFixed(2)} 0 0 ${sw} ${d.toFixed(2)} 0`;
-      sw = (1 - sw) as 0 | 1;
+      const cy = (y + outDir * (out ? A : -A)).toFixed(2);
+      d += ` Q${(x + hw / 2).toFixed(2)},${cy} ${(x + hw).toFixed(2)},${y}`;
+      x += hw; out = !out;
     }
-    return path;
+    return d;
   }
 
-  function arcY(y1: number, y2: number, firstSweep: 0 | 1): string {
-    const dist = y2 - y1;
-    const n = Math.max(2, Math.round(Math.abs(dist) / R_BUMP));
-    const d = dist / n;
-    const r = Math.abs(d) / 2;
-    let path = '', sw = firstSweep;
+  // Q bezier pentru un segment vertical
+  function wY(ya: number, yb: number, x: number, outDir: number): string {
+    const dist = yb - ya;
+    const n = Math.max(2, Math.round(Math.abs(dist) / (WL / 2)));
+    const hw = dist / n;
+    let d = '', y = ya, out = true;
     for (let i = 0; i < n; i++) {
-      path += ` a${r.toFixed(2)} ${r.toFixed(2)} 0 0 ${sw} 0 ${d.toFixed(2)}`;
-      sw = (1 - sw) as 0 | 1;
+      const cx = (x + outDir * (out ? A : -A)).toFixed(2);
+      d += ` Q${cx},${(y + hw / 2).toFixed(2)} ${x},${(y + hw).toFixed(2)}`;
+      y += hw; out = !out;
     }
-    return path;
+    return d;
   }
 
-  // Sweep-uri: top 0=up, right 1=right, bottom 1=down, left 0=left
   return [
-    `M${C},0`,
-    arcX(C, w - C, 0),
-    ` Q${w},0 ${w},${C}`,
-    arcY(C, h - C, 1),
-    ` Q${w},${h} ${w - C},${h}`,
-    arcX(w - C, C, 1),
-    ` Q0,${h} 0,${h - C}`,
-    arcY(h - C, C, 0),
-    ` Q0,0 ${C},0 Z`,
+    `M${L + CR},${T}`,
+    wX(L + CR, R - CR, T, -1),   // top — outward = sus (-y)
+    ` Q${R},${T} ${R},${T + CR}`,
+    wY(T + CR, B - CR, R, +1),   // right — outward = dreapta (+x)
+    ` Q${R},${B} ${R - CR},${B}`,
+    wX(R - CR, L + CR, B, +1),   // bottom — outward = jos (+y)
+    ` Q${L},${B} ${L},${B - CR}`,
+    wY(B - CR, T + CR, L, -1),   // left — outward = stânga (-x)
+    ` Q${L},${T} ${L + CR},${T} Z`,
   ].join('');
 }
 
-const WAVY_SEL = '.flexlayout__tabset, .rounded-3xl, .rounded-2xl, .rounded-xl, .rounded-full';
+const WAVY_SEL = '.flexlayout__tabset, .rounded-3xl, .rounded-2xl, .rounded-xl';
 
 function applyWavyBorders(): () => void {
   const ros: ResizeObserver[] = [];

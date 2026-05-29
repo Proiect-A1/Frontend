@@ -423,8 +423,7 @@
 /* Ascunde bordul drept — wavy SVG îl înlocuiește vizual */
 [data-theme='custom'][data-custom-border='wobbly'] .rounded-3xl,
 [data-theme='custom'][data-custom-border='wobbly'] .rounded-2xl,
-[data-theme='custom'][data-custom-border='wobbly'] .rounded-xl,
-[data-theme='custom'][data-custom-border='wobbly'] .rounded-full {
+[data-theme='custom'][data-custom-border='wobbly'] .rounded-xl {
     border-color: transparent !important;
 }
 
