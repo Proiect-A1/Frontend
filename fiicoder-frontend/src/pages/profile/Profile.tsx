@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../language/Language';
@@ -18,11 +18,16 @@ import ProfileHomeworkPanel from './components/ProfileHomeworkPanel';
 import { useTabParam } from '../../hooks/useTabParam';
 
 export default function Profile() {
+    const { username: usernameParam } = useParams<{ username?: string }>();
     const { username, userId, isAdmin, isProfessor } = useAuth();
     const { lang } = useLanguage();
     const { theme } = useTheme();
     const queryClient = useQueryClient();
-    const canViewProposals = isAdmin || isProfessor;
+
+    const viewingUsername = usernameParam ?? username;
+    const isOwnProfile = !usernameParam || usernameParam === username;
+    const canViewProposals = isOwnProfile && (isAdmin || isProfessor);
+
     const [activeTab, setActiveTab] = useTabParam<'overview' | 'proposals' | 'homework'>(
         'overview',
         { validValues: ['overview', 'proposals', 'homework'] },
@@ -30,8 +35,9 @@ export default function Profile() {
     const [togglingTitle, setTogglingTitle] = useState<string | null>(null);
 
     const profileQuery = useQuery({
-        queryKey: ['profile', 'me', userId],
-        queryFn: () => profileService.getMyProfile(0, 200),
+        queryKey: ['profile', viewingUsername],
+        queryFn: () => profileService.getProfile(viewingUsername!, 0, 200),
+        enabled: !!viewingUsername,
     });
 
     const proposalsQuery = useQuery({
@@ -93,10 +99,10 @@ export default function Profile() {
     };
 
     useEffect(() => {
-        if (!canViewProposals && activeTab === 'proposals') {
+        if ((!canViewProposals && activeTab === 'proposals') || (!isOwnProfile && activeTab === 'homework')) {
             setActiveTab('overview');
         }
-    }, [activeTab, canViewProposals]);
+    }, [activeTab, canViewProposals, isOwnProfile]);
 
     if (!profile && loading) {
         return (
@@ -149,7 +155,9 @@ export default function Profile() {
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div className="flex items-center gap-3">
                         <h1 className="text-3xl font-bold text-(--text-h) flex items-center gap-3">
-                            {lang === 'RO' ? 'Profil' : 'Profile'}
+                            {isOwnProfile
+                                ? (lang === 'RO' ? 'Profil' : 'Profile')
+                                : (profile?.username ?? viewingUsername)}
                         </h1>
                     </div>
 
@@ -170,15 +178,17 @@ export default function Profile() {
                                 {lang === 'RO' ? 'Propunerile Mele' : 'My Proposals'}
                             </button>
                         )}
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab('homework')}
-                            className={`${navButtonBase} ${activeTab === 'homework' ? navButtonActive : navButtonIdle}`}
-                        >
-                            {lang === 'RO' ? 'Temele Mele' : 'My Homework'}
-                        </button>
+                        {isOwnProfile && (
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab('homework')}
+                                className={`${navButtonBase} ${activeTab === 'homework' ? navButtonActive : navButtonIdle}`}
+                            >
+                                {lang === 'RO' ? 'Temele Mele' : 'My Homework'}
+                            </button>
+                        )}
 
-                        {isAdmin && (
+                        {isOwnProfile && isAdmin && (
                             <Link
                                 to="/admin"
                                 className={`${navButtonBase} ${navButtonIdle}`}

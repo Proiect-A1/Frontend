@@ -111,9 +111,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isAuthenticated = token !== null && !isTokenExpired(token);
 
   useEffect(() => {
-    if (!token || isTokenExpired(token)) return;
+    if (!token || isTokenExpired(token) || !storedUsername) return;
 
-    profileService.getMyProfile()
+    profileService.getProfile(storedUsername)
       .then((profile) => {
         setStoredUsername(profile.username);
         safeSet(USERNAME_KEY, profile.username);

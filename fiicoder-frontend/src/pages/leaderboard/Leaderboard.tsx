@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useLanguage } from "../../language/Language";
 import UserAvatar from "../../components/UserAvatar";
@@ -106,8 +107,11 @@ export default function Leaderboard() {
             {entries.map((entry, index) => {
               const rankStyle = RANK_STYLES[entry.rank];
               return (
-                <motion.div
+                <Link
                   key={entry.user.id}
+                  to={`/profile/${encodeURIComponent(entry.user.username)}`}
+                >
+                <motion.div
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: (index % PAGE_SIZE) * 0.05, duration: 0.25 }}
@@ -158,6 +162,7 @@ export default function Leaderboard() {
                     </div>
                   </div>
                 </motion.div>
+                </Link>
               );
             })}
           </div>

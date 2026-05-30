@@ -47,7 +47,7 @@ export interface ProfileResponseDTO {
 }
 
 export const profileService = {
-    getMyProfile(page: number = 0, size: number = 5) {
-        return apiClient.get<ProfileResponseDTO>(`/profile/me?page=${page}&size=${size}`);
+    getProfile(username: string, page: number = 0, size: number = 5) {
+        return apiClient.get<ProfileResponseDTO>(`/profile/${encodeURIComponent(username)}?page=${page}&size=${size}`);
     },
 };

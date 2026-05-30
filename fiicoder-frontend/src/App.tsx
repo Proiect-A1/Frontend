@@ -81,6 +81,7 @@ function AnimatedRoutes() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/profile/:username" element={<Profile />} />
             <Route
               path="/propose"
               element={

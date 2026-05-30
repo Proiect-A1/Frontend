@@ -75,7 +75,11 @@ export default function StatsSidebar() {
                     )}
 
                     {topSolvers.map((entry, idx) => (
-                        <motion.div variants={itemVariants} key={entry.user.id} className="flex items-center justify-between group p-3 rounded-2xl border border-(--accent)/30 bg-(--accent)/5 hover:border-(--accent)/60 transition-colors">
+                        <motion.div variants={itemVariants} key={entry.user.id}>
+                        <Link
+                            to={`/profile/${encodeURIComponent(entry.user.username)}`}
+                            className="flex items-center justify-between group p-3 rounded-2xl border border-(--accent)/30 bg-(--accent)/5 hover:border-(--accent)/60 transition-colors"
+                        >
                             <div className="flex items-center gap-3 min-w-0">
                                 <UserAvatar
                                     email={entry.user.email}
@@ -97,6 +101,7 @@ export default function StatsSidebar() {
                                 </div>
                             </div>
                             <span className="text-xs font-black italic opacity-20">#{entry.rank}</span>
+                        </Link>
                         </motion.div>
                     ))}
                 </motion.div>
