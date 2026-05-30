@@ -66,7 +66,7 @@ export default function Navbar() {
       return;
     }
 
-    if (trimmed.toLowerCase() === 'liviu') {
+    if (trimmed.toLowerCase() === 'liviu.vrea.sa.mori.in.cada.maine') {
       const isActive = document.documentElement.hasAttribute('data-liviu');
       if (isActive) {
         document.documentElement.removeAttribute('data-liviu');
