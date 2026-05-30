@@ -36,7 +36,7 @@ jobs:
 
             docker compose down dev-frontend
             docker compose build --build-arg VITE_OPENAI_API_KEY=${{ secrets.VITE_OPENAI_API_KEY }} dev-frontend
-            docker compose up -d dev-frontend
+            docker compose up -d --build dev-frontend
 
             docker image prune -f
             sleep 20
