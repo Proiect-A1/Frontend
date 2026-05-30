@@ -14,7 +14,7 @@ export interface SubmissionResponse {
 export interface SubmissionSubtaskTestDTO {
   index: number;
   verdict: string;
-  time: number;   // nanoseconds
+  time: number;   // milliseconds
   memory: number; // bytes
   message: string;
 }
@@ -51,7 +51,7 @@ export interface DoneTestEvent {
   maxScore: number;
   "score%": number;
   memory: number; // bytes
-  time: number;   // nanoseconds
+  time: number;   // milliseconds
 }
 
 export interface DoneSubtaskEvent {

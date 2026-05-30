@@ -77,7 +77,7 @@ type Props = {
 function TestRow({ t, idx }: { t: any; idx: number }) {
     const color = verdictColors[t.verdict] ?? 'border-(--accent)/30 bg-(--accent)/10 text-(--text-muted)';
     const isPending = t.verdict === 'PENDING';
-    const timeMs = t.time ? (t.time / 1_000_000).toFixed(0) : '0';
+    const timeMs = t.time ? t.time.toFixed(0) : '0';
     const memKB = t.memory ? (t.memory / 1024).toFixed(0) : '0';
 
     return (
@@ -320,7 +320,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                 const badgeClasses = summaryBadgeClasses[subtaskVerdict];
                                 const verdictLabel = submissionVerdictLabels[subtaskVerdict][lang === 'RO' ? 'ro' : 'en'];
                                 const maxMemKB = st.max_memory ? (st.max_memory / 1024).toFixed(0) : '-';
-                                const maxTimeMs = st.max_time ? (st.max_time / 1_000_000).toFixed(0) : '-';
+                                const maxTimeMs = st.max_time ? st.max_time.toFixed(0) : '-';
                                 const isExpanded = expandedSubtasks.has(st.subtaskId);
 
                                 return (

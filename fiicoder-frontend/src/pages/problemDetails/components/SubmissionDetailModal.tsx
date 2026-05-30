@@ -125,8 +125,8 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
                     const allTimes = sortedTests.map(t => t.time).filter(t => t > 0);
                     const allMems  = sortedTests.map(t => t.memory).filter(m => m > 0);
                     const maxTimeMs = st.maxTime > 0
-                        ? (st.maxTime / 1_000_000).toFixed(0)
-                        : allTimes.length ? (Math.max(...allTimes) / 1_000_000).toFixed(0) : '-';
+                        ? st.maxTime.toFixed(0)
+                        : allTimes.length ? Math.max(...allTimes).toFixed(0) : '-';
                     const maxMemKB = st.maxMemory > 0
                         ? (st.maxMemory / 1024).toFixed(0)
                         : allMems.length ? (Math.max(...allMems) / 1024).toFixed(0) : '-';
@@ -176,8 +176,8 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
                                             </div>
                                             {sortedTests.map(test => {
                                                 const color = testVerdictColors[test.verdict] ?? 'border-(--accent)/30 bg-(--accent)/5 text-(--text-muted)';
-                                                const timeMs = test.time   > 0 ? `${(test.time   / 1_000_000).toFixed(0)}ms` : '-';
-                                                const memKB  = test.memory > 0 ? `${(test.memory / 1024).toFixed(0)}KB`      : '-';
+                                                const timeMs = test.time   > 0 ? `${test.time.toFixed(0)}ms`             : '-';
+                                                const memKB  = test.memory > 0 ? `${(test.memory / 1024).toFixed(0)}KB`     : '-';
                                                 return (
                                                     <div key={test.index} className="flex items-center gap-3 px-4 py-2 hover:bg-(--accent)/5 transition-colors">
                                                         <span className="text-xs font-mono font-bold text-(--text-subtle) w-8">#{test.index}</span>
