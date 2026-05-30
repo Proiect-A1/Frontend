@@ -66,6 +66,17 @@ export default function Navbar() {
       return;
     }
 
+    if (trimmed.toLowerCase() === 'liviu') {
+      const isActive = document.documentElement.hasAttribute('data-liviu');
+      if (isActive) {
+        document.documentElement.removeAttribute('data-liviu');
+      } else {
+        document.documentElement.setAttribute('data-liviu', '1');
+      }
+      setNavSearch('');
+      return;
+    }
+
     if (trimmed.toLowerCase() === 'stupify') {
       const isActive = document.documentElement.hasAttribute('data-trippy');
       if (isActive) {
