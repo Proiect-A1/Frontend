@@ -417,46 +417,24 @@
     filter: url('#trippy');
 }
 
-/* ── CUSTOM THEME BORDER VARIANTS ── */
-
-/* Asymmetric: alternating large/small corners on each element */
-[data-theme='custom'][data-custom-border='asymmetric'] .rounded-3xl,
-[data-theme='custom'][data-custom-border='asymmetric'] .rounded-2xl,
-[data-theme='custom'][data-custom-border='asymmetric'] .rounded-xl {
-    border-radius: 24px 6px 24px 6px !important;
-}
-[data-theme='custom'][data-custom-border='asymmetric'] .rounded-lg,
-[data-theme='custom'][data-custom-border='asymmetric'] .rounded-md {
-    border-radius: 12px 3px 12px 3px !important;
-}
-[data-theme='custom'][data-custom-border='asymmetric'] .rounded,
-[data-theme='custom'][data-custom-border='asymmetric'] .rounded-full {
-    border-radius: 8px 2px 8px 2px !important;
-}
-[data-theme='custom'][data-custom-border='asymmetric'] .flexlayout__tabset,
-[data-theme='custom'][data-custom-border='asymmetric'] .flexlayout__tab,
-[data-theme='custom'][data-custom-border='asymmetric'] .flexlayout__outline_rect {
-    border-radius: 6px 24px 6px 24px !important;
-}
-
-/* Dashed-dotted: dashed on top/bottom, dotted on left/right */
+/* ── CUSTOM THEME BORDER: DASHED-DOTTED ── */
+/* Uniform dashed on all sides (3:1 dash:gap — no tight-dot problem on verticals)
+   + a lighter dashed outline offset outside for the layered "dashed-dotted" look */
 [data-theme='custom'][data-custom-border='dashed-dotted'] .rounded-3xl,
 [data-theme='custom'][data-custom-border='dashed-dotted'] .rounded-2xl,
 [data-theme='custom'][data-custom-border='dashed-dotted'] .rounded-xl {
-    border-top-style: dashed !important;
-    border-bottom-style: dashed !important;
-    border-left-style: dotted !important;
-    border-right-style: dotted !important;
-    border-color: color-mix(in srgb, var(--accent) 65%, transparent) !important;
+    border-style: dashed !important;
+    border-color: color-mix(in srgb, var(--accent) 60%, transparent) !important;
     border-width: 2px !important;
+    outline: 1px dashed color-mix(in srgb, var(--accent) 22%, transparent);
+    outline-offset: 5px;
 }
 [data-theme='custom'][data-custom-border='dashed-dotted'] .flexlayout__tabset {
-    border-top-style: dashed !important;
-    border-bottom-style: dashed !important;
-    border-left-style: dotted !important;
-    border-right-style: dotted !important;
+    border-style: dashed !important;
     border-color: color-mix(in srgb, var(--accent) 40%, transparent) !important;
     border-width: 2px !important;
+    outline: 1px dashed color-mix(in srgb, var(--accent) 18%, transparent);
+    outline-offset: 4px;
 }
 
 /* ── CUSTOM THEME RADIUS VARIANTS ── */
@@ -480,6 +458,29 @@
 [data-theme='custom'][data-custom-radius='square'] .flexlayout__tabset,
 [data-theme='custom'][data-custom-radius='square'] .flexlayout__tab,
 [data-theme='custom'][data-custom-radius='square'] .flexlayout__outline_rect { border-radius: 0 !important; }
+
+/* ── CUSTOM THEME BORDER: ASYMMETRIC ── */
+/* Placed AFTER radius variants — same specificity, last-wins, so this always beats square/medium */
+[data-theme='custom'][data-custom-border='asymmetric'] .rounded-3xl,
+[data-theme='custom'][data-custom-border='asymmetric'] .rounded-2xl,
+[data-theme='custom'][data-custom-border='asymmetric'] .rounded-xl {
+    border-radius: 32px 4px 32px 4px !important;
+}
+[data-theme='custom'][data-custom-border='asymmetric'] .rounded-lg,
+[data-theme='custom'][data-custom-border='asymmetric'] .rounded-md {
+    border-radius: 18px 3px 18px 3px !important;
+}
+[data-theme='custom'][data-custom-border='asymmetric'] .rounded {
+    border-radius: 10px 2px 10px 2px !important;
+}
+[data-theme='custom'][data-custom-border='asymmetric'] .rounded-full {
+    border-radius: 999px 8px 999px 8px !important;
+}
+[data-theme='custom'][data-custom-border='asymmetric'] .flexlayout__tabset,
+[data-theme='custom'][data-custom-border='asymmetric'] .flexlayout__tab,
+[data-theme='custom'][data-custom-border='asymmetric'] .flexlayout__outline_rect {
+    border-radius: 4px 32px 4px 32px !important;
+}
 
 /* xl: layout fix, scroll pe componente individuale */
 @media (min-width: 1280px) {
