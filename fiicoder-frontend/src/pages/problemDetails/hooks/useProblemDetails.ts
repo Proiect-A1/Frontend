@@ -315,11 +315,13 @@ export function useProblemDetails() {
             evalStartRef.current = Date.now();
             setEvalElapsedMs(null);
 
-            // Pre-populate tests and subtasks based on problemTests structure
+            // Pre-populate tests and subtasks based on problemTests structure.
+            // Tests are keyed by global testIndex; a test shared across subtasks
+            // (cumulative scoring) is added only once to initialTests.
             let initialTests: DoneTestEvent[] = [];
             let initialSubtasks: DoneSubtaskEvent[] = [];
             if (problemTests && problemTests.subtasks) {
-                let globalTestIdx = 0;
+                const seenTests = new Map<number, number>(); // testIndex -> maxScore
                 problemTests.subtasks.forEach(subtask => {
                     initialSubtasks.push({
                         request: "doneSubtask",
@@ -331,23 +333,27 @@ export function useProblemDetails() {
                         max_memory: 0,
                         max_time: 0
                     });
-
                     subtask.tests.forEach(test => {
-                        initialTests.push({
-                            request: "doneTest",
-                            submissionId: "",
-                            testId: globalTestIdx++,
-                            verdict: "PENDING",
-                            message: "",
-                            score: 0,
-                            maxScore: test.score,
-                            "score%": 0,
-                            memory: 0,
-                            time: 0
-                        });
+                        if (!seenTests.has(test.testIndex)) {
+                            seenTests.set(test.testIndex, test.score);
+                        }
                     });
                 });
                 initialSubtasks.sort((a, b) => a.subtaskId - b.subtaskId);
+
+                const sortedIndices = [...seenTests.keys()].sort((a, b) => a - b);
+                initialTests = sortedIndices.map(testIndex => ({
+                    request: "doneTest" as const,
+                    submissionId: "",
+                    testId: testIndex,
+                    verdict: "PENDING",
+                    message: "",
+                    score: 0,
+                    maxScore: seenTests.get(testIndex)!,
+                    "score%": 0,
+                    memory: 0,
+                    time: 0
+                }));
             }
 
             setEvalTests(initialTests);

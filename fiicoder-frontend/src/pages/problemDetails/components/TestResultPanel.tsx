@@ -51,6 +51,7 @@ const verdictColors: Record<string, string> = {
     FAIL: 'border-red-500/40 bg-red-500/10 text-red-300',
     SKIP: 'border-gray-500/40 bg-gray-500/10 text-gray-300',
     NONE: 'border-gray-500/30 bg-gray-500/5 text-gray-400',
+    IDLE: 'border-gray-500/30 bg-gray-500/5 text-gray-400',
     OTHER: 'border-gray-500/30 bg-gray-500/5 text-gray-400',
     PENDING: 'border-sky-500/40 bg-sky-500/10 text-sky-300',
 };
@@ -69,6 +70,7 @@ const verdictIcons: Record<string, string> = {
     FAIL: '✗',
     SKIP: '—',
     NONE: '·',
+    IDLE: '·',
     OTHER: '?',
     PENDING: '…',
 };
@@ -210,13 +212,11 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
         });
     };
 
-    // Map subtaskId -> globally-sequential testIds (matches the pre-populated order in the hook)
+    // Map subtaskId -> testIndex values (global sandbox test ids, may overlap between subtasks for cumulative scoring)
     const subtaskTestIds = new Map<number, number[]>();
     if (problemTests) {
-        let globalIdx = 0;
         problemTests.subtasks.forEach(subtask => {
-            const testIds = subtask.tests.map(() => globalIdx++);
-            subtaskTestIds.set(subtask.index, testIds);
+            subtaskTestIds.set(subtask.index, subtask.tests.map(t => t.testIndex));
         });
     }
 
