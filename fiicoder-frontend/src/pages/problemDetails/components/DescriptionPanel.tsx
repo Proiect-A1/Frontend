@@ -1,9 +1,43 @@
+import { useState, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { translations } from '../../../language/Language';
+
+function CodeBlock({ children, lang, ...props }: any) {
+    const [copied, setCopied] = useState(false);
+    const preRef = useRef<HTMLPreElement>(null);
+
+    const handleCopy = () => {
+        const text = preRef.current?.innerText ?? '';
+        navigator.clipboard.writeText(text).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        });
+    };
+
+    const isRO = lang === 'RO';
+
+    return (
+        <div className="relative group my-4">
+            <pre
+                ref={preRef}
+                className="bg-(--surface-input) p-4 rounded-xl border border-(--accent)/20 overflow-x-auto text-sm text-(--text) shadow-inner"
+                {...props}
+            >
+                {children}
+            </pre>
+            <button
+                onClick={handleCopy}
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded-md text-[10px] font-bold border border-(--accent)/20 bg-(--surface-card) text-(--text-muted) hover:text-(--text) hover:border-(--accent)/40"
+            >
+                {copied ? (isRO ? '✓ Copiat' : '✓ Copied') : (isRO ? 'Copiază' : 'Copy')}
+            </button>
+        </div>
+    );
+}
 
 type Props = {
     problem: any;
@@ -155,14 +189,7 @@ export default function DescriptionPanel({ problem, processedDescription, lang }
                             </code>
                         ),
                         pre: ({ children, ...props }: any) => (
-                            <div className="relative group my-4">
-                                <pre
-                                    className="bg-(--surface-input) p-4 rounded-xl border border-(--accent)/20 overflow-x-auto text-sm text-(--text) shadow-inner"
-                                    {...props}
-                                >
-                                    {children}
-                                </pre>
-                            </div>
+                            <CodeBlock lang={lang} {...props}>{children}</CodeBlock>
                         ),
                     }}
                 />
