@@ -32,7 +32,7 @@ jobs:
             git clean -fd
 
             # Ne întoarcem la root /home/github/sandbox și refacem containerul
-            cd ../
+            cd ../../
 
             docker compose down dev-frontend
             docker compose build --build-arg VITE_OPENAI_API_KEY=${{ secrets.VITE_OPENAI_API_KEY }} dev-frontend
