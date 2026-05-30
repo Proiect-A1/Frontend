@@ -543,6 +543,16 @@ export default function Navbar() {
               transition={{ duration: 0.12 }}
               className="xl:hidden absolute top-full left-0 right-0 mt-6 p-6 bg-(--surface-card) backdrop-blur-xl border-2 border-(--accent) rounded-3xl flex flex-col gap-4 max-h-[calc(100svh-5rem)] overflow-y-auto"
             >
+              <SearchInput
+                value={navSearch}
+                onChange={setNavSearch}
+                placeholder={t.navSearchPlaceholder}
+                suggestions={navSuggestions}
+                onEnter={handleNavSearchEnter}
+                onSelectSuggestion={(s) => { navigate(`/problems/${s}`); closeMenu(); }}
+                onFocus={() => setSearchEverFocused(true)}
+              />
+
               <Link to="/problems" onClick={closeMenu} className={getNavLinkClass("/problems") + " text-center"}>
                 {t.archiveBtn}
               </Link>
