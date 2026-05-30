@@ -240,7 +240,7 @@ export default function AttachmentsTab() {
                                 >
                                     <div
                                         className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
-                                        onDoubleClick={() =>
+                                        onClick={() =>
                                             fileManagement.setEditingFileId(
                                                 fileManagement.editingFileId === file.id ? null : file.id,
                                             )
