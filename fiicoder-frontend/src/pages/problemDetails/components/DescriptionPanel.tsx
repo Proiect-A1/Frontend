@@ -21,7 +21,7 @@ function CodeBlock({ children, lang, ...props }: any) {
     const isRO = lang === 'RO';
 
     return (
-        <div className="relative group my-4">
+        <div className="relative my-4">
             <pre
                 ref={preRef}
                 className="bg-(--surface-input) p-4 rounded-xl border border-(--accent)/20 overflow-x-auto text-sm text-(--text) shadow-inner"
@@ -31,7 +31,7 @@ function CodeBlock({ children, lang, ...props }: any) {
             </pre>
             <button
                 onClick={handleCopy}
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded-md text-[10px] font-bold border border-(--accent)/20 bg-(--surface-card) text-(--text-muted) hover:text-(--text) hover:border-(--accent)/40"
+                className="absolute top-2 right-2 px-2 py-1 rounded-md text-[10px] font-bold border border-(--accent)/20 bg-(--surface-card) text-(--text-muted) hover:text-(--text) hover:border-(--accent)/40 transition-colors"
             >
                 {copied ? (isRO ? '✓ Copiat' : '✓ Copied') : (isRO ? 'Copiază' : 'Copy')}
             </button>
