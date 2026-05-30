@@ -19,7 +19,7 @@ function generateMockRunResult(fileName: string): SourceRunHistory {
             tests: [
                 {
                     testId: '000',
-                    verdict: 'AC',
+                    verdict: 'OK',
                     time: 0.02,
                     memory: 4.2,
                     points: 10,
@@ -27,7 +27,7 @@ function generateMockRunResult(fileName: string): SourceRunHistory {
                 },
                 {
                     testId: '001',
-                    verdict: 'AC',
+                    verdict: 'OK',
                     time: 0.05,
                     memory: 4.5,
                     points: 10,
@@ -35,7 +35,7 @@ function generateMockRunResult(fileName: string): SourceRunHistory {
                 },
                 {
                     testId: '002',
-                    verdict: 'AC',
+                    verdict: 'OK',
                     time: 0.01,
                     memory: 3.8,
                     points: 10,
@@ -51,7 +51,7 @@ function generateMockRunResult(fileName: string): SourceRunHistory {
             tests: [
                 {
                     testId: '003',
-                    verdict: isMain ? 'AC' : 'WA',
+                    verdict: isMain ? 'OK' : 'WA',
                     time: 0.03,
                     memory: 5.1,
                     points: isMain ? 14 : 0,
@@ -59,7 +59,7 @@ function generateMockRunResult(fileName: string): SourceRunHistory {
                 },
                 {
                     testId: '004',
-                    verdict: 'AC',
+                    verdict: 'OK',
                     time: 0.12,
                     memory: 6.2,
                     points: 14,
@@ -67,7 +67,7 @@ function generateMockRunResult(fileName: string): SourceRunHistory {
                 },
                 {
                     testId: '005',
-                    verdict: isMain ? 'AC' : 'TLE',
+                    verdict: isMain ? 'OK' : 'TLE',
                     time: isMain ? 0.45 : 2.1,
                     memory: 12.3,
                     points: isMain ? 14 : 0,
@@ -75,7 +75,7 @@ function generateMockRunResult(fileName: string): SourceRunHistory {
                 },
                 {
                     testId: '006',
-                    verdict: isMain ? 'AC' : 'WA',
+                    verdict: isMain ? 'OK' : 'WA',
                     time: 0.22,
                     memory: 8.0,
                     points: isMain ? 14 : 0,
@@ -83,7 +83,7 @@ function generateMockRunResult(fileName: string): SourceRunHistory {
                 },
                 {
                     testId: '007',
-                    verdict: isMain ? 'AC' : 'MLE',
+                    verdict: isMain ? 'OK' : 'MLE',
                     time: 0.33,
                     memory: isMain ? 15 : 280,
                     points: isMain ? 14 : 0,

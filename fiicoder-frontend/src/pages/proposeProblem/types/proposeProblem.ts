@@ -50,7 +50,7 @@ export interface GeneratorValidationResult {
 // ── Run results ──
 export interface TestRunResult {
   testId: string;
-  verdict: 'AC' | 'WA' | 'TLE' | 'MLE' | 'RE' | 'CE' | 'PENDING';
+  verdict: 'OK' | 'WA' | 'PE' | 'SUPER' | 'PA' | 'FAIL' | 'SKIP' | 'NONE' | 'CPE' | 'TLE' | 'MLE' | 'RTE' | 'ILE' | 'OTHER' | 'PENDING';
   time?: number;  // seconds
   memory?: number; // MB
   points: number;
