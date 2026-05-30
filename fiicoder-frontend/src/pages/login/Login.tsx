@@ -57,10 +57,6 @@ export default function Login() {
         return Object.values(errors).join('. ');
     }
 
-    function deriveUsername(emailValue: string): string {
-        return emailValue.trim().split('@')[0].trim();
-    }
-
     // Submit handler
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
