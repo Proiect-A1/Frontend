@@ -1,4 +1,5 @@
 import { formatScore } from '../utils/textUtils';
+import type { HomeworkShortOptionDTO } from '../types/problemDetails';
 
 type Props = {
     evalStatus: string;
@@ -9,9 +10,12 @@ type Props = {
     status: null | 'pending' | 'valid' | 'invalid';
     resetLayout: () => void;
     onStatusClick?: () => void;
+    homeworkOptions?: HomeworkShortOptionDTO[];
+    selectedHomeworkId?: string | null;
+    onHomeworkChange?: (id: string | null) => void;
 };
 
-export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang, handleSubmit, status, resetLayout, onStatusClick }: Props) {
+export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang, handleSubmit, status, resetLayout, onStatusClick, homeworkOptions = [], selectedHomeworkId, onHomeworkChange }: Props) {
     return (
         <div className="hidden xl:flex h-14 shrink-0 bg-(--surface-card) border-2 border-(--accent) rounded-full items-center justify-between px-5">
             <div className="flex items-center gap-5">
@@ -85,6 +89,23 @@ export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang,
                     <span>+</span>
                     <span className="px-1.5 py-0.5 rounded border border-(--accent)/30 bg-(--surface-muted) font-mono">↵</span>
                 </kbd>
+                {homeworkOptions.length > 0 && onHomeworkChange && (
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-bold text-(--text-muted) uppercase tracking-wider whitespace-nowrap">
+                            {lang === 'RO' ? 'Temă:' : 'Hw:'}
+                        </span>
+                        <select
+                            value={selectedHomeworkId ?? ''}
+                            onChange={e => onHomeworkChange(e.target.value || null)}
+                            className="bg-(--surface-input) border border-(--accent)/30 rounded-lg px-2 py-1 text-[11px] text-(--text-h) outline-none cursor-pointer hover:border-(--accent) transition-colors max-w-[140px]"
+                        >
+                            <option value="">{lang === 'RO' ? 'Niciuna' : 'None'}</option>
+                            {homeworkOptions.map(hw => (
+                                <option key={hw.id} value={hw.id}>{hw.title}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
                 <button
                     onClick={handleSubmit}
                     disabled={status === 'pending'}

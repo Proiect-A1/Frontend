@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../../contexts/AuthContext';
 import { submissionService, connectToEvaluation } from '../services/submissionService';
-import type { DoneTestEvent, DoneSubtaskEvent, DoneSubmissionEvent, LanguageDTO, ProblemSubmissionDTO, ProblemTestDetailsDTO } from '../types/problemDetails';
+import type { DoneTestEvent, DoneSubtaskEvent, DoneSubmissionEvent, LanguageDTO, ProblemSubmissionDTO, ProblemTestDetailsDTO, HomeworkShortOptionDTO } from '../types/problemDetails';
 import { problemService } from '../../../services/problemService';
 import type { ProblemFindResponseDTO } from '../../../services/problemService';
 import { useLanguage, translations } from '../../../language/Language';
@@ -49,6 +49,8 @@ export function useProblemDetails() {
     const [evalElapsedMs, setEvalElapsedMs] = useState<number | null>(null);
     const evalStartRef = useRef<number | null>(null);
     const [problemTests, setProblemTests] = useState<ProblemTestDetailsDTO | null>(null);
+    const [homeworkOptions, setHomeworkOptions] = useState<HomeworkShortOptionDTO[]>([]);
+    const [selectedHomeworkId, setSelectedHomeworkId] = useState<string | null>(null);
     const wsCleanupRef = useRef<(() => void) | null>(null);
     const handleSubmitRef = useRef<((e: React.FormEvent) => Promise<void>) | null>(null);
 
@@ -226,6 +228,11 @@ export function useProblemDetails() {
                         .getByProblem(problemTitle)
                         .then((data) => { if (isMounted) setRecentSubmissions(data); })
                         .catch((err) => console.error('Error fetching submissions:', err));
+
+                    submissionService
+                        .getHomeworkOptions(problemTitle)
+                        .then((opts) => { if (isMounted) setHomeworkOptions(opts); })
+                        .catch(() => {});
                 }
             } catch (err: any) {
                 if (isMounted) {
@@ -369,6 +376,7 @@ export function useProblemDetails() {
                     problem_title: problem.title,
                     languageId: selectedLanguageId,
                     code,
+                    ...(selectedHomeworkId ? { homeworkId: selectedHomeworkId } : {}),
                 });
 
                 setEvalStatus('evaluating');
@@ -436,7 +444,7 @@ export function useProblemDetails() {
                 console.error('Eroare la trimiterea submisiei:', err);
             }
         },
-        [isAuthenticated, lang, problem, problemTitle, selectedLanguageId],
+        [isAuthenticated, lang, problem, problemTitle, selectedLanguageId, selectedHomeworkId],
     );
 
     useEffect(() => {
@@ -480,6 +488,9 @@ export function useProblemDetails() {
         problemTitle,
         problemTests,
         codeRef,
+        homeworkOptions,
+        selectedHomeworkId,
+        setSelectedHomeworkId,
     };
 }
 

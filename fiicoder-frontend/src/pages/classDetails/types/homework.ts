@@ -67,6 +67,24 @@ export interface HomeworkDetailDTO {
   submissions: HomeworkSubmissionSummaryDTO[];
 }
 
+export interface SubmissionSummaryDTO {
+  submissionId: string;
+  problemTitle: string;
+  username: string | null;
+  score: number | null;
+  status: "PENDING" | "FINISHED";
+  submittedAt: string;
+}
+
+export interface PagedHomeworkSubmissionsDTO {
+  content: SubmissionSummaryDTO[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  hasNext: boolean;
+}
+
 export interface StudentSummaryDTO {
   userId: string;
   username: string;

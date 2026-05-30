@@ -4,6 +4,12 @@ export interface SubmissionRequest {
   problem_title: string;
   languageId: string;
   code: string;
+  homeworkId?: string;
+}
+
+export interface HomeworkShortOptionDTO {
+  id: string;
+  title: string;
 }
 
 /** Matches backend SubmissionEvaluationResponseDTO (only `ticket`). */

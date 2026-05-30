@@ -12,7 +12,9 @@ import type {
     StudentProgressSummaryDTO,
     HomeworkUpdateDeleteRequestDTO,
     HomeworkUpdateRequestDTO,
+    PagedHomeworkSubmissionsDTO,
 } from './types/homework';
+import { submissionVerdict, submissionVerdictLabels, type SubmissionVerdict } from '../profile/profileUtils';
 import { useLanguage } from '../../language/Language';
 import { containerVariants, itemVariants, pageVariants } from '../../utils/motionConfig';
 import { toast } from 'sonner';
@@ -36,6 +38,13 @@ function getHomeworkBadge(status: HomeworkResponseDTO['status']) {
             return 'border-(--accent)/20 bg-(--accent)/5 text-(--text-muted)';
     }
 }
+
+const verdictClasses: Record<SubmissionVerdict, string> = {
+    ACCEPTED: 'border-green-500/40 bg-green-500/10 text-green-300',
+    PARTIAL: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
+    PENDING: 'border-sky-500/40 bg-sky-500/10 text-sky-300',
+    REJECTED: 'border-red-500/40 bg-red-500/10 text-red-300',
+};
 
 function parseCsvValues(rawInput: string): string[] {
     return rawInput
@@ -84,12 +93,50 @@ function HomeworkItem({
         useState<StudentProgressSummaryDTO | null>(null);
     const [loadingStudentProgress, setLoadingStudentProgress] = useState(false);
 
+    const [submissionsProblem, setSubmissionsProblem] = useState<{ id: string; title: string } | null>(null);
+    const [problemSubmissions, setProblemSubmissions] = useState<PagedHomeworkSubmissionsDTO | null>(null);
+    const [submissionsPage, setSubmissionsPage] = useState(0);
+    const [loadingSubmissions, setLoadingSubmissions] = useState(false);
+
+    const isCreator = !!(userId && creatorId && userId.toLowerCase() === creatorId.toLowerCase());
+
     useEffect(() => {
         if (!selectedStudentProgress) return;
         const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setSelectedStudentProgress(null); };
         document.addEventListener('keydown', onKey);
         return () => document.removeEventListener('keydown', onKey);
     }, [selectedStudentProgress]);
+
+    useEffect(() => {
+        if (!submissionsProblem) return;
+        const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { setSubmissionsProblem(null); setProblemSubmissions(null); } };
+        document.addEventListener('keydown', onKey);
+        return () => document.removeEventListener('keydown', onKey);
+    }, [submissionsProblem]);
+
+    const loadProblemSubmissions = useCallback(async (problemId: string, page: number) => {
+        try {
+            setLoadingSubmissions(true);
+            const data = await homeworkService.getSubmissionsForProblem(groupId, homework.id, problemId, page);
+            setProblemSubmissions(data);
+        } catch (err) {
+            console.error('Failed to load problem submissions', err);
+        } finally {
+            setLoadingSubmissions(false);
+        }
+    }, [groupId, homework.id]);
+
+    const handleViewProblemSubmissions = (problem: { id: string; title: string }) => {
+        setSubmissionsProblem(problem);
+        setSubmissionsPage(0);
+        void loadProblemSubmissions(problem.id, 0);
+    };
+
+    const goToSubmissionsPage = (page: number) => {
+        if (!submissionsProblem || page < 0) return;
+        setSubmissionsPage(page);
+        void loadProblemSubmissions(submissionsProblem.id, page);
+    };
 
     useEffect(() => {
         if (!isSelected) {
@@ -217,7 +264,7 @@ function HomeworkItem({
     const handleViewStudentProgress = async (studentId: string) => {
         try {
             setLoadingStudentProgress(true);
-            const data = await homeworkService.getStudentProgress(groupId, homework.id, studentId);
+            const data = await homeworkService.getStudentProgress(homework.id, studentId);
             setSelectedStudentProgress(data);
         } catch (err) {
             console.error(err);
@@ -306,16 +353,128 @@ function HomeworkItem({
                                         {lang === 'RO' ? 'Probleme' : 'Problems'}
                                     </h4>
                                     <div className="flex flex-wrap gap-2">
-                                        {selectedHomeworkDetail.problems.map((p) => (
-                                            <Link
-                                                key={p.title}
-                                                to={`/problems/${p.title}`}
-                                                className="px-2 py-1 rounded-md border border-(--accent)/30 bg-(--accent)/10 text-[11px] hover:bg-(--accent)/25"
-                                            >
-                                                {p.title}
-                                            </Link>
-                                        ))}
+                                        {selectedHomeworkDetail.problems.map((p) => {
+                                            const problemTitle = p.title ?? p.problemTitle ?? '';
+                                            return (
+                                                <div
+                                                    key={p.id ?? problemTitle}
+                                                    className="flex items-center rounded-md border border-(--accent)/30 bg-(--accent)/10 overflow-hidden"
+                                                >
+                                                    <Link
+                                                        to={`/problems/${problemTitle}`}
+                                                        className="px-2 py-1 text-[11px] hover:bg-(--accent)/25"
+                                                    >
+                                                        {problemTitle}
+                                                    </Link>
+                                                    {isCreator && p.id && homework.status !== 'DRAFT' && (
+                                                        <button
+                                                            onClick={() => handleViewProblemSubmissions({ id: p.id, title: problemTitle })}
+                                                            title={lang === 'RO' ? 'Vezi submisii' : 'View submissions'}
+                                                            className="px-1.5 py-1 border-l border-(--accent)/30 text-(--text-muted) hover:bg-(--accent)/25 hover:text-(--accent) transition-colors"
+                                                        >
+                                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                                            </svg>
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
                                     </div>
+
+                                    {submissionsProblem && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="mt-3 p-4 rounded-2xl border-2 border-(--accent)/30 bg-(--surface-card)"
+                                        >
+                                            <div className="flex justify-between items-start mb-3">
+                                                <div>
+                                                    <h5 className="font-bold text-(--text-h)">
+                                                        {lang === 'RO' ? 'Submisii:' : 'Submissions:'}{' '}
+                                                        {submissionsProblem.title}
+                                                    </h5>
+                                                    {problemSubmissions && (
+                                                        <p className="text-[10px] text-(--text-muted)">
+                                                            {problemSubmissions.totalElements}{' '}
+                                                            {lang === 'RO' ? 'submisii în total' : 'total submissions'}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <button
+                                                    onClick={() => { setSubmissionsProblem(null); setProblemSubmissions(null); }}
+                                                    className="text-(--text-muted) hover:text-(--text-h)"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                </button>
+                                            </div>
+
+                                            {loadingSubmissions ? (
+                                                <p className="text-xs text-(--text-muted)">
+                                                    {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
+                                                </p>
+                                            ) : problemSubmissions && problemSubmissions.content.length > 0 ? (
+                                                <>
+                                                    <div className="overflow-x-auto">
+                                                        <table className="w-full text-left text-xs border-collapse">
+                                                            <thead>
+                                                                <tr className="border-b border-(--accent)/10 text-(--text-muted)">
+                                                                    <th className="py-2 px-1 font-bold">{lang === 'RO' ? 'Elev' : 'Student'}</th>
+                                                                    <th className="py-2 px-1 text-center font-bold">{lang === 'RO' ? 'Scor' : 'Score'}</th>
+                                                                    <th className="py-2 px-1 text-center font-bold">Status</th>
+                                                                    <th className="py-2 px-1 text-right font-bold">{lang === 'RO' ? 'Data' : 'Date'}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {problemSubmissions.content.map((s) => {
+                                                                    const verdict = submissionVerdict({ status: s.status, score: s.score ?? 0 });
+                                                                    return (
+                                                                        <tr key={s.submissionId} className="border-b border-(--accent)/5 hover:bg-(--accent)/5 transition-colors">
+                                                                            <td className="py-2 px-1 font-bold text-(--text-h)">{s.username ?? '—'}</td>
+                                                                            <td className="py-2 px-1 text-center font-mono">{s.score != null ? s.score.toFixed(0) : '—'}</td>
+                                                                            <td className="py-2 px-1 text-center">
+                                                                                <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold border ${verdictClasses[verdict]}`}>
+                                                                                    {submissionVerdictLabels[verdict][lang === 'RO' ? 'ro' : 'en']}
+                                                                                </span>
+                                                                            </td>
+                                                                            <td className="py-2 px-1 text-right text-[10px] text-(--text-muted)">
+                                                                                {new Date(s.submittedAt).toLocaleString(lang === 'RO' ? 'ro-RO' : 'en-US', { dateStyle: 'short', timeStyle: 'short' })}
+                                                                            </td>
+                                                                        </tr>
+                                                                    );
+                                                                })}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    {problemSubmissions.totalPages > 1 && (
+                                                        <div className="flex items-center justify-between mt-3 text-xs">
+                                                            <button
+                                                                disabled={submissionsPage <= 0}
+                                                                onClick={() => goToSubmissionsPage(submissionsPage - 1)}
+                                                                className="px-3 py-1 rounded-lg border border-(--accent)/30 text-(--text-h) hover:bg-(--accent)/10 disabled:opacity-40 disabled:cursor-not-allowed"
+                                                            >
+                                                                {lang === 'RO' ? 'Înapoi' : 'Prev'}
+                                                            </button>
+                                                            <span className="text-(--text-muted)">
+                                                                {submissionsPage + 1} / {problemSubmissions.totalPages}
+                                                            </span>
+                                                            <button
+                                                                disabled={!problemSubmissions.hasNext}
+                                                                onClick={() => goToSubmissionsPage(submissionsPage + 1)}
+                                                                className="px-3 py-1 rounded-lg border border-(--accent)/30 text-(--text-h) hover:bg-(--accent)/10 disabled:opacity-40 disabled:cursor-not-allowed"
+                                                            >
+                                                                {lang === 'RO' ? 'Înainte' : 'Next'}
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <p className="text-xs text-(--text-muted)">
+                                                    {lang === 'RO' ? 'Nicio submisie pentru această problemă.' : 'No submissions for this problem.'}
+                                                </p>
+                                            )}
+                                        </motion.div>
+                                    )}
                                 </div>
                                 {userId &&
                                     creatorId &&

@@ -67,6 +67,9 @@ export default function ProblemDetails() {
         problemTests,
         problemTitle,
         codeRef,
+        homeworkOptions,
+        selectedHomeworkId,
+        setSelectedHomeworkId,
     } = useProblemDetails();
 
     // Open latest submission modal directly (toolbar shortcut)
@@ -189,6 +192,9 @@ export default function ProblemDetails() {
                         status={status}
                         resetLayout={resetLayout}
                         onStatusClick={handleGoToLastSubmission}
+                        homeworkOptions={homeworkOptions}
+                        selectedHomeworkId={selectedHomeworkId}
+                        onHomeworkChange={setSelectedHomeworkId}
                     />
                 </>
             ) : (
@@ -234,11 +240,23 @@ export default function ProblemDetails() {
                                 <SubmissionsPanel isAuthenticated={isAuthenticated} recentSubmissions={recentSubmissions} lang={lang} onSelectSubmission={setSelectedSubmission} />
                             )}
                         </div>
-                        <div className="px-6 pb-6 bg-(--surface-card)">
+                        <div className="px-6 pb-6 bg-(--surface-card) flex items-center gap-3 mt-2">
+                            {homeworkOptions.length > 0 && (
+                                <select
+                                    value={selectedHomeworkId ?? ''}
+                                    onChange={e => setSelectedHomeworkId(e.target.value || null)}
+                                    className="flex-1 bg-(--surface-input) border border-(--accent)/30 rounded-lg px-2 py-1.5 text-xs text-(--text-h) outline-none cursor-pointer"
+                                >
+                                    <option value="">{lang === 'RO' ? 'Fără temă' : 'No homework'}</option>
+                                    {homeworkOptions.map(hw => (
+                                        <option key={hw.id} value={hw.id}>{hw.title}</option>
+                                    ))}
+                                </select>
+                            )}
                             <button
                                 onClick={handleSubmit}
                                 disabled={status === 'pending'}
-                                className="px-6 py-1.5 rounded-xl bg-(--accent) border-2 border-(--accent) text-xs text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group ml-auto mt-2"
+                                className="px-6 py-1.5 rounded-xl bg-(--accent) border-2 border-(--accent) text-xs text-(--surface-card) hover:bg-transparent hover:text-(--accent) transition-all flex items-center gap-2 group ml-auto shrink-0"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />

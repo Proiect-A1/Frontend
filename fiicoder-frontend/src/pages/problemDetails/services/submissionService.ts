@@ -8,7 +8,8 @@ import type {
     DoneTestEvent,
     DoneSubtaskEvent,
     DoneSubmissionEvent,
-    ProblemTestDetailsDTO
+    ProblemTestDetailsDTO,
+    HomeworkShortOptionDTO,
 } from "../types/problemDetails";
 
 // ── API wrappers ──────────────────────────────────────────────────
@@ -26,9 +27,13 @@ export const submissionService = {
   getByProblem: (title: string) =>
     apiClient.get<ProblemSubmissionDTO[]>(`/problems/${encodeURIComponent(title)}/submissions`),
 
-  // GET /api/problems/{title}/tests 
+  // GET /api/problems/{title}/tests
   getTests: (title: string) =>
     apiClient.get<ProblemTestDetailsDTO>(`/problems/${encodeURIComponent(title)}/tests`),
+
+  // GET /api/homeworks/problem/{title} — active homeworks for the current user that include this problem
+  getHomeworkOptions: (title: string) =>
+    apiClient.get<HomeworkShortOptionDTO[]>(`/homeworks/problem/${encodeURIComponent(title)}`),
 };
 
 // ── WebSocket evaluation stream ───────────────────────────────────

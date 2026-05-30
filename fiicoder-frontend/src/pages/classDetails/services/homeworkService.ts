@@ -7,7 +7,8 @@ import type {
     HomeworkUpdateResponseDTO,
     HomeworkUpdateDeleteRequestDTO,
     HomeworkStatisticsDTO,
-    StudentProgressSummaryDTO
+    StudentProgressSummaryDTO,
+    PagedHomeworkSubmissionsDTO
 } from "../types/homework";
 
 export const homeworkService = {
@@ -49,7 +50,13 @@ export const homeworkService = {
     return apiClient.get<HomeworkStatisticsDTO>(`/group/${groupId}/homeworks/${homeworkId}/statistics`);
   },
 
-  getStudentProgress(groupId: string, homeworkId: string, studentId: string) {
-    return apiClient.get<StudentProgressSummaryDTO>(`/group/${groupId}/homeworks/${homeworkId}/students/${studentId}/progress`);
+  getStudentProgress(homeworkId: string, studentId: string) {
+    return apiClient.get<StudentProgressSummaryDTO>(`/homeworks/${homeworkId}/students/${studentId}/progress`);
+  },
+
+  getSubmissionsForProblem(groupId: string, homeworkId: string, problemId: string, page = 0, size = 20) {
+    return apiClient.get<PagedHomeworkSubmissionsDTO>(
+      `/group/${groupId}/homeworks/${homeworkId}/problems/${problemId}/submissions?page=${page}&size=${size}`
+    );
   }
 };
