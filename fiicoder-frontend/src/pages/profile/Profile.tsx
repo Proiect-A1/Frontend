@@ -19,7 +19,7 @@ import { useTabParam } from '../../hooks/useTabParam';
 
 export default function Profile() {
     const { username: usernameParam } = useParams<{ username?: string }>();
-    const { username, userId, isAdmin, isProfessor } = useAuth();
+    const { username, userId, isAdmin, isProfessor, updateAvatar } = useAuth();
     const { lang } = useLanguage();
     const { theme } = useTheme();
     const queryClient = useQueryClient();
@@ -103,6 +103,11 @@ export default function Profile() {
             setActiveTab('overview');
         }
     }, [activeTab, canViewProposals, isOwnProfile]);
+
+    useEffect(() => {
+        if (!isOwnProfile || !profile) return;
+        if (profile.email) updateAvatar(profile.email);
+    }, [profile, isOwnProfile]);
 
     if (!profile && loading) {
         return (

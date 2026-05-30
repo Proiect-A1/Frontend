@@ -73,12 +73,7 @@ export default function Login() {
                     email: loginEmail,
                     password,
                 });
-                const displayUsername = deriveUsername(loginEmail);
-                if (displayUsername) {
-                    login(token, displayUsername);
-                } else {
-                    login(token);
-                }
+                login(token);
                 toast.success(lang === 'RO' ? 'Autentificare reușită.' : 'Login successful.');
                 // clear any persisted non-sensitive info after successful login
                 setLoginEmail('');
