@@ -23,6 +23,8 @@ export interface SubmissionSubtaskDTO {
   index: number;
   score: number;
   maxScore: number;
+  maxMemory: number;
+  maxTime: number;
   tests: SubmissionSubtaskTestDTO[];
 }
 

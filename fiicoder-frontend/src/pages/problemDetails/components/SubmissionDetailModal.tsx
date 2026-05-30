@@ -124,8 +124,12 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
                     const sortedTests = [...st.tests].sort((a, b) => a.index - b.index);
                     const allTimes = sortedTests.map(t => t.time).filter(t => t > 0);
                     const allMems  = sortedTests.map(t => t.memory).filter(m => m > 0);
-                    const maxTimeMs = allTimes.length ? (Math.max(...allTimes) / 1_000_000).toFixed(0) : '-';
-                    const maxMemKB  = allMems.length  ? (Math.max(...allMems)  / 1024).toFixed(0)      : '-';
+                    const maxTimeMs = st.maxTime > 0
+                        ? (st.maxTime / 1_000_000).toFixed(0)
+                        : allTimes.length ? (Math.max(...allTimes) / 1_000_000).toFixed(0) : '-';
+                    const maxMemKB = st.maxMemory > 0
+                        ? (st.maxMemory / 1024).toFixed(0)
+                        : allMems.length ? (Math.max(...allMems) / 1024).toFixed(0) : '-';
 
                     return (
                         <div key={st.index} className="rounded-xl overflow-hidden border border-(--accent)/15">

@@ -380,7 +380,7 @@ export default function Navbar() {
 
                       <div className="w-full flex flex-col gap-2">
                         <Link
-                          to="/profile"
+                          to={username ? `/profile/${encodeURIComponent(username)}` : '/profile'}
                           onClick={closeMenu}
                           className="w-full px-4 py-2 text-xs font-bold rounded-full border-2 border-(--accent)/40 bg-transparent text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5 transition-all duration-200 text-center"
                         >
@@ -573,7 +573,7 @@ export default function Navbar() {
 
               {isAuthenticated ? (
                 <>
-                  <Link to="/profile" onClick={closeMenu} className={getNavLinkClass("/profile") + " text-center"}>
+                  <Link to={username ? `/profile/${encodeURIComponent(username)}` : '/profile'} onClick={closeMenu} className={getNavLinkClass("/profile") + " text-center"}>
                     {avatarSrc && !avatarFailed ? (
                       <img src={avatarSrc} alt="avatar" className="w-5 h-5 rounded-full shadow-md" onError={handleAvatarError} />
                     ) : (

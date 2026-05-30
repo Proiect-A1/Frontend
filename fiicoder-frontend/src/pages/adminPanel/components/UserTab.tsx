@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from '../../../utils/motionConfig';
 import { useT } from '../../../language/Language';
@@ -100,7 +101,12 @@ export default function UserTab({
                             <UserAvatar user={user} />
                             <div className="min-w-0">
                             <h3 className="text-(--text-h) font-bold text-lg flex flex-wrap items-center gap-4">
-                                <span className="truncate">{user.username}</span>
+                                <Link
+                                    to={`/profile/${encodeURIComponent(user.username)}`}
+                                    className="truncate hover:text-(--accent) transition-colors"
+                                >
+                                    {user.username}
+                                </Link>
                                 {user.role === 'ADMIN' && (
                                     <span className="bg-purple-500/20 text-purple-500/60 border border-purple-500/60 text-xs px-2.5 py-1 rounded-full uppercase">
                                         Admin
