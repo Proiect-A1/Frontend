@@ -116,7 +116,6 @@ function ResultsTab({ subtasks, score, maxScore, lang }: {
 
             {/* Subtasks */}
             <div className="space-y-2">
-            <div className="space-y-2">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-(--text-muted) px-1">
                     {t.subtasksLabel}
                 </p>
