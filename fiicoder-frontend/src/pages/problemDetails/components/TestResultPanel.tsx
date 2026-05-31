@@ -283,16 +283,19 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                     {/* Summary */}
                     {evalSummary ? (
                         (() => {
-                            const fatal = evalSummary.verdict && fatalVerdictStyle[evalSummary.verdict];
-                            if (fatal) {
+                            const fatalTest = evalStatus === 'done'
+                                ? evalTests.find(t => t.verdict === 'FAIL' || t.verdict === 'CPE')
+                                : undefined;
+                            const fatal = fatalTest ? fatalVerdictStyle[fatalTest.verdict] : null;
+                            if (fatal && fatalTest) {
                                 return (
                                     <div className={`p-4 rounded-2xl border-2 ${fatal.card}`}>
                                         <div className="flex flex-col gap-2 @[180px]:flex-row @[180px]:items-center @[180px]:justify-between">
                                             <span className={`text-xl @[220px]:text-2xl font-black ${fatal.scoreText}`}>
-                                                {verdictIcons[evalSummary.verdict] ?? ''} {evalSummary.verdict}
+                                                {verdictIcons[fatalTest.verdict] ?? ''} {fatalTest.verdict}
                                             </span>
                                             <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border-2 self-start @[180px]:self-auto ${fatal.badge}`}>
-                                                {evalSummary.verdict}
+                                                {fatalTest.verdict}
                                             </span>
                                         </div>
                                         {evalElapsedMs != null && (
@@ -354,8 +357,8 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                         </div>
                     )}
 
-                    {/* Subtasks with collapsible tests — ascunse pentru verdictele fatale (FAIL/CPE) */}
-                    {evalSubtasks.length > 0 && !(evalSummary?.verdict && fatalVerdictStyle[evalSummary.verdict]) && (
+                    {/* Subtasks — ascunse când există un test cu verdict fatal (FAIL/CPE) */}
+                    {evalSubtasks.length > 0 && !(evalStatus === 'done' && evalTests.some(t => t.verdict === 'FAIL' || t.verdict === 'CPE')) && (
                         <div className="space-y-1.5">
                             <p className="text-[10px] font-bold uppercase tracking-widest text-(--text-muted) px-1 whitespace-nowrap">
                                 {tr.subtasksLabel}
@@ -430,7 +433,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                     )}
 
                     {/* Fallback: tests not assigned to any subtask */}
-                    {orphanTests.length > 0 && !(evalSummary?.verdict && fatalVerdictStyle[evalSummary.verdict]) && (
+                    {orphanTests.length > 0 && !(evalStatus === 'done' && evalTests.some(t => t.verdict === 'FAIL' || t.verdict === 'CPE')) && (
                         <div className="space-y-1.5">
                             <p className="text-[10px] font-bold uppercase tracking-widest text-(--text-muted) px-1 whitespace-nowrap">
                                 {tr.testsLabel}

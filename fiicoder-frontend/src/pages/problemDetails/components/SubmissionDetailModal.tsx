@@ -48,10 +48,6 @@ const verdictBorderClasses: Record<SubmissionVerdict, string> = {
     REJECTED: 'border-red-500/40 bg-red-500/10 text-red-300',
 };
 
-const fatalVerdictClasses: Record<string, { card: string; badge: string; score: string }> = {
-    FAIL: { card: 'border-rose-600/50 bg-rose-600/10',   badge: 'border-rose-600/60 bg-rose-600/20 text-rose-300',     score: 'text-rose-300' },
-    CPE:  { card: 'border-purple-500/50 bg-purple-500/10', badge: 'border-purple-500/60 bg-purple-500/20 text-purple-300', score: 'text-purple-300' },
-};
 
 const subtaskBadgeClasses: Record<SubmissionVerdict, string> = {
     ACCEPTED: 'border-green-500/50 bg-green-500/20 text-green-300',
@@ -85,12 +81,11 @@ function stVerdict(st: SubmissionSubtaskDTO): SubmissionVerdict {
     return 'REJECTED';
 }
 
-function ResultsTab({ subtasks, score, maxScore, lang, verdict }: {
+function ResultsTab({ subtasks, score, maxScore, lang }: {
     subtasks: SubmissionSubtaskDTO[];
     score: number;
     maxScore: number;
     lang: string;
-    verdict?: string;
 }) {
     const t = translations[lang as 'RO' | 'EN'] ?? translations.RO;
     const [expanded, setExpanded] = useState<Set<number>>(new Set());
@@ -100,37 +95,27 @@ function ResultsTab({ subtasks, score, maxScore, lang, verdict }: {
         return next;
     });
 
-    const fatal = verdict ? fatalVerdictClasses[verdict] : null;
     const overallVerdict = submissionVerdict({ status: 'FINISHED', score });
 
     return (
         <div className="space-y-4">
             {/* Summary card */}
-            {fatal ? (
-                <div className={`flex items-center justify-between p-4 rounded-2xl border-2 ${fatal.card}`}>
-                    <span className={`text-3xl font-black ${fatal.score}`}>{verdict}</span>
-                    <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border-2 ${fatal.badge}`}>
-                        {verdict}
+            <div className={`flex items-center justify-between p-4 rounded-2xl border-2 ${verdictBorderClasses[overallVerdict]}`}>
+                <div className="flex items-center gap-3">
+                    <span className={`text-3xl font-black ${summaryScoreClasses[overallVerdict]}`}>
+                        {formatScore(score)}<span className="text-lg font-bold opacity-60">/{formatScore(maxScore)}</span>
+                    </span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted)">
+                        {t.pointsLabel}
                     </span>
                 </div>
-            ) : (
-                <div className={`flex items-center justify-between p-4 rounded-2xl border-2 ${verdictBorderClasses[overallVerdict]}`}>
-                    <div className="flex items-center gap-3">
-                        <span className={`text-3xl font-black ${summaryScoreClasses[overallVerdict]}`}>
-                            {formatScore(score)}<span className="text-lg font-bold opacity-60">/{formatScore(maxScore)}</span>
-                        </span>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-(--text-muted)">
-                            {t.pointsLabel}
-                        </span>
-                    </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border-2 ${verdictBorderClasses[overallVerdict]}`}>
-                        {submissionVerdictLabels[overallVerdict][lang === 'RO' || lang === 'ro' ? 'ro' : 'en']}
-                    </span>
-                </div>
-            )}
+                <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border-2 ${verdictBorderClasses[overallVerdict]}`}>
+                    {submissionVerdictLabels[overallVerdict][lang === 'RO' || lang === 'ro' ? 'ro' : 'en']}
+                </span>
+            </div>
 
-            {/* Subtasks — ascunse pentru verdictele fatale */}
-            {!fatal && (
+            {/* Subtasks */}
+            <div className="space-y-2">
             <div className="space-y-2">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-(--text-muted) px-1">
                     {t.subtasksLabel}
@@ -211,7 +196,6 @@ function ResultsTab({ subtasks, score, maxScore, lang, verdict }: {
                     );
                 })}
             </div>
-            )}
         </div>
     );
 }
@@ -244,14 +228,8 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
 
     if (!isOpen || !submission) return null;
 
-    const fatalVerdict = submission.verdict ? fatalVerdictClasses[submission.verdict] : null;
-    const computedVerdict = submissionVerdict({ status: submission.status, score: submission.Score });
-    const verdictLabel = fatalVerdict
-        ? submission.verdict!
-        : submissionVerdictLabels[computedVerdict][lang === 'RO' || lang === 'ro' ? 'ro' : 'en'];
-    const headerBadgeClass = fatalVerdict
-        ? `${fatalVerdict.badge}`
-        : verdictBorderClasses[computedVerdict];
+    const verdict = submissionVerdict({ status: submission.status, score: submission.Score });
+    const verdictLabel = submissionVerdictLabels[verdict][lang === 'RO' || lang === 'ro' ? 'ro' : 'en'];
     const languageName = typeof submission.language === 'string'
         ? submission.language
         : (submission.language as any)?.name || 'Unknown';
@@ -284,14 +262,12 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
                                 {new Date(submission.submissiondate).toLocaleString(t.dateLocale)}
                             </p>
                         </div>
-                        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border-2 shrink-0 ${headerBadgeClass}`}>
+                        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border-2 shrink-0 ${verdictBorderClasses[verdict]}`}>
                             {verdictLabel}
                         </span>
-                        {!fatalVerdict && (
                         <span className="text-sm font-bold text-(--text-h) shrink-0">
                             {t.scoreLabel}: {formatScore(submission.Score)}
                         </span>
-                        )}
                         <span className="text-xs px-2 py-0.5 bg-(--accent)/10 text-(--accent) rounded-md border border-(--accent)/20 shrink-0">
                             {languageName}
                         </span>
@@ -359,13 +335,12 @@ export default function SubmissionDetailModal({ isOpen, onClose, submission, lan
                                 <div className="animate-spin w-6 h-6 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
                                 <span className="text-sm text-(--text-muted)">{t.loadingLabel}</span>
                             </div>
-                        ) : hasSubtasks || fatalVerdict ? (
+                        ) : hasSubtasks ? (
                             <ResultsTab
-                                subtasks={results?.subtasks ?? []}
+                                subtasks={results!.subtasks}
                                 score={submission.Score}
-                                maxScore={(results?.subtasks ?? []).reduce((s, st) => s + st.maxScore, 0)}
+                                maxScore={results!.subtasks.reduce((s, st) => s + st.maxScore, 0)}
                                 lang={lang}
-                                verdict={submission.verdict}
                             />
                         ) : submission.status === 'PENDING' ? (
                             <div className="flex flex-col items-center justify-center h-40 gap-2 text-(--text-muted)">
