@@ -15,6 +15,7 @@ import { applyMonacoTheme } from '../../../utils/monacoTheme';
 import { unindent } from '../utils/textUtils';
 import { unpackTranslation } from '../../../utils/translationPacker';
 import { useTabParam } from '../../../hooks/useTabParam';
+import { storage, STORAGE_KEYS } from '../../../utils/storage';
 
 export function useProblemDetails() {
     const { problemTitle } = useParams();
@@ -28,7 +29,7 @@ export function useProblemDetails() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const [language, setLanguage] = useState(() => localStorage.getItem('fiicoder_editor_language') ?? 'C++');
+    const [language, setLanguage] = useState(() => storage.get(STORAGE_KEYS.editorLanguage) ?? 'C++');
     const [isOpen, setIsOpen] = useState(false);
     const [status, setStatus] = useState<null | 'pending' | 'valid' | 'invalid'>(null);
     const monacoRef = useRef<any>(null);
@@ -156,7 +157,7 @@ export function useProblemDetails() {
 
     const [model, setModel] = useState(() => {
         try {
-            const saved = localStorage.getItem('fiicoder_problemdetails_layout_v4');
+            const saved = storage.get(STORAGE_KEYS.problemLayout);
             if (saved) {
                 return FlexLayout.Model.fromJson(JSON.parse(saved));
             }
@@ -211,7 +212,7 @@ export function useProblemDetails() {
                 setAvailableLanguages(langs);
                 setProblemTests(testDetails);
                 if (langs.length > 0) {
-                    const savedLangName = localStorage.getItem('fiicoder_editor_language');
+                    const savedLangName = storage.get(STORAGE_KEYS.editorLanguage);
                     const savedLang = savedLangName ? langs.find(l => l.name === savedLangName) : null;
                     const cppLang = langs.find(l =>
                         l.name === 'C++' ||
@@ -297,14 +298,14 @@ export function useProblemDetails() {
     // Called AFTER the model is updated — correct place to persist the layout
     const handleLayoutSave = useCallback((updatedModel: FlexLayout.Model) => {
         try {
-            localStorage.setItem('fiicoder_problemdetails_layout_v4', JSON.stringify(updatedModel.toJson()));
+            storage.set(STORAGE_KEYS.problemLayout, JSON.stringify(updatedModel.toJson()));
         } catch {
             // Silently fail if localStorage is unavailable
         }
     }, []);
 
     const resetLayout = useCallback(() => {
-        localStorage.removeItem('fiicoder_problemdetails_layout_v4');
+        storage.remove(STORAGE_KEYS.problemLayout);
         setModel(FlexLayout.Model.fromJson(getDefaultLayout(langRef.current)));
     }, []);
 

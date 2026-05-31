@@ -6,6 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { storage, STORAGE_KEYS } from "../utils/storage";
 
 export const THEMES = ["fii", "fiicode", "rose", "nord", "cream", "sage", "olivia", "serika", "eighties", "superuser", "custom", "mcdonalds"] as const;
 export type Theme = (typeof THEMES)[number];
@@ -31,7 +32,6 @@ interface ThemeContextValue {
   setCustomColors: (colors: Partial<CustomColors>) => void;
 }
 
-const THEME_STORAGE_KEY = "fiicoder_theme";
 const THEME_FAVICONS: Record<Theme, string> = {
   rose: "/logo.svg",
   nord: "/logo_nord.svg",
@@ -49,28 +49,22 @@ const THEME_FAVICONS: Record<Theme, string> = {
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
-const CUSTOM_COLORS_KEY = "fiicoder_custom_colors";
 const DEFAULT_CUSTOM_COLORS: CustomColors = { bg: "#090812", accent: "#ff5eb6", radius: 'rounded', font: 'sans', border: 'default' };
 
 function isTheme(value: string | null): value is Theme {
   return value !== null && THEMES.includes(value as Theme);
 }
 
-// In Safari/Firefox private mode, localStorage poate fi indisponibil sau
-// poate intoarce date corupte. Orice throw aici ar darama intregul tree
-// fara ErrorBoundary, deci defensiva.
+// localStorage access goes through the shared `storage` wrapper, which is
+// already guarded against private-mode / quota throws (Safari/Firefox).
 function safeReadTheme(): Theme {
-  try {
-    const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    return isTheme(stored) ? stored : DEFAULT_THEME;
-  } catch {
-    return DEFAULT_THEME;
-  }
+  const stored = storage.get(STORAGE_KEYS.theme);
+  return isTheme(stored) ? stored : DEFAULT_THEME;
 }
 
 function safeReadCustomColors(): CustomColors {
   try {
-    const stored = localStorage.getItem(CUSTOM_COLORS_KEY);
+    const stored = storage.get(STORAGE_KEYS.customColors);
     if (!stored) return DEFAULT_CUSTOM_COLORS;
     const parsed = JSON.parse(stored) as Partial<{ bg: string; accent: string; radius: string; font: string; border: string }>;
     if (parsed && typeof parsed.bg === "string" && typeof parsed.accent === "string") {
@@ -87,20 +81,8 @@ function safeReadCustomColors(): CustomColors {
     }
     return DEFAULT_CUSTOM_COLORS;
   } catch {
-    try {
-      localStorage.removeItem(CUSTOM_COLORS_KEY);
-    } catch {
-      // ignore
-    }
+    storage.remove(STORAGE_KEYS.customColors);
     return DEFAULT_CUSTOM_COLORS;
-  }
-}
-
-function safeWrite(key: string, value: string) {
-  try {
-    localStorage.setItem(key, value);
-  } catch {
-    // ignore quota errors and private-mode blocks
   }
 }
 
@@ -111,7 +93,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
-        safeWrite(THEME_STORAGE_KEY, theme);
+        storage.set(STORAGE_KEYS.theme, theme);
         document.getElementById('custom-squiggle-svg')?.remove();
 
         // Resolve effective tone (light/dark) per theme — used to retarget
@@ -229,7 +211,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (theme !== 'custom') return;
     const id = setTimeout(
-      () => safeWrite(CUSTOM_COLORS_KEY, JSON.stringify(customColors)),
+      () => storage.setJson(STORAGE_KEYS.customColors, customColors),
       250,
     );
     return () => clearTimeout(id);

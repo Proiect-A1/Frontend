@@ -13,6 +13,7 @@ import SearchInput from "../../components/SearchInput";
 import StatsSidebar from "./components/StatsSidebar";
 import ProblemSkeleton from "../../components/ProblemSkeleton";
 import { useAuth } from "../../contexts/AuthContext";
+import { extractErrorMessage } from "../../utils/httpError";
 
 export default function ProblemList() {
   const { lang } = useLanguage();
@@ -53,8 +54,12 @@ export default function ProblemList() {
     [problemsQuery.data],
   );
   const loading = problemsQuery.isPending;
-  const error =
-    problemsQuery.error instanceof Error ? problemsQuery.error.message : null;
+  const error = problemsQuery.error
+    ? extractErrorMessage(
+        problemsQuery.error,
+        lang === "RO" ? "Eroare la încărcarea problemelor." : "Error loading problems.",
+      )
+    : null;
   const hasMore = problemsQuery.hasNextPage ?? false;
   const isLoadingMore = problemsQuery.isFetchingNextPage;
 

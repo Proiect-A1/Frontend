@@ -12,6 +12,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { createPortal } from 'react-dom';
 import { unpackTranslation, hasTranslation } from '../../utils/translationPacker';
 import { formatDateTime } from '../../utils/dateTime';
+import { storage, STORAGE_KEYS } from '../../utils/storage';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -230,21 +231,12 @@ export default function Landing() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showAllAnnouncements, setShowAllAnnouncements] = useState(false);
 
-    const [readIds, setReadIds] = useState<Set<string | number>>(() => {
-        try {
-            const stored = localStorage.getItem('fiicoder_read_announcements');
-            return stored ? new Set(JSON.parse(stored)) : new Set();
-        } catch {
-            return new Set();
-        }
-    });
+    const [readIds, setReadIds] = useState<Set<string | number>>(
+        () => new Set(storage.getJson<(string | number)[]>(STORAGE_KEYS.readAnnouncements, [])),
+    );
 
     useEffect(() => {
-        try {
-            localStorage.setItem('fiicoder_read_announcements', JSON.stringify([...readIds]));
-        } catch {
-            // ignore
-        }
+        storage.setJson(STORAGE_KEYS.readAnnouncements, [...readIds]);
     }, [readIds]);
 
     // Memoize the features and stats list to avoid recreation on every render

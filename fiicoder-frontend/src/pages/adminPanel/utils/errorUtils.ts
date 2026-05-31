@@ -1,8 +1,3 @@
-export function extractErrorMessage(error: unknown, fallback: string): string {
-    if (error && typeof error === 'object' && 'body' in error) {
-        const body = (error as { body?: { message?: string } }).body;
-        if (body?.message) return body.message;
-    }
-    if (error instanceof Error && error.message) return error.message;
-    return fallback;
-}
+// Re-export of the shared helper so existing admin imports keep working.
+// Canonical implementation lives in src/utils/httpError.ts.
+export { extractErrorMessage } from '../../../utils/httpError';

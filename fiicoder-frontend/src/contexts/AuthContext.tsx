@@ -4,31 +4,8 @@ import { getGravatarUrl, getDiceBearUrl } from '../utils/gravatar';
 import { profileService } from '../services/profileService';
 import { subscribeToken, refreshSession, setAccessToken } from '../services/apiClient';
 import { authService } from '../pages/login/services/authService';
-
-interface JwtPayload {
-  sub: string;
-  role: string;
-  username: string;
-  iat: number;
-  exp: number;
-}
-
-function decodeJwt(token: string): JwtPayload | null {
-  try {
-    const parts = token.split('.');
-    if (parts.length !== 3) return null;
-    const payload = JSON.parse(atob(parts[1]));
-    return payload as JwtPayload;
-  } catch {
-    return null;
-  }
-}
-
-function isTokenExpired(token: string): boolean {
-  const payload = decodeJwt(token);
-  if (!payload) return true;
-  return Date.now() >= payload.exp * 1000;
-}
+import { decodeJwt, isTokenExpired } from '../utils/jwt';
+import { storage, STORAGE_KEYS } from '../utils/storage';
 
 interface AuthContextType {
   token: string | null;
@@ -60,33 +37,9 @@ const AuthContext = createContext<AuthContextType>({
   updateAvatar: () => {},
 });
 
-const TOKEN_KEY = 'fiicoder_jwt';
-const GRAVATAR_KEY = 'fiicoder_gravatar';
-const DICEBEAR_KEY = 'fiicoder_dicebear';
-
-function safeGet(key: string): string | null {
-  try {
-    return localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function safeSet(key: string, value: string) {
-  try {
-    localStorage.setItem(key, value);
-  } catch {}
-}
-
-function safeRemove(key: string) {
-  try {
-    localStorage.removeItem(key);
-  } catch {}
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() => {
-    const stored = safeGet(TOKEN_KEY);
+    const stored = storage.get(STORAGE_KEYS.token);
     // pastram un token expirat ca "marker" de sesiune anterioara — incercam refresh la boot
     return stored && !isTokenExpired(stored) ? stored : null;
   });
@@ -94,12 +47,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // true cat timp incercam un silent refresh la pornire (ca sa nu redirectionam
   // userul spre /login inainte sa stim daca avem o sesiune valida prin cookie)
   const [isLoading, setIsLoading] = useState<boolean>(() => {
-    const stored = safeGet(TOKEN_KEY);
+    const stored = storage.get(STORAGE_KEYS.token);
     return !!stored && isTokenExpired(stored);
   });
 
-  const [gravatarUrl, setGravatarUrl] = useState<string | null>(() => safeGet(GRAVATAR_KEY));
-  const [dicebearUrl, setDicebearUrl] = useState<string | null>(() => safeGet(DICEBEAR_KEY));
+  const [gravatarUrl, setGravatarUrl] = useState<string | null>(() => storage.get(STORAGE_KEYS.gravatar));
+  const [dicebearUrl, setDicebearUrl] = useState<string | null>(() => storage.get(STORAGE_KEYS.dicebear));
 
   // Decodam JWT-ul o singura data per schimbare de token (atob + JSON.parse sunt
   // suficient de scumpe cat sa nu vrem sa le rulam de 2x pe fiecare render).
@@ -120,13 +73,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const dicebear = getDiceBearUrl(email);
     setGravatarUrl(gravatar);
     setDicebearUrl(dicebear);
-    safeSet(GRAVATAR_KEY, gravatar);
-    safeSet(DICEBEAR_KEY, dicebear);
+    storage.set(STORAGE_KEYS.gravatar, gravatar);
+    storage.set(STORAGE_KEYS.dicebear, dicebear);
   }, []);
 
   const login = useCallback((newToken: string) => {
-    safeRemove(GRAVATAR_KEY);
-    safeRemove(DICEBEAR_KEY);
+    storage.remove(STORAGE_KEYS.gravatar);
+    storage.remove(STORAGE_KEYS.dicebear);
     setGravatarUrl(null);
     setDicebearUrl(null);
     // setAccessToken scrie in localStorage si notifica abonatii -> setToken (vezi efectul de mai jos)
@@ -136,8 +89,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     // invalidam refresh token-ul pe server (fire-and-forget); UI-ul se deconecteaza imediat
     void authService.logout();
-    safeRemove(GRAVATAR_KEY);
-    safeRemove(DICEBEAR_KEY);
+    storage.remove(STORAGE_KEYS.gravatar);
+    storage.remove(STORAGE_KEYS.dicebear);
     setGravatarUrl(null);
     setDicebearUrl(null);
     setAccessToken(null);
@@ -149,8 +102,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = subscribeToken((t) => {
       setToken(t);
       if (!t) {
-        safeRemove(GRAVATAR_KEY);
-        safeRemove(DICEBEAR_KEY);
+        storage.remove(STORAGE_KEYS.gravatar);
+        storage.remove(STORAGE_KEYS.dicebear);
         setGravatarUrl(null);
         setDicebearUrl(null);
       }
@@ -161,7 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // La boot: daca avem un token expirat (marker de sesiune anterioara), incercam un
   // silent refresh prin cookie-ul httpOnly inainte sa decidem ca userul e delogat.
   useEffect(() => {
-    const stored = safeGet(TOKEN_KEY);
+    const stored = storage.get(STORAGE_KEYS.token);
     if (stored && isTokenExpired(stored)) {
       refreshSession().finally(() => setIsLoading(false));
     } else {

@@ -1,4 +1,5 @@
 import { apiClient } from "../../../services/apiClient";
+import { buildQuery } from "../../../utils/queryString";
 
 export interface GroupFindResponseDTO {
   id: string;
@@ -103,15 +104,6 @@ export interface GroupSearchCriteria {
   createdBefore?: string;
 }
 
-function appendCriteria(params: URLSearchParams, criteria?: GroupSearchCriteria) {
-  if (!criteria) return;
-  if (criteria.search) params.append('search', criteria.search);
-  if (criteria.creatorId) params.append('creatorId', criteria.creatorId);
-  if (criteria.creatorUsername) params.append('creatorUsername', criteria.creatorUsername);
-  if (criteria.createdAfter) params.append('createdAfter', criteria.createdAfter);
-  if (criteria.createdBefore) params.append('createdBefore', criteria.createdBefore);
-}
-
 export const classService = {
   getMyGroups() {
     return apiClient.get<GroupMembershipDTO[]>('/group/me');
@@ -168,12 +160,8 @@ export const classService = {
     size: number = 20,
     sort?: string,
   ) {
-    const params = new URLSearchParams();
-    params.append('page', String(page));
-    params.append('size', String(size));
-    if (sort) params.append('sort', sort);
-    appendCriteria(params, criteria);
-    return apiClient.get<SpringPage<GroupFindResponseDTO>>(`/group?${params.toString()}`);
+    const query = buildQuery({ page, size, sort, ...criteria });
+    return apiClient.get<SpringPage<GroupFindResponseDTO>>(`/group${query}`);
   },
 
   removeGroupMemberAsAdmin(groupId: string, userId: string) {

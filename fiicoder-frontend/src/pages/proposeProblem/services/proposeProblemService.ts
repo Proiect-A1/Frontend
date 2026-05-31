@@ -1,6 +1,7 @@
 import { apiClient } from "../../../services/apiClient";
 import type { ProposeProblemForm, ProblemProposalResponse } from "../types/proposeProblem";
 import { createProblemZip } from "../utils/zipHelper";
+import { storage, STORAGE_KEYS } from "../../../utils/storage";
 
 type BackendProblemProposal = {
   title: string;
@@ -299,29 +300,14 @@ function mapProblemVisibility(visibility?: string): ProblemProposalResponse["vis
 
 // ── Draft persistence (localStorage) ──
 
-const DRAFT_KEY = "fiicoder_proposal_draft";
-
 export function saveDraft(data: ProposeProblemForm): void {
-  try {
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
-  } catch {
-    // localStorage full or unavailable - silently ignore
-  }
+  storage.setJson(STORAGE_KEYS.proposalDraft, data);
 }
 
 export function loadDraft(): ProposeProblemForm | null {
-  try {
-    const raw = localStorage.getItem(DRAFT_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
+  return storage.getJson<ProposeProblemForm | null>(STORAGE_KEYS.proposalDraft, null);
 }
 
 export function clearDraft(): void {
-  try {
-    localStorage.removeItem(DRAFT_KEY);
-  } catch {
-    // ignore
-  }
+  storage.remove(STORAGE_KEYS.proposalDraft);
 }

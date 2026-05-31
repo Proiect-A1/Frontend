@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { getEffectivePalette } from '../../../utils/monacoTheme';
+import { storage, STORAGE_KEYS } from '../../../utils/storage';
 
 type Tool = 'pencil' | 'line' | 'rect' | 'ellipse' | 'eraser';
 
@@ -24,7 +25,7 @@ type Props = {
 };
 
 export default function PaintPanel({ lang, problemTitle }: Props) {
-    const storageKey = `fiicoder_paint_${problemTitle}`;
+    const storageKey = STORAGE_KEYS.paint(problemTitle);
     const { theme, customColors } = useTheme();
     const bgColor = getEffectivePalette(theme, customColors).editorBg;
 
@@ -61,7 +62,7 @@ export default function PaintPanel({ lang, problemTitle }: Props) {
             ctx.fillRect(0, 0, w, h);
 
             const src = firstRun
-                ? (savedRef.current ?? (() => { try { return localStorage.getItem(storageKey); } catch { return null; } })())
+                ? (savedRef.current ?? storage.get(storageKey))
                 : savedRef.current;
 
             if (src) {
@@ -81,15 +82,11 @@ export default function PaintPanel({ lang, problemTitle }: Props) {
     // Autosave to localStorage every 15 s
     useEffect(() => {
         const id = setInterval(() => {
-            if (savedRef.current) {
-                try { localStorage.setItem(storageKey, savedRef.current); } catch {}
-            }
+            if (savedRef.current) storage.set(storageKey, savedRef.current);
         }, 15_000);
         return () => {
             clearInterval(id);
-            if (savedRef.current) {
-                try { localStorage.setItem(storageKey, savedRef.current); } catch {}
-            }
+            if (savedRef.current) storage.set(storageKey, savedRef.current);
         };
     }, [storageKey]);
 

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import React, { useRef, useMemo, useState } from 'react';
 import { getMonacoLanguageId } from '../../../utils/monacoTheme';
 import { useMonacoContextMenu } from '../../../hooks/useMonacoContextMenu';
+import { storage, STORAGE_KEYS } from '../../../utils/storage';
 
 type Props = {
     isAuthenticated: boolean;
@@ -128,7 +129,7 @@ export default function EditorPanel({
                                             onClick={() => {
                                                 setSelectedLanguageId(langItem.id);
                                                 setLanguage(langItem.name);
-                                                localStorage.setItem('fiicoder_editor_language', langItem.name);
+                                                storage.set(STORAGE_KEYS.editorLanguage, langItem.name);
                                                 setIsOpen(false);
                                             }}
                                             className="w-full text-left px-4 py-2 text-sm text-(--text-h) hover:bg-(--accent)/20 transition-colors"

@@ -5,6 +5,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useLanguage } from "../../language/Language";
 import UserAvatar from "../../components/UserAvatar";
 import { leaderboardService, type LeaderboardEntry } from "./services/leaderboardService";
+import { extractErrorMessage } from "../../utils/httpError";
 
 const PAGE_SIZE = 20;
 
@@ -42,7 +43,12 @@ export default function Leaderboard() {
 
   const entries = useMemo(() => query.data?.pages.flat() ?? [], [query.data]);
   const loading = query.isPending;
-  const error = query.error instanceof Error ? query.error.message : query.error ? String(query.error) : null;
+  const error = query.error
+    ? extractErrorMessage(
+        query.error,
+        lang === "RO" ? "Eroare la încărcarea clasamentului." : "Error loading leaderboard.",
+      )
+    : null;
   const hasMore = query.hasNextPage ?? false;
   const isLoadingMore = query.isFetchingNextPage;
 

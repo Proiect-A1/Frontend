@@ -1,5 +1,7 @@
+import { storage, STORAGE_KEYS } from '../utils/storage';
+import { ApiError } from '../utils/httpError';
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
-const TOKEN_KEY = 'fiicoder_jwt';
 
 // Cloudflare Access Service Token (necesar pentru a trece de firewall-ul CF)
 const CF_ACCESS_CLIENT_ID = import.meta.env.VITE_CF_ACCESS_CLIENT_ID || '77c033abcecc445a14ca70470aebdbd9.access';
@@ -21,14 +23,14 @@ export function subscribeToken(listener: TokenListener): () => void {
 }
 
 export function getAccessToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
+  return storage.get(STORAGE_KEYS.token);
 }
 
 export function setAccessToken(token: string | null): void {
   if (token) {
-    localStorage.setItem(TOKEN_KEY, token);
+    storage.set(STORAGE_KEYS.token, token);
   } else {
-    localStorage.removeItem(TOKEN_KEY);
+    storage.remove(STORAGE_KEYS.token);
   }
   tokenListeners.forEach((l) => l(token));
 }
@@ -127,7 +129,7 @@ async function request<TResponse>(
       window.location.href = `/login?banned=true${reason}`;
     }
 
-    throw { status: response.status, body: errorBody, message: response.statusText };
+    throw new ApiError(response.status, errorBody, response.statusText);
   }
 
   if (response.status === 204) {

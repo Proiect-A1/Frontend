@@ -1,4 +1,5 @@
 import { apiClient } from '../../../services/apiClient';
+import { buildQuery } from '../../../utils/queryString';
 import type { Announcement, AnnouncementInput } from '../../../types/announcement';
 
 export interface AdminOverview {
@@ -309,15 +310,8 @@ export const adminService = {
         criteria?: GroupsSearchCriteria,
         sort?: string,
     ): Promise<GroupsPage> {
-        const params = new URLSearchParams();
-        params.append('page', String(page));
-        params.append('size', String(pageSize));
-        if (sort) params.append('sort', sort);
-        if (criteria?.search) params.append('search', criteria.search);
-        if (criteria?.creatorUsername) params.append('creatorUsername', criteria.creatorUsername);
-        if (criteria?.createdAfter) params.append('createdAfter', criteria.createdAfter);
-        if (criteria?.createdBefore) params.append('createdBefore', criteria.createdBefore);
-        return await apiClient.get<GroupsPage>(`/group?${params.toString()}`);
+        const query = buildQuery({ page, size: pageSize, sort, ...criteria });
+        return await apiClient.get<GroupsPage>(`/group${query}`);
     },
 
     async getGroup(groupId: string): Promise<GroupSummary> {

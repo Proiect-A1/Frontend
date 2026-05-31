@@ -17,16 +17,9 @@ import type {
 import { submissionVerdict, submissionVerdictLabels, type SubmissionVerdict } from '../profile/profileUtils';
 import { useLanguage } from '../../language/Language';
 import { containerVariants, itemVariants, pageVariants } from '../../utils/motionConfig';
+import { extractErrorMessage } from '../../utils/httpError';
+import { storage, STORAGE_KEYS } from '../../utils/storage';
 import { toast } from 'sonner';
-
-function extractErrorMessage(error: unknown, fallback: string): string {
-    if (error && typeof error === 'object' && 'body' in error) {
-        const body = (error as { body?: { message?: string } }).body;
-        if (body?.message) return body.message;
-    }
-    if (error instanceof Error && error.message) return error.message;
-    return fallback;
-}
 
 function getHomeworkBadge(status: HomeworkResponseDTO['status']) {
     switch (status) {
@@ -843,16 +836,12 @@ export default function ClassDetails() {
         try {
             await classService.deleteGroup(groupId!);
             if (userId) {
-                const key = `fiicoder_recent_classes_${userId}`;
-                const stored = localStorage.getItem(key);
-                if (stored) {
-                    try {
-                        const classes = JSON.parse(stored) as { id: string }[];
-                        localStorage.setItem(
-                            key,
-                            JSON.stringify(classes.filter((c) => c.id !== groupId)),
-                        );
-                    } catch {}
+                const key = STORAGE_KEYS.recentClasses(userId);
+                // Only rewrite if a recent-classes entry already exists (preserves
+                // prior behavior of not creating the key on delete).
+                if (storage.get(key) !== null) {
+                    const classes = storage.getJson<{ id: string }[]>(key, []);
+                    storage.setJson(key, classes.filter((c) => c.id !== groupId));
                 }
             }
             toast.success(lang === 'RO' ? 'Clasa a fost ștearsă.' : 'Class deleted.');

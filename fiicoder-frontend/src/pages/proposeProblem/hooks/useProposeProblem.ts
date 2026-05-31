@@ -34,29 +34,35 @@ const BACKEND_MSG_MAP: Record<string, string> = {
 
 function parseSubmitError(err: unknown): string {
     if (err instanceof TypeError) return 'Eroare de rețea. Verifică conexiunea și încearcă din nou.';
+
+    // Check the api-error shape (status/body) before the generic Error branch:
+    // apiClient now rejects with ApiError, which is itself an Error, so the
+    // structural check must come first to keep the status-specific messages.
+    if (isApiError(err)) {
+        if (err.message === 'ZIP_UPLOAD_FAILED') return 'Eroare la încărcarea arhivei ZIP pe server. URL-ul de upload a expirat sau serverul a refuzat fișierul — încearcă din nou.';
+
+        const backendMsg = err.body?.message ?? '';
+
+        if (err.status === 409) {
+            const titleMatch = backendMsg.match(/title\s+(.+?)\s+is already in use/i);
+            const title = titleMatch ? `„${titleMatch[1]}"` : 'acest titlu';
+            return `Există deja o problemă cu ${title}. Alege un alt titlu.`;
+        }
+        if (err.status === 400) {
+            const violations = err.body?.violations;
+            if (violations?.length) return BACKEND_MSG_MAP[violations[0].message] ?? violations[0].message;
+            return BACKEND_MSG_MAP[backendMsg] ?? backendMsg ?? 'Datele introduse nu sunt valide. Verifică toate câmpurile.';
+        }
+        if (err.status === 403) return 'Nu ai permisiunea să propui probleme. Necesită rol de Profesor.';
+        if (err.status === 401) return 'Sesiunea a expirat. Autentifică-te din nou.';
+        if (err.status === 404) return 'Una sau mai multe etichete selectate nu există pe platformă.';
+        if (err.status === 413) return 'Arhiva ZIP depășește limita de dimensiune a serverului.';
+        if (err.status === 0 || err.status === undefined) return 'Eroare de rețea. Verifică conexiunea și încearcă din nou.';
+        return backendMsg || `Eroare server (${err.status}). Încearcă din nou.`;
+    }
+
     if (err instanceof Error) return `Eroare la generarea pachetului: ${err.message}`;
-    if (!isApiError(err)) return 'Eroare neașteptată. Încearcă din nou.';
-
-    if (err.message === 'ZIP_UPLOAD_FAILED') return 'Eroare la încărcarea arhivei ZIP pe server. URL-ul de upload a expirat sau serverul a refuzat fișierul — încearcă din nou.';
-
-    const backendMsg = err.body?.message ?? '';
-
-    if (err.status === 409) {
-        const titleMatch = backendMsg.match(/title\s+(.+?)\s+is already in use/i);
-        const title = titleMatch ? `„${titleMatch[1]}"` : 'acest titlu';
-        return `Există deja o problemă cu ${title}. Alege un alt titlu.`;
-    }
-    if (err.status === 400) {
-        const violations = err.body?.violations;
-        if (violations?.length) return BACKEND_MSG_MAP[violations[0].message] ?? violations[0].message;
-        return BACKEND_MSG_MAP[backendMsg] ?? backendMsg ?? 'Datele introduse nu sunt valide. Verifică toate câmpurile.';
-    }
-    if (err.status === 403) return 'Nu ai permisiunea să propui probleme. Necesită rol de Profesor.';
-    if (err.status === 401) return 'Sesiunea a expirat. Autentifică-te din nou.';
-    if (err.status === 404) return 'Una sau mai multe etichete selectate nu există pe platformă.';
-    if (err.status === 413) return 'Arhiva ZIP depășește limita de dimensiune a serverului.';
-    if (err.status === 0 || err.status === undefined) return 'Eroare de rețea. Verifică conexiunea și încearcă din nou.';
-    return backendMsg || `Eroare server (${err.status}). Încearcă din nou.`;
+    return 'Eroare neașteptată. Încearcă din nou.';
 }
 
 function triggerDownload(blob: Blob, filename: string) {

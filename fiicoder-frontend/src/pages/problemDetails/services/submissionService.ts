@@ -72,8 +72,10 @@ export function connectToEvaluation(
   ws.onmessage = (messageEvent) => {
     try {
       const data = JSON.parse(messageEvent.data);
-       msgCount++;
-      console.log(`[WS] #${msgCount} ${data.request} testId=${data.testId ?? '-'} subtaskId=${data.subtaskId ?? '-'}`);
+      msgCount++;
+      if (import.meta.env.DEV) {
+        console.log(`[WS] #${msgCount} ${data.request} testId=${data.testId ?? '-'} subtaskId=${data.subtaskId ?? '-'}`);
+      }
 
       switch (data.request) {
         case "doneTest":
@@ -87,10 +89,10 @@ export function connectToEvaluation(
           onDone(data as DoneSubmissionEvent);
           break;
         default:
-          console.warn("[WS] Unknown event type:", data.request);
+          if (import.meta.env.DEV) console.warn("[WS] Unknown event type:", data.request);
       }
     } catch (err) {
-      console.error("[WS] Failed to parse message:", err);
+      if (import.meta.env.DEV) console.error("[WS] Failed to parse message:", err);
     }
   };
 
@@ -99,9 +101,11 @@ export function connectToEvaluation(
   };
 
   ws.onclose = (event) => {
-    console.log(`[WS] closed after ${msgCount} messages — code: ${event.code}, reason: "${event.reason}"`);
-    if (event.code !== 1000) {
-      console.warn("[WS] Connection closed unexpectedly:", event.code, event.reason);
+    if (import.meta.env.DEV) {
+      console.log(`[WS] closed after ${msgCount} messages — code: ${event.code}, reason: "${event.reason}"`);
+      if (event.code !== 1000) {
+        console.warn("[WS] Connection closed unexpectedly:", event.code, event.reason);
+      }
     }
   };
 

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../language/Language';
+import { storage, STORAGE_KEYS } from '../../utils/storage';
 import {
     classService,
     type GroupFindResponseDTO,
@@ -21,8 +22,6 @@ interface RecentClass {
     createdAt: string;
 }
 
-const RECENT_CLASSES_KEY = 'fiicoder_recent_classes_';
-
 export default function ClassesHub() {
     const { userId, isAdmin, isProfessor } = useAuth();
     const { lang } = useLanguage();
@@ -38,20 +37,11 @@ export default function ClassesHub() {
     const [error, setError] = useState<string | null>(null);
     const [feedback, setFeedback] = useState<string | null>(null);
 
-    const getRecentClassesKey = (uid: string) => `${RECENT_CLASSES_KEY}${uid}`;
-
-    const loadRecentClasses = (uid: string): RecentClass[] => {
-        const stored = localStorage.getItem(getRecentClassesKey(uid));
-        if (!stored) return [];
-        try {
-            return JSON.parse(stored) as RecentClass[];
-        } catch {
-            return [];
-        }
-    };
+    const loadRecentClasses = (uid: string): RecentClass[] =>
+        storage.getJson<RecentClass[]>(STORAGE_KEYS.recentClasses(uid), []);
 
     const saveRecentClasses = (uid: string, classes: RecentClass[]) => {
-        localStorage.setItem(getRecentClassesKey(uid), JSON.stringify(classes.slice(0, 10)));
+        storage.setJson(STORAGE_KEYS.recentClasses(uid), classes.slice(0, 10));
     };
 
     const storeRecentClass = (c: RecentClass) => {

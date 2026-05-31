@@ -7,8 +7,7 @@ import type { ValidationErrors } from './services/authService';
 import { containerVariants, itemVariants, hoverTransition } from '../../utils/motionConfig';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-
-const USERNAME_KEY = 'fiicoder_username';
+import { storage, STORAGE_KEYS } from '../../utils/storage';
 
 export default function Login() {
     const [isLogin, setIsLogin] = useState(true);
@@ -94,7 +93,7 @@ export default function Login() {
                     email,
                     password,
                 });
-                localStorage.setItem(USERNAME_KEY, username);
+                storage.set(STORAGE_KEYS.username, username);
                 toast.success(
                     lang === 'RO'
                         ? 'Cont creat cu succes! Te poți autentifica.'

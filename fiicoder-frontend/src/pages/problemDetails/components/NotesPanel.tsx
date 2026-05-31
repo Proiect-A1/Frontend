@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { storage, STORAGE_KEYS } from '../../../utils/storage';
 
 type Props = {
     lang: string;
@@ -6,16 +7,12 @@ type Props = {
 };
 
 export default function NotesPanel({ lang, problemTitle }: Props) {
-    const storageKey = `fiicoder_notes_${problemTitle}`;
-    const [notes, setNotes] = useState(() => {
-        try { return localStorage.getItem(storageKey) ?? ''; } catch { return ''; }
-    });
+    const storageKey = STORAGE_KEYS.notes(problemTitle);
+    const [notes, setNotes] = useState(() => storage.get(storageKey) ?? '');
 
     // Debounced autosave
     useEffect(() => {
-        const t = setTimeout(() => {
-            try { localStorage.setItem(storageKey, notes); } catch {}
-        }, 400);
+        const t = setTimeout(() => storage.set(storageKey, notes), 400);
         return () => clearTimeout(t);
     }, [notes, storageKey]);
 
