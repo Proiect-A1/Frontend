@@ -39,22 +39,37 @@ const subtaskTextColor: Record<SubmissionVerdict, string> = {
 };
 
 const verdictColors: Record<string, string> = {
-    OK: 'border-green-500/40 bg-green-500/10 text-green-300',
-    SUPER: 'border-emerald-400/60 bg-emerald-400/15 text-emerald-300',
-    WA: 'border-red-500/40 bg-red-500/10 text-red-300',
-    PE: 'border-orange-500/40 bg-orange-500/10 text-orange-300',
-    PA: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
-    TLE: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
-    MLE: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
-    ILE: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
-    RTE: 'border-red-500/40 bg-red-500/10 text-red-300',
-    CPE: 'border-purple-500/40 bg-purple-500/10 text-purple-300',
-    FAIL: 'border-red-500/40 bg-red-500/10 text-red-300',
-    SKIP: 'border-gray-500/40 bg-gray-500/10 text-gray-300',
-    NONE: 'border-gray-500/30 bg-gray-500/5 text-gray-400',
-    IDLE: 'border-gray-500/30 bg-gray-500/5 text-gray-400',
-    OTHER: 'border-gray-500/30 bg-gray-500/5 text-gray-400',
-    PENDING: 'border-sky-500/40 bg-sky-500/10 text-sky-300',
+    OK:      'border-green-500/40    bg-green-500/10    text-green-300',
+    SUPER:   'border-emerald-400/60  bg-emerald-400/15  text-emerald-300',
+    WA:      'border-red-500/40      bg-red-500/10      text-red-300',
+    PE:      'border-orange-500/40   bg-orange-500/10   text-orange-300',
+    PA:      'border-amber-500/40    bg-amber-500/10    text-amber-300',
+    TLE:     'border-amber-500/40    bg-amber-500/10    text-amber-300',
+    MLE:     'border-violet-500/40   bg-violet-500/10   text-violet-300',
+    ILE:     'border-amber-500/40    bg-amber-500/10    text-amber-300',
+    RTE:     'border-red-500/40      bg-red-500/10      text-red-300',
+    CPE:     'border-purple-500/40   bg-purple-500/10   text-purple-300',
+    FAIL:    'border-rose-600/50     bg-rose-600/10     text-rose-300',
+    SKIP:    'border-gray-500/40     bg-gray-500/10     text-gray-300',
+    NONE:    'border-gray-500/30     bg-gray-500/5      text-gray-400',
+    IDLE:    'border-gray-500/30     bg-gray-500/5      text-gray-400',
+    OTHER:   'border-gray-500/30     bg-gray-500/5      text-gray-400',
+    PENDING: 'border-sky-500/40      bg-sky-500/10      text-sky-300',
+};
+
+// Card + badge styles pentru verdictele fatale (FAIL / CPE) care înlocuiesc complet
+// afișajul de punctaj și ascund testele.
+const fatalVerdictStyle: Record<string, { card: string; badge: string; scoreText: string }> = {
+    FAIL: {
+        card:      'border-rose-600/50   bg-rose-600/10',
+        badge:     'border-rose-600/60   bg-rose-600/20   text-rose-300',
+        scoreText: 'text-rose-300',
+    },
+    CPE: {
+        card:      'border-purple-500/50 bg-purple-500/10',
+        badge:     'border-purple-500/60 bg-purple-500/20 text-purple-300',
+        scoreText: 'text-purple-300',
+    },
 };
 
 const verdictIcons: Record<string, string> = {
@@ -268,6 +283,33 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                     {/* Summary */}
                     {evalSummary ? (
                         (() => {
+                            const fatal = evalSummary.verdict && fatalVerdictStyle[evalSummary.verdict];
+                            if (fatal) {
+                                return (
+                                    <div className={`p-4 rounded-2xl border-2 ${fatal.card}`}>
+                                        <div className="flex flex-col gap-2 @[180px]:flex-row @[180px]:items-center @[180px]:justify-between">
+                                            <span className={`text-xl @[220px]:text-2xl font-black ${fatal.scoreText}`}>
+                                                {verdictIcons[evalSummary.verdict] ?? ''} {evalSummary.verdict}
+                                            </span>
+                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border-2 self-start @[180px]:self-auto ${fatal.badge}`}>
+                                                {evalSummary.verdict}
+                                            </span>
+                                        </div>
+                                        {evalElapsedMs != null && (
+                                            <div className="mt-2 flex items-center gap-1.5 text-[10px] text-(--text-muted)">
+                                                <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                                    <circle cx="12" cy="12" r="10"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2"/>
+                                                </svg>
+                                                <span>{tr.evalTimeLabel}</span>
+                                                <span className="font-mono font-bold text-(--text-h)">
+                                                    {evalElapsedMs < 1000 ? `${evalElapsedMs}ms` : `${(evalElapsedMs / 1000).toFixed(1)}s`}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            }
+
                             const summaryVerdict = submissionVerdict({ status: 'FINISHED', score: evalSummary.score });
                             const verdictLabel = submissionVerdictLabels[summaryVerdict][lang === 'RO' ? 'ro' : 'en'];
                             return (
@@ -312,8 +354,8 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                         </div>
                     )}
 
-                    {/* Subtasks with collapsible tests */}
-                    {evalSubtasks.length > 0 && (
+                    {/* Subtasks with collapsible tests — ascunse pentru verdictele fatale (FAIL/CPE) */}
+                    {evalSubtasks.length > 0 && !(evalSummary?.verdict && fatalVerdictStyle[evalSummary.verdict]) && (
                         <div className="space-y-1.5">
                             <p className="text-[10px] font-bold uppercase tracking-widest text-(--text-muted) px-1 whitespace-nowrap">
                                 {tr.subtasksLabel}
@@ -328,8 +370,8 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                 const color = `${summaryBorderClasses[subtaskVerdict]} ${subtaskTextColor[subtaskVerdict]}`;
                                 const badgeClasses = summaryBadgeClasses[subtaskVerdict];
                                 const verdictLabel = submissionVerdictLabels[subtaskVerdict][lang === 'RO' ? 'ro' : 'en'];
-                                const maxMemKB = st.max_memory ? (st.max_memory / 1024).toFixed(0) : '-';
-                                const maxTimeMs = st.max_time ? st.max_time.toFixed(0) : '-';
+                                const maxMemKB = st.max_memory > 0 ? (st.max_memory / 1024).toFixed(0) : '-';
+                                const maxTimeMs = st.max_time > 0 ? st.max_time.toFixed(0) : '-';
                                 const isExpanded = expandedSubtasks.has(st.subtaskId);
 
                                 return (
@@ -388,7 +430,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                     )}
 
                     {/* Fallback: tests not assigned to any subtask */}
-                    {orphanTests.length > 0 && (
+                    {orphanTests.length > 0 && !(evalSummary?.verdict && fatalVerdictStyle[evalSummary.verdict]) && (
                         <div className="space-y-1.5">
                             <p className="text-[10px] font-bold uppercase tracking-widest text-(--text-muted) px-1 whitespace-nowrap">
                                 {tr.testsLabel}

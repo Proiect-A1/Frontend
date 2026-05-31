@@ -30,6 +30,11 @@ const verdictClasses: Record<SubmissionVerdict, string> = {
     REJECTED: 'border-red-500/40 bg-red-500/10 text-red-300',
 };
 
+const fatalVerdictClasses: Record<string, string> = {
+    FAIL: 'border-rose-600/50 bg-rose-600/10 text-rose-300',
+    CPE:  'border-purple-500/40 bg-purple-500/10 text-purple-300',
+};
+
 export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, lang, onSelectSubmission }: Props) {
     const t = translations[lang as 'RO' | 'EN'] ?? translations.RO;
 
@@ -46,7 +51,10 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
                     </p>
                 ) : sorted.length > 0 ? (
                     sorted.map((sub, idx) => {
+                        const fatalClass = sub.verdict ? fatalVerdictClasses[sub.verdict] : undefined;
                         const verdict = verdictFor(sub);
+                        const badgeClass = fatalClass ?? verdictClasses[verdict];
+                        const badgeText = fatalClass ? sub.verdict! : verdictLabel(verdict, lang);
                         return (
                             <div
                                 key={idx}
@@ -62,10 +70,12 @@ export default function SubmissionsPanel({ isAuthenticated, recentSubmissions, l
                                             minute: '2-digit',
                                         })}
                                     </p>
-                                    <p className="text-[10px] text-(--text-muted) font-mono">Score: {formatScore(sub.Score)}</p>
+                                    {!fatalClass && (
+                                        <p className="text-[10px] text-(--text-muted) font-mono">Score: {formatScore(sub.Score)}</p>
+                                    )}
                                 </div>
-                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border-2 shrink-0 self-start @[180px]:self-auto ${verdictClasses[verdict]}`}>
-                                    {verdictLabel(verdict, lang)}
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border-2 shrink-0 self-start @[180px]:self-auto ${badgeClass}`}>
+                                    {badgeText}
                                 </span>
                             </div>
                         );

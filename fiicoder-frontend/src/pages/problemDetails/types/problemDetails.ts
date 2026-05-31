@@ -43,6 +43,7 @@ export interface SubmissionStatus {
   problemTitle: string;
   score: number;
   subtasks: SubmissionSubtaskDTO[];
+  verdict?: string;
 }
 
 // ── WebSocket event types (from sandbox-service protocol) ─────────
@@ -79,6 +80,7 @@ export interface DoneSubmissionEvent {
   "score%": number;
   max_memory: number;
   max_time: number;
+  verdict?: string;
 }
 
 export type EvaluationEvent = DoneTestEvent | DoneSubtaskEvent | DoneSubmissionEvent;
@@ -92,6 +94,7 @@ export interface ProblemSubmissionDTO {
   Score: number;
   status: 'PENDING' | 'FINISHED';
   submissiondate: string;
+  verdict?: string;
 }
 
 // ── Tests Structure ───────────────────────────────────────────────
