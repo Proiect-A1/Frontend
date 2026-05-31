@@ -8,6 +8,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
 import SearchInput from "./SearchInput";
 import { problemService } from "../services/problemService";
+import { prefetchRoute } from "../routes/lazyRoutes";
 
 export default function Navbar() {
   const location = useLocation();
@@ -158,6 +159,12 @@ export default function Navbar() {
       : `${baseClasses} bg-transparent border-(--accent)/50 text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5`;
   };
 
+  // Prefetch chunk-ul rutei la hover/focus, ca navigarea sa fie instant la click.
+  const prefetchOn = (path: string) => ({
+    onMouseEnter: () => prefetchRoute(path),
+    onFocus: () => prefetchRoute(path),
+  });
+
   const handleLogout = () => {
     logout();
     closeMenu();
@@ -296,18 +303,18 @@ export default function Navbar() {
 
           {/* desktop navigation - collapses at 1400 px to avoid logo overlap */}
           <div className="hidden xl:flex gap-3 items-center flex-nowrap whitespace-nowrap">
-            <Link to="/problems" className={getNavLinkClass("/problems")}>
+            <Link to="/problems" className={getNavLinkClass("/problems")} {...prefetchOn("/problems")}>
               {t.archiveBtn}
             </Link>
 
             {isAuthenticated && (
-              <Link to="/leaderboard" className={getNavLinkClass("/leaderboard")}>
+              <Link to="/leaderboard" className={getNavLinkClass("/leaderboard")} {...prefetchOn("/leaderboard")}>
                 {lang === "RO" ? "Clasament" : "Leaderboard"}
               </Link>
             )}
 
             {!isAuthenticated && (
-              <Link to="/login" className={getNavLinkClass("/login")}>
+              <Link to="/login" className={getNavLinkClass("/login")} {...prefetchOn("/login")}>
                 {t.loginBtn}
               </Link>
             )}
@@ -382,6 +389,7 @@ export default function Navbar() {
                         <Link
                           to={username ? `/profile/${encodeURIComponent(username)}` : '/profile'}
                           onClick={closeMenu}
+                          {...prefetchOn("/profile")}
                           className="w-full px-4 py-2 text-xs font-bold rounded-full border-2 border-(--accent)/40 bg-transparent text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5 transition-all duration-200 text-center"
                         >
                           {t.navViewProfile}
@@ -389,6 +397,7 @@ export default function Navbar() {
                         <Link
                           to="/classes"
                           onClick={closeMenu}
+                          {...prefetchOn("/classes")}
                           className="w-full px-4 py-2 text-xs font-bold rounded-full border-2 border-(--accent)/40 bg-transparent text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5 transition-all duration-200 text-center"
                         >
                           {t.classesTitle}

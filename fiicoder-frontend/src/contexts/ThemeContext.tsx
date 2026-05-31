@@ -177,8 +177,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
             // Border style
             document.documentElement.setAttribute('data-custom-border', customColors.border);
-
-            safeWrite(CUSTOM_COLORS_KEY, JSON.stringify(customColors));
+            // Persistenta (JSON.stringify + localStorage.setItem) e mutata intr-un
+            // efect debounced mai jos — input-ul de culoare emite onChange continuu
+            // in timpul drag-ului si nu vrem scrieri sincrone in storage pe fiecare frame.
         } else {
             document.documentElement.style.removeProperty('--bg-color');
             document.documentElement.style.removeProperty('--accent');
@@ -223,6 +224,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             document.head.appendChild(favicon);
         }
     }, [theme, customColors]);
+
+  // Persistam culorile custom debounced (~250ms) in loc de la fiecare frame de drag.
+  useEffect(() => {
+    if (theme !== 'custom') return;
+    const id = setTimeout(
+      () => safeWrite(CUSTOM_COLORS_KEY, JSON.stringify(customColors)),
+      250,
+    );
+    return () => clearTimeout(id);
+  }, [theme, customColors]);
 
   const value = useMemo(
     () => ({

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { getGravatarUrl, getDiceBearUrl } from '../utils/gravatar';
 import { profileService } from '../services/profileService';
@@ -101,12 +101,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [gravatarUrl, setGravatarUrl] = useState<string | null>(() => safeGet(GRAVATAR_KEY));
   const [dicebearUrl, setDicebearUrl] = useState<string | null>(() => safeGet(DICEBEAR_KEY));
 
-  const payload = token ? decodeJwt(token) : null;
-  const username = payload?.username ?? null;
-  const userId = payload?.sub ?? null;
-  const isAdmin = payload?.role === 'ADMIN';
-  const isProfessor = payload?.role === 'PROFESSOR';
-  const isAuthenticated = token !== null && !isTokenExpired(token);
+  // Decodam JWT-ul o singura data per schimbare de token (atob + JSON.parse sunt
+  // suficient de scumpe cat sa nu vrem sa le rulam de 2x pe fiecare render).
+  const authState = useMemo(() => {
+    const payload = token ? decodeJwt(token) : null;
+    return {
+      username: payload?.username ?? null,
+      userId: payload?.sub ?? null,
+      isAdmin: payload?.role === 'ADMIN',
+      isProfessor: payload?.role === 'PROFESSOR',
+      // folosim exp-ul deja decodat in loc sa mai chemam isTokenExpired (al doilea decode)
+      isAuthenticated: payload != null && Date.now() < payload.exp * 1000,
+    };
+  }, [token]);
 
   const updateAvatar = useCallback((email: string) => {
     const gravatar = getGravatarUrl(email);
@@ -163,6 +170,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    const username = authState.username;
     if (!token || isTokenExpired(token) || !username) return;
     profileService.getProfile(username)
       .then((profile) => updateAvatar(profile.email))
@@ -178,26 +186,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(id);
   }, [token]);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        token,
-        username,
-        userId,
-        gravatarUrl,
-        dicebearUrl,
-        isAdmin,
-        isProfessor,
-        isAuthenticated,
-        isLoading,
-        login,
-        logout,
-        updateAvatar,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  // Valoarea contextului e memoizata: useAuth e consumat in tot app-ul (Navbar,
+  // ProtectedRoute, majoritatea paginilor), deci un obiect nou la fiecare render
+  // ar re-randa toti consumatorii degeaba. login/logout/updateAvatar sunt deja
+  // stabile (useCallback), iar authState se schimba doar cand se schimba token-ul.
+  const value = useMemo(
+    () => ({
+      token,
+      username: authState.username,
+      userId: authState.userId,
+      gravatarUrl,
+      dicebearUrl,
+      isAdmin: authState.isAdmin,
+      isProfessor: authState.isProfessor,
+      isAuthenticated: authState.isAuthenticated,
+      isLoading,
+      login,
+      logout,
+      updateAvatar,
+    }),
+    [token, authState, gravatarUrl, dicebearUrl, isLoading, login, logout, updateAvatar],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

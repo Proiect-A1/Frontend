@@ -4,20 +4,19 @@ import { Suspense } from "react";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { pageVariants } from "./utils/motionConfig";
-import { lazyWithRetry } from "./utils/lazyWithRetry";
-
-// Lazy load pages - se vor încărca doar când e nevoie. Folosim lazyWithRetry
-// ca sa supravietuim la chunk-uri esuate dupa un deploy nou.
-const Landing = lazyWithRetry(() => import("./pages/landing/Landing"));
-const Login = lazyWithRetry(() => import("./pages/login/Login"));
-const ProblemList = lazyWithRetry(() => import("./pages/problemList/ProblemList"));
-const ProblemDetails = lazyWithRetry(() => import("./pages/problemDetails/ProblemDetails"));
-const ClassesHub = lazyWithRetry(() => import("./pages/classesHub/ClassesHub"));
-const ClassDetails = lazyWithRetry(() => import("./pages/classDetails/ClassDetails"));
-const Profile = lazyWithRetry(() => import("./pages/profile/Profile"));
-const AdminPanel = lazyWithRetry(() => import("./pages/adminPanel/AdminPanel"));
-const ProposeProblem = lazyWithRetry(() => import("./pages/proposeProblem/ProposeProblem"));
-const Leaderboard = lazyWithRetry(() => import("./pages/leaderboard/Leaderboard"));
+// Paginile code-split (+ prefetch la hover) sunt definite intr-un registru comun.
+import {
+  Landing,
+  Login,
+  ProblemList,
+  ProblemDetails,
+  ClassesHub,
+  ClassDetails,
+  Profile,
+  AdminPanel,
+  ProposeProblem,
+  Leaderboard,
+} from "./routes/lazyRoutes";
 
 function NotFound() {
   return (
