@@ -214,13 +214,13 @@ export default function ProblemDetails() {
                                 onClick={() => setActiveTab('testresult')}
                                 className={`text-xs font-bold pb-1 border-b-2 whitespace-nowrap ${activeTab === 'testresult' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
                             >
-                                {lang === 'RO' ? 'Rezultat' : 'Result'}
+                                {t.resultTab}
                             </button>
                             <button
                                 onClick={() => setActiveTab('submissions')}
                                 className={`text-xs font-bold pb-1 border-b-2 whitespace-nowrap ${activeTab === 'submissions' ? 'border-(--accent)' : 'border-transparent opacity-50'}`}
                             >
-                                {lang === 'RO' ? 'Submisii' : 'Submissions'}
+                                {t.submissionsTab}
                             </button>
                         </div>
                         <div className="flex-1">
@@ -247,7 +247,7 @@ export default function ProblemDetails() {
                                     onChange={e => setSelectedHomeworkId(e.target.value || null)}
                                     className="flex-1 bg-(--surface-input) border border-(--accent)/30 rounded-lg px-2 py-1.5 text-xs text-(--text-h) outline-none cursor-pointer"
                                 >
-                                    <option value="">{lang === 'RO' ? 'Fără temă' : 'No homework'}</option>
+                                    <option value="">{t.noHomework}</option>
                                     {homeworkOptions.map(hw => (
                                         <option key={hw.id} value={hw.id}>{hw.title}</option>
                                     ))}
@@ -261,9 +261,7 @@ export default function ProblemDetails() {
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                 </svg>
-                                {status === 'pending'
-                                    ? lang === 'RO' ? 'Trimitere...' : 'Submitting...'
-                                    : lang === 'RO' ? 'Trimite' : 'Submit'}
+                                {status === 'pending' ? t.submittingLabel : t.submitLabel}
                             </button>
                         </div>
                     </div>

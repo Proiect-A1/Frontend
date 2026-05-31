@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useLanguage, translations } from '../../language/Language';
+import { useLanguage, translations, getBannedMsg } from '../../language/Language';
 import { useAuth } from '../../contexts/AuthContext';
 import { authService, AuthError } from './services/authService';
 import type { ValidationErrors } from './services/authService';
@@ -21,10 +21,7 @@ export default function Login() {
     useEffect(() => {
         if (searchParams.get('banned') === 'true') {
             const reason = searchParams.get('reason');
-            const msg = lang === 'RO'
-                ? `Contul tău a fost suspendat.${reason ? ` Motiv: ${reason}` : ''} Contactează un administrator.`
-                : `Your account has been suspended.${reason ? ` Reason: ${reason}` : ''} Contact an administrator.`;
-            setError(msg);
+            setError(getBannedMsg(lang, reason));
         }
     }, []);
 
@@ -69,7 +66,7 @@ export default function Login() {
                     password,
                 });
                 login(token);
-                toast.success(lang === 'RO' ? 'Autentificare reușită.' : 'Login successful.');
+                toast.success(t.loginSuccess);
                 // clear any persisted non-sensitive info after successful login
                 setLoginEmail('');
                 setUsername('');
@@ -82,7 +79,7 @@ export default function Login() {
             } else {
                 if (password !== confirmPassword) {
                     setFieldErrors({ confirmPassword: 'Parolele nu coincid.' });
-                    setError(lang === 'RO' ? 'Parolele nu coincid.' : 'Passwords do not match.');
+                    setError(t.passwordMismatch);
                     return;
                 }
 
@@ -94,16 +91,8 @@ export default function Login() {
                     password,
                 });
                 storage.set(STORAGE_KEYS.username, username);
-                toast.success(
-                    lang === 'RO'
-                        ? 'Cont creat cu succes! Te poți autentifica.'
-                        : 'Account created successfully! You can now log in.',
-                );
-                setSuccessMsg(
-                    lang === 'RO'
-                        ? 'Cont creat cu succes! Te poți autentifica.'
-                        : 'Account created successfully! You can now log in.',
-                );
+                toast.success(t.accountCreated);
+                setSuccessMsg(t.accountCreated);
                 // Switch to login mode after successful registration
                 setIsLogin(true);
 
@@ -119,9 +108,7 @@ export default function Login() {
         } catch (err) {
             if (err instanceof AuthError) {
                 if (err.status === 403) {
-                    const msg = lang === 'RO'
-                        ? 'Contul tău a fost suspendat. Contactează un administrator.'
-                        : 'Your account has been suspended. Contact an administrator.';
+                    const msg = getBannedMsg(lang);
                     setError(msg);
                     toast.error(msg);
                 } else if (err.status === 400 && (err.body as ValidationErrors)?.errors) {
@@ -134,10 +121,7 @@ export default function Login() {
                     toast.error(err.message);
                 }
             } else {
-                const message =
-                    lang === 'RO'
-                        ? 'Eroare de conexiune. Verifică serverul.'
-                        : 'Connection error. Check if the server is running.';
+                const message = t.connectionError;
                 setError(message);
                 toast.error(message);
             }
@@ -238,7 +222,7 @@ export default function Login() {
                     <>
                         <div>
                             <label className="block text-sm font-semibold text-(--text) mb-1">
-                                {lang === 'RO' ? 'Nume utilizator' : 'Username'}
+                                {t.usernameLabel}
                             </label>
                             <input
                                 type="text"
@@ -353,7 +337,7 @@ export default function Login() {
                         </div>
                         <div>
                             <label className="block text-sm font-semibold text-(--text) mb-1">
-                                {lang === 'RO' ? 'Confirmă parola' : 'Confirm password'}
+                                {t.confirmPasswordLabel}
                             </label>
                             <input
                                 type="password"
@@ -370,7 +354,7 @@ export default function Login() {
                             />
                             {confirmPassword && password !== confirmPassword && (
                                 <p className="mt-1 text-xs text-red-400">
-                                    {lang === 'RO' ? 'Parolele nu coincid.' : 'Passwords do not match.'}
+                                    {t.passwordMismatch}
                                 </p>
                             )}
                             {fieldErrors.confirmPassword && !(confirmPassword && password !== confirmPassword) && (
@@ -387,13 +371,7 @@ export default function Login() {
                     disabled={loading}
                     className="mt-4 w-full rounded-2xl border border-(--accent)/50 bg-(--accent)/20 px-4 py-2.5 text-sm font-bold text-(--text-h) outline-none transition hover:border-(--accent) hover:bg-(--accent)/30 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    {loading
-                        ? lang === 'RO'
-                            ? 'Se încarcă...'
-                            : 'Loading...'
-                        : isLogin
-                          ? t.loginBtn
-                          : t.registerBtn}
+                    {loading ? t.loadingLabel : isLogin ? t.loginBtn : t.registerBtn}
                 </button>
             </motion.form>
 
@@ -408,13 +386,7 @@ export default function Login() {
                     onClick={toggleMode}
                     className="font-semibold text-(--accent) underline underline-offset-4 hover:text-(--text-h) transition-colors"
                 >
-                    {isLogin
-                        ? lang === 'RO'
-                            ? 'Înregistrează-te'
-                            : 'Sign Up'
-                        : lang === 'RO'
-                          ? 'Autentifică-te'
-                          : 'Login'}
+                    {isLogin ? t.signUpLinkBtn : t.loginLinkBtn}
                 </button>
             </motion.div>
 
@@ -422,7 +394,7 @@ export default function Login() {
             <motion.div variants={itemVariants} className="mt-5 flex items-center gap-3">
                 <div className="flex-1 h-px bg-(--accent)/20" />
                 <span className="text-xs font-semibold uppercase tracking-widest text-(--text-muted)">
-                    {lang === 'RO' ? 'sau' : 'or'}
+                    {t.loginOr}
                 </span>
                 <div className="flex-1 h-px bg-(--accent)/20" />
             </motion.div>

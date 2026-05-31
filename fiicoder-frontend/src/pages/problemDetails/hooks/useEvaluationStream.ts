@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { submissionService, connectToEvaluation } from '../services/submissionService';
 import type { DoneTestEvent, DoneSubtaskEvent, DoneSubmissionEvent, ProblemSubmissionDTO, ProblemTestDetailsDTO } from '../types/problemDetails';
 import type { ProblemFindResponseDTO } from '../../../services/problemService';
+import { translations } from '../../../language/Language';
 
 interface UseEvaluationStreamParams {
     problem: ProblemFindResponseDTO | null;
@@ -186,7 +187,7 @@ export function useEvaluationStream(params: UseEvaluationStreamParams) {
                 wsCleanupRef.current = cleanup;
             } catch (err) {
                 setEvalStatus('error');
-                setEvalError(lang === 'RO' ? 'Eroare la trimiterea submisiei.' : 'Submission failed.');
+                setEvalError((translations[lang as 'RO' | 'EN'] ?? translations.RO).submissionFailed);
                 setStatus(null);
                 console.error('Eroare la trimiterea submisiei:', err);
             }

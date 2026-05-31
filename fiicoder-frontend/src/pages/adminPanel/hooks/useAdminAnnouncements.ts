@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { adminService } from '../services/adminService';
 import type { Announcement } from '../../../types/announcement';
 import { toast } from 'sonner';
-import { useLanguage } from '../../../language/Language';
+import { useLanguage, translations } from '../../../language/Language';
 import { extractErrorMessage } from '../utils/errorUtils';
 import { packTranslation, getTranslationParts } from '../../../utils/translationPacker';
 
@@ -13,8 +13,9 @@ export type AnnouncementFormState = {
 
 export function useAdminAnnouncements(isAdmin: boolean, activeTab: string) {
     const { lang } = useLanguage();
+    const t = translations[lang];
     const queryClient = useQueryClient();
-    
+
     const [editingAnnouncementId, setEditingAnnouncementId] = useState<string | null>(null);
     const [selectedAnnouncementId, setSelectedAnnouncementId] = useState<string | null>(null);
     
@@ -62,7 +63,7 @@ export function useAdminAnnouncements(isAdmin: boolean, activeTab: string) {
             }
             setAnnouncementForm({ titleRo: '', titleEn: '', contentRo: '', contentEn: '' });
             setEditingAnnouncementId(null);
-            toast.success(lang === 'RO' ? 'Anunț salvat.' : 'Announcement saved.');
+            toast.success(t.adminAnnouncementSaved);
             await queryClient.invalidateQueries({ queryKey: ['admin', 'announcements'] });
         } finally {
             setIsSavingAnnouncement(false);
@@ -75,7 +76,7 @@ export function useAdminAnnouncements(isAdmin: boolean, activeTab: string) {
             queryClient.setQueryData<Announcement[]>(['admin', 'announcements'], (prev) =>
                 prev?.filter((a) => a.id !== announcementId) ?? []
             );
-            toast.success(lang === 'RO' ? 'Anunț șters.' : 'Announcement deleted.');
+            toast.success(t.adminAnnouncementDeleted);
             await queryClient.invalidateQueries({ queryKey: ['admin', 'announcements'] });
         } catch (error) {
             toast.error(extractErrorMessage(error, 'Error'));

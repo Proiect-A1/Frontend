@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { tagService, type TagResponseDTO } from '../../../services/tagService';
 import { toast } from 'sonner';
-import { useLanguage } from '../../../language/Language';
+import { useLanguage, translations, getDeleteTagConfirm } from '../../../language/Language';
 import { extractErrorMessage } from '../utils/errorUtils';
 
 export function useAdminTags(isAdmin: boolean, activeTab: string) {
     const { lang } = useLanguage();
+    const t = translations[lang];
     const queryClient = useQueryClient();
 
     const [tagForm, setTagForm] = useState({ title: '' });
@@ -39,26 +40,26 @@ export function useAdminTags(isAdmin: boolean, activeTab: string) {
                 queryClient.setQueryData<TagResponseDTO[]>(['admin', 'tags'], prev => [...(prev ?? []), created]);
             }
             setTagForm({ title: '' });
-            toast.success(lang === 'RO' ? 'Tag salvat.' : 'Tag saved.');
+            toast.success(t.adminTagSaved);
             await queryClient.invalidateQueries({ queryKey: ['admin', 'tags'] });
         } catch (err) {
-            toast.error(extractErrorMessage(err, lang === 'RO' ? 'Eroare la salvarea tag-ului.' : 'Failed to save tag.'));
+            toast.error(extractErrorMessage(err, t.adminTagSaveError));
         } finally {
             setIsSavingTag(false);
         }
     };
 
     const handleDeleteTag = async (tag: TagResponseDTO) => {
-        const confirmMsg = lang === 'RO' ? `Sigur vrei să ștergi tag-ul "${tag.title}"?` : `Delete tag "${tag.title}"?`;
+        const confirmMsg = getDeleteTagConfirm(lang, tag.title);
         if (!window.confirm(confirmMsg)) return;
 
         try {
             await tagService.deleteTag(tag.title);
             queryClient.setQueryData<TagResponseDTO[]>(['admin', 'tags'], prev => prev?.filter(t => t.id !== tag.id) ?? []);
-            toast.success(lang === 'RO' ? 'Tag șters.' : 'Tag deleted.');
+            toast.success(t.adminTagDeleted);
             await queryClient.invalidateQueries({ queryKey: ['admin', 'tags'] });
         } catch (err) {
-            toast.error(extractErrorMessage(err, lang === 'RO' ? "Eroare la ștergere (posibil tag-ul e folosit deja)." : "Error deleting tag (it might be in use)."));
+            toast.error(extractErrorMessage(err, t.adminTagDeleteError));
         }
     };
 

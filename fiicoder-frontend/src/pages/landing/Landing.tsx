@@ -93,6 +93,7 @@ interface AnnouncementModalProps {
 }
 
 function AnnouncementModal({ announcement, isOpen, onClose, lang }: AnnouncementModalProps) {
+    const t = translations[lang as 'RO' | 'EN'] ?? translations.RO;
     if (!announcement) return null;
 
     const isHighPriority = announcement.priority === 'high';
@@ -140,7 +141,7 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                                 )}
                                 {isMediumPriority && (
                                     <span className="shrink-0 px-3 py-1 rounded-full bg-(--accent-secondary)/20 text-(--accent-secondary) text-xs font-bold border border-(--accent-secondary)/40">
-                                        {lang === 'RO' ? 'IMPORTANT' : 'IMPORTANT'}
+                                        IMPORTANT
                                     </span>
                                 )}
                             </div>
@@ -170,7 +171,7 @@ function AnnouncementModal({ announcement, isOpen, onClose, lang }: Announcement
                                             : 'border-(--accent-secondary)/50 bg-(--accent-secondary)/10 text-(--text-h) hover:bg-(--accent-secondary)/20'
                                     }`}
                                 >
-                                    {lang === 'RO' ? 'Închide' : 'Close'}
+                                    {t.closeBtn}
                                 </button>
                             </div>
                         </div>
@@ -454,13 +455,7 @@ export default function Landing() {
                                 onClick={() => setShowAllAnnouncements(!showAllAnnouncements)}
                                 className="text-xs font-bold text-(--accent) hover:underline"
                             >
-                                {showAllAnnouncements
-                                    ? lang === 'RO'
-                                        ? 'Vezi mai puțin'
-                                        : 'Show less'
-                                    : lang === 'RO'
-                                      ? 'Vezi toate'
-                                      : 'View all'}
+                                {showAllAnnouncements ? t.showLess : t.showAll}
                             </button>
                         )}
                     </div>
@@ -469,9 +464,7 @@ export default function Landing() {
                         {isAnnouncementsLoading ? (
                             <div className="col-span-full text-center py-8">
                                 <p className="text-(--text-muted) text-sm italic">
-                                    {lang === 'RO'
-                                        ? 'Se încarcă anunțurile...'
-                                        : 'Loading announcements...'}
+                                    {t.loadingAnnouncements}
                                 </p>
                             </div>
                         ) : announcements.length > 0 ? (
@@ -508,7 +501,7 @@ export default function Landing() {
                                                     <div className="flex items-center gap-1 shrink-0">
                                                         {readIds.has(ann.id) && (
                                                             <span className="text-[9px] font-bold text-(--text-subtle) uppercase tracking-wider">
-                                                                {lang === 'RO' ? 'citit' : 'read'}
+                                                                {t.announcementReadLabel}
                                                             </span>
                                                         )}
                                                         {ann.priority === 'high' && (
@@ -531,9 +524,7 @@ export default function Landing() {
                         ) : (
                             <div className="col-span-full text-center py-8">
                                 <p className="text-(--text-muted) text-sm italic">
-                                    {lang === 'RO'
-                                        ? 'Nu sunt anunțuri disponibile.'
-                                        : 'No announcements available.'}
+                                    {t.noAnnouncements}
                                 </p>
                             </div>
                         )}

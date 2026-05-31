@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
-import { useLanguage } from '../../language/Language';
+import { useLanguage, translations } from '../../language/Language';
 import { storage, STORAGE_KEYS } from '../../utils/storage';
 import {
     classService,
@@ -25,6 +25,7 @@ interface RecentClass {
 export default function ClassesHub() {
     const { userId, isAdmin, isProfessor } = useAuth();
     const { lang } = useLanguage();
+    const t = translations[lang];
     const queryClient = useQueryClient();
 
     const canCreateGroup = isAdmin || isProfessor;
@@ -86,7 +87,7 @@ export default function ClassesHub() {
         setFeedback(null);
 
         if (!className.trim()) {
-            setError(lang === 'RO' ? 'Numele clasei este obligatoriu.' : 'Class name is required.');
+            setError(t.classNameRequired);
             return;
         }
 
@@ -96,10 +97,8 @@ export default function ClassesHub() {
                 description: classDescription,
                 creatorId: userId!,
             });
-            setFeedback(
-                lang === 'RO' ? 'Clasa a fost creată cu succes!' : 'Class created successfully!',
-            );
-            toast.success(lang === 'RO' ? 'Clasa a fost creată.' : 'Class created.');
+            setFeedback(t.classCreatedSuccess);
+            toast.success(t.classCreatedShort);
             setClassName('');
             setClassDescription('');
             storeRecentClass({
@@ -110,7 +109,7 @@ export default function ClassesHub() {
                 createdAt: new Date().toISOString(),
             });
         } catch (err: any) {
-            setError(lang === 'RO' ? 'Eroare la crearea clasei.' : 'Error creating class.');
+            setError(t.classCreateError);
         }
     };
 
@@ -121,7 +120,7 @@ export default function ClassesHub() {
         setFoundClass(null);
 
         if (!lookupId.trim()) {
-            setError(lang === 'RO' ? 'Introdu un ID valid.' : 'Enter a valid ID.');
+            setError(t.classIdRequired);
             return;
         }
 
@@ -140,17 +139,11 @@ export default function ClassesHub() {
             });
         } catch (err: any) {
             if (err?.status === 403) {
-                setError(
-                    lang === 'RO'
-                        ? 'Nu ai acces la această clasă. Cere o invitație de la creator.'
-                        : 'You do not have access to this class. Ask the creator for an invitation.',
-                );
+                setError(t.classAccessDeniedInvite);
             } else if (err?.status === 404) {
-                setError(lang === 'RO' ? 'Clasa nu a fost găsită.' : 'Class not found.');
+                setError(t.classNotFoundMsg);
             } else {
-                setError(
-                    lang === 'RO' ? 'Eroare la căutarea clasei.' : 'Error looking up class.',
-                );
+                setError(t.classLookupError);
             }
         }
     };
@@ -159,11 +152,11 @@ export default function ClassesHub() {
         try {
             await classService.acceptInvitation(id);
             await invitationsQuery.refetch();
-            setFeedback(lang === 'RO' ? 'Invitație acceptată!' : 'Invitation accepted!');
-            toast.success(lang === 'RO' ? 'Invitația a fost acceptată.' : 'Invitation accepted.');
+            setFeedback(t.invitationAccepted);
+            toast.success(t.invitationAcceptedMsg);
         } catch (err: any) {
-            setError(lang === 'RO' ? 'Eroare la acceptare.' : 'Error accepting.');
-            toast.error(lang === 'RO' ? 'Eroare la acceptare.' : 'Error accepting.');
+            setError(t.invitationAcceptError);
+            toast.error(t.invitationAcceptError);
         }
     };
 
@@ -171,11 +164,11 @@ export default function ClassesHub() {
         try {
             await classService.declineInvitation(id);
             await invitationsQuery.refetch();
-            setFeedback(lang === 'RO' ? 'Invitație refuzată.' : 'Invitation declined.');
-            toast.success(lang === 'RO' ? 'Invitația a fost refuzată.' : 'Invitation declined.');
+            setFeedback(t.invitationDeclined);
+            toast.success(t.invitationDeclinedMsg);
         } catch (err: any) {
-            setError(lang === 'RO' ? 'Eroare la refuzare.' : 'Error declining.');
-            toast.error(lang === 'RO' ? 'Eroare la refuzare.' : 'Error declining.');
+            setError(t.invitationDeclineError);
+            toast.error(t.invitationDeclineError);
         }
     };
 
@@ -187,9 +180,7 @@ export default function ClassesHub() {
                         variants={itemVariants}
                         className="rounded-2xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)"
                     >
-                        {lang === 'RO'
-                            ? 'Nu ai clase salvate recent. Creează sau caută o clasă și va apărea aici.'
-                            : 'No recent classes yet. Create or search a class and it will appear here.'}
+                        {t.noRecentClasses}
                     </motion.div>
                 )}
 
@@ -206,10 +197,10 @@ export default function ClassesHub() {
                                 </p>
                                 <p className="text-xs text-(--text-muted) mt-0.5">
                                     {savedClass.description ||
-                                        (lang === 'RO' ? 'Fără descriere.' : 'No description.')}
+                                        t.noDescription}
                                 </p>
                                 <p className="text-[10px] text-(--text-muted) mt-1">
-                                    {lang === 'RO' ? 'Creator' : 'Creator'}:{' '}
+                                    Creator:{' '}
                                     {savedClass.creatorUsername}
                                 </p>
                             </div>
@@ -217,7 +208,7 @@ export default function ClassesHub() {
                                 to={`/classes/${savedClass.id}`}
                                 className="inline-flex self-start rounded-xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
                             >
-                                {lang === 'RO' ? 'Deschide clasa' : 'Open class'}
+                                {t.openClassBtn}
                             </Link>
                         </div>
                     </motion.div>
@@ -236,12 +227,8 @@ export default function ClassesHub() {
                         className="rounded-2xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)"
                     >
                         {error?.includes('invita') || error?.includes('fetch')
-                            ? lang === 'RO'
-                                ? 'Eroare la comunicarea cu serverul pentru invitații.'
-                                : 'Server error while fetching invitations.'
-                            : lang === 'RO'
-                              ? 'Nu ai invitații active.'
-                              : 'You have no active invitations.'}
+                            ? t.invitationsServerError
+                            : t.noActiveInvitations}
                     </motion.div>
                 )}
 
@@ -253,11 +240,10 @@ export default function ClassesHub() {
                     >
                         <div>
                             <p className="text-base font-semibold text-(--text-h)">
-                                {invitation.studyClass?.name ||
-                                    (lang === 'RO' ? 'Clasă invitată' : 'Invited class')}
+                                {invitation.studyClass?.name || t.invitedClassFallback}
                             </p>
                             <p className="text-xs text-(--text-muted) mt-0.5">
-                                {lang === 'RO' ? 'Status' : 'Status'}: {invitation.status}
+                                {t.statusLabel}: {invitation.status}
                             </p>
                             <p className="text-[10px] text-(--text-muted) mt-0.5">
                                 {invitation.sentAt}
@@ -268,13 +254,13 @@ export default function ClassesHub() {
                                 onClick={() => handleAcceptInvitation(invitation.id)}
                                 className="rounded-lg bg-emerald-500/20 border border-emerald-500/50 px-3 py-1.5 text-xs font-bold text-emerald-200 hover:bg-emerald-500/30 transition-colors"
                             >
-                                {lang === 'RO' ? 'Acceptă' : 'Accept'}
+                                {t.acceptBtn}
                             </button>
                             <button
                                 onClick={() => handleDeclineInvitation(invitation.id)}
                                 className="rounded-lg bg-red-500/20 border border-red-500/50 px-3 py-1.5 text-xs font-bold text-red-200 hover:bg-red-500/30 transition-colors"
                             >
-                                {lang === 'RO' ? 'Refuză' : 'Decline'}
+                                {t.declineBtn}
                             </button>
                             {invitation.studyClass?.id && (
                                 <Link
@@ -297,7 +283,7 @@ export default function ClassesHub() {
                                     }}
                                     className="rounded-2xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
                                 >
-                                    {lang === 'RO' ? 'Vezi' : 'View'}
+                                    {t.classViewBtn}
                                 </Link>
                             )}
                         </div>
@@ -322,10 +308,10 @@ export default function ClassesHub() {
                 >
                     <div>
                         <p className="text-xs uppercase tracking-widest text-(--text-muted)">
-                            {lang === 'RO' ? 'Clase' : 'Classes'}
+                            {t.classesEyebrow}
                         </p>
                         <h1 className="text-3xl font-bold text-(--text-h) mt-1">
-                            {lang === 'RO' ? 'Hub-ul de clase' : 'Class hub'}
+                            {t.classHubTitle}
                         </h1>
                         <div className="page-line-horizontal mb-0!" />
                     </div>
@@ -333,7 +319,7 @@ export default function ClassesHub() {
                         to="/problems"
                         className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                     >
-                        {lang === 'RO' ? 'Mergi la probleme' : 'Go to problems'}
+                        {t.goToProblems}
                     </Link>
                 </motion.div>
 
@@ -355,31 +341,27 @@ export default function ClassesHub() {
                             className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4 flex flex-col"
                         >
                             <h2 className="text-xl font-bold text-(--text-h) mb-4">
-                                {lang === 'RO' ? 'Creează o clasă' : 'Create a class'}
+                                {t.createClassSection}
                             </h2>
 
                             <form onSubmit={handleCreateClass} className="space-y-3 flex flex-col">
                                 <input
                                     value={className}
                                     onChange={(event) => setClassName(event.target.value)}
-                                    placeholder={lang === 'RO' ? 'Nume clasă' : 'Class name'}
+                                    placeholder={t.classNamePlaceholder}
                                     className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
                                 />
                                 <textarea
                                     value={classDescription}
                                     onChange={(event) => setClassDescription(event.target.value)}
-                                    placeholder={
-                                        lang === 'RO'
-                                            ? 'Descriere opțională'
-                                            : 'Optional description'
-                                    }
+                                    placeholder={t.classOptionalDesc}
                                     className="min-h-24 w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
                                 />
                                 <button
                                     type="submit"
                                     className="w-full mt-auto inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                                 >
-                                    {lang === 'RO' ? 'Creează clasa' : 'Create class'}
+                                    {t.createClassBtn}
                                 </button>
                             </form>
                         </motion.section>
@@ -389,20 +371,20 @@ export default function ClassesHub() {
                         className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4 flex flex-col"
                     >
                         <h2 className="text-xl font-bold text-(--text-h) mb-4">
-                            {lang === 'RO' ? 'Găsește o clasă' : 'Find a class'}
+                            {t.findClassSection}
                         </h2>
                         <form onSubmit={handleLookupClass} className="space-y-3 flex flex-col">
                             <input
                                 value={lookupId}
                                 onChange={(event) => setLookupId(event.target.value)}
-                                placeholder={lang === 'RO' ? 'UUID clasă' : 'Class UUID'}
+                                placeholder={t.classUuidPlaceholder}
                                 className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
                             />
                             <button
                                 type="submit"
                                 className="w-full inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                             >
-                                {lang === 'RO' ? 'Caută' : 'Search'}
+                                {t.classSearchBtn}
                             </button>
                         </form>
 
@@ -416,16 +398,16 @@ export default function ClassesHub() {
                                 </h3>
                                 <p className="mt-1 text-xs text-(--text-muted)">
                                     {foundClass.description ||
-                                        (lang === 'RO' ? 'Fără descriere.' : 'No description.')}
+                                        t.noDescription}
                                 </p>
                                 <div className="mt-2 space-y-1 text-[11px] text-(--text-muted)">
                                     <div>
-                                        {lang === 'RO' ? 'Creată de' : 'Created by'}:{' '}
+                                        {t.createdByLabel}:{' '}
                                         {foundClass.creatorUsername}
                                     </div>
                                     {typeof foundClass.memberCount === 'number' && (
                                         <div>
-                                            {lang === 'RO' ? 'Membri' : 'Members'}:{' '}
+                                            {t.membersLabel}:{' '}
                                             {foundClass.memberCount}
                                         </div>
                                     )}
@@ -435,7 +417,7 @@ export default function ClassesHub() {
                                     to={`/classes/${foundClass.id}`}
                                     className="mt-3 inline-flex rounded-xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
                                 >
-                                    {lang === 'RO' ? 'Deschide clasa' : 'Open class'}
+                                    {t.openClassBtn}
                                 </Link>
                             </motion.div>
                         )}
@@ -445,7 +427,7 @@ export default function ClassesHub() {
                 <motion.section variants={itemVariants} className="mt-4 md:mt-6">
                     <div className="flex items-center justify-between gap-4">
                         <h2 className="text-xl font-bold text-(--text-h)">
-                            {lang === 'RO' ? 'Clase recente' : 'Recent classes'}
+                            {t.recentClassesSection}
                         </h2>
                         {recentClasses.length > 0 && (
                             <button
@@ -458,7 +440,7 @@ export default function ClassesHub() {
                                 }}
                                 className="rounded-2xl border border-(--accent)/35 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
                             >
-                                {lang === 'RO' ? 'Curăță' : 'Clear'}
+                                {t.clearBtn}
                             </button>
                         )}
                     </div>
@@ -469,11 +451,11 @@ export default function ClassesHub() {
                 <motion.section variants={itemVariants} className="mt-4 md:mt-6">
                     <div className="flex items-center justify-between gap-4">
                         <h2 className="text-xl font-bold text-(--text-h)">
-                            {lang === 'RO' ? 'Grupurile mele' : 'My groups'}
+                            {t.myGroupsSection}
                         </h2>
                         {loadingMyGroups && (
                             <span className="text-xs text-(--text-muted)">
-                                {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
+                                {t.loadingLabel}
                             </span>
                         )}
                     </div>
@@ -484,9 +466,7 @@ export default function ClassesHub() {
                                 variants={itemVariants}
                                 className="rounded-2xl border-2 border-(--accent)/20 bg-(--surface-muted) p-3 text-sm text-(--text-muted)"
                             >
-                                {lang === 'RO'
-                                    ? 'Nu faci parte din niciun grup. Creează unul sau acceptă o invitație.'
-                                    : 'You are not part of any group. Create one or accept an invitation.'}
+                                {t.noMyGroups}
                             </motion.div>
                         )}
 
@@ -504,19 +484,19 @@ export default function ClassesHub() {
                                             </p>
                                             {group.isCreator && (
                                                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border border-(--accent)/40 bg-(--accent)/15 text-(--text-h)">
-                                                    {lang === 'RO' ? 'Creator' : 'Creator'}
+                                                    Creator
                                                 </span>
                                             )}
                                             {typeof group.memberCount === 'number' && (
                                                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border border-(--accent)/30 bg-(--surface-card) text-(--text-h)">
                                                     {group.memberCount}{' '}
-                                                    {lang === 'RO' ? 'membri' : 'members'}
+                                                    {t.membersCount}
                                                 </span>
                                             )}
                                         </div>
                                         <p className="text-xs text-(--text-muted) mt-0.5">
                                             {group.description ||
-                                                (lang === 'RO' ? 'Fără descriere.' : 'No description.')}
+                                                t.noDescription}
                                         </p>
                                         <p className="text-[10px] text-(--text-muted) mt-1">
                                             {lang === 'RO' ? 'Creator' : 'Created by'}:{' '}
@@ -528,19 +508,19 @@ export default function ClassesHub() {
                                             type="button"
                                             onClick={() => {
                                                 navigator.clipboard.writeText(`${window.location.origin}/classes/${group.id}`);
-                                                toast.success(lang === 'RO' ? 'Link copiat!' : 'Link copied!');
+                                                toast.success(t.linkCopied);
                                             }}
                                             className="inline-flex items-center gap-1 rounded-xl border border-(--accent)/30 px-3 py-1.5 text-xs font-semibold text-(--text-muted) hover:bg-(--accent)/15 hover:text-(--text-h) transition-colors"
-                                            title={lang === 'RO' ? 'Copiază link-ul clasei' : 'Copy class link'}
+                                            title={t.copyLinkTitle}
                                         >
                                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                                            {lang === 'RO' ? 'Link' : 'Link'}
+                                            Link
                                         </button>
                                         <Link
                                             to={`/classes/${group.id}`}
                                             className="inline-flex rounded-xl border border-(--accent)/50 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/30 transition-colors"
                                         >
-                                            {lang === 'RO' ? 'Deschide' : 'Open'}
+                                            {t.openBtn}
                                         </Link>
                                     </div>
                                 </div>
@@ -552,11 +532,11 @@ export default function ClassesHub() {
                 <motion.section variants={itemVariants} className="mt-4 md:mt-6">
                     <div className="flex items-center justify-between gap-4">
                         <h2 className="text-xl font-bold text-(--text-h)">
-                            {lang === 'RO' ? 'Invitațiile mele' : 'My invitations'}
+                            {t.myInvitationsSection}
                         </h2>
                         {loadingInvitations && (
                             <span className="text-xs text-(--text-muted)">
-                                {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
+                                {t.loadingLabel}
                             </span>
                         )}
                     </div>

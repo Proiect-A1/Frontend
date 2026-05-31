@@ -8,6 +8,7 @@ import {
     submissionVerdict,
     submissionVerdictLabels,
 } from '../../profile/profileUtils';
+import { translations } from '../../../language/Language';
 
 type Props = {
     lang: string;
@@ -17,6 +18,7 @@ type Props = {
 };
 
 export default function DiffPanel({ lang, recentSubmissions, codeRef, language }: Props) {
+    const t = translations[lang as 'RO' | 'EN'] ?? translations.RO;
     const { theme, customColors } = useTheme();
     const themeId = theme === 'custom' ? 'fiicoder-custom' : `fiicoder-${theme}`;
 
@@ -41,9 +43,7 @@ export default function DiffPanel({ lang, recentSubmissions, codeRef, language }
         return (
             <div className="h-full flex items-center justify-center p-8 bg-(--surface-card)">
                 <p className="text-sm text-(--text-muted) italic text-center">
-                    {lang === 'RO'
-                        ? 'Trimite o soluție pentru a putea compara.'
-                        : 'Submit a solution first to compare.'}
+                    {t.diffSubmitFirst}
                 </p>
             </div>
         );
@@ -70,23 +70,23 @@ export default function DiffPanel({ lang, recentSubmissions, codeRef, language }
                 </select>
                 <button
                     onClick={refresh}
-                    title={lang === 'RO' ? 'Actualizează codul curent din editor' : 'Snapshot current editor code'}
+                    title={t.diffSnapshotTitle}
                     className="shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-lg border border-(--accent)/40 bg-(--accent)/10 text-[11px] font-bold text-(--text-muted) hover:bg-(--accent)/20 hover:text-(--accent) transition-colors whitespace-nowrap"
                 >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
-                    {lang === 'RO' ? 'Cod curent' : 'Current code'}
+                    {t.diffCurrentCode}
                 </button>
             </div>
 
             {/* Column labels */}
             <div className="grid grid-cols-2 border-b border-(--accent)/10 shrink-0">
                 <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-(--text-muted) border-r border-(--accent)/10">
-                    {lang === 'RO' ? 'Submisie anterioară' : 'Past submission'}
+                    {t.diffPastSubmission}
                 </div>
                 <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-(--text-muted)">
-                    {lang === 'RO' ? 'Cod curent' : 'Current code'}
+                    {t.diffCurrentCode}
                 </div>
             </div>
 

@@ -45,9 +45,7 @@ export default function ProfileProposalsPanel({ proposals, loading, lang, onTogg
                     )}
                 </p>
                 <p>
-                    {lang === 'RO'
-                        ? 'La trimitere se face o verificare automată. Dacă fișierele sunt aranjate greșit, propunerea va fi respinsă automat. După verificare, este nevoie de aprobarea unui admin.'
-                        : 'Submission triggers an automated check. If files are arranged incorrectly the proposal is auto-rejected. After the check, an admin still needs to approve it.'}
+                    {t.proposalSubmitNote}
                 </p>
             </div>
             {loading ? (

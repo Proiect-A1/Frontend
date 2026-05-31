@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { adminService, type AcceptedProblem } from '../services/adminService';
 import { toast } from 'sonner';
-import { useLanguage } from '../../../language/Language';
+import { useLanguage, translations } from '../../../language/Language';
 import { extractErrorMessage } from '../utils/errorUtils';
 
 export function useAdminProposals(isAdmin: boolean, activeTab: string) {
     const { lang } = useLanguage();
+    const t = translations[lang];
     const queryClient = useQueryClient();
     const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
 
@@ -44,7 +45,7 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
     const handleDeleteProposal = async (proposalId: string) => {
         try {
             await adminService.deleteProblem(proposalId);
-            toast.success(lang === 'RO' ? 'Propunerea a fost ștearsă.' : 'Proposal deleted.');
+            toast.success(t.adminProposalDeleted);
             const remainingProposals = proposals.filter((p) => p.id !== proposalId);
             queryClient.setQueryData(['admin', 'proposals'], remainingProposals);
             if (selectedProposalId === proposalId) {
@@ -53,7 +54,7 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
         } catch (error) {
             const message = extractErrorMessage(
                 error,
-                lang === 'RO' ? 'Eroare la ștergerea propunerii.' : 'Failed to delete proposal.',
+                t.adminProposalDeleteError,
             );
             toast.error(message);
         }
@@ -62,13 +63,13 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
     const handleDeleteAccepted = async (title: string) => {
         try {
             await adminService.deleteProblem(title);
-            toast.success(lang === 'RO' ? 'Problema a fost ștearsă.' : 'Problem deleted.');
+            toast.success(t.adminProblemDeleted);
             queryClient.setQueryData(['admin', 'accepted-problems'],
                 acceptedProblems.filter((p: AcceptedProblem) => p.title !== title));
         } catch (error) {
             const message = extractErrorMessage(
                 error,
-                lang === 'RO' ? 'Eroare la ștergerea problemei.' : 'Failed to delete problem.',
+                t.adminProblemDeleteError,
             );
             toast.error(message);
         }
@@ -78,9 +79,7 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
         try {
             await adminService.changeVisibility(title, newVisibility);
             toast.success(
-                newVisibility === 'PUBLIC'
-                    ? lang === 'RO' ? 'Problema este acum publică.' : 'Problem is now public.'
-                    : lang === 'RO' ? 'Problema este acum privată.' : 'Problem is now private.',
+                newVisibility === 'PUBLIC' ? t.adminProblemNowPublic : t.adminProblemNowPrivate,
             );
             queryClient.setQueryData(['admin', 'accepted-problems'],
                 acceptedProblems.map((p: AcceptedProblem) =>
@@ -89,7 +88,7 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
         } catch (error) {
             const message = extractErrorMessage(
                 error,
-                lang === 'RO' ? 'Eroare la schimbarea vizibilității.' : 'Failed to change visibility.',
+                t.adminVisibilityError,
             );
             toast.error(message);
         }
@@ -100,9 +99,7 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
             await adminService.reviewProposal(proposalId, action);
 
             toast.success(
-                action === 'approve'
-                    ? lang === 'RO' ? 'Propunerea a fost aprobată.' : 'Proposal approved.'
-                    : lang === 'RO' ? 'Propunerea a fost respinsă.' : 'Proposal rejected.',
+                action === 'approve' ? t.adminProposalApproved : t.adminProposalRejected,
             );
             await queryClient.invalidateQueries({ queryKey: ['admin'] });
 
@@ -117,33 +114,15 @@ export function useAdminProposals(isAdmin: boolean, activeTab: string) {
             const beMessage = extractErrorMessage(error, '');
             if (status === 409) {
                 if (beMessage.toLowerCase().includes('same')) {
-                    toast.error(
-                        lang === 'RO'
-                            ? 'Problema este deja în acest status.'
-                            : 'Problem is already in this status.',
-                    );
+                    toast.error(t.adminProposalStatusSame);
                 } else if (beMessage.toLowerCase().includes('pending')) {
-                    toast.error(
-                        lang === 'RO'
-                            ? 'Nu poți seta statusul înapoi la PENDING.'
-                            : 'Cannot change status back to PENDING.',
-                    );
+                    toast.error(t.adminProposalStatusNoPending);
                 } else {
-                    toast.error(
-                        beMessage ||
-                            (lang === 'RO'
-                                ? 'Schimbarea statusului nu este permisă.'
-                                : 'Status change not allowed.'),
-                    );
+                    toast.error(beMessage || t.adminProposalStatusNotAllowed);
                 }
                 return;
             }
-            toast.error(
-                beMessage ||
-                    (lang === 'RO'
-                        ? 'Eroare la procesarea propunerii.'
-                        : 'Failed to process proposal.'),
-            );
+            toast.error(beMessage || t.adminProposalProcessError);
         }
     };
 

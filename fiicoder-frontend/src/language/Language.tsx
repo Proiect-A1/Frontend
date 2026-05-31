@@ -1,8 +1,15 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Difficulty } from '../types/difficulty';
+import { storage, STORAGE_KEYS } from '../utils/storage';
 
 type Language = 'RO' | 'EN';
+
+const DEFAULT_LANGUAGE: Language = 'RO';
+
+function isLanguage(value: string | null): value is Language {
+    return value === 'RO' || value === 'EN';
+}
 
 export const translations = {
     RO: {
@@ -92,6 +99,9 @@ export const translations = {
         filterShowing: 'Afișate',
         filterOf: 'din',
         filterProblemsWord: 'probleme',
+        statsViewAll: 'Vezi tot',
+        statsLoginLeaderboard: 'Autentifică-te pentru a vedea clasamentul.',
+        statsNoSolvers: 'Niciun rezolvator încă.',
 
         // ─── Stats Sidebar ────────────────────────────────────────────────────────
         statsTitle: 'Statistici',
@@ -133,6 +143,28 @@ export const translations = {
         submitLabel: 'Trimite',
         evaluatingPrefix: 'Evaluare... (',
         evaluatingSuffix: ' teste)',
+
+        // ─── Problem Details — panels ─────────────────────────────────────────────
+        notesPanelTitle: 'Notițe personale',
+        notesClear: 'Șterge',
+        goToLastSubmission: 'Mergi la ultima submisie',
+        homeworkShort: 'Temă:',
+        noneOption: 'Niciuna',
+        paintCustomColor: 'Culoare personalizată',
+        paintUndo: 'Anul',
+        paintClearAll: 'Șterge tot',
+        paintDownloadPng: 'Descarcă PNG',
+        evalTimeLabel: 'Timp evaluare:',
+        diffSnapshotTitle: 'Actualizează codul curent din editor',
+        diffCurrentCode: 'Cod curent',
+        diffPastSubmission: 'Submisie anterioară',
+        diffSubmitFirst: 'Trimite o soluție pentru a putea compara.',
+        testResultSubmitting: 'Se trimite...',
+        notesPlaceholder: 'Observații, idei, formule, complexitate...',
+        descCopied: '✓ Copiat',
+        descCopy: 'Copiază',
+        submissionFailed: 'Eroare la trimiterea submisiei.',
+        noHomework: 'Fără temă',
 
         // ─── Submissions Panel ────────────────────────────────────────────────────
         loginToSeeHistory: 'Autentifică-te pentru istoricul tău.',
@@ -216,6 +248,11 @@ export const translations = {
         membersCount: 'membri',
         openBtn: 'Deschide',
         noMyGroups: 'Nu faci parte din niciun grup. Creează unul sau acceptă o invitație.',
+        classesEyebrow: 'Clase',
+        classHubTitle: 'Hub-ul de clase',
+        classSearchBtn: 'Caută',
+        myInvitationsSection: 'Invitațiile mele',
+        classViewBtn: 'Vezi',
 
         // ─── ClassDetails ─────────────────────────────────────────────────────────
         hwLoadError: 'Eroare la încărcare.',
@@ -244,6 +281,13 @@ export const translations = {
         hwAvgScoreShort: 'Scor mediu:',
         hwAttemptsShort: 'înc',
         hwAttemptedProblems: 'probleme încercate',
+        hwDeleteBtn: 'Șterge',
+        hwViewSubmissions: 'Vezi submisii',
+        hwTotalSubmissions: 'submisii în total',
+        hwDateCol: 'Data',
+        hwPrevBtn: 'Înapoi',
+        hwNextBtn: 'Înainte',
+        hwNoProblemSubmissions: 'Nicio submisie pentru această problemă.',
         classLabel: 'Clasă',
         deleteClassBtn: 'Șterge clasa',
         backBtn: 'Înapoi',
@@ -275,6 +319,7 @@ export const translations = {
         inviteAdminError: 'Conturile de admin nu pot fi invitate.',
         inviteAlreadyMember: 'Deja membru.',
         invitePendingError: 'Invitație deja în așteptare.',
+        inviteSuccess: 'Succes!',
 
         // ─── Profile ──────────────────────────────────────────────────────────────
         profileStatsTitle: 'Statistici',
@@ -337,6 +382,7 @@ export const translations = {
         // ─── Profile Proposals Panel ───────────────────────────────────────────────
         myProposals: 'Propunerile Mele',
         proposalHowItWorks: 'Cum funcționează:',
+        proposalSubmitNote: 'La trimitere se face o verificare automată. Dacă fișierele sunt aranjate greșit, propunerea va fi respinsă automat. După verificare, este nevoie de aprobarea unui admin.',
         proposalNoProposals: 'Nu ai trimis nicio propunere încă.',
         proposalMakePrivate: 'Fă privat',
         proposalMakePublic: 'Fă public',
@@ -362,6 +408,38 @@ export const translations = {
         adminTabAnnouncements: 'Anunțuri',
         adminTabGroups: 'Grupe',
         adminTabAudit: 'Audit',
+
+        // ─── Admin actions (toasts / confirms) ─────────────────────────────────────
+        adminGroupDeleted: 'Grup sters.',
+        adminGroupDeleteError: 'Eroare la stergere.',
+        adminMemberRemoved: 'Membru eliminat.',
+        adminMemberRemoveError: 'Eroare la eliminare.',
+        adminProposalDeleted: 'Propunerea a fost ștearsă.',
+        adminProposalDeleteError: 'Eroare la ștergerea propunerii.',
+        adminProblemDeleted: 'Problema a fost ștearsă.',
+        adminProblemDeleteError: 'Eroare la ștergerea problemei.',
+        adminProblemNowPublic: 'Problema este acum publică.',
+        adminProblemNowPrivate: 'Problema este acum privată.',
+        adminVisibilityError: 'Eroare la schimbarea vizibilității.',
+        adminProposalApproved: 'Propunerea a fost aprobată.',
+        adminProposalRejected: 'Propunerea a fost respinsă.',
+        adminProposalStatusSame: 'Problema este deja în acest status.',
+        adminProposalStatusNoPending: 'Nu poți seta statusul înapoi la PENDING.',
+        adminProposalStatusNotAllowed: 'Schimbarea statusului nu este permisă.',
+        adminProposalProcessError: 'Eroare la procesarea propunerii.',
+        adminAnnouncementSaved: 'Anunț salvat.',
+        adminAnnouncementDeleted: 'Anunț șters.',
+        adminBanReasonPrompt: 'Motivul banării (obligatoriu):',
+        adminReasonEmpty: 'Motivul nu poate fi gol.',
+        adminUserDeleted: 'Utilizatorul a fost șters.',
+        adminUserDeleteError: 'Eroare la ștergerea utilizatorului.',
+        adminRoleUpdated: 'Rol actualizat.',
+        adminUserUnbanned: 'Utilizatorul a fost deblocat.',
+        adminUserBanned: 'Utilizatorul a fost blocat.',
+        adminTagSaved: 'Tag salvat.',
+        adminTagSaveError: 'Eroare la salvarea tag-ului.',
+        adminTagDeleted: 'Tag șters.',
+        adminTagDeleteError: 'Eroare la ștergere (posibil tag-ul e folosit deja).',
 
         // ─── Admin Sidebar (Overview) ──────────────────────────────────────────────
         adminOverviewTitle: 'Rezumat',
@@ -691,6 +769,9 @@ export const translations = {
         filterShowing: 'Showing',
         filterOf: 'out of',
         filterProblemsWord: 'problems',
+        statsViewAll: 'View all',
+        statsLoginLeaderboard: 'Log in to see the leaderboard.',
+        statsNoSolvers: 'No solvers yet.',
 
         // ─── Stats Sidebar ────────────────────────────────────────────────────────
         statsTitle: 'Statistics',
@@ -732,6 +813,28 @@ export const translations = {
         submitLabel: 'Submit',
         evaluatingPrefix: 'Evaluating... (',
         evaluatingSuffix: ' tests)',
+
+        // ─── Problem Details — panels ─────────────────────────────────────────────
+        notesPanelTitle: 'Personal notes',
+        notesClear: 'Clear',
+        goToLastSubmission: 'Go to last submission',
+        homeworkShort: 'Hw:',
+        noneOption: 'None',
+        paintCustomColor: 'Custom colour',
+        paintUndo: 'Undo',
+        paintClearAll: 'Clear all',
+        paintDownloadPng: 'Download PNG',
+        evalTimeLabel: 'Eval time:',
+        diffSnapshotTitle: 'Snapshot current editor code',
+        diffCurrentCode: 'Current code',
+        diffPastSubmission: 'Past submission',
+        diffSubmitFirst: 'Submit a solution first to compare.',
+        testResultSubmitting: 'Submitting...',
+        notesPlaceholder: 'Observations, ideas, formulas, complexity...',
+        descCopied: '✓ Copied',
+        descCopy: 'Copy',
+        submissionFailed: 'Submission failed.',
+        noHomework: 'No homework',
 
         // ─── Submissions Panel ────────────────────────────────────────────────────
         loginToSeeHistory: 'Log in to see history.',
@@ -815,6 +918,11 @@ export const translations = {
         membersCount: 'members',
         openBtn: 'Open',
         noMyGroups: 'You are not part of any group. Create one or accept an invitation.',
+        classesEyebrow: 'Classes',
+        classHubTitle: 'Class hub',
+        classSearchBtn: 'Search',
+        myInvitationsSection: 'My invitations',
+        classViewBtn: 'View',
 
         // ─── ClassDetails ─────────────────────────────────────────────────────────
         hwLoadError: 'Load error.',
@@ -843,6 +951,13 @@ export const translations = {
         hwAvgScoreShort: 'Avg score:',
         hwAttemptsShort: 'try',
         hwAttemptedProblems: 'attempted problems',
+        hwDeleteBtn: 'Delete',
+        hwViewSubmissions: 'View submissions',
+        hwTotalSubmissions: 'total submissions',
+        hwDateCol: 'Date',
+        hwPrevBtn: 'Prev',
+        hwNextBtn: 'Next',
+        hwNoProblemSubmissions: 'No submissions for this problem.',
         classLabel: 'Class',
         deleteClassBtn: 'Delete class',
         backBtn: 'Back',
@@ -874,6 +989,7 @@ export const translations = {
         inviteAdminError: 'Admin accounts cannot be invited.',
         inviteAlreadyMember: 'Already a member.',
         invitePendingError: 'Invitation already pending.',
+        inviteSuccess: 'Success!',
 
         // ─── Profile ──────────────────────────────────────────────────────────────
         profileStatsTitle: 'Statistics',
@@ -936,6 +1052,7 @@ export const translations = {
         // ─── Profile Proposals Panel ───────────────────────────────────────────────
         myProposals: 'My Proposals',
         proposalHowItWorks: 'How it works:',
+        proposalSubmitNote: 'Submission triggers an automated check. If files are arranged incorrectly the proposal is auto-rejected. After the check, an admin still needs to approve it.',
         proposalNoProposals: "You haven't submitted any proposals yet.",
         proposalMakePrivate: 'Make private',
         proposalMakePublic: 'Make public',
@@ -961,6 +1078,38 @@ export const translations = {
         adminTabAnnouncements: 'Announcements',
         adminTabGroups: 'Groups',
         adminTabAudit: 'Audit Log',
+
+        // ─── Admin actions (toasts / confirms) ─────────────────────────────────────
+        adminGroupDeleted: 'Group deleted.',
+        adminGroupDeleteError: 'Failed to delete group.',
+        adminMemberRemoved: 'Member removed.',
+        adminMemberRemoveError: 'Failed to remove member.',
+        adminProposalDeleted: 'Proposal deleted.',
+        adminProposalDeleteError: 'Failed to delete proposal.',
+        adminProblemDeleted: 'Problem deleted.',
+        adminProblemDeleteError: 'Failed to delete problem.',
+        adminProblemNowPublic: 'Problem is now public.',
+        adminProblemNowPrivate: 'Problem is now private.',
+        adminVisibilityError: 'Failed to change visibility.',
+        adminProposalApproved: 'Proposal approved.',
+        adminProposalRejected: 'Proposal rejected.',
+        adminProposalStatusSame: 'Problem is already in this status.',
+        adminProposalStatusNoPending: 'Cannot change status back to PENDING.',
+        adminProposalStatusNotAllowed: 'Status change not allowed.',
+        adminProposalProcessError: 'Failed to process proposal.',
+        adminAnnouncementSaved: 'Announcement saved.',
+        adminAnnouncementDeleted: 'Announcement deleted.',
+        adminBanReasonPrompt: 'Ban reason (required):',
+        adminReasonEmpty: 'Reason cannot be empty.',
+        adminUserDeleted: 'User deleted.',
+        adminUserDeleteError: 'Error deleting user.',
+        adminRoleUpdated: 'Role updated.',
+        adminUserUnbanned: 'User unbanned.',
+        adminUserBanned: 'User banned.',
+        adminTagSaved: 'Tag saved.',
+        adminTagSaveError: 'Failed to save tag.',
+        adminTagDeleted: 'Tag deleted.',
+        adminTagDeleteError: 'Error deleting tag (it might be in use).',
 
         // ─── Admin Sidebar (Overview) ──────────────────────────────────────────────
         adminOverviewTitle: 'Overview',
@@ -1290,6 +1439,24 @@ export function getPendingInvitationsTitle(lang: Language, count: number): strin
     return `Pending invitations (${count})`;
 }
 
+/** Confirm dialog for deleting a group (admin) */
+export function getDeleteGroupConfirm(lang: Language, name: string): string {
+    if (lang === 'RO') return `Sigur vrei sa stergi grupul "${name}"?`;
+    return `Are you sure you want to delete "${name}"?`;
+}
+
+/** Confirm dialog for removing a group member (admin) */
+export function getRemoveGroupMemberConfirm(lang: Language, username: string): string {
+    if (lang === 'RO') return `Sigur vrei sa elimini "${username}" din grup?`;
+    return `Remove "${username}" from this group?`;
+}
+
+/** "N invitație trimisă." / "N invitations sent." (handles plural) */
+export function getInvitationsSentMsg(lang: Language, count: number): string {
+    if (lang === 'RO') return `${count} invitație${count > 1 ? ' trimise' : ' trimisă'}.`;
+    return `${count} invitation${count > 1 ? 's' : ''} sent.`;
+}
+
 /** Confirm dialog for removing a student */
 export function getRemoveStudentConfirm(lang: Language, username: string): string {
     if (lang === 'RO') return `Elimini studentul "${username}" din clasă?`;
@@ -1300,6 +1467,18 @@ export function getRemoveStudentConfirm(lang: Language, username: string): strin
 export function getDeleteClassConfirm(lang: Language, name: string): string {
     if (lang === 'RO') return `Sigur vrei să ștergi clasa "${name}"? Această acțiune este ireversibilă.`;
     return `Delete class "${name}"? This action cannot be undone.`;
+}
+
+/** Confirm dialog for deleting a tag */
+export function getDeleteTagConfirm(lang: Language, title: string): string {
+    if (lang === 'RO') return `Sigur vrei să ștergi tag-ul "${title}"?`;
+    return `Delete tag "${title}"?`;
+}
+
+/** Confirm dialog for deleting a user */
+export function getDeleteUserConfirm(lang: Language, username: string): string {
+    if (lang === 'RO') return `Sigur vrei să ștergi utilizatorul ${username}?`;
+    return `Are you sure you want to delete user ${username}?`;
 }
 
 /** "Afișate N din M probleme" / "Showing N out of M problems" */
@@ -1328,7 +1507,16 @@ const LanguageContext = createContext<LanguageContextType>({
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-    const [lang, setLang] = useState<Language>('RO');
+    // Persisted across reloads (consistent with the theme), falling back to the
+    // default when absent or invalid.
+    const [lang, setLang] = useState<Language>(() => {
+        const stored = storage.get(STORAGE_KEYS.language);
+        return isLanguage(stored) ? stored : DEFAULT_LANGUAGE;
+    });
+
+    useEffect(() => {
+        storage.set(STORAGE_KEYS.language, lang);
+    }, [lang]);
 
     return (
         <LanguageContext.Provider value={{ lang, setLang }}>{children}</LanguageContext.Provider>

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ProfileResponseDTO } from '../../../services/profileService';
+import { translations } from '../../../language/Language';
 
 type Props = {
     profile: ProfileResponseDTO;
@@ -162,6 +163,7 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
 }
 
 export default function ProfileAchievementsModal({ profile, lang, isOpen, onClose }: Props) {
+    const t = translations[lang];
     const achievements = computeAchievements(profile);
     const unlocked = achievements.filter(a => a.unlocked);
     const locked = achievements.filter(a => !a.unlocked);
@@ -204,10 +206,10 @@ export default function ProfileAchievementsModal({ profile, lang, isOpen, onClos
                         <div className="flex items-start justify-between gap-3 p-6 pb-4 border-b border-(--accent)/20 shrink-0">
                             <div>
                                 <h2 className="text-2xl font-bold text-(--text-h)">
-                                    {lang === 'RO' ? 'Realizări' : 'Achievements'}
+                                    {t.achievementsTitle}
                                 </h2>
                                 <p className="text-xs text-(--text-muted) font-semibold mt-1">
-                                    {unlocked.length}/{achievements.length} {lang === 'RO' ? 'deblocate' : 'unlocked'}
+                                    {unlocked.length}/{achievements.length} {t.achievementsUnlockedCount}
                                 </p>
                             </div>
                             <button
@@ -225,7 +227,7 @@ export default function ProfileAchievementsModal({ profile, lang, isOpen, onClos
                         <div className="px-6 py-4 border-b border-(--accent)/10 shrink-0">
                             <div className="flex items-center justify-between text-xs mb-2">
                                 <span className="text-(--text-muted) font-semibold uppercase tracking-widest">
-                                    {lang === 'RO' ? 'Progres total' : 'Overall progress'}
+                                    {t.achievementsProgress}
                                 </span>
                                 <span className="font-black text-(--accent)">{pct}%</span>
                             </div>
@@ -246,7 +248,7 @@ export default function ProfileAchievementsModal({ profile, lang, isOpen, onClos
                             {unlocked.length > 0 && (
                                 <div className="space-y-2">
                                     <p className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3">
-                                        ✓ {lang === 'RO' ? 'Deblocate' : 'Unlocked'}
+                                        ✓ {t.achievementsUnlockedSection}
                                     </p>
                                     {unlocked.map((a, i) => (
                                         <motion.div
@@ -281,7 +283,7 @@ export default function ProfileAchievementsModal({ profile, lang, isOpen, onClos
                             {locked.length > 0 && (
                                 <div className="space-y-2">
                                     <p className="text-xs font-bold text-(--text-muted) uppercase tracking-widest mb-3 mt-5">
-                                        🔒 {lang === 'RO' ? 'Nedeblocate' : 'Locked'}
+                                        🔒 {t.achievementsLockedSection}
                                     </p>
                                     {locked.map((a) => {
                                         const barPct = a.progress

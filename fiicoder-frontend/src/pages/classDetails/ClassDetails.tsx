@@ -15,7 +15,7 @@ import type {
     PagedHomeworkSubmissionsDTO,
 } from './types/homework';
 import { submissionVerdict, submissionVerdictLabels, type SubmissionVerdict } from '../profile/profileUtils';
-import { useLanguage } from '../../language/Language';
+import { useLanguage, translations, getRemoveStudentConfirm, getDeleteClassConfirm, getInvitationsSentMsg, getPendingInvitationsTitle } from '../../language/Language';
 import { containerVariants, itemVariants, pageVariants } from '../../utils/motionConfig';
 import { extractErrorMessage } from '../../utils/httpError';
 import { storage, STORAGE_KEYS } from '../../utils/storage';
@@ -67,6 +67,7 @@ function HomeworkItem({
     lang,
     onReload,
 }: HomeworkItemProps) {
+    const t = translations[lang as 'RO' | 'EN'] ?? translations.RO;
     const [selectedHomeworkDetail, setSelectedHomeworkDetail] = useState<HomeworkDetailDTO | null>(
         null,
     );
@@ -148,10 +149,7 @@ function HomeworkItem({
                 if (!cancelled) setSelectedHomeworkDetail(details);
             } catch (err: any) {
                 if (!cancelled) {
-                    setError(
-                        err?.body?.message ||
-                            (lang === 'RO' ? 'Eroare la încărcare.' : 'Load error.'),
-                    );
+                    setError(err?.body?.message || t.hwLoadError);
                 }
             } finally {
                 if (!cancelled) setLoadingDetails(false);
@@ -181,8 +179,8 @@ function HomeworkItem({
     const handlePublish = async () => {
         try {
             await homeworkService.publish(groupId, homework.id);
-            setFeedback(lang === 'RO' ? 'Publicată!' : 'Published!');
-            toast.success(lang === 'RO' ? 'Tema a fost publicată.' : 'Homework published.');
+            setFeedback(t.hwPublishedFeedback);
+            toast.success(t.hwPublishedMsg);
             await onReload();
         } catch (err: any) {
             const message = extractErrorMessage(err, 'Error');
@@ -192,10 +190,10 @@ function HomeworkItem({
     };
 
     const handleDelete = async () => {
-        if (!window.confirm(lang === 'RO' ? 'Ștergi tema?' : 'Delete homework?')) return;
+        if (!window.confirm(t.hwDeleteConfirm)) return;
         try {
             await homeworkService.delete(groupId, homework.id);
-            toast.success(lang === 'RO' ? 'Tema a fost ștearsă.' : 'Homework deleted.');
+            toast.success(t.hwDeletedMsg);
             await onReload();
         } catch (err: any) {
             const message = extractErrorMessage(err, 'Error');
@@ -216,8 +214,8 @@ function HomeworkItem({
 
         try {
             await homeworkService.addToDraft(groupId, homework.id, request);
-            setFeedback(lang === 'RO' ? 'Actualizat!' : 'Updated!');
-            toast.success(lang === 'RO' ? 'Tema a fost actualizată.' : 'Homework updated.');
+            setFeedback(t.hwUpdatedFeedback);
+            toast.success(t.hwUpdatedMsg);
             setAddUsernamesInput('');
             setAddProblemTitlesInput('');
             setAddDeadline('');
@@ -241,8 +239,8 @@ function HomeworkItem({
 
         try {
             await homeworkService.removeFromDraft(groupId, homework.id, request);
-            setFeedback(lang === 'RO' ? 'Actualizat!' : 'Updated!');
-            toast.success(lang === 'RO' ? 'Elementele au fost eliminate.' : 'Items removed.');
+            setFeedback(t.hwUpdatedFeedback);
+            toast.success(t.hwItemsRemovedMsg);
             setRemoveUsernamesInput('');
             setRemoveProblemTitlesInput('');
             const details = await homeworkService.getById(groupId, homework.id);
@@ -282,12 +280,11 @@ function HomeworkItem({
                         </span>
                     </div>
                     <p className="mt-1.5 text-sm text-(--text-muted)">
-                        {homework.description ||
-                            (lang === 'RO' ? 'Fără descriere.' : 'No description.')}
+                        {homework.description || t.noDescription}
                     </p>
                     <div className="mt-3 flex flex-wrap gap-3 text-xs text-(--text-muted)">
                         <span>
-                            {lang === 'RO' ? 'Deadline' : 'Deadline'}:{' '}
+                            Deadline:{' '}
                             {homework.deadline
                                 ? new Date(homework.deadline).toLocaleString(lang === 'RO' ? 'ro-RO' : 'en-US', { dateStyle: 'medium', timeStyle: 'short', timeZoneName: 'short' })
                                 : '—'}
@@ -299,13 +296,7 @@ function HomeworkItem({
                         onClick={() => onToggle(homework.id)}
                         className="rounded-full border border-(--accent)/40 px-3 py-1.5 text-xs font-semibold text-(--text-h) hover:bg-(--accent)/10"
                     >
-                        {isSelected
-                            ? lang === 'RO'
-                                ? 'Ascunde'
-                                : 'Hide'
-                            : lang === 'RO'
-                              ? 'Detalii'
-                              : 'Details'}
+                        {isSelected ? t.hwHideBtn : t.hwDetailsBtn}
                     </button>
                     {userId && creatorId && userId.toLowerCase() === creatorId.toLowerCase() && (
                         <>
@@ -314,14 +305,14 @@ function HomeworkItem({
                                     onClick={handlePublish}
                                     className="rounded-full border border-emerald-400/50 px-3 py-1.5 text-xs font-semibold text-emerald-200 hover:bg-emerald-500/10"
                                 >
-                                    {lang === 'RO' ? 'Publică' : 'Publish'}
+                                    {t.hwPublishBtn}
                                 </button>
                             )}
                             <button
                                 onClick={handleDelete}
                                 className="rounded-full border border-red-400/50 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/10"
                             >
-                                {lang === 'RO' ? 'Șterge' : 'Delete'}
+                                {t.hwDeleteBtn}
                             </button>
                         </>
                     )}
@@ -332,7 +323,7 @@ function HomeworkItem({
                 <div className="mt-4 rounded-2xl border border-(--accent)/20 bg-black/15 p-4 space-y-4">
                     {loadingDetails && (
                         <p className="text-sm text-(--text-muted)">
-                            {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
+                            {t.loadingLabel}
                         </p>
                     )}
                     {feedback && <p className="text-xs text-emerald-400">{feedback}</p>}
@@ -343,7 +334,7 @@ function HomeworkItem({
                             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                 <div className="space-y-2">
                                     <h4 className="text-xs uppercase tracking-widest text-(--text-muted) font-bold">
-                                        {lang === 'RO' ? 'Probleme' : 'Problems'}
+                                        {t.hwProblemsLabel}
                                     </h4>
                                     <div className="flex flex-wrap gap-2">
                                         {selectedHomeworkDetail.problems.map((p) => {
@@ -362,7 +353,7 @@ function HomeworkItem({
                                                     {isCreator && p.id && homework.status !== 'DRAFT' && (
                                                         <button
                                                             onClick={() => handleViewProblemSubmissions({ id: p.id, title: problemTitle })}
-                                                            title={lang === 'RO' ? 'Vezi submisii' : 'View submissions'}
+                                                            title={t.hwViewSubmissions}
                                                             className="px-1.5 py-1 border-l border-(--accent)/30 text-(--text-muted) hover:bg-(--accent)/25 hover:text-(--accent) transition-colors"
                                                         >
                                                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
@@ -384,13 +375,13 @@ function HomeworkItem({
                                             <div className="flex justify-between items-start mb-3">
                                                 <div>
                                                     <h5 className="font-bold text-(--text-h)">
-                                                        {lang === 'RO' ? 'Submisii:' : 'Submissions:'}{' '}
+                                                        {t.hwSubmissionsLabel}{' '}
                                                         {submissionsProblem.title}
                                                     </h5>
                                                     {problemSubmissions && (
                                                         <p className="text-[10px] text-(--text-muted)">
                                                             {problemSubmissions.totalElements}{' '}
-                                                            {lang === 'RO' ? 'submisii în total' : 'total submissions'}
+                                                            {t.hwTotalSubmissions}
                                                         </p>
                                                     )}
                                                 </div>
@@ -404,7 +395,7 @@ function HomeworkItem({
 
                                             {loadingSubmissions ? (
                                                 <p className="text-xs text-(--text-muted)">
-                                                    {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
+                                                    {t.loadingLabel}
                                                 </p>
                                             ) : problemSubmissions && problemSubmissions.content.length > 0 ? (
                                                 <>
@@ -412,10 +403,10 @@ function HomeworkItem({
                                                         <table className="w-full text-left text-xs border-collapse">
                                                             <thead>
                                                                 <tr className="border-b border-(--accent)/10 text-(--text-muted)">
-                                                                    <th className="py-2 px-1 font-bold">{lang === 'RO' ? 'Elev' : 'Student'}</th>
-                                                                    <th className="py-2 px-1 text-center font-bold">{lang === 'RO' ? 'Scor' : 'Score'}</th>
+                                                                    <th className="py-2 px-1 font-bold">{t.hwStudentCol}</th>
+                                                                    <th className="py-2 px-1 text-center font-bold">{t.scoreLabel}</th>
                                                                     <th className="py-2 px-1 text-center font-bold">Status</th>
-                                                                    <th className="py-2 px-1 text-right font-bold">{lang === 'RO' ? 'Data' : 'Date'}</th>
+                                                                    <th className="py-2 px-1 text-right font-bold">{t.hwDateCol}</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -446,7 +437,7 @@ function HomeworkItem({
                                                                 onClick={() => goToSubmissionsPage(submissionsPage - 1)}
                                                                 className="px-3 py-1 rounded-lg border border-(--accent)/30 text-(--text-h) hover:bg-(--accent)/10 disabled:opacity-40 disabled:cursor-not-allowed"
                                                             >
-                                                                {lang === 'RO' ? 'Înapoi' : 'Prev'}
+                                                                {t.hwPrevBtn}
                                                             </button>
                                                             <span className="text-(--text-muted)">
                                                                 {submissionsPage + 1} / {problemSubmissions.totalPages}
@@ -456,14 +447,14 @@ function HomeworkItem({
                                                                 onClick={() => goToSubmissionsPage(submissionsPage + 1)}
                                                                 className="px-3 py-1 rounded-lg border border-(--accent)/30 text-(--text-h) hover:bg-(--accent)/10 disabled:opacity-40 disabled:cursor-not-allowed"
                                                             >
-                                                                {lang === 'RO' ? 'Înainte' : 'Next'}
+                                                                {t.hwNextBtn}
                                                             </button>
                                                         </div>
                                                     )}
                                                 </>
                                             ) : (
                                                 <p className="text-xs text-(--text-muted)">
-                                                    {lang === 'RO' ? 'Nicio submisie pentru această problemă.' : 'No submissions for this problem.'}
+                                                    {t.hwNoProblemSubmissions}
                                                 </p>
                                             )}
                                         </motion.div>
@@ -474,11 +465,11 @@ function HomeworkItem({
                                     userId.toLowerCase() === creatorId.toLowerCase() && (
                                         <div className="text-[11px] text-(--text-muted)">
                                             <p>
-                                                {lang === 'RO' ? 'Elevi:' : 'Users:'}{' '}
+                                                {t.hwStudentsLabel}{' '}
                                                 {selectedHomeworkDetail.assignedUsers?.length || 0}
                                             </p>
                                             <p>
-                                                {lang === 'RO' ? 'Submisii:' : 'Submissions:'}{' '}
+                                                {t.hwSubmissionsLabel}{' '}
                                                 {selectedHomeworkDetail.submissions?.length || 0}
                                             </p>
                                         </div>
@@ -492,7 +483,7 @@ function HomeworkItem({
                                     <div className="grid gap-4 xl:grid-cols-2 mt-4">
                                         <div className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-3 space-y-2">
                                             <h4 className="text-sm font-bold text-(--text-h)">
-                                                {lang === 'RO' ? 'Adaugă' : 'Add'}
+                                                {t.hwAddSection}
                                             </h4>
                                             <input
                                                 value={addUsernamesInput}
@@ -525,7 +516,7 @@ function HomeworkItem({
                                         </div>
                                         <div className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-3 space-y-2">
                                             <h4 className="text-sm font-bold text-(--text-h)">
-                                                {lang === 'RO' ? 'Șterge' : 'Remove'}
+                                                {t.hwRemoveSection}
                                             </h4>
                                             <input
                                                 value={removeUsernamesInput}
@@ -559,7 +550,7 @@ function HomeworkItem({
                                 userId.toLowerCase() === creatorId.toLowerCase() && (
                                     <div className="space-y-4 border-t border-(--accent)/10 pt-4 mt-4">
                                         <h4 className="text-xs uppercase tracking-widest text-(--text-muted) font-bold">
-                                            {lang === 'RO' ? 'Progres Elevi' : 'Student Progress'}
+                                            {t.hwStudentProgressTitle}
                                         </h4>
 
                                         {loadingStats && (
@@ -571,17 +562,13 @@ function HomeworkItem({
                                                 <thead>
                                                     <tr className="border-b border-(--accent)/10 text-(--text-muted)">
                                                         <th className="py-2 px-1 font-bold">
-                                                            {lang === 'RO' ? 'Elev' : 'Student'}
+                                                            {t.hwStudentCol}
                                                         </th>
                                                         <th className="py-2 px-1 text-center font-bold">
-                                                            {lang === 'RO'
-                                                                ? 'Probleme'
-                                                                : 'Problems'}
+                                                            {t.hwProblemsLabel}
                                                         </th>
                                                         <th className="py-2 px-1 text-center font-bold">
-                                                            {lang === 'RO'
-                                                                ? 'Scor Mediu'
-                                                                : 'Avg Score'}
+                                                            {t.hwAvgScoreCol}
                                                         </th>
                                                         <th className="py-2 px-1 text-center font-bold">
                                                             Status
@@ -616,16 +603,10 @@ function HomeworkItem({
                                                                     className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${student.isCompleted ? 'bg-emerald-500/20 text-emerald-400' : student.hasStarted ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/10 text-red-400/60'}`}
                                                                 >
                                                                     {student.isCompleted
-                                                                        ? lang === 'RO'
-                                                                            ? 'GATA'
-                                                                            : 'DONE'
+                                                                        ? t.hwStatusDone
                                                                         : student.hasStarted
-                                                                          ? lang === 'RO'
-                                                                              ? 'ÎN LUCRU'
-                                                                              : 'WORKING'
-                                                                          : lang === 'RO'
-                                                                            ? 'NU A ÎNCEPUT'
-                                                                            : 'IDLE'}
+                                                                          ? t.hwStatusWorking
+                                                                          : t.hwStatusIdle}
                                                                 </span>
                                                             </td>
                                                             <td className="py-2 px-1 text-right">
@@ -640,13 +621,7 @@ function HomeworkItem({
                                                                     }
                                                                     className="text-(--accent) hover:underline font-bold disabled:opacity-50"
                                                                 >
-                                                                    {loadingStudentProgress
-                                                                        ? lang === 'RO'
-                                                                            ? 'Se încarcă...'
-                                                                            : 'Loading...'
-                                                                        : lang === 'RO'
-                                                                          ? 'Detalii'
-                                                                          : 'Details'}
+                                                                    {loadingStudentProgress ? t.loadingLabel : t.hwDetailsBtn}
                                                                 </button>
                                                             </td>
                                                         </tr>
@@ -664,15 +639,11 @@ function HomeworkItem({
                                                 <div className="flex justify-between items-start mb-4">
                                                     <div>
                                                         <h5 className="font-bold text-(--text-h)">
-                                                            {lang === 'RO'
-                                                                ? 'Detalii progres:'
-                                                                : 'Progress details:'}{' '}
+                                                            {t.hwProgressDetailsLabel}{' '}
                                                             {selectedStudentProgress.username}
                                                         </h5>
                                                         <p className="text-[10px] text-(--text-muted)">
-                                                            {lang === 'RO'
-                                                                ? 'Scor mediu:'
-                                                                : 'Avg score:'}{' '}
+                                                            {t.hwAvgScoreShort}{' '}
                                                             {selectedStudentProgress.averageScore.toFixed(
                                                                 1,
                                                             )}{' '}
@@ -680,9 +651,7 @@ function HomeworkItem({
                                                             {
                                                                 selectedStudentProgress.attemptedProblems
                                                             }{' '}
-                                                            {lang === 'RO'
-                                                                ? 'probleme încercate'
-                                                                : 'attempted problems'}
+                                                            {t.hwAttemptedProblems}
                                                         </p>
                                                     </div>
                                                     <button
@@ -707,7 +676,7 @@ function HomeworkItem({
                                                             <div className="flex items-center gap-3">
                                                                 <span className="text-(--text-muted)">
                                                                     {p.attempts}{' '}
-                                                                    {lang === 'RO' ? 'înc' : 'try'}
+                                                                    {t.hwAttemptsShort}
                                                                 </span>
                                                                 <span
                                                                     className={`font-mono font-bold ${p.bestScore === 100 ? 'text-emerald-400' : 'text-amber-400'}`}
@@ -734,6 +703,7 @@ export default function ClassDetails() {
     const { groupId } = useParams();
     const navigate = useNavigate();
     const { lang } = useLanguage();
+    const t = translations[lang];
     const { userId, isAdmin } = useAuth();
     const queryClient = useQueryClient();
     const [inviteEmail, setInviteEmail] = useState('');
@@ -784,22 +754,15 @@ export default function ClassDetails() {
 
     const handleRemoveStudent = async (studentId: string, username: string) => {
         if (!groupId) return;
-        const confirmMsg =
-            lang === 'RO'
-                ? `Elimini studentul "${username}" din clasă?`
-                : `Remove student "${username}" from this class?`;
-        if (!window.confirm(confirmMsg)) return;
+        if (!window.confirm(getRemoveStudentConfirm(lang, username))) return;
         try {
             await classService.removeGroupStudent(groupId, studentId);
-            toast.success(lang === 'RO' ? 'Student eliminat.' : 'Student removed.');
+            toast.success(t.studentRemoved);
             await queryClient.invalidateQueries({ queryKey: ['class-members', groupId] });
             await queryClient.invalidateQueries({ queryKey: ['my-groups'] });
         } catch (err: any) {
             toast.error(
-                extractErrorMessage(
-                    err,
-                    lang === 'RO' ? 'Eroare la eliminare.' : 'Failed to remove student.',
-                ),
+                extractErrorMessage(err, t.studentRemoveError),
             );
         }
     };
@@ -809,12 +772,8 @@ export default function ClassDetails() {
     const homeworks = homeworksQuery.data ?? [];
     const loading = groupQuery.isPending || homeworksQuery.isPending;
     const groupErrorStatus = (groupQuery.error as { status?: number } | null)?.status;
-    const accessDeniedMessage =
-        lang === 'RO'
-            ? 'Nu ai acces la această clasă. Trebuie să fii membru, creator sau admin.'
-            : 'You do not have access to this class. You must be a member, creator, or admin.';
-    const notFoundMessage =
-        lang === 'RO' ? 'Clasa nu a fost găsită.' : 'Class not found.';
+    const accessDeniedMessage = t.classAccessDeniedLong;
+    const notFoundMessage = t.classNotFoundMsg;
     const error =
         groupErrorStatus === 403
             ? accessDeniedMessage
@@ -828,11 +787,7 @@ export default function ClassDetails() {
     }, [homeworksQuery]);
 
     const handleDeleteGroup = async () => {
-        const confirmMsg =
-            lang === 'RO'
-                ? `Sigur vrei să ștergi clasa "${group?.name}"? Această acțiune este ireversibilă.`
-                : `Delete class "${group?.name}"? This action cannot be undone.`;
-        if (!window.confirm(confirmMsg)) return;
+        if (!window.confirm(getDeleteClassConfirm(lang, group?.name ?? ''))) return;
         try {
             await classService.deleteGroup(groupId!);
             if (userId) {
@@ -844,12 +799,10 @@ export default function ClassDetails() {
                     storage.setJson(key, classes.filter((c) => c.id !== groupId));
                 }
             }
-            toast.success(lang === 'RO' ? 'Clasa a fost ștearsă.' : 'Class deleted.');
+            toast.success(t.classDeleted);
             navigate('/classes');
         } catch (err: any) {
-            toast.error(
-                extractErrorMessage(err, lang === 'RO' ? 'Eroare la ștergere.' : 'Delete failed.'),
-            );
+            toast.error(extractErrorMessage(err, t.classDeleteError));
         }
     };
 
@@ -873,20 +826,11 @@ export default function ClassDetails() {
                 const lowered = rawMessage.toLowerCase();
                 let message = rawMessage;
                 if (lowered.includes('admin') && lowered.includes('invited')) {
-                    message =
-                        lang === 'RO'
-                            ? `${email}: Conturile de admin nu pot fi invitate.`
-                            : `${email}: Admin accounts cannot be invited.`;
+                    message = `${email}: ${t.inviteAdminError}`;
                 } else if (lowered.includes('already a member')) {
-                    message =
-                        lang === 'RO'
-                            ? `${email}: Deja membru.`
-                            : `${email}: Already a member.`;
+                    message = `${email}: ${t.inviteAlreadyMember}`;
                 } else if (lowered.includes('pending invitation')) {
-                    message =
-                        lang === 'RO'
-                            ? `${email}: Invitație deja în așteptare.`
-                            : `${email}: Invitation already pending.`;
+                    message = `${email}: ${t.invitePendingError}`;
                 } else {
                     message = `${email}: ${rawMessage}`;
                 }
@@ -895,18 +839,14 @@ export default function ClassDetails() {
         }
         setLoadingInvite(false);
         if (successCount > 0) {
-            toast.success(
-                lang === 'RO'
-                    ? `${successCount} invitație${successCount > 1 ? ' trimise' : ' trimisă'}.`
-                    : `${successCount} invitation${successCount > 1 ? 's' : ''} sent.`,
-            );
+            toast.success(getInvitationsSentMsg(lang, successCount));
         }
         if (errors.length > 0) {
             setInviteFeedback({ msg: errors.join(' | '), isError: true });
             errors.forEach((msg) => toast.error(msg));
             setTimeout(() => setInviteFeedback(null), 8000);
         } else {
-            setInviteFeedback({ msg: lang === 'RO' ? 'Succes!' : 'Success!', isError: false });
+            setInviteFeedback({ msg: t.inviteSuccess, isError: false });
             setInviteEmail('');
             setTimeout(() => setInviteFeedback(null), 5000);
         }
@@ -932,8 +872,8 @@ export default function ClassDetails() {
             setHomeworkTitle('');
             setHomeworkDescription('');
             setHomeworkDeadline('');
-            setFeedback(lang === 'RO' ? 'Creat!' : 'Created!');
-            toast.success(lang === 'RO' ? 'Tema a fost creată.' : 'Homework created.');
+            setFeedback(t.hwCreatedFeedback);
+            toast.success(t.hwCreatedMsg);
             await reloadHomeworks();
         } catch (err: any) {
             const message = extractErrorMessage(err, 'Error');
@@ -974,7 +914,7 @@ export default function ClassDetails() {
                 >
                     <div>
                         <p className="text-xs uppercase tracking-widest text-(--text-muted)">
-                            {lang === 'RO' ? 'Clasă' : 'Class'}
+                            {t.classLabel}
                         </p>
                         <h1 className="text-3xl font-bold text-(--text-h) mt-1">
                             {group?.name || '...'}
@@ -990,14 +930,14 @@ export default function ClassDetails() {
                                 onClick={handleDeleteGroup}
                                 className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-full font-semibold border-2 border-red-500/50 bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
                             >
-                                {lang === 'RO' ? 'Șterge clasa' : 'Delete class'}
+                                {t.deleteClassBtn}
                             </button>
                         )}
                         <Link
                             to="/classes"
                             className="inline-flex items-center justify-center px-4 py-2 text-sm rounded-full font-semibold border-2 border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                         >
-                            {lang === 'RO' ? 'Înapoi' : 'Back'}
+                            {t.backBtn}
                         </Link>
                     </div>
                 </motion.div>
@@ -1014,7 +954,7 @@ export default function ClassDetails() {
                 {loading && (
                     <motion.div variants={itemVariants} className="text-center py-6">
                         <p className="text-(--text-muted)">
-                            {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
+                            {t.loadingLabel}
                         </p>
                     </motion.div>
                 )}
@@ -1027,13 +967,13 @@ export default function ClassDetails() {
                             className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4 flex flex-col"
                         >
                             <h2 className="text-xl font-bold text-(--text-h) mb-4">
-                                {lang === 'RO' ? 'Detalii' : 'Details'}
+                                {t.detailsSection}
                             </h2>
 
                             <div className="space-y-3 mb-5">
                                 <div className="rounded-xl border border-(--accent)/20 bg-(--surface-card) p-3">
                                     <p className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-1">
-                                        {lang === 'RO' ? 'Creator' : 'Creator'}
+                                        Creator
                                     </p>
                                     <p className="text-sm font-semibold text-(--text-h)">
                                         {group.creatorUsername}
@@ -1042,7 +982,7 @@ export default function ClassDetails() {
                                 {typeof group.memberCount === 'number' && (
                                     <div className="rounded-xl border border-(--accent)/20 bg-(--surface-card) p-3">
                                         <p className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-1">
-                                            {lang === 'RO' ? 'Membri' : 'Members'}
+                                            {t.membersLabel}
                                         </p>
                                         <p className="text-sm font-semibold text-(--text-h)">
                                             {group.memberCount}
@@ -1060,7 +1000,7 @@ export default function ClassDetails() {
                                 {group.description && (
                                     <div className="rounded-xl border border-(--accent)/20 bg-(--surface-card) p-3">
                                         <p className="text-xs uppercase tracking-widest text-(--text-muted) font-bold mb-1">
-                                            {lang === 'RO' ? 'Descriere' : 'Description'}
+                                            {t.descriptionLabel}
                                         </p>
                                         <p className="text-sm text-(--text-h)">
                                             {group.description}
@@ -1071,13 +1011,13 @@ export default function ClassDetails() {
 
                             <div className="border-t border-(--accent)/20 pt-4 mt-auto">
                                 <h3 className="text-sm font-bold text-(--text-h) mb-3">
-                                    {lang === 'RO' ? 'Invită colegi' : 'Invite members'}
+                                    {t.inviteMembersTitle}
                                 </h3>
                                 <form onSubmit={handleInviteStudent} className="space-y-2">
                                     <textarea
                                         value={inviteEmail}
                                         onChange={(e) => setInviteEmail(e.target.value)}
-                                        placeholder={lang === 'RO' ? 'Email-uri (separate prin virgulă sau linie nouă)' : 'Emails (comma or newline separated)'}
+                                        placeholder={t.inviteEmailPlaceholder}
                                         rows={3}
                                         className="w-full rounded-xl bg-(--surface-card) border border-(--accent)/25 px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted) resize-none"
                                     />
@@ -1086,11 +1026,7 @@ export default function ClassDetails() {
                                         disabled={loadingInvite}
                                         className="w-full inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                                     >
-                                        {loadingInvite
-                                            ? (lang === 'RO' ? 'Se trimite...' : 'Sending...')
-                                            : lang === 'RO'
-                                              ? 'Invită'
-                                              : 'Invite'}
+                                        {loadingInvite ? t.sendingBtn : t.inviteBtn}
                                     </button>
                                 </form>
                                 {inviteFeedback && (
@@ -1109,7 +1045,7 @@ export default function ClassDetails() {
                             className="rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4 flex flex-col"
                         >
                             <h2 className="text-xl font-bold text-(--text-h) mb-4">
-                                {lang === 'RO' ? 'Temă nouă' : 'New homework'}
+                                {t.newHomeworkSection}
                             </h2>
                             <form
                                 onSubmit={handleCreateHomework}
@@ -1118,18 +1054,14 @@ export default function ClassDetails() {
                                 <input
                                     value={homeworkTitle}
                                     onChange={(e) => setHomeworkTitle(e.target.value)}
-                                    placeholder={lang === 'RO' ? 'Titlu' : 'Title'}
+                                    placeholder={t.hwTitlePlaceholder}
                                     required
                                     className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
                                 />
                                 <textarea
                                     value={homeworkDescription}
                                     onChange={(e) => setHomeworkDescription(e.target.value)}
-                                    placeholder={
-                                        lang === 'RO'
-                                            ? 'Descriere opțională'
-                                            : 'Optional description'
-                                    }
+                                    placeholder={t.classOptionalDesc}
                                     className="min-h-20 w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-sm text-(--text-h) outline-none transition placeholder:text-(--text-muted) resize-none"
                                 />
                                 <input
@@ -1141,20 +1073,14 @@ export default function ClassDetails() {
                                 />
                                 <div className="border-t border-(--accent)/20 pt-3 space-y-2">
                                     <p className="text-xs uppercase tracking-widest text-(--text-muted) font-bold">
-                                        {lang === 'RO'
-                                            ? 'Inițial (opțional)'
-                                            : 'Initial setup (optional)'}
+                                        {t.hwInitialOptional}
                                     </p>
                                     <input
                                         value={homeworkCreationUsernames}
                                         onChange={(e) =>
                                             setHomeworkCreationUsernames(e.target.value)
                                         }
-                                        placeholder={
-                                            lang === 'RO'
-                                                ? 'Utilizatori (user1, user2)'
-                                                : 'Users (user1, user2)'
-                                        }
+                                        placeholder={t.hwUsersPlaceholder}
                                         className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
                                     />
                                     <input
@@ -1162,11 +1088,7 @@ export default function ClassDetails() {
                                         onChange={(e) =>
                                             setHomeworkCreationProblems(e.target.value)
                                         }
-                                        placeholder={
-                                            lang === 'RO'
-                                                ? 'Probleme (p1, p2)'
-                                                : 'Problems (p1, p2)'
-                                        }
+                                        placeholder={t.hwProblemsPlaceholder}
                                         className="w-full rounded-xl border border-(--accent)/25 bg-(--surface-card) px-3 py-2 text-xs text-(--text-h) outline-none transition placeholder:text-(--text-muted)"
                                     />
                                 </div>
@@ -1174,7 +1096,7 @@ export default function ClassDetails() {
                                     type="submit"
                                     className="w-full mt-auto inline-flex items-center justify-center px-4 py-2 text-sm rounded-xl font-semibold border border-(--accent)/50 bg-(--accent)/10 hover:bg-(--accent)/20 transition-colors"
                                 >
-                                    {lang === 'RO' ? 'Creează' : 'Create'}
+                                    {t.createBtn}
                                 </button>
                             </form>
                         </motion.section>
@@ -1186,18 +1108,18 @@ export default function ClassDetails() {
                         >
                             <div className="flex items-center justify-between gap-3 mb-4">
                                 <h2 className="text-xl font-bold text-(--text-h)">
-                                    {lang === 'RO' ? 'Membrii clasei' : 'Class members'}
+                                    {t.classMembersSection}
                                 </h2>
                                 {members && (
                                     <span className="text-xs text-(--text-muted)">
                                         {members.students.length + 1}{' '}
-                                        {lang === 'RO' ? 'total' : 'total'}
+                                        total
                                     </span>
                                 )}
                             </div>
                             {membersQuery.isPending && (
                                 <p className="text-sm text-(--text-muted)">
-                                    {lang === 'RO' ? 'Se încarcă...' : 'Loading...'}
+                                    {t.loadingLabel}
                                 </p>
                             )}
                             {members && (
@@ -1215,15 +1137,13 @@ export default function ClassDetails() {
                                                 </p>
                                             </div>
                                             <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border border-(--accent)/40 bg-(--accent)/15 text-(--text-h)">
-                                                {lang === 'RO' ? 'Profesor' : 'Teacher'}
+                                                {t.teacherLabel}
                                             </span>
                                         </div>
                                     </div>
                                     {members.students.length === 0 && (
                                         <p className="text-xs text-(--text-muted) self-center">
-                                            {lang === 'RO'
-                                                ? 'Niciun student în clasă încă.'
-                                                : 'No students in this class yet.'}
+                                            {t.noStudentsYet}
                                         </p>
                                     )}
                                     {members.students.map((student) => (
@@ -1250,7 +1170,7 @@ export default function ClassDetails() {
                                                     }
                                                     className="shrink-0 rounded-full border border-red-500/40 bg-red-500/10 text-red-400 px-3 py-1 text-[11px] font-bold hover:bg-red-500/20"
                                                 >
-                                                    {lang === 'RO' ? 'Elimină' : 'Kick'}
+                                                    {t.kickBtn}
                                                 </button>
                                             )}
                                         </div>
@@ -1266,9 +1186,7 @@ export default function ClassDetails() {
                                 className="xl:col-span-2 rounded-2xl border border-(--accent)/20 bg-(--surface-muted) p-4"
                             >
                                 <h2 className="text-xl font-bold text-(--text-h) mb-4">
-                                    {lang === 'RO'
-                                        ? `Invitații în așteptare (${pendingInvitations.length})`
-                                        : `Pending invitations (${pendingInvitations.length})`}
+                                    {getPendingInvitationsTitle(lang, pendingInvitations.length)}
                                 </h2>
                                 <div className="grid gap-3 md:grid-cols-2">
                                     {pendingInvitations.map((inv) => (
@@ -1294,11 +1212,11 @@ export default function ClassDetails() {
                         <motion.section variants={itemVariants} className="xl:col-span-2">
                             <div className="flex items-center justify-between gap-4 mb-4">
                                 <h2 className="text-xl font-bold text-(--text-h)">
-                                    {lang === 'RO' ? 'Teme' : 'Homework'}
+                                    {t.homeworkSection}
                                 </h2>
                                 {homeworks.length > 0 && (
                                     <span className="text-xs text-(--text-muted)">
-                                        {homeworks.length} {lang === 'RO' ? 'teme' : 'items'}
+                                        {homeworks.length} {t.homeworkItems}
                                     </span>
                                 )}
                             </div>
@@ -1308,9 +1226,7 @@ export default function ClassDetails() {
                                     variants={itemVariants}
                                     className="rounded-2xl border-2 border-(--accent)/20 bg-(--surface-muted) p-4 text-sm text-(--text-muted) text-center"
                                 >
-                                    {lang === 'RO'
-                                        ? 'Nicio temă creată încă. Creează una mai sus.'
-                                        : 'No homework yet. Create one above.'}
+                                    {t.noHomeworkYet}
                                 </motion.div>
                             ) : (
                                 <div className="grid gap-4">{memoizedHomeworkList}</div>

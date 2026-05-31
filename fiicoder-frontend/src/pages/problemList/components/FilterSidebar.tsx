@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { getDifficultyLabel, useLanguage, translations } from '../../../language/Language';
+import { getDifficultyLabel, useLanguage, translations, getFilterCountLabel } from '../../../language/Language';
 import { useState, useEffect } from 'react';
 import type { Difficulty } from '../../../types/difficulty';
 import { tagService, type TagResponseDTO } from '../../../services/tagService';
@@ -151,7 +151,7 @@ export default function FilterSidebar({
                             </div>
                         ) : tagsError ? (
                             <p className="text-xs text-red-400">
-                                {lang === 'RO' ? 'Nu s-au putut încărca tag-urile.' : 'Failed to load tags.'}
+                                {t.filterTagsError}
                             </p>
                         ) : availableTags.length === 0 ? (
                             <p className="text-xs text-(--text-muted)">{t.noTagsAvailable}</p>
@@ -195,9 +195,7 @@ export default function FilterSidebar({
 
                     {/* counter for search results */}
                     <motion.p variants={itemVariants} className="text-xs text-(--text-muted)">
-                        {lang === 'RO'
-                            ? `Afișate ${filteredCount} din ${totalCount} probleme`
-                            : `Showing ${filteredCount} out of ${totalCount} problems`}
+                        {getFilterCountLabel(lang, filteredCount, totalCount)}
                     </motion.p>
                 </div>
             </motion.div>

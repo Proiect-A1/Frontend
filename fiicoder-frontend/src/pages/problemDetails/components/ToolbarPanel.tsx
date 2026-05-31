@@ -1,5 +1,6 @@
 import { formatScore } from '../utils/textUtils';
 import type { HomeworkShortOptionDTO } from '../types/problemDetails';
+import { translations } from '../../../language/Language';
 
 type Props = {
     evalStatus: string;
@@ -16,12 +17,13 @@ type Props = {
 };
 
 export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang, handleSubmit, status, resetLayout, onStatusClick, homeworkOptions = [], selectedHomeworkId, onHomeworkChange }: Props) {
+    const t = translations[lang as 'RO' | 'EN'] ?? translations.RO;
     return (
         <div className="hidden xl:flex h-14 shrink-0 bg-(--surface-card) border-2 border-(--accent) rounded-full items-center justify-between px-5">
             <div className="flex items-center gap-5">
                 <button
                     onClick={resetLayout}
-                    title={lang === 'RO' ? 'Resetează layout-ul la valorile implicite' : 'Reset layout to default'}
+                    title={t.resetLayoutTitle}
                     className="text-[11px] font-black text-(--text-muted) opacity-50 hover:opacity-100 flex items-center gap-2 uppercase tracking-tighter group transition-opacity"
                 >
                     <svg
@@ -38,7 +40,7 @@ export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang,
                             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                         />
                     </svg>
-                    {lang === 'RO' ? 'Reset' : 'Reset'}
+                    Reset
                 </button>
                 <div className="w-px h-6 bg-(--accent)/20" />
                 {(() => {
@@ -53,14 +55,14 @@ export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang,
                             ? 'bg-red-500'
                             : 'bg-green-500';
                     const label = evalStatus === 'connecting'
-                        ? lang === 'RO' ? 'Conectare...' : 'Connecting...'
+                        ? t.connectingLabel
                         : evalStatus === 'evaluating'
                           ? `Test ${evalTests.length}...`
                           : evalStatus === 'done' && evalSummary
                             ? `${formatScore(evalSummary.score)}/${formatScore(evalSummary.maxScore)}`
                             : evalStatus === 'error'
                               ? 'Error'
-                              : lang === 'RO' ? 'Sistem Activ' : 'System Ready';
+                              : t.systemActiveLabel;
                     const content = (
                         <>
                             <div className={`w-3 h-3 rounded-full shrink-0 ${dotColor}`} />
@@ -72,7 +74,7 @@ export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang,
                     return isClickable ? (
                         <button
                             onClick={onStatusClick}
-                            title={lang === 'RO' ? 'Mergi la ultima submisie' : 'Go to last submission'}
+                            title={t.goToLastSubmission}
                             className="flex items-center gap-3 hover:opacity-70 transition-opacity cursor-pointer"
                         >
                             {content}
@@ -92,14 +94,14 @@ export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang,
                 {homeworkOptions.length > 0 && onHomeworkChange && (
                     <div className="flex items-center gap-1.5">
                         <span className="text-[10px] font-bold text-(--text-muted) uppercase tracking-wider whitespace-nowrap">
-                            {lang === 'RO' ? 'Temă:' : 'Hw:'}
+                            {t.homeworkShort}
                         </span>
                         <select
                             value={selectedHomeworkId ?? ''}
                             onChange={e => onHomeworkChange(e.target.value || null)}
                             className="bg-(--surface-input) border border-(--accent)/30 rounded-lg px-2 py-1 text-[11px] text-(--text-h) outline-none cursor-pointer hover:border-(--accent) transition-colors max-w-[140px]"
                         >
-                            <option value="">{lang === 'RO' ? 'Niciuna' : 'None'}</option>
+                            <option value="">{t.noneOption}</option>
                             {homeworkOptions.map(hw => (
                                 <option key={hw.id} value={hw.id}>{hw.title}</option>
                             ))}
@@ -121,13 +123,7 @@ export default function ToolbarPanel({ evalStatus, evalSummary, evalTests, lang,
                     >
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
-                    {status === 'pending'
-                        ? lang === 'RO'
-                            ? 'Trimitere...'
-                            : 'Submitting...'
-                        : lang === 'RO'
-                          ? 'Trimite'
-                          : 'Submit'}
+                    {status === 'pending' ? t.submittingLabel : t.submitLabel}
                 </button>
             </div>
         </div>

@@ -18,7 +18,7 @@ function CodeBlock({ children, lang, ...props }: any) {
         });
     };
 
-    const isRO = lang === 'RO';
+    const t = translations[lang as 'RO' | 'EN'] ?? translations.RO;
 
     return (
         <div className="relative my-4">
@@ -33,7 +33,7 @@ function CodeBlock({ children, lang, ...props }: any) {
                 onClick={handleCopy}
                 className="absolute top-2 right-2 px-2 py-1 rounded-md text-[10px] font-bold border border-(--accent)/20 bg-(--surface-card) text-(--text-muted) hover:text-(--text) hover:border-(--accent)/40 transition-colors"
             >
-                {copied ? (isRO ? '✓ Copiat' : '✓ Copied') : (isRO ? 'Copiază' : 'Copy')}
+                {copied ? t.descCopied : t.descCopy}
             </button>
         </div>
     );
@@ -70,7 +70,7 @@ export default function DescriptionPanel({ problem, processedDescription, lang }
                             <svg className="w-3.5 h-3.5 shrink-0 text-(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <circle cx="12" cy="12" r="10"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2"/>
                             </svg>
-                            {lang === 'RO' ? 'Timp:' : 'Time:'}&nbsp;
+                            {t.timeLabel}:&nbsp;
                             <span className="font-mono text-(--text-h)">
                                 {timeLimit % 1 === 0 ? timeLimit : timeLimit}s
                             </span>
@@ -81,7 +81,7 @@ export default function DescriptionPanel({ problem, processedDescription, lang }
                             <svg className="w-3.5 h-3.5 shrink-0 text-(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
                             </svg>
-                            {lang === 'RO' ? 'Memorie:' : 'Memory:'}&nbsp;
+                            {t.memoryLabel}:&nbsp;
                             <span className="font-mono text-(--text-h)">{memoryLimit} MB</span>
                         </span>
                     )}

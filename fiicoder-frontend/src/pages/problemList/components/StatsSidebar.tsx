@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useT, useLanguage } from '../../../language/Language';
+import { useT } from '../../../language/Language';
 import { itemVariants, staggerConfig } from '../../../utils/motionConfig';
 import { useAuth } from '../../../contexts/AuthContext';
 import UserAvatar from '../../../components/UserAvatar';
@@ -23,7 +23,6 @@ const MOCK_POPULAR_PROBLEMS = [
 
 export default function StatsSidebar() {
     const t = useT();
-    const { lang } = useLanguage();
     const { isAuthenticated } = useAuth();
 
     const topSolversQuery = useQuery({
@@ -51,14 +50,14 @@ export default function StatsSidebar() {
                         {t.topSolvers}
                     </h2>
                     <Link to="/leaderboard" className="text-xs bg-(--accent)/10 text-(--accent) px-2 py-0.5 rounded-full font-bold hover:bg-(--accent)/20 transition-colors">
-                        {lang === 'RO' ? 'Vezi tot' : 'View all'}
+                        {t.statsViewAll}
                     </Link>
                 </motion.div>
                 <div className="page-line-horizontal" />
                 <motion.div variants={{ visible: { transition: staggerConfig } }} initial="hidden" animate="visible" className="space-y-4">
                     {!isAuthenticated && (
                         <p className="text-xs text-(--text-muted) p-3 rounded-2xl border border-(--accent)/20 bg-(--accent)/5">
-                            {lang === 'RO' ? 'Autentifică-te pentru a vedea clasamentul.' : 'Log in to see the leaderboard.'}
+                            {t.statsLoginLeaderboard}
                         </p>
                     )}
 
@@ -70,7 +69,7 @@ export default function StatsSidebar() {
 
                     {isAuthenticated && !topSolversQuery.isPending && topSolvers.length === 0 && (
                         <p className="text-xs text-(--text-muted) p-3 rounded-2xl border border-(--accent)/20 bg-(--accent)/5">
-                            {lang === 'RO' ? 'Niciun rezolvator încă.' : 'No solvers yet.'}
+                            {t.statsNoSolvers}
                         </p>
                     )}
 

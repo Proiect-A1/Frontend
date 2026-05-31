@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { adminService, type AdminUser } from '../services/adminService';
 import { toast } from 'sonner';
-import { useLanguage } from '../../../language/Language';
+import { useLanguage, translations, getDeleteUserConfirm } from '../../../language/Language';
 import { extractErrorMessage } from '../utils/errorUtils';
 
 const USERS_PER_PAGE = 20;
 
 export function useAdminUsers(isAdmin: boolean, activeTab: string) {
     const { lang } = useLanguage();
+    const t = translations[lang];
     const queryClient = useQueryClient();
     const [userPage, setUserPage] = useState(1);
     const [processingUsers, setProcessingUsers] = useState<Set<string>>(new Set());
@@ -24,11 +25,11 @@ export function useAdminUsers(isAdmin: boolean, activeTab: string) {
         let reason: string | undefined;
         if (!banned) {
             const input = window.prompt(
-                lang === 'RO' ? 'Motivul banării (obligatoriu):' : 'Ban reason (required):'
+                t.adminBanReasonPrompt
             );
             if (input === null) return;
             if (!input.trim()) {
-                toast.error(lang === 'RO' ? 'Motivul nu poate fi gol.' : 'Reason cannot be empty.');
+                toast.error(t.adminReasonEmpty);
                 return;
             }
             reason = input.trim();
@@ -36,15 +37,7 @@ export function useAdminUsers(isAdmin: boolean, activeTab: string) {
 
         try {
             await adminService.toggleBan(id, banned, reason);
-            toast.success(
-                banned
-                    ? lang === 'RO'
-                        ? 'Utilizatorul a fost deblocat.'
-                        : 'User unbanned.'
-                    : lang === 'RO'
-                      ? 'Utilizatorul a fost blocat.'
-                      : 'User banned.',
-            );
+            toast.success(banned ? t.adminUserUnbanned : t.adminUserBanned);
             await queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
             queryClient.setQueryData<AdminUser[]>(['admin', 'users', userPage], (previousUsers) =>
                 previousUsers?.map((user) =>
@@ -57,10 +50,7 @@ export function useAdminUsers(isAdmin: boolean, activeTab: string) {
     };
 
     const handleDeleteUser = async (username: string) => {
-        const confirmMsg =
-            lang === 'RO'
-                ? `Sigur vrei să ștergi utilizatorul ${username}?`
-                : `Are you sure you want to delete user ${username}?`;
+        const confirmMsg = getDeleteUserConfirm(lang, username);
 
         if (!window.confirm(confirmMsg)) return;
 
@@ -70,11 +60,11 @@ export function useAdminUsers(isAdmin: boolean, activeTab: string) {
             queryClient.setQueryData<AdminUser[]>(['admin', 'users', userPage], (previousUsers) =>
                 previousUsers?.filter((user) => user.username !== username) ?? [],
             );
-            toast.success(lang === 'RO' ? 'Utilizatorul a fost șters.' : 'User deleted.');
+            toast.success(t.adminUserDeleted);
             await queryClient.invalidateQueries({ queryKey: ['admin'] });
         } catch (error) {
             console.error('Failed to delete user:', error);
-            toast.error(lang === 'RO' ? 'Eroare la ștergerea utilizatorului.' : 'Error deleting user.');
+            toast.error(t.adminUserDeleteError);
         } finally {
             setProcessingUsers((prev) => {
                 const next = new Set(prev);
@@ -92,7 +82,7 @@ export function useAdminUsers(isAdmin: boolean, activeTab: string) {
                     user.username === username ? { ...user, role: newRole } : user,
                 ) ?? [],
             );
-            toast.success(lang === 'RO' ? 'Rol actualizat.' : 'Role updated.');
+            toast.success(t.adminRoleUpdated);
             await queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
         } catch (error) {
             toast.error(extractErrorMessage(error, 'Error'));

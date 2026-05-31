@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { itemVariants } from '../../../utils/motionConfig';
 import { studentHomeworkService } from '../services/studentHomeworkService';
 import type { HomeworkResponseDTO } from '../../classDetails/types/homework';
+import { translations } from '../../../language/Language';
 
 type Props = {
     lang: 'RO' | 'EN';
@@ -19,6 +20,7 @@ function statusColor(status: HomeworkResponseDTO['status']) {
 }
 
 function HomeworkRow({ hw, lang }: { hw: HomeworkResponseDTO; lang: 'RO' | 'EN' }) {
+    const t = translations[lang];
     const [open, setOpen] = useState(false);
 
     const detailsQuery = useQuery({
@@ -45,7 +47,7 @@ function HomeworkRow({ hw, lang }: { hw: HomeworkResponseDTO; lang: 'RO' | 'EN' 
                 <div className="min-w-0">
                     <p className="font-bold text-(--text-h) truncate">{hw.title}</p>
                     <p className="text-[11px] text-(--text-muted) mt-0.5">
-                        {lang === 'RO' ? 'Termen:' : 'Deadline:'}{' '}
+                        {t.hwDeadlineLabel}{' '}
                         {new Date(hw.deadline).toLocaleDateString()}
                     </p>
                 </div>
@@ -65,7 +67,7 @@ function HomeworkRow({ hw, lang }: { hw: HomeworkResponseDTO; lang: 'RO' | 'EN' 
             {open && (
                 <div className="px-4 pb-4 border-t border-(--accent)/10 pt-3 space-y-3">
                     {(detailsQuery.isPending || progressQuery.isPending) && (
-                        <p className="text-xs text-(--text-muted)">{lang === 'RO' ? 'Se încarcă...' : 'Loading...'}</p>
+                        <p className="text-xs text-(--text-muted)">{t.loadingLabel}</p>
                     )}
 
                     {progress && (() => {
@@ -81,7 +83,7 @@ function HomeworkRow({ hw, lang }: { hw: HomeworkResponseDTO; lang: 'RO' | 'EN' 
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between text-xs">
                                     <span className="text-(--text-muted)">
-                                        {lang === 'RO' ? 'Progres' : 'Progress'}{' '}
+                                        {t.hwProgress}{' '}
                                         <span className="font-bold text-(--text-h)">
                                             {progress.solvedProblems}/{progress.totalProblems}
                                         </span>
@@ -89,12 +91,12 @@ function HomeworkRow({ hw, lang }: { hw: HomeworkResponseDTO; lang: 'RO' | 'EN' 
                                     <div className="flex items-center gap-2">
                                         {isCompleted && (
                                             <span className="text-emerald-400 font-bold text-[10px]">
-                                                ✓ {lang === 'RO' ? 'Finalizat' : 'Completed'}
+                                                ✓ {t.hwCompleted}
                                             </span>
                                         )}
                                         {isOverdue && !isCompleted && (
                                             <span className="text-red-400 font-bold text-[10px]">
-                                                ⚠ {lang === 'RO' ? 'Depășit' : 'Overdue'}
+                                                ⚠ {t.hwOverdue}
                                             </span>
                                         )}
                                         <span className="font-bold text-(--text-h)">{pct.toFixed(0)}%</span>
@@ -143,6 +145,7 @@ function HomeworkRow({ hw, lang }: { hw: HomeworkResponseDTO; lang: 'RO' | 'EN' 
 }
 
 export default function ProfileHomeworkPanel({ lang }: Props) {
+    const t = translations[lang];
     const homeworksQuery = useQuery({
         queryKey: ['student-homeworks'],
         queryFn: () => studentHomeworkService.getMyHomeworks(),
@@ -156,7 +159,7 @@ export default function ProfileHomeworkPanel({ lang }: Props) {
             className="p-6 rounded-2xl border border-(--accent)/50 bg-(--surface-muted) card-glow min-w-0"
         >
             <h2 className="text-sm font-bold text-(--text-h) mb-4 uppercase tracking-wider">
-                {lang === 'RO' ? 'Temele Mele' : 'My Homework'}
+                {t.homeworkPanelTitle}
             </h2>
 
             {homeworksQuery.isPending ? (
@@ -166,7 +169,7 @@ export default function ProfileHomeworkPanel({ lang }: Props) {
             ) : homeworks.length === 0 ? (
                 <div className="text-center p-8 rounded-2xl border-2 border-dashed border-(--accent)/20">
                     <p className="text-sm text-(--text-subtle)">
-                        {lang === 'RO' ? 'Nu ești asignat la nicio temă.' : 'You have no assigned homework.'}
+                        {t.hwNoAssigned}
                     </p>
                 </div>
             ) : (

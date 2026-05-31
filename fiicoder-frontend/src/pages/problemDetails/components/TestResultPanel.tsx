@@ -8,6 +8,7 @@ import {
     submissionVerdictLabels,
     type SubmissionVerdict,
 } from '../../profile/profileUtils';
+import { translations } from '../../../language/Language';
 
 const summaryBorderClasses: Record<SubmissionVerdict, string> = {
     ACCEPTED: 'border-green-500/40 bg-green-500/10',
@@ -186,6 +187,8 @@ function Confetti() {
 }
 
 export default function TestResultPanel({ evalStatus, evalError, evalSummary, evalTests, evalSubtasks, evalElapsedMs, lang, problemTests }: Props) {
+    // `t` is used throughout this file as a test-object variable; use `tr` for translations.
+    const tr = translations[lang as 'RO' | 'EN'] ?? translations.RO;
     const [expandedSubtasks, setExpandedSubtasks] = useState<Set<number>>(new Set());
     const [showConfetti, setShowConfetti] = useState(false);
     const prevStatus = useRef<string>('idle');
@@ -233,12 +236,10 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                         <span className="text-xl opacity-30">▶</span>
                     </div>
                     <p className="text-xs text-(--text-muted) italic">
-                        {lang === 'RO'
-                            ? 'Trimite codul pentru a vedea rezultatele.'
-                            : 'Submit your code to see results.'}
+                        {tr.submitToSeeResults}
                     </p>
                     <p className="mt-2 text-[10px] text-(--text-muted) opacity-60">
-                        {lang === 'RO' ? 'Scurtătură:' : 'Shortcut:'}{' '}
+                        {tr.shortcutLabel}{' '}
                         <kbd className="px-1 py-0.5 rounded border border-(--accent)/20 bg-(--surface-muted) font-mono text-[9px]">Ctrl</kbd>
                         {' + '}
                         <kbd className="px-1 py-0.5 rounded border border-(--accent)/20 bg-(--surface-muted) font-mono text-[9px]">↵</kbd>
@@ -249,7 +250,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
             {evalStatus === 'connecting' && (
                 <div className="h-full flex flex-col items-center justify-center text-center gap-3">
                     <div className="animate-spin w-8 h-8 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
-                    <p className="text-xs text-(--text-muted)">{lang === 'RO' ? 'Se trimite...' : 'Submitting...'}</p>
+                    <p className="text-xs text-(--text-muted)">{tr.testResultSubmitting}</p>
                 </div>
             )}
 
@@ -277,7 +278,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                                 {formatScore(evalSummary.score)}/{formatScore(evalSummary.maxScore)}
                                             </span>
                                             <span className="hidden @[180px]:block text-[10px] font-bold uppercase tracking-wider text-(--text-muted)">
-                                                {lang === 'RO' ? 'puncte' : 'points'}
+                                                {tr.pointsLabel}
                                             </span>
                                         </div>
                                         <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border-2 self-start @[180px]:self-auto ${summaryBadgeClasses[summaryVerdict]}`}>
@@ -290,7 +291,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                                 <circle cx="12" cy="12" r="10"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2"/>
                                             </svg>
                                             <span>
-                                                {lang === 'RO' ? 'Timp evaluare:' : 'Eval time:'}
+                                                {tr.evalTimeLabel}
                                             </span>
                                             <span className="font-mono font-bold text-(--text-h)">
                                                 {evalElapsedMs < 1000
@@ -306,9 +307,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                         <div className="p-3 rounded-2xl border-2 border-(--accent)/20 bg-(--accent)/5 flex items-center gap-3">
                             <div className="animate-spin w-4 h-4 border-2 border-(--accent)/30 border-t-(--accent) rounded-full" />
                             <span className="text-xs font-bold text-(--text-muted)">
-                                {lang === 'RO'
-                                    ? `Evaluare... (${evalTests.length} teste)`
-                                    : `Evaluating... (${evalTests.length} tests)`}
+                                {`${tr.evaluatingPrefix}${evalTests.length}${tr.evaluatingSuffix}`}
                             </span>
                         </div>
                     )}
@@ -317,7 +316,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                     {evalSubtasks.length > 0 && (
                         <div className="space-y-1.5">
                             <p className="text-[10px] font-bold uppercase tracking-widest text-(--text-muted) px-1 whitespace-nowrap">
-                                {lang === 'RO' ? 'Subtask-uri' : 'Subtasks'}
+                                {tr.subtasksLabel}
                             </p>
                             {evalSubtasks.map((st) => {
                                 const testIds = subtaskTestIds.get(st.subtaskId) ?? [];
@@ -392,7 +391,7 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                     {orphanTests.length > 0 && (
                         <div className="space-y-1.5">
                             <p className="text-[10px] font-bold uppercase tracking-widest text-(--text-muted) px-1 whitespace-nowrap">
-                                {lang === 'RO' ? 'Teste' : 'Tests'}
+                                {tr.testsLabel}
                             </p>
                             {orphanTests.map((t, idx) => (
                                 <TestRow key={t.testId} t={t} idx={idx} />

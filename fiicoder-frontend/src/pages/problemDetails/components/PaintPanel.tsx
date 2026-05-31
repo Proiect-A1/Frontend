@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { getEffectivePalette } from '../../../utils/monacoTheme';
 import { storage, STORAGE_KEYS } from '../../../utils/storage';
+import { translations } from '../../../language/Language';
 
 type Tool = 'pencil' | 'line' | 'rect' | 'ellipse' | 'eraser';
 
@@ -25,6 +26,7 @@ type Props = {
 };
 
 export default function PaintPanel({ lang, problemTitle }: Props) {
+    const t = translations[lang as 'RO' | 'EN'] ?? translations.RO;
     const storageKey = STORAGE_KEYS.paint(problemTitle);
     const { theme, customColors } = useTheme();
     const bgColor = getEffectivePalette(theme, customColors).editorBg;
@@ -248,7 +250,7 @@ export default function PaintPanel({ lang, problemTitle }: Props) {
                         />
                     ))}
                     {/* Custom color */}
-                    <label title={lang === 'RO' ? 'Culoare personalizată' : 'Custom colour'} className="relative w-5 h-5 rounded-sm overflow-hidden border border-(--accent)/30 cursor-pointer hover:scale-110 transition-transform">
+                    <label title={t.paintCustomColor} className="relative w-5 h-5 rounded-sm overflow-hidden border border-(--accent)/30 cursor-pointer hover:scale-110 transition-transform">
                         <div className="absolute inset-0" style={{ background: 'conic-gradient(red, yellow, lime, cyan, blue, magenta, red)' }} />
                         <input
                             type="color"
@@ -263,7 +265,7 @@ export default function PaintPanel({ lang, problemTitle }: Props) {
                 <div className="flex gap-0.5 ml-auto">
                     <button
                         onClick={undo}
-                        title={lang === 'RO' ? 'Anul' : 'Undo'}
+                        title={t.paintUndo}
                         disabled={historyRef.current.length === 0}
                         className="p-1.5 rounded-lg border border-(--accent)/20 text-(--text-muted) hover:bg-(--accent)/20 hover:text-(--accent) transition-colors disabled:opacity-30"
                     >
@@ -273,7 +275,7 @@ export default function PaintPanel({ lang, problemTitle }: Props) {
                     </button>
                     <button
                         onClick={clear}
-                        title={lang === 'RO' ? 'Șterge tot' : 'Clear all'}
+                        title={t.paintClearAll}
                         className="p-1.5 rounded-lg border border-(--accent)/20 text-(--text-muted) hover:bg-red-500/20 hover:text-red-400 transition-colors"
                     >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
@@ -282,7 +284,7 @@ export default function PaintPanel({ lang, problemTitle }: Props) {
                     </button>
                     <button
                         onClick={download}
-                        title={lang === 'RO' ? 'Descarcă PNG' : 'Download PNG'}
+                        title={t.paintDownloadPng}
                         className="p-1.5 rounded-lg border border-(--accent)/20 text-(--text-muted) hover:bg-(--accent)/20 hover:text-(--accent) transition-colors"
                     >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>

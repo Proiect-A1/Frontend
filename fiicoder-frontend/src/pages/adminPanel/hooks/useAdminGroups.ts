@@ -7,13 +7,14 @@ import {
     type GroupsSearchCriteria,
 } from '../services/adminService';
 import { toast } from 'sonner';
-import { useLanguage } from '../../../language/Language';
+import { useLanguage, translations, getDeleteGroupConfirm, getRemoveGroupMemberConfirm } from '../../../language/Language';
 import { extractErrorMessage } from '../utils/errorUtils';
 
 const GROUPS_PER_PAGE = 20;
 
 export function useAdminGroups(isAdmin: boolean, activeTab: string) {
     const { lang } = useLanguage();
+    const t = translations[lang];
     const queryClient = useQueryClient();
     const [groupPage, setGroupPage] = useState(1);
     const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
@@ -55,18 +56,14 @@ export function useAdminGroups(isAdmin: boolean, activeTab: string) {
     });
 
     const handleDeleteGroup = async (group: GroupSummary) => {
-        const confirmMsg =
-            lang === 'RO'
-                ? `Sigur vrei sa stergi grupul "${group.name}"?`
-                : `Are you sure you want to delete "${group.name}"?`;
-        if (!window.confirm(confirmMsg)) return;
+        if (!window.confirm(getDeleteGroupConfirm(lang, group.name))) return;
 
         try {
             if (selectedGroupId === group.id) {
                 setSelectedGroupId(null);
             }
             await adminService.deleteGroup(group.id);
-            toast.success(lang === 'RO' ? 'Grup sters.' : 'Group deleted.');
+            toast.success(t.adminGroupDeleted);
             queryClient.setQueryData<GroupsPage>(
                 ['admin', 'groups', groupPage, criteria, sort],
                 (prev) => prev
@@ -78,7 +75,7 @@ export function useAdminGroups(isAdmin: boolean, activeTab: string) {
             toast.error(
                 extractErrorMessage(
                     error,
-                    lang === 'RO' ? 'Eroare la stergere.' : 'Failed to delete group.',
+                    t.adminGroupDeleteError,
                 ),
             );
         }
@@ -86,22 +83,18 @@ export function useAdminGroups(isAdmin: boolean, activeTab: string) {
 
     const handleRemoveMember = async (userId: string, username: string) => {
         if (!selectedGroupId) return;
-        const confirmMsg =
-            lang === 'RO'
-                ? `Sigur vrei sa elimini "${username}" din grup?`
-                : `Remove "${username}" from this group?`;
-        if (!window.confirm(confirmMsg)) return;
+        if (!window.confirm(getRemoveGroupMemberConfirm(lang, username))) return;
 
         try {
             await adminService.removeGroupMember(selectedGroupId, userId);
-            toast.success(lang === 'RO' ? 'Membru eliminat.' : 'Member removed.');
+            toast.success(t.adminMemberRemoved);
             await queryClient.invalidateQueries({ queryKey: ['admin', 'groups', selectedGroupId] });
             await queryClient.invalidateQueries({ queryKey: ['admin', 'groups'] });
         } catch (error) {
             toast.error(
                 extractErrorMessage(
                     error,
-                    lang === 'RO' ? 'Eroare la eliminare.' : 'Failed to remove member.',
+                    t.adminMemberRemoveError,
                 ),
             );
         }

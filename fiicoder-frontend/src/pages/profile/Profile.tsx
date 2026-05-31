@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../contexts/AuthContext';
-import { useLanguage } from '../../language/Language';
+import { useLanguage, translations } from '../../language/Language';
 import { useTheme } from '../../contexts/ThemeContext';
 import { containerVariants, pageVariants } from '../../utils/motionConfig';
 import { profileService } from '../../services/profileService';
@@ -21,6 +21,7 @@ export default function Profile() {
     const { username: usernameParam } = useParams<{ username?: string }>();
     const { username, userId, isAdmin, isProfessor, updateAvatar } = useAuth();
     const { lang } = useLanguage();
+    const t = translations[lang];
     const { theme } = useTheme();
     const queryClient = useQueryClient();
 
@@ -48,11 +49,7 @@ export default function Profile() {
 
     const profile = profileQuery.data ?? null;
     const loading = profileQuery.isPending;
-    const error = profileQuery.isError
-        ? lang === 'RO'
-            ? 'Nu am putut încărca profilul. Încearcă din nou.'
-            : 'Could not load profile. Please try again.'
-        : null;
+    const error = profileQuery.isError ? t.profileError : null;
     const proposals = proposalsQuery.data ?? [];
     const loadingProposals = proposalsQuery.isPending;
 
@@ -60,11 +57,9 @@ export default function Profile() {
         try {
             await proposeProblemService.deleteProblem(title);
             await queryClient.invalidateQueries({ queryKey: ['profile', 'proposals'] });
-            toast.success(lang === 'RO' ? 'Propunerea a fost ștearsă.' : 'Proposal deleted.');
+            toast.success(t.proposalDeleted);
         } catch {
-            toast.error(
-                lang === 'RO' ? 'Eroare la ștergerea propunerii.' : 'Failed to delete proposal.',
-            );
+            toast.error(t.proposalDeleteError);
         }
     };
 
@@ -85,14 +80,10 @@ export default function Profile() {
 
         try {
             await problemService.changeVisibility(title, newVisibility);
-            toast.success(lang === 'RO' ? 'Vizibilitate actualizată.' : 'Visibility updated.');
+            toast.success(t.visibilityUpdated);
         } catch {
             queryClient.setQueryData(queryKey, previous);
-            toast.error(
-                lang === 'RO'
-                    ? 'Eroare la actualizarea vizibilității.'
-                    : 'Failed to update visibility.',
-            );
+            toast.error(t.visibilityUpdateError);
         } finally {
             setTogglingTitle(null);
         }
@@ -118,7 +109,7 @@ export default function Profile() {
                 animate="visible"
             >
                 <div className="text-center text-(--text-muted) text-sm italic">
-                    {lang === 'RO' ? 'Se încarcă profilul...' : 'Loading profile...'}
+                    {t.profileLoading}
                 </div>
             </motion.div>
         );
@@ -133,10 +124,7 @@ export default function Profile() {
                 animate="visible"
             >
                 <div className="rounded-xl border border-(--accent)/20 bg-(--surface-muted) p-4 text-sm text-(--text-muted)">
-                    {error ??
-                        (lang === 'RO'
-                            ? 'Profil indisponibil momentan.'
-                            : 'Profile is currently unavailable.')}
+                    {error ?? t.profileUnavailable}
                 </div>
             </motion.div>
         );
@@ -161,7 +149,7 @@ export default function Profile() {
                     <div className="flex items-center gap-3">
                         <h1 className="text-3xl font-bold text-(--text-h) flex items-center gap-3">
                             {isOwnProfile
-                                ? (lang === 'RO' ? 'Profil' : 'Profile')
+                                ? t.profileTitle
                                 : (profile?.username ?? viewingUsername)}
                         </h1>
                     </div>
@@ -172,7 +160,7 @@ export default function Profile() {
                             onClick={() => setActiveTab('overview')}
                             className={`${navButtonBase} ${activeTab === 'overview' ? navButtonActive : navButtonIdle}`}
                         >
-                            {lang === 'RO' ? 'Prezentare' : 'Overview'}
+                            {t.profileTabOverview}
                         </button>
                         {canViewProposals && (
                             <button
@@ -180,7 +168,7 @@ export default function Profile() {
                                 onClick={() => setActiveTab('proposals')}
                                 className={`${navButtonBase} ${activeTab === 'proposals' ? navButtonActive : navButtonIdle}`}
                             >
-                                {lang === 'RO' ? 'Propunerile Mele' : 'My Proposals'}
+                                {t.myProposals}
                             </button>
                         )}
                         {isOwnProfile && (
@@ -189,7 +177,7 @@ export default function Profile() {
                                 onClick={() => setActiveTab('homework')}
                                 className={`${navButtonBase} ${activeTab === 'homework' ? navButtonActive : navButtonIdle}`}
                             >
-                                {lang === 'RO' ? 'Temele Mele' : 'My Homework'}
+                                {t.homeworkPanelTitle}
                             </button>
                         )}
 
@@ -198,7 +186,7 @@ export default function Profile() {
                                 to="/admin"
                                 className={`${navButtonBase} ${navButtonIdle}`}
                             >
-                                {lang === 'RO' ? 'Panou Administrare' : 'Admin Dashboard'}
+                                {t.profileAdminDashboard}
                             </Link>
                         )}
                     </div>

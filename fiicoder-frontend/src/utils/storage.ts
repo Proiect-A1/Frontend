@@ -70,6 +70,7 @@ export const STORAGE_KEYS = {
   // Appearance
   theme: 'fiicoder_theme',
   customColors: 'fiicoder_custom_colors',
+  language: 'fiicoder_language',
 
   // Feature state
   readAnnouncements: 'fiicoder_read_announcements',
