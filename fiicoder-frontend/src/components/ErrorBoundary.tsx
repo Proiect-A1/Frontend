@@ -73,6 +73,14 @@ export default class ErrorBoundary extends Component<Props, State> {
 
         const chunkProblem = isChunkLoadError(error);
 
+        // componentDidCatch va triggera reload-ul imediat; nu afisam dialogul in timp ce asta se intampla.
+        // Dialogul apare doar daca reload-ul a esuat deja (flag setat din sesiunea curenta).
+        if (chunkProblem) {
+            let alreadyReloaded = false;
+            try { alreadyReloaded = !!sessionStorage.getItem(RELOAD_FLAG_KEY); } catch { /* Safari private */ }
+            if (!alreadyReloaded) return null;
+        }
+
         return (
             <div className="min-h-dvh flex items-center justify-center p-6 bg-(--bg) text-(--text)">
                 <div className="w-full max-w-135 rounded-3xl border-2 border-(--accent) p-6 bg-(--surface-card)">
