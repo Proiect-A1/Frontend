@@ -48,6 +48,7 @@ export const translations = {
         problemNotFound: 'Problema nu a fost găsită.',
         navCloseMenu: 'Închide meniu',
         navOpenMenu: 'Deschide meniu',
+        navMyProblems: 'Problemele mele',
 
         // ─── Landing ─────────────────────────────────────────────────────────────
         welcomeTitle: 'Bine ai venit la',
@@ -718,6 +719,7 @@ export const translations = {
         problemNotFound: 'Problem not found.',
         navCloseMenu: 'Close menu',
         navOpenMenu: 'Open menu',
+        navMyProblems: 'My Problems',
 
         // ─── Landing ─────────────────────────────────────────────────────────────
         welcomeTitle: 'Welcome to',

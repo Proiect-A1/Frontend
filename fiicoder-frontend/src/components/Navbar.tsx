@@ -16,7 +16,7 @@ export default function Navbar() {
 
   const { lang, setLang } = useLanguage();
   const t = translations[lang];
-  const { isAuthenticated, username, gravatarUrl, dicebearUrl, logout } = useAuth();
+  const { isAuthenticated, username, gravatarUrl, dicebearUrl, logout, isAdmin, isProfessor } = useAuth();
 
   const [avatarSrc, setAvatarSrc] = useState<string | null>(gravatarUrl);
   const [avatarFailed, setAvatarFailed] = useState(false);
@@ -39,6 +39,7 @@ export default function Navbar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isThemeOpen, setIsThemeOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMyProblemsOpen, setIsMyProblemsOpen] = useState(false);
 
   const [navSearch, setNavSearch] = useState("");
   const [searchEverFocused, setSearchEverFocused] = useState(false);
@@ -119,6 +120,8 @@ export default function Navbar() {
   const themePanelRef = useRef<HTMLDivElement>(null);
   const profileButtonRef = useRef<HTMLDivElement>(null);
   const profilePanelRef = useRef<HTMLDivElement>(null);
+  const myProblemsButtonRef = useRef<HTMLDivElement>(null);
+  const myProblemsPanelRef = useRef<HTMLDivElement>(null);
   const navSearchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -175,6 +178,7 @@ export default function Navbar() {
     setIsMobileOpen(false);
     setIsThemeOpen(false);
     setIsProfileOpen(false);
+    setIsMyProblemsOpen(false);
   };
 
   useEffect(() => {
@@ -195,6 +199,14 @@ export default function Navbar() {
         !profilePanelRef.current.contains(target)
       ) {
         setIsProfileOpen(false);
+      }
+      if (
+        myProblemsButtonRef.current &&
+        !myProblemsButtonRef.current.contains(target) &&
+        myProblemsPanelRef.current &&
+        !myProblemsPanelRef.current.contains(target)
+      ) {
+        setIsMyProblemsOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -310,6 +322,56 @@ export default function Navbar() {
             {isAuthenticated && (
               <Link to="/leaderboard" className={getNavLinkClass("/leaderboard")} {...prefetchOn("/leaderboard")}>
                 {lang === "RO" ? "Clasament" : "Leaderboard"}
+              </Link>
+            )}
+
+            {(isAdmin || isProfessor) && (
+              <div className="relative" ref={myProblemsButtonRef}>
+                <button
+                  onClick={() => setIsMyProblemsOpen((prev) => !prev)}
+                  className={getNavLinkClass("/propose")}
+                  onMouseEnter={() => { prefetchRoute("/propose"); prefetchRoute("/profile"); }}
+                  onFocus={() => { prefetchRoute("/propose"); prefetchRoute("/profile"); }}
+                >
+                  {t.navMyProblems}
+                  <motion.span animate={{ rotate: isMyProblemsOpen ? 180 : 0 }} className="text-[10px]">▼</motion.span>
+                </button>
+
+                <AnimatePresence>
+                  {isMyProblemsOpen && (
+                    <motion.div
+                      ref={myProblemsPanelRef}
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute left-0 top-full mt-3 w-52 bg-(--surface-dropdown) border-2 border-(--accent) rounded-2xl shadow-xl overflow-hidden z-50 p-2 flex flex-col gap-1"
+                    >
+                      <Link
+                        to={username ? `/profile/${encodeURIComponent(username)}?tab=proposals` : '/profile'}
+                        onClick={closeMenu}
+                        {...prefetchOn("/profile")}
+                        className="px-4 py-2 text-xs font-bold rounded-xl border-2 border-(--accent)/40 bg-transparent text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) transition-all duration-200"
+                      >
+                        {t.myProposals}
+                      </Link>
+                      <Link
+                        to="/propose"
+                        onClick={closeMenu}
+                        {...prefetchOn("/propose")}
+                        className="px-4 py-2 text-xs font-bold rounded-xl border-2 border-(--accent)/40 bg-transparent text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) transition-all duration-200"
+                      >
+                        {t.proposeBtn}
+                      </Link>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+
+            {isAdmin && (
+              <Link to="/admin" className={getNavLinkClass("/admin")} {...prefetchOn("/admin")}>
+                {t.adminBtn}
               </Link>
             )}
 
@@ -575,6 +637,28 @@ export default function Navbar() {
               {isAuthenticated && (
                 <Link to="/classes" onClick={closeMenu} className={getNavLinkClass("/classes") + " text-center"}>
                   {lang === "RO" ? "Clase" : "Classes"}
+                </Link>
+              )}
+
+              {(isAdmin || isProfessor) && (
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs uppercase tracking-widest text-(--text-muted) font-bold text-center">{t.navMyProblems}</span>
+                  <Link
+                    to={username ? `/profile/${encodeURIComponent(username)}?tab=proposals` : '/profile'}
+                    onClick={closeMenu}
+                    className={getNavLinkClass("/profile") + " text-center justify-center"}
+                  >
+                    {t.myProposals}
+                  </Link>
+                  <Link to="/propose" onClick={closeMenu} className={getNavLinkClass("/propose") + " text-center justify-center"}>
+                    {t.proposeBtn}
+                  </Link>
+                </div>
+              )}
+
+              {isAdmin && (
+                <Link to="/admin" onClick={closeMenu} className={getNavLinkClass("/admin") + " text-center"}>
+                  {t.adminBtn}
                 </Link>
               )}
 

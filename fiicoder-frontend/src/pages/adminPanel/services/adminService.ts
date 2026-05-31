@@ -1,6 +1,12 @@
 import { apiClient } from '../../../services/apiClient';
 import { buildQuery } from '../../../utils/queryString';
 import type { Announcement, AnnouncementInput } from '../../../types/announcement';
+import type { GroupMember, GroupMembersResponse } from '../../../types/group';
+
+// Canonical group-member types live in types/group; re-exported under the names
+// this module historically used so consumers (e.g. GroupsTab) keep working.
+export type { GroupMembersResponse };
+export type GroupMemberSummary = GroupMember;
 
 export interface AdminOverview {
     users: number;
@@ -53,22 +59,6 @@ export interface ProblemProposalDetail extends ProblemProposal {
     zipDownloadLink?: string;
     time_limit?: number;
     memory_limit?: number;
-}
-
-export interface GroupMemberSummary {
-    id: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    role: 'USER' | 'ADMIN' | 'PROFESSOR';
-    email: string;
-}
-
-export interface GroupMembersResponse {
-    groupId: string;
-    canManage: boolean;
-    teacher: GroupMemberSummary;
-    students: GroupMemberSummary[];
 }
 
 export interface GroupsSearchCriteria {

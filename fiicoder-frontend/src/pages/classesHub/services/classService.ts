@@ -1,5 +1,12 @@
 import { apiClient } from "../../../services/apiClient";
 import { buildQuery } from "../../../utils/queryString";
+import type { GroupMember, GroupMembersResponse, SpringPage } from "../../../types/group";
+
+// Re-exported under the names this module historically used, so consumers and
+// the methods below keep working unchanged. Canonical defs live in types/group.
+export type { SpringPage };
+export type GroupMemberDTO = GroupMember;
+export type GroupMembersResponseDTO = GroupMembersResponse;
 
 export interface GroupFindResponseDTO {
   id: string;
@@ -66,34 +73,6 @@ export interface GroupMembershipDTO {
   creatorUsername: string;
   createdAt: string;
   isCreator: boolean;
-}
-
-export interface GroupMemberDTO {
-  id: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  role: 'USER' | 'ADMIN' | 'PROFESSOR';
-  email: string;
-}
-
-export interface GroupMembersResponseDTO {
-  groupId: string;
-  canManage: boolean;
-  teacher: GroupMemberDTO;
-  students: GroupMemberDTO[];
-}
-
-// Spring Page<T> shape returned by the paginated /group endpoint.
-export interface SpringPage<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  number: number;
-  size: number;
-  first: boolean;
-  last: boolean;
-  empty: boolean;
 }
 
 export interface GroupSearchCriteria {
