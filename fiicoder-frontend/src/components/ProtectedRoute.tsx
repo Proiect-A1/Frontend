@@ -9,7 +9,12 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children, requireStaff = false, requireAdmin = false }: ProtectedRouteProps) {
-  const { isAuthenticated, isAdmin, isProfessor } = useAuth();
+  const { isAuthenticated, isAdmin, isProfessor, isLoading } = useAuth();
+
+  // Cat timp incercam silent refresh la boot, nu redirectiona inca spre /login.
+  if (isLoading) {
+    return null;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;

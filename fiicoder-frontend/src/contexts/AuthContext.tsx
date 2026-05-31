@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import type { ReactNode } from 'react';
 import { getGravatarUrl, getDiceBearUrl } from '../utils/gravatar';
 import { profileService } from '../services/profileService';
+import { subscribeToken, refreshSession, setAccessToken } from '../services/apiClient';
+import { authService } from '../pages/login/services/authService';
 
 interface JwtPayload {
   sub: string;
@@ -37,6 +39,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isProfessor: boolean;
   isAuthenticated: boolean;
+  isLoading: boolean;
   login: (token: string) => void;
   logout: () => void;
   updateAvatar: (email: string) => void;
@@ -51,6 +54,7 @@ const AuthContext = createContext<AuthContextType>({
   isAdmin: false,
   isProfessor: false,
   isAuthenticated: false,
+  isLoading: true,
   login: () => {},
   logout: () => {},
   updateAvatar: () => {},
@@ -83,9 +87,15 @@ function safeRemove(key: string) {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() => {
     const stored = safeGet(TOKEN_KEY);
-    if (stored && !isTokenExpired(stored)) return stored;
-    safeRemove(TOKEN_KEY);
-    return null;
+    // pastram un token expirat ca "marker" de sesiune anterioara — incercam refresh la boot
+    return stored && !isTokenExpired(stored) ? stored : null;
+  });
+
+  // true cat timp incercam un silent refresh la pornire (ca sa nu redirectionam
+  // userul spre /login inainte sa stim daca avem o sesiune valida prin cookie)
+  const [isLoading, setIsLoading] = useState<boolean>(() => {
+    const stored = safeGet(TOKEN_KEY);
+    return !!stored && isTokenExpired(stored);
   });
 
   const [gravatarUrl, setGravatarUrl] = useState<string | null>(() => safeGet(GRAVATAR_KEY));
@@ -108,21 +118,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback((newToken: string) => {
-    safeSet(TOKEN_KEY, newToken);
     safeRemove(GRAVATAR_KEY);
     safeRemove(DICEBEAR_KEY);
     setGravatarUrl(null);
     setDicebearUrl(null);
-    setToken(newToken);
+    // setAccessToken scrie in localStorage si notifica abonatii -> setToken (vezi efectul de mai jos)
+    setAccessToken(newToken);
   }, []);
 
   const logout = useCallback(() => {
-    safeRemove(TOKEN_KEY);
+    // invalidam refresh token-ul pe server (fire-and-forget); UI-ul se deconecteaza imediat
+    void authService.logout();
     safeRemove(GRAVATAR_KEY);
     safeRemove(DICEBEAR_KEY);
     setGravatarUrl(null);
     setDicebearUrl(null);
-    setToken(null);
+    setAccessToken(null);
+  }, []);
+
+  // Sursa de adevar pentru access token e apiClient (el face silent refresh).
+  // Ne abonam ca sa tinem state-ul React sincronizat cu localStorage.
+  useEffect(() => {
+    const unsubscribe = subscribeToken((t) => {
+      setToken(t);
+      if (!t) {
+        safeRemove(GRAVATAR_KEY);
+        safeRemove(DICEBEAR_KEY);
+        setGravatarUrl(null);
+        setDicebearUrl(null);
+      }
+    });
+    return unsubscribe;
+  }, []);
+
+  // La boot: daca avem un token expirat (marker de sesiune anterioara), incercam un
+  // silent refresh prin cookie-ul httpOnly inainte sa decidem ca userul e delogat.
+  useEffect(() => {
+    const stored = safeGet(TOKEN_KEY);
+    if (stored && isTokenExpired(stored)) {
+      refreshSession().finally(() => setIsLoading(false));
+    } else {
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -132,12 +169,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .catch(() => {});
   }, [token]);
 
+  // Refresh proactiv: cand access token-ul (15 min) a expirat, incercam sa-l reinnoim
+  // prin cookie in loc sa delogam direct. Daca refresh-ul esueaza, apiClient curata token-ul.
   useEffect(() => {
     const id = setInterval(() => {
-      if (token && isTokenExpired(token)) logout();
+      if (token && isTokenExpired(token)) void refreshSession();
     }, 60_000);
     return () => clearInterval(id);
-  }, [token, logout]);
+  }, [token]);
 
   return (
     <AuthContext.Provider
@@ -150,6 +189,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAdmin,
         isProfessor,
         isAuthenticated,
+        isLoading,
         login,
         logout,
         updateAvatar,

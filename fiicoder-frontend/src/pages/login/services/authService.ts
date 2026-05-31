@@ -54,11 +54,21 @@ export const authService = {
     try {
       return await apiClient.post<RegisterResponse>('/auth/register', request);
     } catch (err: any) {
-      const errorMessage = err.status === 409 
+      const errorMessage = err.status === 409
         ? (err.body?.error || 'Username or email already used')
         : (err.status === 400 && err.body?.errors ? 'Validation failed' : (err.body?.message || err.body?.error || 'Registration failed'));
-        
+
       throw new AuthError(errorMessage, err.status || 500, err.body);
+    }
+  },
+
+  // POST /api/auth/logout — invalideaza refresh token-ul pe server si curata cookie-ul.
+  // Nu aruncam daca pica: oricum facem logout local imediat dupa.
+  async logout(): Promise<void> {
+    try {
+      await apiClient.post<void>('/auth/logout');
+    } catch {
+      // ignoram — logout-ul local din AuthContext ramane sursa de adevar pentru UI
     }
   },
 };
