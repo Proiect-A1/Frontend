@@ -12,15 +12,11 @@ import FilterSidebar from "./components/FilterSidebar";
 import SearchInput from "../../components/SearchInput";
 import StatsSidebar from "./components/StatsSidebar";
 import ProblemSkeleton from "../../components/ProblemSkeleton";
-import { useAuth } from "../../contexts/AuthContext";
 import { extractErrorMessage } from "../../utils/httpError";
 
 export default function ProblemList() {
   const { lang } = useLanguage();
   const t = translations[lang];
-
-  const { isAdmin, isProfessor } = useAuth();
-  const canPropose = isAdmin || isProfessor;
 
   const [searchTerm, setSearchTerm] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
@@ -129,14 +125,6 @@ export default function ProblemList() {
             {t.problemsTitle}
           </h1>
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto md:flex-1 md:justify-end">
-            {canPropose && (
-              <Link
-                to="/propose"
-                className="px-4 py-1.5 rounded-full border-2 border-(--accent)/50 bg-transparent text-sm font-bold text-(--text) hover:bg-(--accent)/15 hover:text-(--text-h) hover:-translate-y-0.5 transition-all duration-200 text-center whitespace-nowrap shrink-0"
-              >
-                {lang === "RO" ? "Propune problemă" : "Propose problem"}
-              </Link>
-            )}
 
             <select
               value={sortOrder}

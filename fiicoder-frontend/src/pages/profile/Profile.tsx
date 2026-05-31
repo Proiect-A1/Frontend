@@ -181,14 +181,6 @@ export default function Profile() {
                             </button>
                         )}
 
-                        {isOwnProfile && isAdmin && (
-                            <Link
-                                to="/admin"
-                                className={`${navButtonBase} ${navButtonIdle}`}
-                            >
-                                {t.profileAdminDashboard}
-                            </Link>
-                        )}
                     </div>
                 </div>
 
