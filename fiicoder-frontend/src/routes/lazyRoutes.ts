@@ -14,6 +14,8 @@ const routeImports = {
   adminPanel: () => import("../pages/adminPanel/AdminPanel"),
   proposeProblem: () => import("../pages/proposeProblem/ProposeProblem"),
   leaderboard: () => import("../pages/leaderboard/Leaderboard"),
+  privacyPolicy: () => import("../pages/legal/PrivacyPolicy"),
+  terms: () => import("../pages/legal/Terms"),
 } as const;
 
 export const Landing = lazyWithRetry(routeImports.landing);
@@ -26,6 +28,8 @@ export const Profile = lazyWithRetry(routeImports.profile);
 export const AdminPanel = lazyWithRetry(routeImports.adminPanel);
 export const ProposeProblem = lazyWithRetry(routeImports.proposeProblem);
 export const Leaderboard = lazyWithRetry(routeImports.leaderboard);
+export const PrivacyPolicy = lazyWithRetry(routeImports.privacyPolicy);
+export const Terms = lazyWithRetry(routeImports.terms);
 
 // Map de la prefix de path -> factory de import. Ordinea conteaza: prefixele mai
 // specifice trebuie sa fie inaintea celor mai generice (nu e cazul aici, dar e o

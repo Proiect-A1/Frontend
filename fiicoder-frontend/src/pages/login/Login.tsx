@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useLanguage, translations, getBannedMsg } from '../../language/Language';
 import { useAuth } from '../../contexts/AuthContext';
 import { authService, AuthError } from './services/authService';
@@ -34,6 +34,8 @@ export default function Login() {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
+    // GDPR Art. 6/7 — consimțământ explicit, obligatoriu la înregistrare
+    const [consent, setConsent] = useState(false);
 
     const [error, setError] = useState<string | null>(null);
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -83,6 +85,13 @@ export default function Login() {
                     return;
                 }
 
+                if (!consent) {
+                    setFieldErrors({ consent: t.consentRequired });
+                    setError(t.consentRequired);
+                    toast.error(t.consentRequired);
+                    return;
+                }
+
                 await authService.register({
                     username,
                     firstName,
@@ -104,6 +113,7 @@ export default function Login() {
                 setEmail('');
                 setPassword('');
                 setConfirmPassword('');
+                setConsent(false);
             }
         } catch (err) {
             if (err instanceof AuthError) {
@@ -137,6 +147,7 @@ export default function Login() {
         clearMessages();
         setPassword('');
         setConfirmPassword('');
+        setConsent(false);
         setIsLogin((prev) => !prev);
     };
 
@@ -361,6 +372,43 @@ export default function Login() {
                                 <p className="mt-1 text-xs text-red-400">
                                     {fieldErrors.confirmPassword}
                                 </p>
+                            )}
+                        </div>
+
+                        {/* Consimțământ GDPR — obligatoriu pentru a putea crea contul */}
+                        <div>
+                            <label className="flex items-start gap-2 text-sm text-(--text) cursor-pointer select-none">
+                                <input
+                                    type="checkbox"
+                                    required
+                                    checked={consent}
+                                    onChange={(e) => setConsent(e.target.checked)}
+                                    className="mt-0.5 h-4 w-4 shrink-0 accent-(--accent) cursor-pointer"
+                                />
+                                <span>
+                                    {t.consentPrefix}
+                                    <Link
+                                        to="/privacy"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="font-semibold text-(--accent) underline underline-offset-2 hover:text-(--text-h)"
+                                    >
+                                        {t.consentPrivacyLink}
+                                    </Link>
+                                    {t.consentAnd}
+                                    <Link
+                                        to="/terms"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="font-semibold text-(--accent) underline underline-offset-2 hover:text-(--text-h)"
+                                    >
+                                        {t.consentTermsLink}
+                                    </Link>
+                                    .
+                                </span>
+                            </label>
+                            {fieldErrors.consent && (
+                                <p className="mt-1 text-xs text-red-400">{fieldErrors.consent}</p>
                             )}
                         </div>
                     </>

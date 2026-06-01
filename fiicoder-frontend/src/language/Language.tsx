@@ -681,6 +681,16 @@ export const translations = {
         reset: 'Resetează',
         approve: 'Aprobă',
         reject: 'Respinge',
+
+        // ─── Legal / GDPR ────────────────────────────────────────────────────────
+        consentPrefix: 'Sunt de acord cu ',
+        consentPrivacyLink: 'Politica de confidențialitate',
+        consentAnd: ' și ',
+        consentTermsLink: 'Termenii și condițiile',
+        consentRequired: 'Trebuie să accepți politica de confidențialitate și termenii pentru a-ți crea un cont.',
+        privacyPolicy: 'Politica de confidențialitate',
+        termsAndConditions: 'Termeni și condiții',
+        legalBack: 'Înapoi',
     },
 
     EN: {
@@ -1352,6 +1362,16 @@ export const translations = {
         reset: 'Reset',
         approve: 'Approve',
         reject: 'Reject',
+
+        // ─── Legal / GDPR ────────────────────────────────────────────────────────
+        consentPrefix: 'I agree to the ',
+        consentPrivacyLink: 'Privacy Policy',
+        consentAnd: ' and the ',
+        consentTermsLink: 'Terms and Conditions',
+        consentRequired: 'You must accept the privacy policy and terms to create an account.',
+        privacyPolicy: 'Privacy Policy',
+        termsAndConditions: 'Terms and Conditions',
+        legalBack: 'Back',
     },
 };
 

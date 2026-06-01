@@ -38,18 +38,16 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(() => {
-    const stored = storage.get(STORAGE_KEYS.token);
-    // pastram un token expirat ca "marker" de sesiune anterioara — incercam refresh la boot
-    return stored && !isTokenExpired(stored) ? stored : null;
-  });
+  // Access token-ul nu se mai persista in localStorage (vezi apiClient.ts): la boot
+  // pornim mereu de la null si il recuperam printr-un silent refresh prin cookie.
+  const [token, setToken] = useState<string | null>(null);
 
   // true cat timp incercam un silent refresh la pornire (ca sa nu redirectionam
-  // userul spre /login inainte sa stim daca avem o sesiune valida prin cookie)
-  const [isLoading, setIsLoading] = useState<boolean>(() => {
-    const stored = storage.get(STORAGE_KEYS.token);
-    return !!stored && isTokenExpired(stored);
-  });
+  // userul spre /login inainte sa stim daca avem o sesiune valida prin cookie).
+  // Daca exista marker-ul de sesiune, presupunem ca trebuie sa incercam refresh.
+  const [isLoading, setIsLoading] = useState<boolean>(
+    () => storage.get(STORAGE_KEYS.session) === '1',
+  );
 
   const [gravatarUrl, setGravatarUrl] = useState<string | null>(() => storage.get(STORAGE_KEYS.gravatar));
   const [dicebearUrl, setDicebearUrl] = useState<string | null>(() => storage.get(STORAGE_KEYS.dicebear));
@@ -82,7 +80,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     storage.remove(STORAGE_KEYS.dicebear);
     setGravatarUrl(null);
     setDicebearUrl(null);
-    // setAccessToken scrie in localStorage si notifica abonatii -> setToken (vezi efectul de mai jos)
+    // setAccessToken pune token-ul in memorie + marker-ul de sesiune si notifica
+    // abonatii -> setToken (vezi efectul de mai jos)
     setAccessToken(newToken);
   }, []);
 
@@ -96,8 +95,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAccessToken(null);
   }, []);
 
-  // Sursa de adevar pentru access token e apiClient (el face silent refresh).
-  // Ne abonam ca sa tinem state-ul React sincronizat cu localStorage.
+  // Sursa de adevar pentru access token e apiClient (token in memorie + silent refresh).
+  // Ne abonam ca sa tinem state-ul React sincronizat cu acel store.
   useEffect(() => {
     const unsubscribe = subscribeToken((t) => {
       setToken(t);
@@ -111,11 +110,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe;
   }, []);
 
-  // La boot: daca avem un token expirat (marker de sesiune anterioara), incercam un
-  // silent refresh prin cookie-ul httpOnly inainte sa decidem ca userul e delogat.
+  // La boot: daca exista marker-ul de sesiune, incercam un silent refresh prin
+  // cookie-ul httpOnly inainte sa decidem ca userul e delogat (token-ul nu mai e
+  // persistat, deci doar refresh-ul ne poate spune daca sesiunea e inca valida).
   useEffect(() => {
-    const stored = storage.get(STORAGE_KEYS.token);
-    if (stored && isTokenExpired(stored)) {
+    if (storage.get(STORAGE_KEYS.session) === '1') {
       refreshSession().finally(() => setIsLoading(false));
     } else {
       setIsLoading(false);

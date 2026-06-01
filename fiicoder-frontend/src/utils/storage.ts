@@ -62,7 +62,12 @@ export const storage = {
 
 export const STORAGE_KEYS = {
   // Auth / identity
-  token: 'fiicoder_jwt',
+  // NOTE: the JWT access token is intentionally NOT persisted here. It lives only
+  // in memory (see apiClient.ts) so it can't be exfiltrated from localStorage via
+  // XSS. We persist only a non-sensitive boolean marker that a session *existed*,
+  // so on boot we know to attempt a silent refresh via the httpOnly cookie instead
+  // of flashing the login page. GDPR Art. 32 (security of processing).
+  session: 'fiicoder_session',
   gravatar: 'fiicoder_gravatar',
   dicebear: 'fiicoder_dicebear',
   username: 'fiicoder_username',

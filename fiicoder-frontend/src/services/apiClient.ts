@@ -22,15 +22,22 @@ export function subscribeToken(listener: TokenListener): () => void {
   };
 }
 
+// Access token-ul traieste DOAR in memorie (nu in localStorage), ca sa nu poata fi
+// exfiltrat prin XSS. La reload se pierde si e recuperat printr-un silent refresh
+// (cookie httpOnly). In localStorage tinem doar un marker non-sensibil ca a existat
+// o sesiune, ca AuthContext sa stie sa incerce refresh la boot. GDPR Art. 32.
+let accessToken: string | null = null;
+
 export function getAccessToken(): string | null {
-  return storage.get(STORAGE_KEYS.token);
+  return accessToken;
 }
 
 export function setAccessToken(token: string | null): void {
+  accessToken = token;
   if (token) {
-    storage.set(STORAGE_KEYS.token, token);
+    storage.set(STORAGE_KEYS.session, '1');
   } else {
-    storage.remove(STORAGE_KEYS.token);
+    storage.remove(STORAGE_KEYS.session);
   }
   tokenListeners.forEach((l) => l(token));
 }

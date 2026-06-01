@@ -16,6 +16,8 @@ import {
   AdminPanel,
   ProposeProblem,
   Leaderboard,
+  PrivacyPolicy,
+  Terms,
 } from "./routes/lazyRoutes";
 
 function NotFound() {
@@ -62,6 +64,8 @@ function AnimatedRoutes() {
           <Routes location={location}>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<Terms />} />
             <Route path="/problems" element={<ProblemList />} />
             <Route path="/problems/:problemTitle" element={<ProblemDetails />} />
             <Route
