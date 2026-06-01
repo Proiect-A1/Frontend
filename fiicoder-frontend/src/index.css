@@ -447,6 +447,19 @@
     outline-offset: 4px;
 }
 
+/* Pre-set the outline color on ALL custom-theme cards (not just dashed-dotted),
+   so switching INTO dashed-dotted doesn't make transition-all animate
+   outline-color from its initial `currentColor` (≈ white text) → accent.
+   The outline stays invisible until a border mode sets outline-style. */
+[data-theme='custom'] .rounded-3xl,
+[data-theme='custom'] .rounded-2xl,
+[data-theme='custom'] .rounded-xl {
+    outline-color: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+[data-theme='custom'] .flexlayout__tabset {
+    outline-color: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
 /* ── CUSTOM THEME RADIUS VARIANTS ── */
 [data-theme='custom'][data-custom-radius='medium'] .rounded-3xl { border-radius: 12px !important; }
 [data-theme='custom'][data-custom-radius='medium'] .rounded-2xl { border-radius: 10px !important; }

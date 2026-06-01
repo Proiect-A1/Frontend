@@ -122,28 +122,6 @@ export interface GroupInvitation {
     inviterUsername: string;
 }
 
-const mockProposalDetails: ProblemProposalDetail[] = [
-    {
-        id: 'p1',
-        title: 'Arbori de intervale avansați',
-        authorUsername: 'student1',
-        description: 'O problemă clasică de actualizare și interogare în timp logaritmic pe un vector mare.',
-        status: 'PENDING',
-        createdAt: '2026-04-20',
-        statement: 'Se dă un vector cu valorile inițiale și o mulțime de operații de actualizare și interogare. Pentru fiecare interogare, trebuie afișată suma pe interval.',
-        inputDescription: 'Prima linie conține n și q. Următoarele q linii descriu operațiile.',
-        outputDescription: 'Pentru fiecare interogare de tip query se afișează rezultatul pe o linie separată.',
-        constraints: ['1 <= n, q <= 200000', 'valorile sunt întregi pozitive', 'timp limită: O((n + q) log n)'],
-        sampleInput: '5 3\n1 1 5\n2 2 4\n1 3 7',
-        sampleOutput: '12',
-        tags: ['trees', 'data-structures', 'range-query'],
-    },
-];
-
-const mockAuditLog: AuditLogEntry[] = [
-    { id: 'audit-1', action: 'ROLE_CHANGED', actorUsername: 'admin', targetType: 'User', targetName: 'student_11', details: 'User promoted to ADMIN.', createdAt: '2026-04-29 14:10' },
-];
-
 function normalizeOverview(payload: AdminOverviewResponse): AdminOverview {
     return {
         users: payload.totalUsers,
@@ -176,12 +154,8 @@ export const adminService = {
     },
 
     async getOverview(): Promise<AdminOverview> {
-        try {
-            const data = await apiClient.get<AdminOverviewResponse>('/admin/overview');
-            return normalizeOverview(data);
-        } catch {
-            return { users: 40, problems: 342, submissions: 1024, classes: 12, assignments: 45, pendingProposals: 3 };
-        }
+        const data = await apiClient.get<AdminOverviewResponse>('/admin/overview');
+        return normalizeOverview(data);
     },
 
     async getUsers(page: number = 1, pageSize: number = 20): Promise<AdminUser[]> {
@@ -205,51 +179,43 @@ export const adminService = {
     },
 
     async getProposals(): Promise<ProblemProposal[]> {
-        try {
-            const data = await apiClient.get<any[]>('/problems/pending');
-            return data.map(p => {
-                const rawStatus = (p.problemStatus || p.status || 'PENDING').toString().toUpperCase();
-                const normalizedStatus: ProblemProposal['status'] =
-                    rawStatus === 'CHECKED' ? 'CHECKED'
-                        : rawStatus === 'ACCEPTED' ? 'ACCEPTED'
-                            : rawStatus === 'REJECTED' ? 'REJECTED'
-                                : 'PENDING';
-                return {
-                    id: p.title,
-                    title: p.title,
-                    authorUsername: p.user?.username || p.proposedBy || p.authorUsername || 'unknown',
-                    description: p.description || '',
-                    difficulty: p.difficulty || '',
-                    status: normalizedStatus,
-                    createdAt: p.submittedAt || p.createdAt || new Date().toISOString(),
-                    tags: Array.from(p.tags || []),
-                };
-            });
-        } catch {
-            return mockProposalDetails;
-        }
-    },
-
-    async getProblemProposal(title: string): Promise<ProblemProposalDetail> {
-        try {
-            // Using form details endpoint which returns ProblemCreationDetailsResponseDTO
-            const p = await apiClient.get<any>(`/problems/${encodeURIComponent(title)}/form/details`);
+        const data = await apiClient.get<any[]>('/problems/pending');
+        return data.map(p => {
+            const rawStatus = (p.problemStatus || p.status || 'PENDING').toString().toUpperCase();
+            const normalizedStatus: ProblemProposal['status'] =
+                rawStatus === 'CHECKED' ? 'CHECKED'
+                    : rawStatus === 'ACCEPTED' ? 'ACCEPTED'
+                        : rawStatus === 'REJECTED' ? 'REJECTED'
+                            : 'PENDING';
             return {
                 id: p.title,
                 title: p.title,
-                authorUsername: p.user?.username || p.authorUsername || 'unknown',
+                authorUsername: p.user?.username || p.proposedBy || p.authorUsername || 'unknown',
                 description: p.description || '',
-                status: 'PENDING',
-                createdAt: new Date().toISOString(),
-                statement: p.description,
-                tags: Array.from(p.tagTitles || []),
-                zipDownloadLink: p.zipDownloadLink,
-                time_limit: p.time_limit,
-                memory_limit: p.memory_limit
+                difficulty: p.difficulty || '',
+                status: normalizedStatus,
+                createdAt: p.submittedAt || p.createdAt || new Date().toISOString(),
+                tags: Array.from(p.tags || []),
             };
-        } catch {
-            return mockProposalDetails[0];
-        }
+        });
+    },
+
+    async getProblemProposal(title: string): Promise<ProblemProposalDetail> {
+        // Using form details endpoint which returns ProblemCreationDetailsResponseDTO
+        const p = await apiClient.get<any>(`/problems/${encodeURIComponent(title)}/form/details`);
+        return {
+            id: p.title,
+            title: p.title,
+            authorUsername: p.user?.username || p.authorUsername || 'unknown',
+            description: p.description || '',
+            status: 'PENDING',
+            createdAt: new Date().toISOString(),
+            statement: p.description,
+            tags: Array.from(p.tagTitles || []),
+            zipDownloadLink: p.zipDownloadLink,
+            time_limit: p.time_limit,
+            memory_limit: p.memory_limit
+        };
     },
 
     async deleteProblem(title: string): Promise<void> {
@@ -287,11 +253,7 @@ export const adminService = {
     },
 
     async getAuditLog(): Promise<AuditLogEntry[]> {
-        try {
-            return await apiClient.get('/admin/audit-log');
-        } catch {
-            return mockAuditLog;
-        }
+        return await apiClient.get('/admin/audit-log');
     },
 
     async getGroups(
