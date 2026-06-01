@@ -1,11 +1,14 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { useLanguage, translations } from '../../language/Language';
-import { containerVariants, itemVariants } from '../../utils/motionConfig';
 
 // Container comun pentru paginile legale (Privacy / Terms). Tine doar layout-ul si
 // stilurile; continutul concret (bilingv) vine din paginile care il folosesc.
+//
+// Intentionat NU are animatie proprie (framer-motion): tranzitia de pagina e deja
+// facuta de <motion.main> din App (fade). Daca am suprapune inca un fade + stagger
+// aici, tranzitia ar parea "rough". Layout-ul copiaza structura de la Landing
+// (h-full + zona interna care scrolleaza) ca inaltimea sa ramana stabila.
 export default function LegalLayout({
     title,
     updatedAt,
@@ -19,40 +22,23 @@ export default function LegalLayout({
     const t = translations[lang];
 
     return (
-        // Aceeasi structura ca Landing: card cat tot spatiul disponibil (h-full),
-        // overflow ascuns pe exterior si o zona interna care scrolleaza (flex-1 +
-        // overflow-y-auto). Asta tine inaltimea stabila in timpul tranzitiei de
-        // pagina, deci nu mai apare saltul de layout.
-        <motion.div
-            className="w-full max-w-5xl mx-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) h-full overflow-hidden relative flex flex-col card-glow"
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-        >
-            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-6 md:px-10 md:py-8">
-                {/* Coloana de text e limitata pentru lizibilitate, chiar daca cardul e lat. */}
-                <div className="w-full max-w-3xl mx-auto">
-                    <motion.div variants={itemVariants}>
-                        <Link
-                            to="/"
-                            className="inline-block mb-4 text-sm font-semibold text-(--accent) underline underline-offset-4 hover:text-(--text-h) transition-colors"
-                        >
-                            ← {t.legalBack}
-                        </Link>
-                        <h1 className="text-3xl font-bold text-(--text-h) mb-2">{title}</h1>
-                        <p className="text-xs text-(--text-muted) mb-2">{updatedAt}</p>
-                        <div className="page-line-horizontal" />
-                    </motion.div>
+        <div className="w-full max-w-5xl mx-auto rounded-3xl border-2 border-(--accent) bg-(--surface-card) h-full overflow-hidden relative flex flex-col card-glow">
+            <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-6 md:px-10 md:py-12">
+                <Link
+                    to="/"
+                    className="inline-block mb-4 text-sm font-semibold text-(--accent) underline underline-offset-4 hover:text-(--text-h) transition-colors"
+                >
+                    ← {t.legalBack}
+                </Link>
+                <h1 className="text-3xl font-bold text-(--text-h) mb-2">{title}</h1>
+                <p className="text-xs text-(--text-muted) mb-2">{updatedAt}</p>
+                <div className="page-line-horizontal" />
 
-                    <motion.div
-                        variants={itemVariants}
-                        className="mt-6 flex flex-col gap-5 text-sm leading-relaxed text-(--text)"
-                    >
-                        {children}
-                    </motion.div>
+                <div className="mt-6 flex flex-col gap-5 text-sm leading-relaxed text-(--text)">
+                    {children}
                 </div>
             </div>
-        </motion.div>
+        </div>
     );
 }
 

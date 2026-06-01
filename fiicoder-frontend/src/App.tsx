@@ -4,6 +4,10 @@ import { Suspense } from "react";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { pageVariants } from "./utils/motionConfig";
+// Paginile legale sunt mici si statice: le tinem in bundle-ul principal (nu lazy),
+// ca sa nu apara flash-ul de "Loading..." cand sunt deschise intr-un tab nou.
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
+import Terms from "./pages/legal/Terms";
 // Paginile code-split (+ prefetch la hover) sunt definite intr-un registru comun.
 import {
   Landing,
@@ -16,8 +20,6 @@ import {
   AdminPanel,
   ProposeProblem,
   Leaderboard,
-  PrivacyPolicy,
-  Terms,
 } from "./routes/lazyRoutes";
 
 function NotFound() {

@@ -555,6 +555,20 @@ export default function Landing() {
                             </motion.div>
                         ))}
                     </div>
+
+                    {/* Footer discret — link-uri legale accesibile public */}
+                    <motion.footer
+                        variants={itemVariants}
+                        className="mt-2 pt-4 border-t border-(--accent)/10 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-(--text-subtle)"
+                    >
+                        <Link to="/privacy" className="hover:text-(--accent) transition-colors">
+                            {t.privacyPolicy}
+                        </Link>
+                        <span className="opacity-40">·</span>
+                        <Link to="/terms" className="hover:text-(--accent) transition-colors">
+                            {t.termsAndConditions}
+                        </Link>
+                    </motion.footer>
                 </div>
             </motion.div>
     );
