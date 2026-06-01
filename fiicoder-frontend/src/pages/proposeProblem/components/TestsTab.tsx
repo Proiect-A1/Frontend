@@ -14,7 +14,7 @@ export default function TestsTab() {
 
     const addTest = () => {
         append({
-            id: `manual_${Date.now()}`,
+            id: String(fields.length + 1),
             input: '',
             output: '',
             subtaskIds: [],
@@ -77,8 +77,18 @@ export default function TestsTab() {
                                     key={field.id}
                                     className="border-b border-(--accent)/20 hover:bg-(--surface-muted)/50 transition-colors"
                                 >
-                                    <td className="text-(--text) text-xs font-mono py-4 px-4">
-                                        {field.id}
+                                    <td className="text-(--text) py-4 px-4">
+                                        <Controller
+                                            name={`tests.${index}.id`}
+                                            control={control}
+                                            render={({ field }) => (
+                                                <input
+                                                    {...field}
+                                                    type="text"
+                                                    className="w-24 px-2 py-1 bg-(--surface-muted) border border-(--accent) rounded text-xs text-(--text) font-mono focus:outline-none focus:[box-shadow:0_0_0_2px_color-mix(in_srgb,var(--accent)_50%,transparent)] transition-all"
+                                                />
+                                            )}
+                                        />
                                     </td>
 
                                     {/* Input Field */}

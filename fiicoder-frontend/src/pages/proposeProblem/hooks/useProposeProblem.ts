@@ -205,6 +205,21 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
             try {
                 if (isEditMode && proposalId) {
                     const original = originalFormRef.current;
+
+                    // Warn if a file-change edit would silently reset a non-private visibility.
+                    if (original && original.visibility !== 'private') {
+                        const filesChanged =
+                            JSON.stringify(data.files) !== JSON.stringify(original.files) ||
+                            JSON.stringify(data.tests) !== JSON.stringify(original.tests) ||
+                            data.generatorScript !== original.generatorScript;
+                        if (filesChanged) {
+                            toast.warning(
+                                'Vizibilitatea problemei va fi resetată la Privat după re-verificare.',
+                                { duration: 7000 },
+                            );
+                        }
+                    }
+
                     if (!original) {
                         const msg = 'Propunerea originală nu este încărcată. Reîncarcă pagina și încearcă din nou.';
                         setSubmitStatus('error');

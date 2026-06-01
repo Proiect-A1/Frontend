@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { useLanguage } from '../../../language/Language';
 
-export default function ZipFormatModal() {
+interface ZipFormatModalProps {
+    onNavigateToGeneratorDocs?: () => void;
+}
+
+export default function ZipFormatModal({ onNavigateToGeneratorDocs }: ZipFormatModalProps) {
     const [open, setOpen] = useState(false);
     const { lang } = useLanguage();
     const ro = lang === 'RO';
@@ -317,49 +321,26 @@ input1.txt     (extensie .txt)
 < gen 100 -1000 1000  ← generează un test rulând: files/generators/gen 100 -1000 1000
 < gen 100000 0 9999   ← alt test generat cu alți parametri`}
                             </pre>
-                            <div className="mt-4 space-y-3">
-                                <Directive
-                                    name="#MAIN"
-                                    desc={ro
-                                        ? 'Numele binarului soluție din files/sources/, fără extensie. Ex: dacă ai files/sources/solution.cpp, scrie #MAIN solution.'
-                                        : 'Binary name of the solution from files/sources/, without extension. E.g. if you have files/sources/solution.cpp, write #MAIN solution.'}
-                                />
-                                <Directive
-                                    name="#DEFGRP"
-                                    desc={ro
-                                        ? '<procente> <nume> - definește un subtask. Procentele tuturor subtask-urilor definite trebuie să sumeze exact 100.'
-                                        : '<percent> <name> - defines a subtask. The percentages of all defined subtasks must sum to exactly 100.'}
-                                />
-                                <Directive
-                                    name="#VAL"
-                                    desc={ro
-                                        ? '<nume> - validatorul din files/validators/, fără extensie. Ex: dacă ai files/validators/val.cpp, scrie #VAL val.'
-                                        : '<name> - validator from files/validators/, without extension. E.g. if you have files/validators/val.cpp, write #VAL val.'}
-                                />
-                                <Directive
-                                    name="#IN"
-                                    desc={ro
-                                        ? '<grup1> [grup2...] - toate testele de după această linie (până la următorul #IN sau #NOTIN) aparțin subtask-urilor specificate.'
-                                        : '<group1> [group2...] - all tests after this line (until the next #IN or #NOTIN) belong to the specified subtasks.'}
-                                />
-                                <Directive
-                                    name="#NOTIN"
-                                    desc={ro
-                                        ? '<grup> - testele de după această linie nu mai aparțin subtask-ului specificat, chiar dacă aparțineau înainte.'
-                                        : '<group> - tests after this line no longer belong to the specified subtask, even if they did before.'}
-                                />
-                                <Directive
-                                    name="="
-                                    desc={ro
-                                        ? '<fisier.in> - include un test manual existent din files/raw_tests/. Scrie doar numele fișierului (cu extensia .in), nu calea completă. Numele trebuie să fie identic cu cel din raw_tests/ — ex: pentru files/raw_tests/strength.1.in scrie "= strength.1.in".'
-                                        : '<file.in> - includes an existing manual test from files/raw_tests/. Write only the filename (with .in extension), not the full path. The name must match exactly what is in raw_tests/ — e.g. for files/raw_tests/strength.1.in write "= strength.1.in".'}
-                                />
-                                <Directive
-                                    name="<"
-                                    desc={ro
-                                        ? '<comanda> [argumente] - generează un test nou rulând generatorul cu argumentele date. Generatorul trebuie să existe în files/generators/ și să fie declarat cu #MAIN sau apelat după numele binarului.'
-                                        : '<command> [arguments] - generates a new test by running the generator with the given arguments. The generator must exist in files/generators/.'}
-                                />
+                            <div className="mt-4 flex items-start gap-3 rounded-xl border border-(--accent)/20 bg-(--accent)/5 p-3">
+                                <svg className="w-4 h-4 shrink-0 mt-0.5 text-(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
+                                </svg>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs text-(--text-muted) leading-relaxed">
+                                        {ro
+                                            ? 'Sintaxa completă include și directive pentru checker (#CHECK), generator implicit (#GEN), subtask-uri alternative (#TEST, #GRP) și apartenența aditivă (#ADDIN). Toate sunt documentate în tab-ul Generator.'
+                                            : 'The full syntax also includes directives for the checker (#CHECK), default generator (#GEN), alternative subtask styles (#TEST, #GRP), and additive membership (#ADDIN). All are documented in the Generator tab.'}
+                                    </p>
+                                    {onNavigateToGeneratorDocs && (
+                                        <button
+                                            type="button"
+                                            onClick={() => { setOpen(false); onNavigateToGeneratorDocs(); }}
+                                            className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-(--accent) hover:underline"
+                                        >
+                                            {ro ? 'Deschide documentația completă →' : 'Open full Script Documentation →'}
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </Section>
 
@@ -406,17 +387,6 @@ function Field({ name, type, desc, warn }: { name: string; type: string; desc: s
     );
 }
 
-function Directive({ name, desc, warn }: { name: string; desc: string; warn?: string }) {
-    return (
-        <div className="flex gap-2 text-xs items-start">
-            <code className="font-mono text-(--accent) shrink-0 pt-0.5 min-w-[72px]">{name}</code>
-            <span className="text-(--text-muted)">
-                {desc}
-                {warn && <span className="text-amber-400 flex items-start gap-1 mt-1"><svg className="w-3.5 h-3.5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>{warn}</span>}
-            </span>
-        </div>
-    );
-}
 
 function Warn({ children }: { children: React.ReactNode }) {
     return (
