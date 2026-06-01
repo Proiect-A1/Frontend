@@ -14,6 +14,10 @@ import StatsSidebar from "./components/StatsSidebar";
 import ProblemSkeleton from "../../components/ProblemSkeleton";
 import { extractErrorMessage } from "../../utils/httpError";
 
+// Static lookup — hoisted so it isn't reallocated on every render (and so the
+// sort memo below has a stable reference).
+const DIFFICULTY_ORDER: Record<string, number> = { EASY: 0, MEDIUM: 1, HARD: 2, CONTEST: 3 };
+
 export default function ProblemList() {
   const { lang } = useLanguage();
   const t = translations[lang];
@@ -59,8 +63,6 @@ export default function ProblemList() {
   const hasMore = problemsQuery.hasNextPage ?? false;
   const isLoadingMore = problemsQuery.isFetchingNextPage;
 
-  const DIFFICULTY_ORDER: Record<string, number> = { EASY: 0, MEDIUM: 1, HARD: 2, CONTEST: 3 };
-
   const filteredProblems = useMemo(() => {
     const filtered = problems.filter((problem) => {
       const matchesDifficulty =
@@ -94,7 +96,7 @@ export default function ProblemList() {
     return () => observer.disconnect();
   }, [hasMore, isLoadingMore, problemsQuery]);
 
-  const suggestions = problems.map((p) => p.title);
+  const suggestions = useMemo(() => problems.map((p) => p.title), [problems]);
 
   const handleTagsChange = (newTags: string[]) => {
     setSelectedTags(newTags);

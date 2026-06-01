@@ -1,6 +1,6 @@
 import Editor from '@monaco-editor/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import React, { useRef, useMemo, useState } from 'react';
+import React, { memo, useRef, useMemo, useState } from 'react';
 import { getMonacoLanguageId } from '../../../utils/monacoTheme';
 import { useMonacoContextMenu } from '../../../hooks/useMonacoContextMenu';
 import { storage, STORAGE_KEYS } from '../../../utils/storage';
@@ -21,7 +21,7 @@ type Props = {
     defaultCode?: string;
 };
 
-export default function EditorPanel({
+function EditorPanel({
     isAuthenticated,
     t,
     language,
@@ -230,3 +230,9 @@ export default function EditorPanel({
         </div>
     );
 }
+
+// Memoized: the parent (ProblemDetails) re-renders on every live-evaluation
+// event. Every prop here is referentially stable during a stream (handlers are
+// useCallback'd, `t` is a per-language constant), so this skips re-rendering the
+// Monaco wrapper while verdicts stream in.
+export default memo(EditorPanel);
