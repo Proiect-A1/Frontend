@@ -652,6 +652,7 @@ export const translations = {
         generatorSyntaxOk: 'Sintaxă și referințe OK!',
         generatorRuntimeNote:
             'Verificarea de rulare (compilarea generatorului, output valid) se face automat la trimitere prin sandbox.',
+        generatorScriptEmpty: 'Scriptul de generare nu poate fi gol.',
 
         // ─── Error Boundary ───────────────────────────────────────────────────────
         errorBoundaryNewVersion: 'Versiune nouă disponibilă',
@@ -1333,6 +1334,7 @@ export const translations = {
         generatorSyntaxOk: 'Syntax and references OK!',
         generatorRuntimeNote:
             'Runtime check (generator compilation, valid output) is performed automatically at submission via sandbox.',
+        generatorScriptEmpty: 'The generator script cannot be empty.',
 
         // ─── Error Boundary ───────────────────────────────────────────────────────
         errorBoundaryNewVersion: 'New version available',

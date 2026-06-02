@@ -35,7 +35,7 @@ const EXAMPLE_SCRIPT = `#MAIN main
 // validation status handled by hook
 
 export default function GeneratorTab() {
-    const { watch, setValue } = useFormContext<ProposeProblemForm>();
+    const { watch, setValue, clearErrors } = useFormContext<ProposeProblemForm>();
     const { theme, customColors } = useTheme();
     const { lang } = useLanguage();
     const t = useT();
@@ -90,7 +90,9 @@ export default function GeneratorTab() {
         if (!file) return;
         const reader = new FileReader();
         reader.onload = (ev) => {
-            setValue('generatorScript', ev.target?.result as string);
+            const content = ev.target?.result as string;
+            setValue('generatorScript', content);
+            if (content?.trim()) clearErrors('generatorScript');
         };
         reader.readAsText(file);
         e.target.value = '';
@@ -98,6 +100,7 @@ export default function GeneratorTab() {
 
     const insertExample = () => {
         setValue('generatorScript', EXAMPLE_SCRIPT);
+        clearErrors('generatorScript');
     };
 
     const statusConfig = {
@@ -200,7 +203,10 @@ export default function GeneratorTab() {
                         language={LANGUAGE_ID}
                         theme="fiicoder-gen-theme"
                         value={generatorScript}
-                        onChange={(val) => setValue('generatorScript', val || '')}
+                        onChange={(val) => {
+                            setValue('generatorScript', val || '');
+                            if (val?.trim()) clearErrors('generatorScript');
+                        }}
                         onMount={handleEditorMount}
                         options={{
                             minimap: { enabled: false },

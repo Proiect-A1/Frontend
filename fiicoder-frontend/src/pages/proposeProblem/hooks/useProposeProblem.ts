@@ -13,6 +13,7 @@ import { ZipImportError } from '../utils/unzipHelper';
 import type { ProposeProblemForm } from '../types/proposeProblem';
 import { validateGeneratorScript } from '../utils/generatorValidator';
 import { useTabParam } from '../../../hooks/useTabParam';
+import { useT } from '../../../language/Language';
 
 interface ApiError { status: number; body: { message?: string; violations?: { message: string }[] } | null; message: string; }
 
@@ -83,6 +84,7 @@ type UseProposeProblemOptions = {
 
 export function useProposeProblem({ proposalId, navigate, methods, defaultValues }: UseProposeProblemOptions) {
     const isEditMode = Boolean(proposalId);
+    const t = useT();
 
     const [activeTab, setActiveTab] = useTabParam('general', {
         validValues: ['general', 'statement', 'files', 'tests', 'generator'],
@@ -179,27 +181,36 @@ export function useProposeProblem({ proposalId, navigate, methods, defaultValues
             setSubmitPhase('uploading');
 
             // Validate generator script before any network calls.
-            if (data.generatorScript?.trim()) {
-                const genResult = validateGeneratorScript(data.generatorScript);
-                if (!genResult.valid) {
-                    setActiveTab('generator');
-                    const count = genResult.errors.length;
-                    const preview = genResult.errors
-                        .slice(0, 3)
-                        .map(e => `• L${e.line}:${e.col} — ${e.message}`)
-                        .join('\n');
-                    const suffix = count > 3 ? `\n... și încă ${count - 3} ${count - 3 === 1 ? 'eroare' : 'erori'}` : '';
-                    const summary = `Scriptul de generare are ${count} ${count === 1 ? 'eroare' : 'erori'}. Corectează-le înainte de a trimite.`;
-                    setSubmitStatus('error');
-                    setErrorMessage(summary);
-                    toast.error(summary, {
-                        description: preview + suffix,
-                        duration: 10000,
-                    });
-                    setIsSubmitting(false);
-                    setSubmitPhase('idle');
-                    return;
-                }
+            if (!data.generatorScript?.trim()) {
+                setActiveTab('generator');
+                const msg = t.generatorScriptEmpty;
+                setSubmitStatus('error');
+                setErrorMessage(msg);
+                methods.setError('generatorScript', { type: 'required', message: msg });
+                toast.error(msg, { duration: 8000 });
+                setIsSubmitting(false);
+                setSubmitPhase('idle');
+                return;
+            }
+            const genResult = validateGeneratorScript(data.generatorScript);
+            if (!genResult.valid) {
+                setActiveTab('generator');
+                const count = genResult.errors.length;
+                const preview = genResult.errors
+                    .slice(0, 3)
+                    .map(e => `• L${e.line}:${e.col} — ${e.message}`)
+                    .join('\n');
+                const suffix = count > 3 ? `\n... și încă ${count - 3} ${count - 3 === 1 ? 'eroare' : 'erori'}` : '';
+                const summary = `Scriptul de generare are ${count} ${count === 1 ? 'eroare' : 'erori'}. Corectează-le înainte de a trimite.`;
+                setSubmitStatus('error');
+                setErrorMessage(summary);
+                toast.error(summary, {
+                    description: preview + suffix,
+                    duration: 10000,
+                });
+                setIsSubmitting(false);
+                setSubmitPhase('idle');
+                return;
             }
 
             try {
