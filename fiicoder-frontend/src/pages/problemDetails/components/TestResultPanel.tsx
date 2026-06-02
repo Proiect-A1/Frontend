@@ -128,7 +128,9 @@ function TestRow({ t, idx }: { t: any; idx: number }) {
                     {t.verdict}
                 </span>
             )}
-            <span className="text-[10px] font-bold text-(--text-muted) ml-auto shrink-0">{formatScore(t.score)}/{formatScore(t.maxScore)}</span>
+            <span className="text-[10px] font-bold text-(--text-muted) ml-auto shrink-0">
+                {t['score%'] != null ? `${Math.round(t['score%'] * 100)}%` : '-'}
+            </span>
             <span className="hidden @[320px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-14 text-right">{timeMs}ms</span>
             <span className="hidden @[320px]:block text-[10px] font-mono text-(--text-subtle) shrink-0 w-16 text-right">{memKB}KB</span>
         </motion.div>
