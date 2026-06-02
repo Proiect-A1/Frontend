@@ -64,15 +64,21 @@ const summaryScoreClasses: Record<SubmissionVerdict, string> = {
 };
 
 const testVerdictColors: Record<string, string> = {
-    OK:   'border-green-500/40 bg-green-500/10 text-green-300',
-    WA:   'border-red-500/40 bg-red-500/10 text-red-300',
-    TLE:  'border-amber-500/40 bg-amber-500/10 text-amber-300',
-    MLE:  'border-amber-500/40 bg-amber-500/10 text-amber-300',
-    RTE:  'border-red-500/40 bg-red-500/10 text-red-300',
-    CPE:  'border-purple-500/40 bg-purple-500/10 text-purple-300',
-    FAIL: 'border-red-500/40 bg-red-500/10 text-red-300',
-    SKIP: 'border-gray-500/40 bg-gray-500/10 text-gray-300',
-    ILE:  'border-amber-500/40 bg-amber-500/10 text-amber-300',
+    OK:    'border-green-500/40   bg-green-500/10   text-green-300',
+    SUPER: 'border-emerald-400/60 bg-emerald-400/15 text-emerald-300',
+    WA:    'border-red-500/40     bg-red-500/10     text-red-300',
+    PE:    'border-orange-500/40  bg-orange-500/10  text-orange-300',
+    PA:    'border-amber-500/40   bg-amber-500/10   text-amber-300',
+    TLE:   'border-amber-500/40   bg-amber-500/10   text-amber-300',
+    MLE:   'border-violet-500/40  bg-violet-500/10  text-violet-300',
+    RTE:   'border-red-500/40     bg-red-500/10     text-red-300',
+    CPE:   'border-purple-500/40  bg-purple-500/10  text-purple-300',
+    FAIL:  'border-rose-600/50    bg-rose-600/10    text-rose-300',
+    SKIP:  'border-gray-500/40    bg-gray-500/10    text-gray-300',
+    ILE:   'border-amber-500/40   bg-amber-500/10   text-amber-300',
+    NONE:  'border-gray-500/30    bg-gray-500/5     text-gray-400',
+    IDLE:  'border-gray-500/30    bg-gray-500/5     text-gray-400',
+    OTHER: 'border-gray-500/30    bg-gray-500/5     text-gray-400',
 };
 
 function stVerdict(st: SubmissionSubtaskDTO): SubmissionVerdict {
