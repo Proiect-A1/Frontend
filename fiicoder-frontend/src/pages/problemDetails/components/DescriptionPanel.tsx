@@ -76,6 +76,14 @@ function makeMarkdownComponents(lang: string) {
             <ol className="list-decimal pl-6 mb-4 space-y-1" {...props} />
         ),
         li: ({ ...props }) => <li className="ml-2" {...props} />,
+        a: ({ ...props }) => (
+            <a
+                className="text-(--accent) underline underline-offset-2 hover:text-(--accent)/70 transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+                {...props}
+            />
+        ),
 
         // ── GFM table ─────────────────────────────────────────
         table: ({ ...props }) => (
