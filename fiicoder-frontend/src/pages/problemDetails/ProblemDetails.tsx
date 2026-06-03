@@ -60,6 +60,7 @@ export default function ProblemDetails() {
         model,
         handleCodeChange,
         handleEditorMount,
+        setEditorCode,
         handleSubmit,
         handleLayoutAction,
         handleLayoutSave,
@@ -162,7 +163,7 @@ export default function ProblemDetails() {
             case 'notes':
                 return <NotesPanel lang={lang} problemTitle={problemTitle ?? ''} />;
             case 'diff':
-                return <DiffPanel lang={lang} recentSubmissions={recentSubmissions} codeRef={codeRef} language={language} />;
+                return <DiffPanel lang={lang} recentSubmissions={recentSubmissions} codeRef={codeRef} language={language} onRestoreCode={setEditorCode} />;
             case 'paint':
                 return <PaintPanel lang={lang} problemTitle={problemTitle ?? ''} />;
             default:

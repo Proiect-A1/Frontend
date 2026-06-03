@@ -9,10 +9,12 @@ import type { Theme, CustomColors } from '../../../contexts/ThemeContext';
  */
 export function useMonacoEditorTheme(theme: Theme, customColors: CustomColors) {
     const monacoRef = useRef<any>(null);
+    const editorRef = useRef<any>(null);
 
     const handleEditorMount: OnMount = useCallback(
         (_editor, monaco) => {
             monacoRef.current = monaco;
+            editorRef.current = _editor;
             applyMonacoTheme(monaco, theme, { customColors });
             setTimeout(() => _editor.layout(), 100);
         },
@@ -25,5 +27,5 @@ export function useMonacoEditorTheme(theme: Theme, customColors: CustomColors) {
         }
     }, [theme, customColors]);
 
-    return { monacoRef, handleEditorMount };
+    return { monacoRef, editorRef, handleEditorMount };
 }

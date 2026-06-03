@@ -56,11 +56,16 @@ export function useProblemDetails() {
     useEditorShortcuts({ isAuthenticated, codeRef, onSubmit: evaluation.handleSubmit });
 
     const layout = useEditorLayout(lang);
-    const { handleEditorMount } = useMonacoEditorTheme(theme, customColors);
+    const { editorRef, handleEditorMount } = useMonacoEditorTheme(theme, customColors);
 
     const handleCodeChange = useCallback((val: string | undefined) => {
         codeRef.current = val ?? '';
     }, []);
+
+    const setEditorCode = useCallback((code: string) => {
+        codeRef.current = code;
+        editorRef.current?.getModel()?.setValue(code);
+    }, [editorRef]);
 
     const processedDescription = useMemo(() => {
         if (!data.problem?.description) return '';
@@ -98,6 +103,7 @@ export function useProblemDetails() {
         model: layout.model,
         handleCodeChange,
         handleEditorMount,
+        setEditorCode,
         handleSubmit: evaluation.handleSubmit,
         handleLayoutAction: layout.handleLayoutAction,
         handleLayoutSave: layout.handleLayoutSave,
