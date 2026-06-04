@@ -16,9 +16,9 @@ function solverInitials(entry: LeaderboardEntry): string {
 }
 
 const MOCK_POPULAR_PROBLEMS = [
-    { title: 'A+B Problem', solved: 1250, difficulty: 'EASY' },
-    { title: 'Dijkstra on Steroids', solved: 450, difficulty: 'HARD' },
-    { title: 'Knapsack 0/1', solved: 890, difficulty: 'MEDIUM' },
+    { title: 'Componente conexe', solved: 14, difficulty: 'EASY' },
+    { title: 'Drumuri', solved: 9, difficulty: 'MEDIUM' },
+    { title: 'Bloxorz', solved: 4, difficulty: 'HARD' },
 ];
 
 export default function StatsSidebar() {
@@ -120,19 +120,21 @@ export default function StatsSidebar() {
                 <div className="page-line-horizontal" />
                 <motion.div variants={{ visible: { transition: staggerConfig } }} initial="hidden" animate="visible" className="space-y-4">
                     {MOCK_POPULAR_PROBLEMS.map((prob) => (
-                        <motion.div variants={itemVariants} key={prob.title} className="p-3 rounded-2xl border border-(--accent)/30 bg-(--accent)/5 hover:bg-(--accent)/10 transition-colors cursor-pointer">
-                            <h3 className="text-xs font-bold text-(--text-h) mb-1">{prob.title}</h3>
-                            <div className="flex items-center justify-between">
-                                <span className="text-[9px] text-(--text-muted) font-semibold uppercase">
-                                    {prob.solved} {t.attemptsLabel}
-                                </span>
-                                <span className={`text-[8px] font-black ${
-                                    prob.difficulty === 'EASY' ? 'text-emerald-400' :
-                                    prob.difficulty === 'MEDIUM' ? 'text-amber-400' : 'text-red-400'
-                                }`}>
-                                    {prob.difficulty}
-                                </span>
-                            </div>
+                        <motion.div variants={itemVariants} key={prob.title}>
+                            <Link to={`/problems/${encodeURIComponent(prob.title)}`} className="block p-3 rounded-2xl border border-(--accent)/30 bg-(--accent)/5 hover:bg-(--accent)/10 transition-colors cursor-pointer">
+                                <h3 className="text-xs font-bold text-(--text-h) mb-1">{prob.title}</h3>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[9px] text-(--text-muted) font-semibold uppercase">
+                                        {prob.solved} {t.attemptsLabel}
+                                    </span>
+                                    <span className={`text-[8px] font-black ${
+                                        prob.difficulty === 'EASY' ? 'text-emerald-400' :
+                                        prob.difficulty === 'MEDIUM' ? 'text-amber-400' : 'text-red-400'
+                                    }`}>
+                                        {prob.difficulty}
+                                    </span>
+                                </div>
+                            </Link>
                         </motion.div>
                     ))}
                 </motion.div>
