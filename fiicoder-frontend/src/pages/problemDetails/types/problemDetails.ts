@@ -42,6 +42,7 @@ export interface SubmissionStatus {
   status: string;
   problemTitle: string;
   score: number;
+  verdict: string;
   subtasks: SubmissionSubtaskDTO[];
 }
 
@@ -67,18 +68,19 @@ export interface DoneSubtaskEvent {
   score: number;
   maxScore: number;
   "score%": number;
-  max_memory: number;
-  max_time: number;
+  maxMemory: number;
+  maxTime: number;
 }
 
 export interface DoneSubmissionEvent {
   request: "doneSubmission";
   submissionId: string;
+  verdict: string;
   score: number;
   maxScore: number;
   "score%": number;
-  max_memory: number;
-  max_time: number;
+  maxMemory: number;
+  maxTime: number;
 }
 
 export type EvaluationEvent = DoneTestEvent | DoneSubtaskEvent | DoneSubmissionEvent;

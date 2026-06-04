@@ -375,8 +375,8 @@ export default function TestResultPanel({ evalStatus, evalError, evalSummary, ev
                                 const color = `${summaryBorderClasses[subtaskVerdict]} ${subtaskTextColor[subtaskVerdict]}`;
                                 const badgeClasses = summaryBadgeClasses[subtaskVerdict];
                                 const verdictLabel = submissionVerdictLabels[subtaskVerdict][lang === 'RO' ? 'ro' : 'en'];
-                                const maxMemKB = st.max_memory > 0 ? (st.max_memory / 1024).toFixed(0) : '-';
-                                const maxTimeMs = st.max_time > 0 ? st.max_time.toFixed(0) : '-';
+                                const maxMemKB = st.maxMemory > 0 ? (st.maxMemory / 1024).toFixed(0) : '-';
+                                const maxTimeMs = st.maxTime > 0 ? st.maxTime.toFixed(0) : '-';
                                 const isExpanded = expandedSubtasks.has(st.subtaskId);
 
                                 return (

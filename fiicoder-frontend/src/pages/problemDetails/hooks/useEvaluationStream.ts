@@ -85,8 +85,8 @@ export function useEvaluationStream(params: UseEvaluationStreamParams) {
                         score: 0,
                         maxScore: subtask.total_score,
                         "score%": 0,
-                        max_memory: 0,
-                        max_time: 0
+                        maxMemory: 0,
+                        maxTime: 0
                     });
                     subtask.tests.forEach(test => {
                         if (!seenTests.has(test.testIndex)) {
