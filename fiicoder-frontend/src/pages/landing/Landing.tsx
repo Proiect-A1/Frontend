@@ -297,10 +297,10 @@ export default function Landing() {
 
     const stats = useMemo(
         () => [
-            { num: '5k+', label: t.activeStudents },
-            { num: '500+', label: t.problemsCount },
-            { num: '150+', label: t.contestsCount },
-            { num: '98%', label: t.satisfactionRate },
+            { num: '24', label: t.activeStudents },
+            { num: '13', label: t.problemsCount },
+            { num: '87', label: t.contestsCount },
+            { num: '100%', label: t.satisfactionRate },
         ],
         [t],
     );
