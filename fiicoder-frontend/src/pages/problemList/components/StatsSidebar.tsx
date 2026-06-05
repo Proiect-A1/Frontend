@@ -16,7 +16,7 @@ function solverInitials(entry: LeaderboardEntry): string {
 }
 
 const MOCK_POPULAR_PROBLEMS = [
-    { title: 'Componente conexe', solved: 14, difficulty: 'EASY' },
+    { title: 'Componente', solved: 14, difficulty: 'EASY' },
     { title: 'Drumuri', solved: 9, difficulty: 'MEDIUM' },
     { title: 'Bloxorz', solved: 4, difficulty: 'HARD' },
 ];
