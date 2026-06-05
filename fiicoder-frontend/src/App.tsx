@@ -1,38 +1,52 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { Suspense } from "react";
 import Navbar from "./components/Navbar";
-import Login from "./pages/Login";
-import ProblemList from "./pages/ProblemList";
-import ProblemDetails from "./pages/ProblemDetails";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { pageVariants } from "./utils/motionConfig";
+// Paginile legale sunt mici si statice: le tinem in bundle-ul principal (nu lazy),
+// ca sa nu apara flash-ul de "Loading..." cand sunt deschise intr-un tab nou.
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
+import Terms from "./pages/legal/Terms";
+// Paginile code-split (+ prefetch la hover) sunt definite intr-un registru comun.
+import {
+  Landing,
+  Login,
+  ProblemList,
+  ProblemDetails,
+  ClassesHub,
+  ClassDetails,
+  Profile,
+  AdminPanel,
+  ProposeProblem,
+  Leaderboard,
+} from "./routes/lazyRoutes";
 
-const pageVariants: Variants = {
-  initial: {
-    y: -60,
-    opacity: 0,
-    scale: 0.97
-  },
-  animate: {
-    y: 0,
-    opacity: 1,
-    scale: 1,
-    transition: {
-      type: "spring",
-      stiffness: 200,
-      damping: 20,
-      duration: 0.3,
-      ease: "easeIn"
-    }
-  },
-  exit: {
-    y: 30,
-    opacity: 0,
-    scale: 0.95,
-    transition: {
-      duration: 0.2,
-      ease: "easeIn"
-    }
-  },
-};
+function NotFound() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full gap-6 text-center">
+      <div className="w-20 h-20 rounded-full bg-(--accent)/10 border-2 border-(--accent)/30 flex items-center justify-center">
+        <span className="text-3xl font-black text-(--accent)/50">404</span>
+      </div>
+      <div>
+        <h1 className="text-2xl font-bold text-(--text-h) mb-2">Pagina nu există</h1>
+        <p className="text-sm text-(--text-muted)">URL-ul acesta nu corespunde niciunei pagini.</p>
+      </div>
+      <a href="/" className="px-5 py-2 rounded-full border-2 border-(--accent)/50 bg-(--accent)/10 text-sm font-bold text-(--text-h) hover:bg-(--accent)/20 transition-colors">
+        Înapoi acasă
+      </a>
+    </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function PageLoader() {
+  return (
+    <div className="flex items-center justify-center h-full">
+      <div className="animate-pulse text-(--text-muted)">Loading...</div>
+    </div>
+  );
+}
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -41,31 +55,81 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <motion.main
         key={location.pathname}
-        className="max-w-6xl mx-auto px-4 pt-28 pb-6"
+        className="w-full px-4 md:px-6 pt-6 pb-4 md:pb-6 xl:flex-1 xl:min-h-0 xl:py-6 xl:flex xl:flex-col"
         style={{ position: "relative" }}
-        variants={pageVariants}
+        variants={pageVariants as Variants}
         initial="initial"
         animate="animate"
         exit="exit"
       >
-        <Routes location={location}>
-          <Route path="/" element={
-            <Navigate to="/login" replace />
-            }
-          />
-          <Route path="/login" element={
-            <Login />
-            }
-          />
-          <Route path="/problems" element={
-            <ProblemList />
-            }
-          />
-          <Route path="/problems/:problemId" element={
-            <ProblemDetails />
-            }
-          />
-        </Routes>
+        <Suspense fallback={<PageLoader />}>
+          <Routes location={location}>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/problems" element={<ProblemList />} />
+            <Route path="/problems/:problemTitle" element={<ProblemDetails />} />
+            <Route
+              path="/leaderboard"
+              element={
+                <ProtectedRoute>
+                  <Leaderboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/profile/:username" element={<Profile />} />
+            <Route
+              path="/propose"
+              element={
+                <ProtectedRoute requireStaff>
+                  <ProposeProblem />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/propose/:proposalId"
+              element={
+                <ProtectedRoute requireStaff>
+                  <ProposeProblem />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/classes"
+              element={
+                <ProtectedRoute>
+                  <ClassesHub />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/classes/:groupId"
+              element={
+                <ProtectedRoute>
+                  <ClassDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminPanel />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </motion.main>
     </AnimatePresence>
   );
@@ -74,7 +138,7 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="h-screen w-full text-pink-100 font-sans site-hero overflow-hidden">
+      <div className="flex-1 flex flex-col xl:overflow-hidden text-(--text) font-sans custom-scrollbar">
         <Navbar />
         <AnimatedRoutes />
       </div>

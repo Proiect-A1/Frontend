@@ -2,9 +2,45 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><_fiicoder></title>
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <title>Fiicoder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Pixelify+Sans:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet">
+    <script>
+      (function () {
+        try {
+          const theme = localStorage.getItem('fiicoder_theme') || 'rose';
+          document.documentElement.setAttribute('data-theme', theme);
+
+          const faviconByTheme = {
+            rose: '/logo.svg',
+            nord: '/logo_nord.svg',
+            cream: '/logo_cream.svg',
+            sage: '/logo_sage.svg',
+            olivia: '/logo_olivia.svg',
+            serika: '/logo_serika.svg',
+            cyberpunk: '/logo_cyberpunk.svg',
+            eighties: '/logo_eighties.svg',
+            fiicode: '/logo_fiicode.svg',
+            fii: '/logo_fii.svg',
+            superuser: '/logo_superuser.svg',
+            custom: '/logo.svg'
+          };
+
+          const href = faviconByTheme[theme] || '/logo.svg';
+          let link = document.querySelector("link[rel~='icon']");
+          if (!link) {
+            link = document.createElement('link');
+            link.rel = 'icon';
+            link.type = 'image/svg+xml';
+            document.head.appendChild(link);
+          }
+          link.href = href;
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
