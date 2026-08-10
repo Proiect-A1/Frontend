@@ -71,6 +71,7 @@ export default function ProblemDetails() {
         homeworkOptions,
         selectedHomeworkId,
         setSelectedHomeworkId,
+        LevelUpOverlayElement,
     } = useProblemDetails();
 
     // Open latest submission modal directly (toolbar shortcut)
@@ -275,6 +276,8 @@ export default function ProblemDetails() {
                 submission={selectedSubmission}
                 lang={lang}
             />
+
+            {LevelUpOverlayElement}
         </div>
     );
 }

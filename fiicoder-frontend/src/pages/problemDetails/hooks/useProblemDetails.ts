@@ -6,6 +6,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { unindent } from '../utils/textUtils';
 import { unpackTranslation } from '../../../utils/translationPacker';
 import { useTabParam } from '../../../hooks/useTabParam';
+import { useGamificationCelebration } from '../../../hooks/useGamificationCelebration';
 import { useProblemData } from './useProblemData';
 import { useEvaluationStream } from './useEvaluationStream';
 import { useEditorLayout } from './useEditorLayout';
@@ -22,8 +23,9 @@ export function useProblemDetails() {
     const { problemTitle } = useParams();
     const { lang } = useLanguage();
     const t = translations[lang];
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, username } = useAuth();
     const { theme, customColors } = useTheme();
+    const { checkAndCelebrate, LevelUpOverlayElement } = useGamificationCelebration();
 
     // Shared editor buffer (written by the editor, read by submit + unload guard).
     const codeRef = useRef('');
@@ -47,10 +49,15 @@ export function useProblemDetails() {
         selectedLanguageId: data.selectedLanguageId,
         selectedHomeworkId,
         isAuthenticated,
+        username,
         lang,
         codeRef,
         setActiveTab,
         onSubmissionsRefresh: data.setRecentSubmissions,
+        // Only ever your own submission — there is no "someone else's submission"
+        // case here, unlike viewing an arbitrary profile — so celebration is
+        // always enabled.
+        onProfileRefreshed: (profile) => checkAndCelebrate(profile, true),
     });
 
     useEditorShortcuts({ isAuthenticated, codeRef, onSubmit: evaluation.handleSubmit });
@@ -114,5 +121,6 @@ export function useProblemDetails() {
         homeworkOptions: data.homeworkOptions,
         selectedHomeworkId,
         setSelectedHomeworkId,
+        LevelUpOverlayElement,
     };
 }

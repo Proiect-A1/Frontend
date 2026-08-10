@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { submissionService, connectToEvaluation } from '../services/submissionService';
 import type { DoneTestEvent, DoneSubtaskEvent, DoneSubmissionEvent, ProblemSubmissionDTO, ProblemTestDetailsDTO } from '../types/problemDetails';
 import type { ProblemFindResponseDTO } from '../../../services/problemService';
+import { profileService, type ProfileResponseDTO } from '../../../services/profileService';
 import { translations } from '../../../language/Language';
 
 interface UseEvaluationStreamParams {
@@ -12,10 +13,12 @@ interface UseEvaluationStreamParams {
     selectedLanguageId: string;
     selectedHomeworkId: string | null;
     isAuthenticated: boolean;
+    username: string | null;
     lang: string;
     codeRef: React.MutableRefObject<string>;
     setActiveTab: (tab: 'testresult' | 'submissions') => void;
     onSubmissionsRefresh: (data: ProblemSubmissionDTO[]) => void;
+    onProfileRefreshed?: (profile: ProfileResponseDTO) => void;
 }
 
 /**
@@ -32,10 +35,12 @@ export function useEvaluationStream(params: UseEvaluationStreamParams) {
         selectedLanguageId,
         selectedHomeworkId,
         isAuthenticated,
+        username,
         lang,
         codeRef,
         setActiveTab,
         onSubmissionsRefresh,
+        onProfileRefreshed,
     } = params;
 
     const queryClient = useQueryClient();
@@ -175,6 +180,20 @@ export function useEvaluationStream(params: UseEvaluationStreamParams) {
                                 .then((data) => onSubmissionsRefresh(data))
                                 .catch(() => {});
                         }
+
+                        if (isAuthenticated && username) {
+                            // Fire-and-forget: fetches the just-updated profile so the
+                            // caller can celebrate a badge unlock / level-up immediately,
+                            // right here on the Problem Details page, instead of only
+                            // when the user later navigates to their Profile page. A
+                            // failed fetch here must never surface — it just means no
+                            // immediate celebration this time (the Profile-page path
+                            // still catches it eventually via the invalidated query above).
+                            profileService
+                                .getProfile(username, 0, 200)
+                                .then((profile) => onProfileRefreshed?.(profile))
+                                .catch(() => {});
+                        }
                     },
                     (errorMsg: any) => {
                         if (evalStartRef.current !== null) {
@@ -197,8 +216,10 @@ export function useEvaluationStream(params: UseEvaluationStreamParams) {
         },
         // Dependency list intentionally matches the original god-hook exactly to
         // preserve recreation timing; the other referenced values (problemTests,
-        // setActiveTab, codeRef, queryClient, onSubmissionsRefresh) are stable or
-        // captured in lockstep with `problem`.
+        // setActiveTab, codeRef, queryClient, onSubmissionsRefresh, username,
+        // onProfileRefreshed) are stable or captured in lockstep with `problem`
+        // (username in particular changes together with `isAuthenticated`, which
+        // is already a dep).
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [isAuthenticated, lang, problem, problemTitle, selectedLanguageId, selectedHomeworkId],
     );
