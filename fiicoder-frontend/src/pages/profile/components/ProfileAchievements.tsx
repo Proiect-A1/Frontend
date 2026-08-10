@@ -153,12 +153,15 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
         },
         {
             id: 'polyglot',
-            rarity: 'common',
+            rarity: 'epic',
             icon: '💬',
             label: { ro: 'Poliglot', en: 'Polyglot' },
-            desc: { ro: 'Folosit ≥ 2 limbaje de programare', en: 'Used ≥ 2 programming languages' },
+            desc: { ro: 'Rezolvă complet 5+ probleme în fiecare din 2 limbaje diferite', en: 'Fully solve 5+ problems in each of 2 different languages' },
             unlocked: langCount >= 2,
-            progress: { current: Math.min(langCount, 2), target: 2, unit: { ro: 'limbaje', en: 'languages' } },
+            hint: {
+                ro: 'O limbă contează abia după ce ai rezolvat complet 5 probleme distincte cu ea — o singură rezolvare într-o limbă nouă nu ajunge',
+                en: 'A language only counts once you have fully solved 5 distinct problems with it — a single solve in a new language is not enough',
+            },
         },
         {
             id: 'specialist',
@@ -246,12 +249,15 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
         },
         {
             id: 'linguist',
-            rarity: 'rare',
+            rarity: 'legendary',
             icon: '🌐',
             label: { ro: 'Poliglot+', en: 'Linguist' },
-            desc: { ro: 'Folosit 3+ limbaje de programare frecvent', en: 'Used 3+ programming languages regularly' },
+            desc: { ro: 'Rezolvă complet 5+ probleme în fiecare din 3 limbaje diferite', en: 'Fully solve 5+ problems in each of 3 different languages' },
             unlocked: langCount >= 3,
-            progress: { current: Math.min(langCount, 3), target: 3, unit: { ro: 'limbaje', en: 'languages' } },
+            hint: {
+                ro: 'Cere minimum 15 probleme rezolvate complet, împărțite în cel puțin 3 limbaje diferite (minimum 5 per limbă)',
+                en: 'Requires at least 15 fully solved problems spread across at least 3 different languages (minimum 5 per language)',
+            },
         },
         {
             id: 'night_owl',
