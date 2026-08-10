@@ -1,6 +1,16 @@
 # Inclus de /etc/nginx/nginx.conf in contextul http.
 # Configuratia este pentru containerul intern de nginx care serveste SPA-ul React
 # si proxiaza /api/ catre backend.
+#
+# E un TEMPLATE (nu un .conf direct): imaginea oficiala nginx:alpine ruleaza
+# automat envsubst pe orice fisier din /etc/nginx/templates/*.template la
+# pornirea containerului si scrie rezultatul in /etc/nginx/conf.d/, inlocuind
+# doar variabilele care chiar exista ca variabile de mediu (deci $uri, $host,
+# $remote_addr etc. - variabile proprii nginx, nu de mediu - raman neatinse).
+# ${BACKEND_HOST} vine din ENV-ul din Dockerfile. Implicit "dev-backend" -
+# intentionat, atat pt. dev cat si pt. prod (vezi README.md, sectiunea Deploy).
+# Poate fi suprascris per-container din docker-compose.yml daca vreodata se
+# separa mediile pentru adevarat.
 
 gzip on;
 gzip_comp_level 6;
@@ -55,7 +65,7 @@ server {
     # nginx rezolva per-request, nu la startup.
     location /api/ {
         resolver 127.0.0.11 valid=30s;
-        set $backend http://dev-backend:9090;
+        set $backend http://${BACKEND_HOST}:9090;
         proxy_pass $backend/api/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;

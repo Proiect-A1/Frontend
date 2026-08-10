@@ -21,6 +21,7 @@ import {
 } from "../../../utils/translationPacker";
 import { useMonacoContextMenu } from "../../../hooks/useMonacoContextMenu";
 import { useT } from "../../../language/Language";
+import { getAccessToken } from "../../../services/apiClient";
 
 const STATEMENT_TEMPLATE = `# Cerință
 Descrie ce trebuie să facă soluția...
@@ -128,12 +129,12 @@ export default function StatementTab() {
     setIsTranslating(true);
     try {
       const response = await fetch(
-        "https://openrouter.ai/api/v1/chat/completions",
+        import.meta.env.VITE_AI_PROXY_URL,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+            Authorization: `Bearer ${getAccessToken() ?? ""}`,
           },
           body: JSON.stringify({
             model: "deepseek/deepseek-chat-v3-0324",

@@ -25,21 +25,50 @@ jobs:
             # Mergem în folderul corespondent pentru Frontend
             cd ~/fiicoder/dev/Frontend
 
-            # Ne asigurăm că tragem de pe branch-ul de dev
+            # Punem deoparte orice modificare locala facuta manual pe VM (nu o stergem -
+            # ramane recuperabila cu `git stash show -p` daca cineva vrea s-o verifice),
+            # ca sa nu blocheze checkout-ul de mai jos.
+            git stash --include-untracked
+
+            # Ne asigurăm că tragem de pe branch-ul de dev. Folosim @{u} (upstream-ul
+            # configurat de git pentru branch-ul curent) in loc de un nume de remote
+            # hardcodat, ca sa nu depindem de cum se numeste remote-ul pe acest checkout
+            # (vezi prod-deploy.yml, unde numele hardcodat "frontend" nu exista de fapt).
             git fetch --all
             git checkout dev
-            git reset --hard frontend/dev
+            git reset --hard @{u}
             git clean -fd
 
             # Ne întoarcem la root /home/github/sandbox și refacem containerul
             cd ../../
 
             docker compose down dev-frontend
-            docker compose build --build-arg VITE_OPENAI_API_KEY=${{ secrets.VITE_OPENAI_API_KEY }} dev-frontend
+            docker compose build \
+              --build-arg VITE_CF_ACCESS_CLIENT_ID=${{ secrets.VITE_CF_ACCESS_CLIENT_ID }} \
+              --build-arg VITE_CF_ACCESS_CLIENT_SECRET=${{ secrets.VITE_CF_ACCESS_CLIENT_SECRET }} \
+              --build-arg VITE_AI_PROXY_URL=${{ vars.VITE_AI_PROXY_URL }} \
+              dev-frontend
             docker compose up -d dev-frontend
 
-            docker image prune -f
-            sleep 20
+            # Cleanup-ul de imagini nu trebuie sa blocheze finalul deploy-ului - il lasam
+            # sa ruleze pe fundal.
+            docker image prune -f &
+
+            # In loc de sleep fix (nginx porneste de fapt in 1-2s), asteptam activ pana
+            # raspunde, cu un plafon de 15s ca sa nu blocam la infinit daca ceva e in
+            # neregula.
+            # 127.0.0.1, nu localhost: busybox wget rezolva "localhost" la IPv6 (::1)
+            # primul, unde conexiunea era refuzata desi nginx asculta pe IPv4 - poll-ul
+            # nu reusea niciodata si mergea oricum pana la plafon.
+            echo "Astept ca nginx sa raspunda..."
+            for i in $(seq 1 15); do
+              if docker exec dev-fiicoder-frontend wget -q --spider http://127.0.0.1/ 2>/dev/null; then
+                echo "Raspunde dupa ${i}s"
+                break
+              fi
+              sleep 1
+            done
+
             echo "FRONTEND DEPLOYMENT LOGS"
             docker logs dev-fiicoder-frontend
             echo "✅ Frontend deployment has finished successfully!"

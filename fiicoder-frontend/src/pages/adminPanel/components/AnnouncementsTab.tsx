@@ -5,6 +5,7 @@ import { useLanguage, useT } from '../../../language/Language';
 import type { Announcement } from '../../../types/announcement';
 import { unpackTranslation } from '../../../utils/translationPacker';
 import type { AnnouncementFormState } from '../hooks/useAdminAnnouncements';
+import { getAccessToken } from '../../../services/apiClient';
 
 type Props = {
     announcements: Announcement[];
@@ -34,11 +35,11 @@ export default function AnnouncementsTab({
         if (!announcementForm.titleRo && !announcementForm.contentRo) return;
         setIsTranslating(true);
         try {
-            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            const response = await fetch(import.meta.env.VITE_AI_PROXY_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
+                    'Authorization': `Bearer ${getAccessToken() ?? ''}`
                 },
                 body: JSON.stringify({
                     model: 'deepseek/deepseek-chat-v3-0324',

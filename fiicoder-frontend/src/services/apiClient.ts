@@ -3,9 +3,12 @@ import { ApiError } from '../utils/httpError';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
-// Cloudflare Access Service Token (necesar pentru a trece de firewall-ul CF)
-const CF_ACCESS_CLIENT_ID = import.meta.env.VITE_CF_ACCESS_CLIENT_ID || '77c033abcecc445a14ca70470aebdbd9.access';
-const CF_ACCESS_CLIENT_SECRET = import.meta.env.VITE_CF_ACCESS_CLIENT_SECRET || 'a312fdd32366072f0cd1d6fb9ff7acccc68ca388d1b40c14a42ea7a1ff818293';
+// Cloudflare Access Service Token (necesar pentru a trece de firewall-ul CF).
+// Setat prin build-arg in CI (vezi .github/workflows/*.yml) sau .env.local pentru dev.
+// NU pune valori hardcodate aici: fiind un build Vite, orice valoare ajunge oricum in
+// bundle-ul livrat clientului, deci hardcodarea le expune permanent in istoricul git.
+const CF_ACCESS_CLIENT_ID = import.meta.env.VITE_CF_ACCESS_CLIENT_ID || '';
+const CF_ACCESS_CLIENT_SECRET = import.meta.env.VITE_CF_ACCESS_CLIENT_SECRET || '';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 

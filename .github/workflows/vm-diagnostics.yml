@@ -1,0 +1,68 @@
+name: VM Diagnostics (read-only)
+
+# Declansat manual din tab-ul Actions (buton "Run workflow"), niciodata automat.
+# Nu modifica nimic pe VM - doar citeste starea curenta, ca sa poata fi vazuta
+# fara acces SSH direct la server.
+on:
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    name: Inspect VM state
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Executing remote SSH commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script_stop: false
+          script: |
+            echo "===== ~/fiicoder structure ====="
+            find ~/fiicoder -maxdepth 3 -type d 2>&1
+
+            echo ""
+            echo "===== docker-compose.yml (prod) ====="
+            cat ~/fiicoder/prod/docker-compose.yml 2>&1 || echo "(nu exista)"
+
+            echo ""
+            echo "===== docker-compose.yml (dev) ====="
+            cat ~/fiicoder/dev/docker-compose.yml 2>&1 || echo "(nu exista)"
+
+            echo ""
+            echo "===== docker compose services (prod) ====="
+            cd ~/fiicoder/prod 2>/dev/null && docker compose config --services 2>&1 || echo "(n/a)"
+
+            echo ""
+            echo "===== docker compose services (dev) ====="
+            cd ~/fiicoder/dev 2>/dev/null && docker compose config --services 2>&1 || echo "(n/a)"
+
+            echo ""
+            echo "===== containere care ruleaza ====="
+            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" 2>&1
+
+            echo ""
+            echo "===== retele docker ====="
+            docker network ls 2>&1
+
+            echo ""
+            echo "===== containere pe fiicoder_retea_fiicoder ====="
+            docker network inspect fiicoder_retea_fiicoder --format '{{range .Containers}}{{.Name}} {{end}}' 2>&1
+
+            echo ""
+            echo "===== containere pe dev_retea_fiicoder ====="
+            docker network inspect dev_retea_fiicoder --format '{{range .Containers}}{{.Name}} {{end}}' 2>&1
+
+            echo ""
+            echo "===== backend-ul catre care proxiaza ACUM containerul fiicoder-frontend (prod) ====="
+            docker exec fiicoder-frontend cat /etc/nginx/conf.d/default.conf 2>&1 | grep -i backend
+
+            echo ""
+            echo "===== remote-uri git (prod/Frontend) ====="
+            cd ~/fiicoder/prod/Frontend 2>/dev/null && git remote -v 2>&1 || echo "(n/a)"
+
+            echo ""
+            echo "===== remote-uri git (dev/Frontend) ====="
+            cd ~/fiicoder/dev/Frontend 2>/dev/null && git remote -v 2>&1 || echo "(n/a)"
