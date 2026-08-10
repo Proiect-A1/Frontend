@@ -166,7 +166,10 @@ export function useEvaluationStream(params: UseEvaluationStreamParams) {
                         setTimeout(() => setStatus(null), 4000);
 
                         if (isAuthenticated && problemTitle) {
-                            queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
+                            // Partial match (no 'exact') so this catches the real key,
+                            // ['profile', <username>], without needing to thread the
+                            // current username into this hook.
+                            queryClient.invalidateQueries({ queryKey: ['profile'] });
                             submissionService
                                 .getByProblem(problemTitle)
                                 .then((data) => onSubmissionsRefresh(data))
