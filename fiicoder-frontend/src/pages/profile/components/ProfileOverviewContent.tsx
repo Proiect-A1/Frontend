@@ -14,11 +14,13 @@ import {
   submissionVerdictLabels,
 } from "../profileUtils";
 import { translations } from "../../../language/Language";
+import ActivityQuests from "./ActivityQuests";
 
 type ProfileOverviewContentProps = {
   profile: ProfileResponseDTO;
   lang: "RO" | "EN";
   theme: string;
+  isOwnProfile: boolean;
 };
 
 const getSubmissionCounts = (
@@ -40,6 +42,7 @@ export default function ProfileOverviewContent({
   profile,
   lang,
   theme,
+  isOwnProfile,
 }: ProfileOverviewContentProps) {
   const t = translations[lang];
   const isLightTheme = theme === "cream" || theme === "sage" || theme === "olivia" || theme === "fii";
@@ -274,6 +277,9 @@ export default function ProfileOverviewContent({
           </motion.div>
         ))}
       </motion.div>
+
+      {isOwnProfile && <ActivityQuests profile={profile} lang={lang} />}
+
       <motion.div
         variants={containerVariants}
         initial="hidden"

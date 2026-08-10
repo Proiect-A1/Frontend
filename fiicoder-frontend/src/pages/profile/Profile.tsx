@@ -191,12 +191,12 @@ export default function Profile() {
                     animate="visible"
                 >
                     <div className="flex flex-col gap-6 min-w-0">
-                        <ProfileSidebar profile={profile} username={username} lang={lang} />
+                        <ProfileSidebar profile={profile} username={username} lang={lang} isOwnProfile={isOwnProfile} />
                     </div>
 
                     <div className="flex flex-col gap-6 min-w-0 w-full">
                         {activeTab === 'overview' ? (
-                            <ProfileOverviewContent profile={profile} lang={lang} theme={theme} />
+                            <ProfileOverviewContent profile={profile} lang={lang} theme={theme} isOwnProfile={isOwnProfile} />
                         ) : activeTab === 'proposals' ? (
                             <ProfileProposalsPanel
                                 proposals={proposals}

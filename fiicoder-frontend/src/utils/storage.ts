@@ -87,4 +87,5 @@ export const STORAGE_KEYS = {
   recentClasses: (userId: string) => `fiicoder_recent_classes_${userId}`,
   notes: (problemTitle: string) => `fiicoder_notes_${problemTitle}`,
   paint: (problemTitle: string) => `fiicoder_paint_${problemTitle}`,
+  seenGamificationState: (userId: string) => `fiicoder_seen_gamification_${userId}`,
 } as const;

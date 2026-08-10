@@ -349,6 +349,9 @@ export const translations = {
         changePhoto: 'Schimbă\npoza',
         changePhotoOnGravatar: 'Schimbă poza pe Gravatar',
         noAchievementsYet: 'Nicio realizare încă',
+        levelLabel: 'Nivel',
+        levelUpTitle: 'Nivel Nou!',
+        achievementUnlockedToast: 'Realizare deblocată',
         problemsSolvedLabel: 'Probleme Rezolvate',
         monthlyActivity: 'Activitate Lunară',
         recentSubmissions: 'Submisii Recente',
@@ -380,6 +383,11 @@ export const translations = {
         achievementsProgress: 'Progres total',
         achievementsUnlockedSection: 'Deblocate',
         achievementsLockedSection: 'Nedeblocate',
+
+        // ─── Profile Activity Quests ──────────────────────────────────────────────
+        questsTitle: 'Provocări',
+        questsGroupDaily: 'Zilnic',
+        questsGroupWeekly: 'Săptămânal',
 
         // ─── Profile Homework Panel ────────────────────────────────────────────────
         hwDeadlineLabel: 'Termen:',
@@ -1039,6 +1047,9 @@ export const translations = {
         changePhoto: 'Change\nphoto',
         changePhotoOnGravatar: 'Change photo on Gravatar',
         noAchievementsYet: 'No achievements yet',
+        levelLabel: 'Level',
+        levelUpTitle: 'Level Up!',
+        achievementUnlockedToast: 'Achievement unlocked',
         problemsSolvedLabel: 'Problems Solved',
         monthlyActivity: 'Monthly Activity',
         recentSubmissions: 'Recent Submissions',
@@ -1070,6 +1081,11 @@ export const translations = {
         achievementsProgress: 'Overall progress',
         achievementsUnlockedSection: 'Unlocked',
         achievementsLockedSection: 'Locked',
+
+        // ─── Profile Activity Quests ──────────────────────────────────────────────
+        questsTitle: 'Quests',
+        questsGroupDaily: 'Daily',
+        questsGroupWeekly: 'Weekly',
 
         // ─── Profile Homework Panel ────────────────────────────────────────────────
         hwDeadlineLabel: 'Deadline:',

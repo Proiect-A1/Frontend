@@ -6,6 +6,7 @@ import { useLanguage } from "../../language/Language";
 import UserAvatar from "../../components/UserAvatar";
 import { leaderboardService, type LeaderboardEntry } from "./services/leaderboardService";
 import { extractErrorMessage } from "../../utils/httpError";
+import { RARITY_STYLES } from "../profile/components/ProfileAchievements";
 
 const PAGE_SIZE = 20;
 
@@ -15,6 +16,26 @@ const RANK_STYLES: Record<number, { ring: string; badge: string; glow: string }>
   2: { ring: "border-[#C8CDD6]", badge: "bg-[#C8CDD6] text-black", glow: "shadow-[0_0_14px_rgba(200,205,214,0.3)]" },
   3: { ring: "border-[#D9954B]", badge: "bg-[#D9954B] text-black", glow: "shadow-[0_0_14px_rgba(217,149,75,0.3)]" },
 };
+
+type Rarity = keyof typeof RARITY_STYLES;
+
+// Solved-count-only milestone badges. Mirrors the 'first_blood' / 'rookie' /
+// 'solver' / 'centurion' entries in ProfileAchievements.computeAchievements —
+// those 4 (out of 19) achievements depend on solved-problem count alone, so
+// they're the only ones a leaderboard row (which only has { rank, solvedCount,
+// user }) can honestly reproduce. Same icons/rarities/thresholds — do not
+// diverge without updating both places.
+const SOLVED_MILESTONES: { threshold: number; icon: string; rarity: Rarity }[] = [
+  { threshold: 100, icon: "💯", rarity: "epic" },
+  { threshold: 25, icon: "⚡", rarity: "rare" },
+  { threshold: 5, icon: "🌱", rarity: "common" },
+  { threshold: 1, icon: "🩸", rarity: "common" },
+];
+
+function highestMilestoneBadge(solvedCount: number): { icon: string; rarity: Rarity } | null {
+  const milestone = SOLVED_MILESTONES.find((m) => solvedCount >= m.threshold);
+  return milestone ? { icon: milestone.icon, rarity: milestone.rarity } : null;
+}
 
 function initials(entry: LeaderboardEntry): string {
   const { firstName, lastName, username } = entry.user;
@@ -112,6 +133,7 @@ export default function Leaderboard() {
           <div className="flex flex-col gap-2.5">
             {entries.map((entry, index) => {
               const rankStyle = RANK_STYLES[entry.rank];
+              const milestone = highestMilestoneBadge(entry.solvedCount);
               return (
                 <Link
                   key={entry.user.id}
@@ -159,12 +181,22 @@ export default function Leaderboard() {
                   </div>
 
                   {/* solved count */}
-                  <div className="shrink-0 text-right">
-                    <div className="text-lg font-black text-(--text-h) leading-none">
-                      {entry.solvedCount}
-                    </div>
-                    <div className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mt-0.5">
-                      {lang === "RO" ? "rezolvate" : "solved"}
+                  <div className="shrink-0 flex items-center gap-2">
+                    {milestone && (
+                      <div
+                        title={lang === "RO" ? "Insignă bazată pe probleme rezolvate" : "Milestone badge based on problems solved"}
+                        className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] shrink-0 ${RARITY_STYLES[milestone.rarity].ring} ${RARITY_STYLES[milestone.rarity].glow}`}
+                      >
+                        {milestone.icon}
+                      </div>
+                    )}
+                    <div className="text-right">
+                      <div className="text-lg font-black text-(--text-h) leading-none">
+                        {entry.solvedCount}
+                      </div>
+                      <div className="text-[10px] uppercase tracking-widest text-(--text-muted) font-bold mt-0.5">
+                        {lang === "RO" ? "rezolvate" : "solved"}
+                      </div>
                     </div>
                   </div>
                 </motion.div>

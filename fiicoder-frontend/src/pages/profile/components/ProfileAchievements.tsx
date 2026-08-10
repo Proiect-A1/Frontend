@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { ProfileResponseDTO } from '../../../services/profileService';
+import { isAcceptedSubmission, type ProfileResponseDTO } from '../../../services/profileService';
 import { translations } from '../../../language/Language';
 
 type Props = {
@@ -16,8 +16,30 @@ type Achievement = {
     label: { ro: string; en: string };
     desc: { ro: string; en: string };
     unlocked: boolean;
+    rarity: 'common' | 'rare' | 'epic' | 'legendary';
     progress?: { current: number; target: number; unit: { ro: string; en: string } };
     hint?: { ro: string; en: string };
+};
+
+export const RARITY_STYLES: Record<Achievement['rarity'], { border: string; bg: string; glow: string; ring: string }> = {
+    common: { border: 'border-gray-400/30', bg: 'bg-gray-400/5', glow: '', ring: 'bg-gray-400/15' },
+    rare: { border: 'border-sky-400/40', bg: 'bg-sky-400/10', glow: 'shadow-[0_0_12px_rgba(56,189,248,0.35)]', ring: 'bg-sky-400/15' },
+    epic: { border: 'border-purple-400/40', bg: 'bg-purple-400/10', glow: 'shadow-[0_0_14px_rgba(192,132,252,0.4)]', ring: 'bg-purple-400/15' },
+    legendary: { border: 'border-amber-400/50', bg: 'bg-amber-400/10', glow: 'shadow-[0_0_18px_rgba(251,191,36,0.5)] animate-pulse', ring: 'bg-amber-400/20' },
+};
+
+const RARITY_LABELS: Record<Achievement['rarity'], { ro: string; en: string }> = {
+    common: { ro: 'Comun', en: 'Common' },
+    rare: { ro: 'Rar', en: 'Rare' },
+    epic: { ro: 'Epic', en: 'Epic' },
+    legendary: { ro: 'Legendar', en: 'Legendary' },
+};
+
+const RARITY_TEXT: Record<Achievement['rarity'], string> = {
+    common: 'text-gray-400',
+    rare: 'text-sky-400',
+    epic: 'text-purple-400',
+    legendary: 'text-amber-400',
 };
 
 export function computeAchievements(profile: ProfileResponseDTO): Achievement[] {
@@ -31,9 +53,23 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
     const hasSkills = profile.skillBreakdownTags.length > 0;
     const langCount = profile.mostUsedLanguages.length;
 
+    // rankEasy/Medium/Hard/Contest sunt fracția (solved/total) pe acea dificultate,
+    // calculată de backend (ProfileService.rank) — nu un rank relativ la alți useri,
+    // deci >= 100% chiar înseamnă "toate problemele din acea dificultate, rezolvate".
+    const pct = (v: number) => (v <= 1 ? v * 100 : v);
+
+    // recentSubmissions acoperă doar ultimele 7 zile (fereastră fixă în backend),
+    // deci astea sunt singurele badge-uri din listă care se pot "re-bloca" dacă nu
+    // mai ai o submisie în acel interval orar recent — comportament intenționat,
+    // nu persistă separat de fereastra pe care ne-o dă backend-ul.
+    const recent = profile.recentSubmissions?.content ?? [];
+    const nightOwl = recent.some((s) => isAcceptedSubmission(s) && new Date(s.submissionDate).getHours() >= 23);
+    const earlyBird = recent.some((s) => isAcceptedSubmission(s) && new Date(s.submissionDate).getHours() < 7);
+
     return [
         {
             id: 'first_blood',
+            rarity: 'common',
             icon: '🩸',
             label: { ro: 'First Blood', en: 'First Blood' },
             desc: { ro: 'Prima problemă rezolvată', en: 'First problem solved' },
@@ -42,6 +78,7 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
         },
         {
             id: 'rookie',
+            rarity: 'common',
             icon: '🌱',
             label: { ro: 'Rookie', en: 'Rookie' },
             desc: { ro: '5 probleme rezolvate', en: '5 problems solved' },
@@ -50,6 +87,7 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
         },
         {
             id: 'solver',
+            rarity: 'rare',
             icon: '⚡',
             label: { ro: 'Solver', en: 'Solver' },
             desc: { ro: '25 probleme rezolvate', en: '25 problems solved' },
@@ -58,6 +96,7 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
         },
         {
             id: 'centurion',
+            rarity: 'epic',
             icon: '💯',
             label: { ro: 'Centurion', en: 'Centurion' },
             desc: { ro: '100 probleme rezolvate', en: '100 problems solved' },
@@ -66,6 +105,7 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
         },
         {
             id: 'streak_3',
+            rarity: 'common',
             icon: '🔥',
             label: { ro: 'Stabil', en: 'Steady' },
             desc: { ro: '3 zile consecutive cu submisii', en: '3-day submission streak' },
@@ -74,6 +114,7 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
         },
         {
             id: 'streak_7',
+            rarity: 'rare',
             icon: '🚀',
             label: { ro: 'Săptămânal', en: 'Weekly' },
             desc: { ro: '7 zile consecutive cu submisii', en: '7-day submission streak' },
@@ -82,6 +123,7 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
         },
         {
             id: 'streak_30',
+            rarity: 'epic',
             icon: '🏅',
             label: { ro: 'Lunar', en: 'Monthly' },
             desc: { ro: '30 zile consecutive cu submisii', en: '30-day submission streak' },
@@ -90,6 +132,7 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
         },
         {
             id: 'persistent',
+            rarity: 'common',
             icon: '🔨',
             label: { ro: 'Persistent', en: 'Persistent' },
             desc: { ro: '50 de submisii trimise', en: '50 submissions sent' },
@@ -98,6 +141,7 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
         },
         {
             id: 'sharpshooter',
+            rarity: 'rare',
             icon: '🎯',
             label: { ro: 'Țintaș', en: 'Sharpshooter' },
             desc: { ro: 'Rată acceptare ≥ 80% (min. 5 submisii)', en: 'Acceptance rate ≥ 80% (min. 5 submissions)' },
@@ -109,6 +153,7 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
         },
         {
             id: 'polyglot',
+            rarity: 'common',
             icon: '💬',
             label: { ro: 'Poliglot', en: 'Polyglot' },
             desc: { ro: 'Folosit ≥ 2 limbaje de programare', en: 'Used ≥ 2 programming languages' },
@@ -117,6 +162,7 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
         },
         {
             id: 'specialist',
+            rarity: 'rare',
             icon: '🧩',
             label: { ro: 'Specialist', en: 'Specialist' },
             desc: { ro: 'Rezolvă ≥ 5 probleme cu același tag', en: 'Solve ≥ 5 problems sharing a tag' },
@@ -128,6 +174,7 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
         },
         {
             id: 'hard_hitter',
+            rarity: 'rare',
             icon: '🏔️',
             label: { ro: 'Alpinist', en: 'Hard Hitter' },
             desc: { ro: 'Obține scor maxim la o problemă HARD', en: 'Get full score on a HARD problem' },
@@ -139,6 +186,7 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
         },
         {
             id: 'contestant',
+            rarity: 'epic',
             icon: '🏆',
             label: { ro: 'Contestant', en: 'Contestant' },
             desc: { ro: 'Rezolvat o problemă CONTEST', en: 'Solved a CONTEST problem' },
@@ -150,6 +198,7 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
         },
         {
             id: 'contributor',
+            rarity: 'epic',
             icon: '📦',
             label: { ro: 'Contributor', en: 'Contributor' },
             desc: { ro: 'Cont Profesor sau Admin — poți propune probleme', en: 'Professor or Admin account — can propose problems' },
@@ -157,6 +206,75 @@ export function computeAchievements(profile: ProfileResponseDTO): Achievement[] 
             hint: {
                 ro: 'Disponibil doar pentru conturi de Profesor sau Admin',
                 en: 'Only available for Professor or Admin accounts',
+            },
+        },
+        {
+            id: 'easy_sweep',
+            rarity: 'rare',
+            icon: '🧹',
+            label: { ro: 'Curățenie Easy', en: 'Easy Sweep' },
+            desc: { ro: 'Toate problemele Easy, rezolvate', en: 'All Easy problems solved' },
+            unlocked: pct(profile.rankEasy) >= 100,
+            progress: { current: Math.min(Math.round(pct(profile.rankEasy)), 100), target: 100, unit: { ro: '%', en: '%' } },
+        },
+        {
+            id: 'medium_sweep',
+            rarity: 'epic',
+            icon: '⚙️',
+            label: { ro: 'Curățenie Medium', en: 'Medium Sweep' },
+            desc: { ro: 'Toate problemele Medium, rezolvate', en: 'All Medium problems solved' },
+            unlocked: pct(profile.rankMedium) >= 100,
+            progress: { current: Math.min(Math.round(pct(profile.rankMedium)), 100), target: 100, unit: { ro: '%', en: '%' } },
+        },
+        {
+            id: 'hard_sweep',
+            rarity: 'legendary',
+            icon: '💎',
+            label: { ro: 'Curățenie Hard', en: 'Hard Sweep' },
+            desc: { ro: 'Toate problemele Hard, rezolvate', en: 'All Hard problems solved' },
+            unlocked: pct(profile.rankHard) >= 100,
+            progress: { current: Math.min(Math.round(pct(profile.rankHard)), 100), target: 100, unit: { ro: '%', en: '%' } },
+        },
+        {
+            id: 'contest_sweep',
+            rarity: 'legendary',
+            icon: '👑',
+            label: { ro: 'Curățenie Contest', en: 'Contest Sweep' },
+            desc: { ro: 'Toate problemele Contest, rezolvate', en: 'All Contest problems solved' },
+            unlocked: pct(profile.rankContest) >= 100,
+            progress: { current: Math.min(Math.round(pct(profile.rankContest)), 100), target: 100, unit: { ro: '%', en: '%' } },
+        },
+        {
+            id: 'linguist',
+            rarity: 'rare',
+            icon: '🌐',
+            label: { ro: 'Poliglot+', en: 'Linguist' },
+            desc: { ro: 'Folosit 3+ limbaje de programare frecvent', en: 'Used 3+ programming languages regularly' },
+            unlocked: langCount >= 3,
+            progress: { current: Math.min(langCount, 3), target: 3, unit: { ro: 'limbaje', en: 'languages' } },
+        },
+        {
+            id: 'night_owl',
+            rarity: 'common',
+            icon: '🦉',
+            label: { ro: 'Bufniță de Noapte', en: 'Night Owl' },
+            desc: { ro: 'Submisie admisă după ora 23:00, în ultimele 7 zile', en: 'Accepted submission after 23:00, in the last 7 days' },
+            unlocked: nightOwl,
+            hint: {
+                ro: 'Trimite o soluție admisă după ora 23:00 — se recalculează pe o fereastră de 7 zile',
+                en: 'Send an accepted solution after 23:00 — recalculated over a rolling 7-day window',
+            },
+        },
+        {
+            id: 'early_bird',
+            rarity: 'common',
+            icon: '🐦',
+            label: { ro: 'Pasăre Matinală', en: 'Early Bird' },
+            desc: { ro: 'Submisie admisă înainte de ora 07:00, în ultimele 7 zile', en: 'Accepted submission before 07:00, in the last 7 days' },
+            unlocked: earlyBird,
+            hint: {
+                ro: 'Trimite o soluție admisă înainte de ora 07:00 — se recalculează pe o fereastră de 7 zile',
+                en: 'Send an accepted solution before 07:00 — recalculated over a rolling 7-day window',
             },
         },
     ];
@@ -250,32 +368,40 @@ export default function ProfileAchievementsModal({ profile, lang, isOpen, onClos
                                     <p className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3">
                                         ✓ {t.achievementsUnlockedSection}
                                     </p>
-                                    {unlocked.map((a, i) => (
-                                        <motion.div
-                                            key={a.id}
-                                            initial={{ opacity: 0, x: -12 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: i * 0.04 }}
-                                            className="rounded-2xl border border-emerald-500/25 bg-emerald-500/8 p-4 flex items-center gap-4"
-                                        >
-                                            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-2xl shrink-0">
-                                                {a.icon}
-                                            </div>
-                                            <div className="min-w-0 flex-1">
-                                                <p className="text-sm font-bold text-(--text-h)">
-                                                    {lang === 'RO' ? a.label.ro : a.label.en}
-                                                </p>
-                                                <p className="text-[11px] text-(--text-muted) mt-0.5 leading-relaxed">
-                                                    {lang === 'RO' ? a.desc.ro : a.desc.en}
-                                                </p>
-                                            </div>
-                                            <div className="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
-                                                <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                                                </svg>
-                                            </div>
-                                        </motion.div>
-                                    ))}
+                                    {unlocked.map((a, i) => {
+                                        const rs = RARITY_STYLES[a.rarity];
+                                        return (
+                                            <motion.div
+                                                key={a.id}
+                                                initial={{ opacity: 0, x: -12 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: i * 0.04 }}
+                                                className={`rounded-2xl border ${rs.border} ${rs.bg} ${rs.glow} p-4 flex items-center gap-4`}
+                                            >
+                                                <div className={`w-12 h-12 rounded-2xl ${rs.ring} flex items-center justify-center text-2xl shrink-0`}>
+                                                    {a.icon}
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="text-sm font-bold text-(--text-h)">
+                                                            {lang === 'RO' ? a.label.ro : a.label.en}
+                                                        </p>
+                                                        <span className={`text-[9px] font-black uppercase tracking-widest ${rs.ring} ${RARITY_TEXT[a.rarity]} rounded-full px-1.5 py-0.5`}>
+                                                            {lang === 'RO' ? RARITY_LABELS[a.rarity].ro : RARITY_LABELS[a.rarity].en}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-[11px] text-(--text-muted) mt-0.5 leading-relaxed">
+                                                        {lang === 'RO' ? a.desc.ro : a.desc.en}
+                                                    </p>
+                                                </div>
+                                                <div className="w-7 h-7 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
+                                                    <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                </div>
+                                            </motion.div>
+                                        );
+                                    })}
                                 </div>
                             )}
 
